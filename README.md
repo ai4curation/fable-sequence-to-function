@@ -1,27 +1,43 @@
----
-title: "LLM_SEQUENCE_PROBE / manuscript"
----
+# LLM sequence probe: manuscript
 
-# LLM_SEQUENCE_PROBE / manuscript
+Draft of a short preprint on four sequence-only tests of general-purpose
+language models on protein sequence.
 
-Draft of a short preprint on the four sequence-only tests described on the
-[project page](../../LLM_SEQUENCE_PROBE.md).
+## Where this came from
+
+This repository was split from the `projects/LLM_SEQUENCE_PROBE/manuscript`
+folder of [`ai4curation/ai-gene-review`](https://github.com/ai4curation/ai-gene-review),
+pull request #6527, at commit `119ac18676`. The commit history of that folder
+is preserved here.
+
+The tests themselves stay in the original repository: the scripts that build
+each test set, the raw model outputs and the scoring code are in
+`projects/LLM_SEQUENCE_PROBE/` there, and are described on its
+[project page](https://github.com/ai4curation/ai-gene-review/blob/119ac1867699227b129baf1f400c10f271193475/projects/LLM_SEQUENCE_PROBE.md).
+Nothing here duplicates them.
 
 ## Files
 
 - `manuscript.tex`: the manuscript source. Start here.
 - `references.bib`: bibliography. Entries with a DOI were checked against Europe PMC.
-- `figures/make_figures.py`: draws both figures from the committed model outputs
-  in `../pseudo/` and `../structure/`. Nothing in it is typed in by hand.
+- `figures/make_figures.py`: draws both figures from the model outputs in the
+  original repository's `pseudo/` and `structure/` folders. Nothing in it is
+  typed in by hand.
 - `figures/*.pdf`: figures used by the manuscript. `figures/*.png` are copies for
   the project page.
+- `manuscript.pdf`: a committed reading copy.
 
 ## Build
 
+The figure script needs a checkout of the original repository for its data.
+Pass the path of its `projects/LLM_SEQUENCE_PROBE` folder:
+
 ```bash
-uv run python figures/make_figures.py
+uv run --with matplotlib python figures/make_figures.py /path/to/ai-gene-review/projects/LLM_SEQUENCE_PROBE
 pdflatex manuscript && bibtex manuscript && pdflatex manuscript && pdflatex manuscript
 ```
+
+The committed figures were made with Matplotlib 3.10.5.
 
 `manuscript.pdf` is a committed reading copy; rebuild and recommit it when the source changes.
 
