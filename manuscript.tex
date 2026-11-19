@@ -75,7 +75,7 @@ long: 7 of 120 replies in test 3 and 9 of 30 in test 4 took more than one reques
 itself after an output limit or a stopped reply, and in test 2 six such replies were asked again, one of whose new answers also took more than one request. In test 1 Opus~4.6 was run at
 low effort only.
 Counts of web search and fetch requests were kept only in rows written by later versions of the revised
-route's code, mostly those of the Opus~4.6 high-effort runs of tests 3 and 4 and of the second asking of the test-3
+route's code, mostly those of the Opus~4.6 high-effort runs of tests 3 and 4 and of the rerun of the test-3
 mutants and wild types for the decoy control; none of those rows shows a web request. Each question has at most
 one scored answer per run. For 6 of the 2,854 calls in the four tests, the tool's usage record lists a second model
 besides the one requested: three Opus~5.5 next-residue calls at high effort, all on shuffled sequences, and
@@ -346,7 +346,8 @@ sequence and a curated feature before it is used.
 
 \paragraph{Limitations.} Cells contain 12 to 68 items, and each question has at most one scored answer per
 model, effort setting and run. The test-3 mutants and wild types were asked again at the same effort for
-the decoy control, and calls marked as carrying attached context were asked again and left unscored. Answers were
+the decoy control, and calls marked as carrying attached context, or whose attempt failed, were asked again; the marked rows
+are not scored. Answers were
 sampled through a command-line tool that adds its own context, which probably lowers accuracy relative to
 direct greedy calls. The Opus~4.6 high-effort runs used a revised call route and a later tool version than
 the runs of the other two models, and its decoys were asked at low effort only. The decoy positions were

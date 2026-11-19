@@ -13,14 +13,14 @@ Date:    2026-11-19
 import json, math, pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[2] / "experiments"
 def n(x):
-    return x if isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) else None
+    return x if isinstance(x, (int, float)) and not isinstance(x, bool) and (isinstance(x, int) or math.isfinite(x)) else None
 def web(r):
     """True if any web request is recorded, False if none, None if a count is not a number."""
     counts = []
     stu = (r.get("usage") or {}).get("server_tool_use")
     if isinstance(stu, dict): counts += [stu.get(k) for k in ("web_search_requests", "web_fetch_requests")]   # a missing key is unknown
     mu = r.get("model_usage")
-    if isinstance(mu, dict): counts += [v.get("webSearchRequests", 0) for v in mu.values() if isinstance(v, dict)]
+    if isinstance(mu, dict): counts += [v.get("webSearchRequests") for v in mu.values() if isinstance(v, dict)]
     if any(n(c) is None for c in counts): return None
     return any(c > 0 for c in counts)
 for f in sorted(ROOT.glob("*/results/**/*.jsonl")):

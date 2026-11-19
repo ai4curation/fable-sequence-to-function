@@ -176,8 +176,8 @@ pixel, so they are not byte-for-byte reproducible.
   Opus 5.5 answered test 1 at low and high effort, and Opus 4.6 answered tests
   2 to 4 at both. The decoy control asked the test-3 mutants and wild types
   again at the same effort on the revised route (`experiments/decoy_control/`).
-  Calls marked as carrying attached context were asked again; their rows stay
-  in the files and are not scored, and neither are the two rows of
+  Calls marked as carrying attached context, or whose attempt failed, were
+  asked again; the marked rows stay in the files and are not scored, and neither are the two rows of
   `experiments/decoy_control/results/canary-original-flags.jsonl`.
 - **Calls listing a second model:** for 6 of the 2,854 calls, the tool's usage
   record (the `served` field, from `modelUsage`) lists a second model besides
