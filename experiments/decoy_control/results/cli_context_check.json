@@ -1,0 +1,102 @@
+{
+ "model": "claude-haiku-5-5",
+ "prompt": "Reply with the single word OK.",
+ "describe_prompt": "Describe in general terms, without quoting, what kinds of information you were given before this sentence in this conversation. Do not include any names, addresses, paths or identifiers. If you were given nothing, reply NONE.",
+ "extra_flags": [
+  "--setting-sources",
+  "",
+  "--strict-mcp-config",
+  "--disable-slash-commands",
+  "--no-chrome"
+ ],
+ "run_at": "2026-11-19T02:16:13+00:00",
+ "original_flags": [
+  {
+   "tools_attached": 0,
+   "connectors": {
+    "pending": 7
+   },
+   "skills_listed": 76,
+   "cli_version": "2.1.328",
+   "result": "OK",
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 347,
+   "cache_read_input_tokens": 5502,
+   "cost": 0.00012661999999999998
+  },
+  {
+   "tools_attached": 0,
+   "connectors": {
+    "pending": 7
+   },
+   "skills_listed": 76,
+   "cli_version": "2.1.328",
+   "result": "OK",
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 5849,
+   "cost": 6.069e-05
+  },
+  {
+   "tools_attached": 0,
+   "connectors": {
+    "pending": 7
+   },
+   "skills_listed": 76,
+   "cli_version": "2.1.328",
+   "result": "OK",
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 5849,
+   "cost": 6.069e-05
+  },
+  {
+   "tools_attached": 0,
+   "connectors": {
+    "pending": 7
+   },
+   "skills_listed": 76,
+   "cli_version": "2.1.328",
+   "result": "OK",
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 5849,
+   "cost": 6.069e-05
+  }
+ ],
+ "with_extra_flags": [
+  {
+   "tools_attached": 0,
+   "connectors": {},
+   "skills_listed": 0,
+   "cli_version": "2.1.328",
+   "result": "OK",
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 571,
+   "cache_read_input_tokens": 0,
+   "cost": 0.00011640000000000001
+  },
+  {
+   "tools_attached": 0,
+   "connectors": {},
+   "skills_listed": 0,
+   "cli_version": "2.1.328",
+   "result": "OK",
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 571,
+   "cost": 7.91e-06
+  }
+ ],
+ "description_with_extra_flags": {
+  "tools_attached": 0,
+  "connectors": {},
+  "skills_listed": 0,
+  "cli_version": "2.1.328",
+  "result": "Before your message, I was given:\n\n- **Account context:** a note that identifies your account, which I should treat as private and not repeat.\n- **Environment details:** the working directory, whether it's a git repository, the operating system and shell, and the date.\n- **Handling guidance:** instructions for treating downloaded or extracted files as untrusted, including where to place them and how to run scripts and send values with `curl`.\n- **Model details:** the model I'm running as and my knowledge cutoff.\n- **Resource information:** a note about my remaining token budget.",
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 627,
+  "cache_read_input_tokens": 0,
+  "cost": 0.00037810000000000003
+ }
+}
