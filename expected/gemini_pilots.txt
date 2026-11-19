@@ -1,0 +1,52 @@
+
+========================================================================
+TEST 2: DOMAINS & MEMBRANE FEATURES
+========================================================================
+
+== gemini-4-neon-medium: 70 usable (0 unusable, 0 unparsed)
+  real     set B   n=35: Pfam >=1 right 17/35; pred 26 (id 23, id/name 23); true 45; IoU 0.762 (n=23)
+           TM: agree 33/35, exact 30/35, helices 49/49 (pred 55); SP TP 6 FN 0 FP 0 TN 29
+  real     set all n=35: Pfam >=1 right 17/35; pred 26 (id 23, id/name 23); true 45; IoU 0.762 (n=23)
+           TM: agree 33/35, exact 30/35, helices 49/49 (pred 55); SP TP 6 FN 0 FP 0 TN 29
+  shuffled set B   n=35: Pfam >=1 right 0/35; pred 0 (id 0, id/name 0); true 45; IoU nan (n=0)
+           (shuffled hallucination) any Pfam domain 0/35
+  shuffled set all n=35: Pfam >=1 right 0/35; pred 0 (id 0, id/name 0); true 45; IoU nan (n=0)
+           (shuffled hallucination) any Pfam domain 0/35
+
+========================================================================
+TEST 3: PSEUDOENZYMES
+========================================================================
+
+== gemini-3.1-flash-lite-high: 120 usable (0 unusable, 0 unparsed)
+  natural pseudokinases named inactive/pseudokinase: 2/20 (of called no: 2/10)
+  enzyme  site_to_ala n=20: yes 12  no  8  uncertain  0; mutated pos flagged 1/20, still intact 0/20
+  enzyme  wt          n=20: yes 14  no  6  uncertain  0; curated pos listed 1/20
+  kinase  asp_to_asn  n=20: yes  5  no 15  uncertain  0; mutated pos flagged 6/20, still intact 0/20
+  kinase  lys_to_met  n=20: yes 14  no  5  uncertain  1; mutated pos flagged 0/20, still intact 0/20
+  kinase  wt          n=20: yes 15  no  5  uncertain  0; curated pos listed 3/20
+  pseudo  wt          n=20: yes 10  no 10  uncertain  0
+
+== gemini-4-neon-medium: 58 usable (0 unusable, 0 unparsed)
+  natural pseudokinases named inactive/pseudokinase: 0/0 (of called no: 0/0)
+  kinase  asp_to_asn  n=19: yes  0  no 19  uncertain  0; mutated pos flagged 19/19, still intact 0/19
+  kinase  lys_to_met  n=19: yes  1  no 18  uncertain  0; mutated pos flagged 18/19, still intact 0/19
+  kinase  wt          n=20: yes 20  no  0  uncertain  0; curated pos listed 20/20
+
+========================================================================
+TEST 4: STRUCTURE & FUNCTION
+========================================================================
+
+== gemini-2.5-flash-high: 13 usable (24 unusable, 0 unparsed)
+  novel                        n= 4: Q3 47.6% (base 56.4%); LR prec 0.0% (top5 0.0%; chance 1.3%); rec 1/4
+  known                        n= 9: Q3 48.3% (base 56.0%); LR prec 1.8% (top5 2.2%; chance 1.7%); rec 5/9
+  novel, ASPRV1 counted once   n= 3: Q3 48.9% (base 59.0%); LR prec 0.0% (top5 0.0%; chance 0.9%); rec 0/3
+
+== gemini-3-flash-preview-high: 7 usable (27 unusable, 0 unparsed)
+  novel                        n= 1: Q3 43.4% (base 60.1%); LR prec 0.0% (top5 0.0%; chance 1.3%); rec 1/1
+  known                        n= 6: Q3 53.2% (base 51.7%); LR prec 13.3% (top5 13.3%; chance 2.1%); rec 6/6
+  novel, ASPRV1 counted once   n= 1: Q3 43.4% (base 60.1%); LR prec 0.0% (top5 0.0%; chance 1.3%); rec 1/1
+
+== gemini-3.1-flash-lite-high: 30 usable (0 unusable, 0 unparsed)
+  novel                        n=15: Q3 42.5% (base 54.1%); LR prec 0.8% (top5 1.3%; chance 2.0%); rec 13/15
+  known                        n=15: Q3 45.7% (base 55.4%); LR prec 3.2% (top5 1.3%; chance 1.7%); rec 13/15
+  novel, ASPRV1 counted once   n=12: Q3 43.7% (base 56.6%); LR prec 1.0% (top5 1.7%; chance 1.8%); rec 12/12
