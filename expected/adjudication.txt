@@ -8,14 +8,14 @@ P64636 GMP/IMP nucleotidase YrfG, Escherichia coli (strain K12); 222 residues; s
   UniProt Binding site D174  Mg(2+)                         evidence ECO:0000250 
   residues 1-24: MHINIAWQDVDTVLLDMDGTLLDL   (Asp at [9, 11, 16, 18, 23])
   Alignment of 11 reviewed relatives (v7.505 (2022/Apr/10)); UniProt query: (family:"HAD-like hydrolase superfamily") AND (reviewed:true) AND (ft_act_site_exp:*) AND (length:[150 TO 330])
-    P0A8Y5  Sugar phosphatase YidA                   Escherichia coli (strain D9    Nucleophile                    experimental     PDB  1 -> query D16
-    Q51645  (S)-2-haloacid dehalogenase 4A           Burkholderia cepacia     D11   Nucleophile                    experimental     PDB  2 -> query D16
-    Q53464  (S)-2-haloacid dehalogenase              Pseudomonas sp. (strain  D10   Nucleophile                    experimental     PDB  4 -> query D16
-    Q58989  Phosphoserine phosphatase                Methanocaldococcus janna D11   Nucleophile                    experimental     PDB  6 -> query D16
-    Q58989  Phosphoserine phosphatase                Methanocaldococcus janna D13   Proton donor                   experimental     PDB  6 -> query D18
-    Q60099  (S)-2-haloacid dehalogenase              Xanthobacter autotrophic D8    Nucleophile                    experimental     PDB  4 -> query D16
-    Q8CHP8  Phosphoglycolate phosphatase             Mus musculus             D34   Nucleophile                    experimental     PDB  3 -> query D16
-    Q96GD0  Chronophin                               Homo sapiens             D25   Nucleophile                    experimental     PDB  9 -> query D16
+    P0A8Y5  Sugar phosphatase YidA                   Escherichia coli (strain D9    Nucleophile                    experimental     PDB  1 -> query D16; evidence ECO:0000269; source PubMed:16990279
+    Q51645  (S)-2-haloacid dehalogenase 4A           Burkholderia cepacia     D11   Nucleophile                    experimental     PDB  2 -> query D16; evidence ECO:0000269,ECO:0007744; source PDB:2NO5,PubMed:17368477
+    Q53464  (S)-2-haloacid dehalogenase              Pseudomonas sp. (strain  D10   Nucleophile                    experimental     PDB  4 -> query D16; evidence ECO:0000269,ECO:0000305; source PubMed:7490277,PubMed:9614112
+    Q58989  Phosphoserine phosphatase                Methanocaldococcus janna D11   Nucleophile                    experimental     PDB  6 -> query D16; evidence ECO:0000269; source PubMed:11342136,PubMed:11438683,PubMed:12051918
+    Q58989  Phosphoserine phosphatase                Methanocaldococcus janna D13   Proton donor                   experimental     PDB  6 -> query D18; evidence ECO:0000269; source PubMed:11342136,PubMed:11438683,PubMed:12051918
+    Q60099  (S)-2-haloacid dehalogenase              Xanthobacter autotrophic D8    Nucleophile                    experimental     PDB  4 -> query D16; evidence ECO:0000269; source PubMed:10521454,PubMed:9407083
+    Q8CHP8  Phosphoglycolate phosphatase             Mus musculus             D34   Nucleophile                    experimental     PDB  3 -> query D16; evidence ECO:0000269; source PubMed:24338473
+    Q96GD0  Chronophin                               Homo sapiens             D25   Nucleophile                    experimental     PDB  9 -> query D16; evidence ECO:0000269,ECO:0007744; source PDB:2P27,PubMed:15580268,PubMed:18058037
     tally: 7 x Nucleophile (experimental) -> query D16
     tally: 1 x Proton donor (experimental) -> query D18
   AlphaFill (AlphaFold model with ligands transplanted from homologous structures); hetero groups ['LAC', 'MG']
@@ -23,7 +23,7 @@ P64636 GMP/IMP nucleotidase YrfG, Escherichia coli (strain K12); 222 residues; s
     Asp11  carboxylate oxygen to: Lys149 NZ  21.1   Asp173 carboxylate  20.7   Asp174 carboxylate  25.0   Thr116 OG1  23.6   Mg  25.0   (angstrom)
     Asp16  carboxylate oxygen to: Lys149 NZ   2.6   Asp173 carboxylate   4.0   Asp174 carboxylate   4.0   Thr116 OG1   4.2   Mg   3.3   (angstrom)
     Asp18  carboxylate oxygen to: Lys149 NZ   7.8   Asp173 carboxylate   9.5   Asp174 carboxylate   8.2   Thr116 OG1   4.4   Mg   6.7   (angstrom)
-  SWISS-MODEL homology model, chain A; hetero groups ['MG']
+  SWISS-MODEL homology model, chain A; template 3opx.A, sequence identity 14.16%; hetero groups ['MG']
     Asp9   carboxylate oxygen to: Lys149 NZ  25.2   Asp173 carboxylate  24.9   Asp174 carboxylate  29.3   Thr116 OG1  27.2   Mg  29.7   (angstrom)
     Asp11  carboxylate oxygen to: Lys149 NZ  19.2   Asp173 carboxylate  18.2   Asp174 carboxylate  22.2   Thr116 OG1  22.3   Mg  23.0   (angstrom)
     Asp16  carboxylate oxygen to: Lys149 NZ   2.6   Asp173 carboxylate   3.4   Asp174 carboxylate   4.2   Thr116 OG1   3.3   Mg   3.1   (angstrom)
@@ -45,24 +45,24 @@ Q08651 Probable oxidoreductase ENV9, Saccharomyces cerevisiae (strain ATCC 20450
   UniProt Active site  K206  Lowers pKa of active site Tyr  evidence ECO:0000250 UniProtKB:O93868
   residues 166-178: GRIISLSSIGHHL
   Alignment of 18 reviewed relatives (v7.505 (2022/Apr/10)); UniProt query: (xref:pfam-PF00106) AND (reviewed:true) AND (ft_act_site_exp:*) AND (length:[230 TO 360]); plus O93868
-    O93868  NADP-dependent mannitol dehydrogenase    Agaricus bisporus        S149  Proton donor                   not experimental PDB  1 -> query S173
-    O93868  NADP-dependent mannitol dehydrogenase    Agaricus bisporus        Y169  Proton acceptor                not experimental PDB  1 -> query Y202
-    O93868  NADP-dependent mannitol dehydrogenase    Agaricus bisporus        K173  Lowers pKa of active site Tyr  not experimental PDB  1 -> query K206
-    O70351  3-hydroxyacyl-CoA dehydrogenase type-2   Rattus norvegicus        Y168  Proton acceptor                experimental     PDB  3 -> query Y202
-    P00334  Alcohol dehydrogenase                    Drosophila melanogaster  Y153  Proton acceptor                experimental     PDB  1 -> query Y202
-    Q071N0  Salutaridine reductase                   Papaver somniferum       Y236  Proton acceptor                experimental     PDB  1 -> query Y202
-    Q99714  3-hydroxyacyl-CoA dehydrogenase type-2   Homo sapiens             Y168  Proton acceptor                experimental     PDB 15 -> query Y202
-    tally: 1 x Lowers pKa of active site Tyr (not experimental) -> query K206
+    O93868  NADP-dependent mannitol dehydrogenase    Agaricus bisporus        S149  Proton donor                   no ECO:0000269   PDB  1 -> query S173; evidence ECO:0000305; source PubMed:11335726
+    O93868  NADP-dependent mannitol dehydrogenase    Agaricus bisporus        Y169  Proton acceptor                no ECO:0000269   PDB  1 -> query Y202; evidence ECO:0000305; source PubMed:11335726
+    O93868  NADP-dependent mannitol dehydrogenase    Agaricus bisporus        K173  Lowers pKa of active site Tyr  no ECO:0000269   PDB  1 -> query K206; evidence ECO:0000305; source PubMed:11335726
+    O70351  3-hydroxyacyl-CoA dehydrogenase type-2   Rattus norvegicus        Y168  Proton acceptor                experimental     PDB  3 -> query Y202; evidence ECO:0000269; source PubMed:11023795
+    P00334  Alcohol dehydrogenase                    Drosophila melanogaster  Y153  Proton acceptor                experimental     PDB  1 -> query Y202; evidence ECO:0000269; source PubMed:15581900
+    Q071N0  Salutaridine reductase                   Papaver somniferum       Y236  Proton acceptor                experimental     PDB  1 -> query Y202; evidence ECO:0000269; source PubMed:21169353
+    Q99714  3-hydroxyacyl-CoA dehydrogenase type-2   Homo sapiens             Y168  Proton acceptor                experimental     PDB 15 -> query Y202; evidence ECO:0000269; source PubMed:15087549
+    tally: 1 x Lowers pKa of active site Tyr (no ECO:0000269) -> query K206
     tally: 4 x Proton acceptor (experimental) -> query Y202
-    tally: 1 x Proton acceptor (not experimental) -> query Y202
-    tally: 1 x Proton donor (not experimental) -> query S173
+    tally: 1 x Proton acceptor (no ECO:0000269) -> query Y202
+    tally: 1 x Proton donor (no ECO:0000269) -> query S173
     pairwise alignment with O93868 alone (MAFFT L-INS-i): S149 Proton donor -> query S173
     pairwise alignment with O93868 alone (MAFFT L-INS-i): Y169 Proton acceptor -> query Y202
     pairwise alignment with O93868 alone (MAFFT L-INS-i): K173 Lowers pKa of active site Tyr -> query K206
   AlphaFill (AlphaFold model with ligands transplanted from homologous structures); cofactor copies with a nicotinamide C4: 5
     Ser172 OG to: Tyr202 OH  7.0   Lys206 NZ  6.0   nearest nicotinamide C4  8.0   (angstrom); side chain points away from Tyr202 OH (cosine -0.65)
     Ser173 OG to: Tyr202 OH  3.2   Lys206 NZ  6.6   nearest nicotinamide C4  4.4   (angstrom); side chain points towards Tyr202 OH (cosine +0.98)
-  SWISS-MODEL homology model, chain A; cofactor copies with a nicotinamide C4: 0
+  SWISS-MODEL homology model, chain A; template 1yxm.A, sequence identity 18.48%; cofactor copies with a nicotinamide C4: 0
     Ser172 OG to: Tyr202 OH  6.8   Lys206 NZ  4.8   nearest nicotinamide C4  nan   (angstrom); side chain points away from Tyr202 OH (cosine -0.82)
     Ser173 OG to: Tyr202 OH  4.5   Lys206 NZ  6.2   nearest nicotinamide C4  nan   (angstrom); side chain points towards Tyr202 OH (cosine +0.67)
   What the tested models listed (not used as evidence): catalytic positions returned for Q08651

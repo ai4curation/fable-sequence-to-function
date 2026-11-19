@@ -2,9 +2,9 @@
 
 For YrfG (P64636) UniProt gives the nucleophile as Asp9; the models place it at Asp16. For ENV9 (Q08651) UniProt gives
 the catalytic serine as Ser172; the models place it at Ser173. Both UniProt positions are annotated by similarity.
-Two independent lines are printed for each: (1) which query residue aligns with active-site residues of reviewed
+Two lines are printed for each: (1) which query residue aligns with active-site residues of reviewed
 relatives, and (2) distances in two structural models. Inputs: snapshot/*.json (written by fetch.py) and models/.
-Nothing here calls a language model, and no answer of a tested model is used as evidence.
+The two lines share homology information. Nothing here calls a language model, and no answer of a tested model is used as evidence.
 """
 import collections, json, math, pathlib, sys
 HERE = pathlib.Path(__file__).parent
@@ -39,8 +39,17 @@ def col(aln, acc, pos):
         if n == pos and c != "-": return i
 def at_col(aln, acc, i):
     c = aln[acc][i]; return "gap" if c == "-" else f"{c}{sum(x != '-' for x in aln[acc][:i + 1])}"
-MODELS = lambda acc: (("AlphaFill (AlphaFold model with ligands transplanted from homologous structures)", atoms_cif(HERE / "models" / f"alphafill_{acc}.cif")),
-                      ("SWISS-MODEL homology model, chain A", atoms_pdb(HERE / "models" / f"swissmodel_{acc}.pdb")))
+def MODELS(acc):
+    path = HERE / "models" / f"swissmodel_{acc}.pdb"
+    template = {}
+    for line in path.read_text().splitlines():
+        fields = line.split()
+        if fields[:2] == ["REMARK", "3"] and len(fields) == 4 and fields[2] in ("PDBID", "CHAIN", "SID"):
+            assert fields[2] not in template, "Expected one SWISS-MODEL template"
+            template[fields[2]] = fields[3]
+    label = f"SWISS-MODEL homology model, chain A; template {template['PDBID']}.{template['CHAIN']}, sequence identity {template['SID']}%"
+    return (("AlphaFill (AlphaFold model with ligands transplanted from homologous structures)", atoms_cif(HERE / "models" / f"alphafill_{acc}.cif")),
+            (label, atoms_pdb(path)))
 
 def uniprot(snap, types=("Active site",)):
     q = snap["entries"][0]
@@ -56,8 +65,8 @@ def alignment(snap, experimental_only_for=()):
             if f["type"] != "Active site": continue
             exp = "ECO:0000269" in f["evidence"]
             if not exp and e["accession"] not in snap["extra"]: continue
-            to = at_col(aln, q, col(aln, e["accession"], f["start"])); tally[(f["description"], "experimental" if exp else "not experimental", to)] += 1
-            print(f"    {e['accession']:7s} {e['name'][:40]:40s} {e['organism'][:24]:24s} {e['sequence'][f['start'] - 1]}{f['start']:<4d} {f['description'][:30]:30s} {'experimental' if exp else 'not experimental':16s} PDB {len(e['pdb']):2d} -> query {to}")
+            to = at_col(aln, q, col(aln, e["accession"], f["start"])); tally[(f["description"], "experimental" if exp else "no ECO:0000269", to)] += 1
+            print(f"    {e['accession']:7s} {e['name'][:40]:40s} {e['organism'][:24]:24s} {e['sequence'][f['start'] - 1]}{f['start']:<4d} {f['description'][:30]:30s} {'experimental' if exp else 'no ECO:0000269':16s} PDB {len(e['pdb']):2d} -> query {to}; evidence {','.join(f['evidence'])}; source {','.join(f['source']) or 'not recorded'}")
     for (desc, ev, to), n in sorted(tally.items()): print(f"    tally: {n} x {desc} ({ev}) -> query {to}")
 def answers(acc, site, variant):
     print(f"  What the tested models listed (not used as evidence): catalytic positions returned for {acc}")
