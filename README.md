@@ -172,12 +172,12 @@ pixel, so they are not byte-for-byte reproducible.
   not a prediction. The stored record cannot show whether anything was run.
   Two limits: an example object written after the answer would be taken as
   the answer, and an answer wrapped in an outer object would not be found.
-- **One scored answer per question, model, effort and run.** Fable 5.2 and
+- **At most one scored answer per question, model, effort and run.** Fable 5.2 and
   Opus 5.5 answered test 1 at low and high effort, and Opus 4.6 answered tests
-  2 to 4 at both. The decoy control asked the test-3 mutants and wild types a
-  second time on the revised route (`experiments/decoy_control/`). Calls that
-  failed or were marked were asked again; their rows stay in the files and are
-  not scored, and neither are the two rows of
+  2 to 4 at both. The decoy control asked the test-3 mutants and wild types
+  again at the same effort on the revised route (`experiments/decoy_control/`).
+  Calls marked as carrying attached context were asked again; their rows stay
+  in the files and are not scored, and neither are the two rows of
   `experiments/decoy_control/results/canary-original-flags.jsonl`.
 - **Calls listing a second model:** for 6 of the 2,854 calls, the tool's usage
   record (the `served` field, from `modelUsage`) lists a second model besides

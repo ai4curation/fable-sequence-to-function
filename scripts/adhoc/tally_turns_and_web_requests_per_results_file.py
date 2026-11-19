@@ -1,7 +1,7 @@
 """Tally, per results file and call route, how many rows can show the number of turns and web requests of a call.
 
-Purpose: check what the stored rows support for the Methods statement on web search and fetch requests (issues 116
-         and 126, pull request 125). No model is called.
+Purpose: check what the stored rows support for the Methods statement on web search and fetch requests (issues 116,
+         127 and 136, pull request 125). No model is called.
 Inputs:  every experiments/*/results/**/*.jsonl file (read only).
 Outputs: one line per file and route on standard output. Route is "revised" when the row records `extra_flags`
          (written by common.call), else "original". Per line: rows; rows with a usage record; rows with more than one
@@ -10,15 +10,15 @@ Outputs: one line per file and route on standard output. Route is "revised" when
 Usage:   python3 scripts/adhoc/tally_turns_and_web_requests_per_results_file.py
 Date:    2026-11-19
 """
-import json, pathlib
+import json, math, pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[2] / "experiments"
 def n(x):
-    return x if isinstance(x, (int, float)) and not isinstance(x, bool) else None
+    return x if isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) else None
 def web(r):
     """True if any web request is recorded, False if none, None if a count is not a number."""
     counts = []
     stu = (r.get("usage") or {}).get("server_tool_use")
-    if isinstance(stu, dict): counts += [stu.get(k, 0) for k in ("web_search_requests", "web_fetch_requests")]
+    if isinstance(stu, dict): counts += [stu.get(k) for k in ("web_search_requests", "web_fetch_requests")]   # a missing key is unknown
     mu = r.get("model_usage")
     if isinstance(mu, dict): counts += [v.get("webSearchRequests", 0) for v in mu.values() if isinstance(v, dict)]
     if any(n(c) is None for c in counts): return None
