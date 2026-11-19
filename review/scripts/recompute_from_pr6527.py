@@ -2,12 +2,13 @@
 
 Purpose: independent recomputation for the review of fable-sequence-to-function.pdf (draft of 2026-11-18).
          Reads the committed truth.json and results/*.jsonl files; does NOT import or run the authors' scripts.
-Inputs:  argv[1] = path to a checkout of projects/LLM_SEQUENCE_PROBE (ai4curation/ai-gene-review PR #6527,
-         head 119ac18676), for example fetched to .temp/pr6527/ at the repository root (not part of this repository).
+Inputs:  the raw outputs as they stood at ai4curation/ai-gene-review PR #6527, head 119ac18676. They are copied,
+         unchanged, to review/pr6527_snapshot/ in this repository, and that folder is read by default. Another folder
+         with the same layout can be given as argv[1].
 Outputs: plain text on stdout. Nothing is written to disk.
 Serves:  review/critique_content_v1.md.
 Date:    2026-11-18
-Run:     python3 -I review/scripts/recompute_from_pr6527.py .temp/pr6527/projects/LLM_SEQUENCE_PROBE
+Run:     python3 -I review/scripts/recompute_from_pr6527.py
 """
 import collections
 import json
@@ -18,7 +19,7 @@ import re
 import statistics
 import sys
 
-ROOT = pathlib.Path(sys.argv[1])
+ROOT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(__file__).resolve().parent.parent / "pr6527_snapshot"
 MODELS = ["claude-fable-5-2", "claude-opus-5-5", "claude-opus-4-6"]
 
 

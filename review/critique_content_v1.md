@@ -195,4 +195,4 @@ Items 1 to 5 would, in my judgement, be enough to post.
 
 **Not checked:** the content of references 1, 2, 5, 6, 8 and 10 against the claims they support; preprints for the novel proteins other than AtDUC1; whether AlphaFold Database models exist for each novel protein; the identity between 10CW and 3WZ0; the individual wild-type answers that list a substituted residue; the authors' stored outputs in the source repository (the 58.8% figure is taken from the project page). An RCSB sequence search for earlier remote homologs of the five named entries failed with server errors for four of them and is not used here.
 
-**Raw outputs are not in this repository.** `scripts/recompute_from_pr6527.py` needs a checkout of `projects/LLM_SEQUENCE_PROBE` from `ai4curation/ai-gene-review` at `119ac18676`; pass its path as the argument.
+**Raw outputs.** When this review was written the raw outputs were not in this repository. They have since been copied, unchanged, from `ai4curation/ai-gene-review` at `119ac18676` to `review/pr6527_snapshot/`, and `scripts/recompute_from_pr6527.py` reads that folder by default. Its output is saved in `review/recompute_output_pr6527.txt`.
