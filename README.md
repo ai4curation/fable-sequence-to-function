@@ -140,13 +140,15 @@ pixel, so they are not byte-for-byte reproducible.
   short message saying so and asks again; and a request that fails inside
   the tool is retried without counting as a turn (#105). Its token counts
   are then sums over the requests, and its usage record lists the last
-  response only. So `requests` is the larger of the turn count and the
-  summed input divided by the listed response; a row is marked when the
-  listed response is larger than one request may be or the sum is larger
-  than that many requests; and the scorers print how many replies took more
-  than one request. An attachment resent with every request is marked; one
-  present only in earlier requests would be counted as further requests and
-  not marked.
+  response only. So `requests` is the turn count, plus at most one retry
+  inferred from the summed input (`requests_by_tokens` records the sum
+  divided by the listed response); a row is marked when the listed response
+  is larger than one request may be or the sum is larger than that many
+  requests; and the scorers print how many replies took more than one
+  request. An attachment resent with every request is marked; one present
+  only in earlier requests is marked once it is larger than about one
+  request, and passes below that (#109). A call with two or more uncounted
+  retries would be marked although clean, and asked again.
 - **How a reply is read** (`experiments/common.py`, used by every scorer): the
   answer is the last complete JSON object in the reply that has at least two
   of the requested keys. Three Opus 4.6 replies in test 2 hold two objects,
