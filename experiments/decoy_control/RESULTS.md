@@ -153,7 +153,7 @@ decoy.
 1. **What the decoy tests.** A substitution at an unannotated position away from the catalytic site. Not a
    change at another conserved or functional position. A scan of every Asp or Lys in a few kinases would show
    whether the response is confined to the catalytic positions.
-2. **One answer per sequence.** No repeats, so the intervals describe sampling of proteins, not run-to-run
+2. **One answer per sequence in each run.** The decoys were asked once and the mutants and wild types twice (the rerun); the intervals describe sampling of proteins, not run-to-run
    change. The rerun shows the size of that change for the mutants: up to 4 of 100 calls for the two newer
    models, all in Lys to Met kinase mutants.
 3. **The decoy label.** "No functional annotation" is not a measurement that the substitution is harmless.

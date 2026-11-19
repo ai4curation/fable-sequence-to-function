@@ -1,20 +1,35 @@
-"""Tally, per results file, how many rows can show the number of turns and web requests of a call.
+"""Tally, per results file and call route, how many rows can show the number of turns and web requests of a call.
 
-Purpose: check what the stored rows support for the Methods claim that calls were single-turn with no web search or
-         fetch (review of the issues proposed for closing, 2026-11-19; follows up issue 49).
+Purpose: check what the stored rows support for the Methods statement on web search and fetch requests (issues 116
+         and 126, pull request 125). No model is called.
 Inputs:  every experiments/*/results/**/*.jsonl file (read only).
-Outputs: one line per file on standard output: rows, rows recording num_turns, rows with num_turns > 1, rows recording
-         usage.server_tool_use, rows with any web_search_requests or web_fetch_requests > 0.
-Usage:   tally_turns_and_web_requests_per_results_file.py      No model is called.      2026-11-19
+Outputs: one line per file and route on standard output. Route is "revised" when the row records `extra_flags`
+         (written by common.call), else "original". Per line: rows; rows with a usage record; rows with more than one
+         turn or request; rows whose usage (server_tool_use) or model_usage (webSearchRequests) shows any web
+         search or fetch request; rows with a non-numeric web count.
+Usage:   python3 scripts/adhoc/tally_turns_and_web_requests_per_results_file.py
+Date:    2026-11-19
 """
 import json, pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[2] / "experiments"
+def n(x):
+    return x if isinstance(x, (int, float)) and not isinstance(x, bool) else None
+def web(r):
+    """True if any web request is recorded, False if none, None if a count is not a number."""
+    counts = []
+    stu = (r.get("usage") or {}).get("server_tool_use")
+    if isinstance(stu, dict): counts += [stu.get(k, 0) for k in ("web_search_requests", "web_fetch_requests")]
+    mu = r.get("model_usage")
+    if isinstance(mu, dict): counts += [v.get("webSearchRequests", 0) for v in mu.values() if isinstance(v, dict)]
+    if any(n(c) is None for c in counts): return None
+    return any(c > 0 for c in counts)
 for f in sorted(ROOT.glob("*/results/**/*.jsonl")):
     rows = [json.loads(l) for l in f.read_text().splitlines() if l.strip()]
-    turns = [r.get("num_turns") for r in rows if r.get("num_turns") is not None]
-    stu = [(r.get("usage") or {}).get("server_tool_use") for r in rows]
-    stu = [s for s in stu if isinstance(s, dict)]
-    web = sum(1 for s in stu if any((s.get(k) or 0) > 0 for k in ("web_search_requests", "web_fetch_requests")))
-    multi = sum(1 for t in turns if isinstance(t, int) and t > 1)
-    print(f"{f.relative_to(ROOT)}: rows {len(rows)}, with num_turns {len(turns)}, num_turns>1 {multi}, "
-          f"with server_tool_use {len(stu)}, web requests>0 {web}")
+    for route in ("original", "revised"):
+        R = [r for r in rows if bool(r.get("extra_flags")) == (route == "revised")]
+        if not R: continue
+        withu = [r for r in R if isinstance(r.get("usage"), dict)]
+        multi = sum(1 for r in R if max(n(r.get("num_turns")) or 1, n(r.get("requests")) or 1) > 1)
+        w = [web(r) for r in withu]
+        print(f"{f.relative_to(ROOT)} [{route}]: rows {len(R)}, with usage {len(withu)}, more than one turn or request "
+              f"{multi}, web requests > 0 {sum(1 for x in w if x)}, non-numeric web count {sum(1 for x in w if x is None)}")
