@@ -28,7 +28,7 @@
   all three types
     decoy still called active            58/58 (100%, 94-100)
     catalytic-site mutant called active  4/58 (7%, 3-16)   (stored run, same proteins)
-    wild type called active              58/58 (100%, 94-100)   (stored run, same proteins)
+    wild type called active              38/38 (100%, 91-100)   (stored run, same proteins)
     paired: decoy active and mutant not  54; mutant active and decoy not 0; exact McNemar p = 1.1e-16
     decoy position named as lost         0/58 (0%, 0-6);  any residue named as lost 3/58 (5%, 2-14)
     catalytic position named as lost     55/58 (95%, 86-98)   (stored run, catalytic-site mutant)
@@ -64,7 +64,7 @@
   all three types
     decoy still called active            58/58 (100%, 94-100)
     catalytic-site mutant called active  10/58 (17%, 10-29)   (stored run, same proteins)
-    wild type called active              57/58 (98%, 91-100)   (stored run, same proteins)
+    wild type called active              37/38 (97%, 87-100)   (stored run, same proteins)
     paired: decoy active and mutant not  48; mutant active and decoy not 0; exact McNemar p = 7.1e-15
     decoy position named as lost         0/58 (0%, 0-6);  any residue named as lost 5/58 (9%, 4-19)
     catalytic position named as lost     45/58 (78%, 65-86)   (stored run, catalytic-site mutant)
@@ -99,7 +99,7 @@
   all three types
     decoy still called active            50/58 (86%, 75-93)
     catalytic-site mutant called active  50/58 (86%, 75-93)   (stored run, same proteins)
-    wild type called active              49/58 (84%, 73-92)   (stored run, same proteins)
+    wild type called active              31/38 (82%, 67-91)   (stored run, same proteins)
     paired: decoy active and mutant not  3; mutant active and decoy not 3; exact McNemar p = 1
     decoy position named as lost         0/58 (0%, 0-6);  any residue named as lost 7/58 (12%, 6-23)
     catalytic position named as lost     0/58 (0%, 0-6)   (stored run, catalytic-site mutant)

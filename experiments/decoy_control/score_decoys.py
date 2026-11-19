@@ -10,7 +10,9 @@ Outputs: a plain-text table on standard output. Nothing is written.
 Serves:  branch experiment/decoy-substitution-control of ai4curation/fable-sequence-to-function. Date: 2026-11-18.
 
 Intervals are 95% Wilson score intervals. The paired test is an exact two-sided McNemar (binomial) test on the
-proteins where the decoy and the catalytic-site mutant got different calls. "Active" means the answer "yes";
+pairs where the decoy and the catalytic-site mutant got different calls. In the "all three types" block each
+kinase contributes two pairs, so those pairs are not independent; the per-type blocks have one pair per protein.
+"Active" means the answer "yes";
 "no" and "uncertain" both count as not called active, as in the original figure.
 """
 import collections, json, math, pathlib, sys
@@ -44,7 +46,9 @@ for m in MODELS:
           f"median input tokens {sorted((r.get('cache_creation_input_tokens') or 0) + (r.get('input_tokens') or 0) + (r.get('cache_read_input_tokens') or 0) for r in dec.values())[len(dec) // 2]}")
     tot = collections.Counter()
     for dv, ov in VARIANTS + [("all", "all")]:
-        if dv == "all": k = tot; label = "all three types"
+        if dv == "all":   # each kinase has two decoys, so wild types are counted once per protein here, not once per pair
+            k = tot; label = "all three types"; accs = sorted({acc for acc, _ in dec if (acc, "wt") in stored})
+            k["wt_n"] = len(accs); k["wt_active"] = sum(active(stored[(acc, "wt")]) for acc in accs)
         else:
             k = collections.Counter(); label = f"{dv} vs {ov}"
             for (acc, v), r in dec.items():
@@ -60,7 +64,7 @@ for m in MODELS:
                 if w: k["wt_n"] += 1; k["wt_active"] += active(w)
                 b = bridge.get((acc, ov))
                 if b and o: k["bridge_n"] += 1; k["bridge_same_call"] += active(b) == active(o); k["bridge_active"] += active(b)
-            tot.update(k)
+            tot.update({x: n for x, n in k.items() if not x.startswith("wt_")})
         if not k["n"]: continue
         print(f"  {label}")
         print(f"    decoy still called active            {wilson(k['decoy_active'], k['n'])}")

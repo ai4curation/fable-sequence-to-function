@@ -12,16 +12,19 @@ and wild types alike.
 
 | Model (effort) | Wild type called active | Catalytic-site mutant called active | Decoy called active |
 |---|---|---|---|
-| Fable 5.2 (high) | 58/58 (100%, 94-100) | 4/58 (7%, 3-16) | 58/58 (100%, 94-100) |
-| Opus 5.5 (high) | 57/58 (98%, 91-100) | 10/58 (17%, 10-29) | 58/58 (100%, 94-100) |
-| Opus 4.6 (low) | 49/58 (84%, 73-92) | 50/58 (86%, 75-93) | 50/58 (86%, 75-93) |
+| Fable 5.2 (high) | 38/38 (100%, 91-100) | 4/58 (7%, 3-16) | 58/58 (100%, 94-100) |
+| Opus 5.5 (high) | 37/38 (97%, 87-100) | 10/58 (17%, 10-29) | 58/58 (100%, 94-100) |
+| Opus 4.6 (low) | 31/38 (82%, 67-91) | 50/58 (86%, 75-93) | 50/58 (86%, 75-93) |
 
-Wild-type and mutant columns are the stored answers from the original run, restricted to the 58 protein and
-substitution pairs that have a decoy. The decoy column is new.
+The wild-type and mutant columns are the stored answers from the original run, restricted to the 38 proteins
+that have a decoy. Each kinase has two mutants and two decoys, so the mutant and decoy columns count 58 pairs
+and the wild-type column counts 38 proteins. The decoy column is new.
 
 Paired by protein, the decoy was called active and the catalytic-site mutant was not in 54 of 58 pairs for
 Fable 5.2 and 48 of 58 for Opus 5.5; the reverse never happened (exact McNemar p = 1.1e-16 and 7.1e-15).
-For Opus 4.6 the counts were 3 and 3 (p = 1).
+For Opus 4.6 the counts were 3 and 3 (p = 1). The 58 pairs come from 38 proteins, so they are not fully
+independent; the per-type tests below have one pair per protein and give p values of 6.1e-05 or smaller for
+Fable 5.2 and 0.00024 or smaller for Opus 5.5.
 
 ## By substitution type (decoy called active / catalytic-site mutant called active)
 
