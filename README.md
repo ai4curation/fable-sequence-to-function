@@ -88,17 +88,20 @@ pixel, so they are not byte-for-byte reproducible.
   the `prompt` function) in each test's `ask.py` or `run.py`.
 - **Limits of that route:** temperature cannot be set, and the tool adds about
   1,400 tokens of its own context to each call.
-- **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; in
-  the runs the manuscript reports, Opus 4.6 ran at low effort because it did
-  not finish at high effort on 2026-11-18. On 2026-11-19 UTC, through
-  `call()`, Opus 4.6 was asked tests 2 to 4 at high effort and answered every
-  question (`results/claude-opus-4-6-high.jsonl`, #51); about one answer in
-  three in test 4 took a second request after reaching the 64,000-token
-  output limit. These tagged runs are scored in `expected/` but are not in
-  the manuscript text or the Methods call totals. Test 1 has low and high
-  runs; Opus 4.6 was not asked test 1 at high effort. The rows of 2026-11-18 record the effort in tests 3 and
-  4. In test 1 it is the results folder (`results/low`, `results/high`). The
-  test 2 rows of that date do not record it.
+- **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4. In
+  the runs the manuscript reports, Opus 4.6 ran at low effort; the authors
+  record that it did not finish at high effort on 2026-11-18 (that attempt
+  left no rows). On 2026-11-19 UTC, through `call()`, Opus 4.6 was asked
+  tests 2 to 4 at high effort and answered every question
+  (`results/claude-opus-4-6-high.jsonl`, #51). Nine of the 30 test 4 answers
+  took more than one request: eight after reaching the 64,000-token output
+  limit and one after a safety-classifier stop. In test 2 the six answers
+  that took more than one request were replaced by fresh answers, because
+  the input check of that time marked them; tests 3 and 4 keep theirs
+  (#104). These tagged runs are scored in `expected/` but are not in the
+  manuscript text or the Methods call totals. Test 1 has low and high runs;
+  for Opus 4.6 at high effort only one canary question of test 1 was asked,
+  and its row is not committed.
 - **Rows that record a prompt hash** (`prompt_sha256`; written from
   2026-11-19 UTC) come from `call()` in `experiments/common.py`. It adds
   four flags to the command above (`--setting-sources "" --strict-mcp-config

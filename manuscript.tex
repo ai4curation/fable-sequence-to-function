@@ -59,8 +59,11 @@ secondary structure, contact and function prediction for structures released aft
 older comparison, \texttt{claude-opus-4-6}. Each question was one call to the \texttt{claude} command-line
 tool in print mode with no tools and an empty system prompt; we confirmed that calls were single-turn with
 no web search or fetch. This route does not expose temperature, so answers were sampled, and it adds about
-1,400 tokens of its own context. Fable~5.2 and Opus~5.5 ran at high effort in tests 2 to 4. Opus~4.6 ran at
-low effort because it did not finish at high effort, so comparisons with it are confounded by effort.
+1,400 tokens of its own context. Eight Opus~5.5 next-residue questions at high effort, left unasked when
+that run was interrupted, were asked on 19 November (UTC) with Claude Code 2.1.328 and flags that keep user
+settings and connector tools out of the call; that route adds about 600 tokens. Fable~5.2 and Opus~5.5 ran
+at high effort in tests 2 to 4. Opus~4.6 ran at low effort because it did not finish at high effort in
+these runs, so comparisons with it are confounded by effort.
 Each question was asked once. For 6 of the 2,578 calls, the tool's usage record lists a second model
 besides the one requested: three Opus~5.5 next-residue calls at high effort, all on shuffled sequences, and
 in test 4 one Fable~5.2 and two Opus~5.5 calls, all on known-stratum entries. One of the Opus~5.5 test-4
@@ -259,7 +262,8 @@ Scripts, prompts, test sets and all raw model outputs are at
 scoring script from the committed model outputs, and \texttt{just check} verifies the data checksums and
 that the numbers reproduce. Test sets were drawn from live UniProt, InterPro and RCSB services on 18
 November 2026 and are committed as drawn, because re-querying those services returns different entries.
-Model calls used Claude Code 2.1.327; repeating them will not return identical answers.
+Model calls used Claude Code 2.1.327, except the eight above, which used 2.1.328; repeating them will not
+return identical answers.
 
 \section*{Acknowledgements}
 
