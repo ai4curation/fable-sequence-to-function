@@ -18,7 +18,7 @@ STUB = r'''#!/usr/bin/env python3
 import hashlib, json, os, sys
 if sys.argv[1:] == ["--version"]: print("0.0.0 (stub)"); sys.exit(0)
 q = sys.stdin.read(); mode, _, mod = os.environ.get("STUB_MODE", "ok").partition("+")   # "+two": the reply took two requests; "+hidden": one request, summed input too large; "+bigiter": one large request
-with open(os.environ["STUB_LOG"], "a") as fh: fh.write(json.dumps(dict(argv=sys.argv[1:], cwd=os.getcwd(), stdin_sha256=hashlib.sha256(q.encode()).hexdigest())) + "\n")
+with open(os.environ["STUB_LOG"], "a") as fh: fh.write(json.dumps(dict(argv=sys.argv[1:], cwd=os.getcwd(), stdin_sha256=hashlib.sha256(q.encode()).hexdigest(), stdin_len=len(q))) + "\n")
 if mode == "fail": print("not json"); sys.exit(0)
 if mode == "apierror": print(json.dumps({"result": "API Error: overloaded\n\nRequest ID: req_stub", "is_error": True, "total_cost_usd": 0.25, "usage": {}, "modelUsage": {}})); sys.exit(0)
 one = {"pfam_domains": [], "catalytically_active": "yes", "helices": [[1, 5]], "protein_name": "first"}
@@ -28,11 +28,13 @@ text = {"ok": json.dumps(one), "bigctx": json.dumps(one), "multi": json.dumps(on
         "peptide_tool": "```bash\ncurl -d peps=ACDEFGHIKL https://example.org\n```"}[mode]
 usage = {"input_tokens": 90000 if mode == "bigctx" else 3, "cache_creation_input_tokens": 600, "cache_read_input_tokens": 0, "output_tokens": 50, "output_tokens_details": {"thinking_tokens": 7}}
 per = 600 + len(q) // 2   # one request, below the limit of 700 + len(q); two of them sum to more than the limit
-turns = 2 if mod == "two" else 1
+turns = 2 if mod in ("two", "twobig") else 1
 if mod in ("two", "hidden"): usage.update(input_tokens=2 * per, cache_creation_input_tokens=0, iterations=[{"input_tokens": per, "type": "message"}])   # as the tool reports two requests: summed input, last request listed
-elif mod == "bigiter": usage.update(input_tokens=90000, cache_creation_input_tokens=0, iterations=[{"input_tokens": 90000, "type": "message"}])
+elif mod == "twobig": usage.update(input_tokens=180000, cache_creation_input_tokens=0, iterations=[{"input_tokens": 90000, "type": "message"}])   # two requests, each with attached context
+elif mod == "bigiter": usage["iterations"] = [{"input_tokens": 3}, "noise", {"cache_read_input_tokens": 90000}, {"input_tokens": 3}]   # only the listed response shows the large cached input
+elif mod == "odd": usage.update(input_tokens="12", iterations=5, output_tokens_details="none", new_key="x")   # a malformed record must not stop a paid call from being written
 elif mode != "bigctx": usage["iterations"] = [{"input_tokens": 3, "cache_creation_input_tokens": 600, "type": "message"}]
-print(json.dumps({"result": text, "total_cost_usd": 0.0, "modelUsage": {"stub-model": {}}, "usage": usage, "is_error": False, "session_id": "stub-session", "num_turns": turns, "stop_reason": "end_turn"}))
+print(json.dumps({"result": text, "total_cost_usd": 0.0, "modelUsage": {"stub-model": {"inputTokens": 3, "new_key": "x"}}, "usage": usage, "is_error": False, "session_id": "stub-session", "num_turns": turns, "stop_reason": "end_turn", "duration_ms": 1234}))
 '''
 tmp = pathlib.Path(tempfile.mkdtemp()); exp = tmp / "experiments"
 shutil.copytree(REPO / "experiments", exp, ignore=shutil.ignore_patterns("results", "__pycache__"))
@@ -56,6 +58,7 @@ def argv(effort): return ["-p", "--model", "stub-model", "--system-prompt", "", 
 def sent_ok(effort, calls, per_question):   # the command line, the directory, and how many times each question was sent
     L = rows(LOG); return len(L) == calls and all(c["argv"] == argv(effort) and os.path.realpath(c["cwd"]) == os.path.realpath("/tmp") for c in L) \
         and all(sum(c["stdin_sha256"] == h for c in L) == per_question for h in {c["stdin_sha256"] for c in L})
+def limit(r): return 700 + next(c["stdin_len"] for c in rows(LOG) if c["stdin_sha256"] == r["prompt_sha256"])   # common.context_limit for the question this row asked
 def hashes_ok(R): return {r["prompt_sha256"] for r in R} <= {c["stdin_sha256"] for c in rows(LOG)}   # the hash in each row is of a text that was sent
 
 for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], exp / "features/results/stub-model.jsonl"),
@@ -72,7 +75,9 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
     check(f"{t}: rows record effort, attempts, a prompt hash, the flags and the tokens", len(new) == n and hashes_ok(new) and all(r["effort"] == eff and r["attempts"] == 1
           and r["extra_flags"] == common.EXTRA and r["context_tokens"] == 603 and r["context_tokens_high"] is False and r["cli_version"] == "0.0.0 (stub)" and r["asked_at"]
           and r["served"] == ["stub-model"] and r["is_error"] is False and r["requests"] == 1 and r["context_tokens_max"] == 603
-          and r["session_id"] == "stub-session" and r["num_turns"] == 1 and r["stop_reason"] == "end_turn" and r["usage"]["iterations"] for r in new))
+          and r["session_id"] == "stub-session" and r["num_turns"] == 1 and r["stop_reason"] == "end_turn" and r["duration_ms"] == 1234
+          and r["usage"] == {"input_tokens": 3, "cache_creation_input_tokens": 600, "cache_read_input_tokens": 0, "output_tokens": 50, "output_tokens_details": {"thinking_tokens": 7},
+                             "iterations": [{"input_tokens": 3, "cache_creation_input_tokens": 600, "type": "message"}]} and r["model_usage"] == {"stub-model": {"inputTokens": 3}} for r in new))
     if t == "next_residue": check(f"{t}: the thinking tokens keep this test's field name, and the peptide is read", all(r["thinking"] == 7 and "thinking_tokens" not in r and r["pred"] == "ACDEFGHIKL" and r["valid"] for r in new))
     else: check(f"{t}: two JSON objects are read as the last one", all(r["ans"] and r["ans"]["protein_name"] == "second" for r in new))
     before = lines(out); run(script, "ok", eff, *extra)
@@ -93,11 +98,23 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
     check(f"{t}: --limit 1 --tag canary asks one question into its own file", len(rows(out.with_name("stub-model-canary.jsonl"))) == 1 and not out.exists() and len(rows(LOG)) == 1)
     two = out.with_name("stub-model-two.jsonl"); run(script, good + "+two", eff, *extra, "--tag", "two"); R = rows(two)
     check(f"{t}: a reply that took two requests is usable and counted, though its summed input passes the limit", len(R) == n and all(r["requests"] == 2 and not r["context_tokens_high"]
-          and r["context_tokens"] == 2 * r["context_tokens_max"] > 700 + 2 * (r["context_tokens_max"] - 600) and not common.unusable(r) for r in R) and len(common.continued(R)) == n)
+          and r["context_tokens"] == 2 * r["context_tokens_max"] and r["context_tokens_max"] <= limit(r) < r["context_tokens"] and not common.unusable(r) for r in R) and len(common.continued(R)) == n)
+    if t != "next_residue":   # the scorer of this test prints the count (test 1 needs the upstream answers for the stub's questions, so it is left out)
+        named = two.with_name("claude-stub.jsonl"); shutil.copy(two, named)   # the test 2 scorer reads claude-*.jsonl
+        p_ = subprocess.run([sys.executable, str(exp / t / "score.py")], capture_output=True, text=True)
+        named.unlink()
+        check(f"{t}: the scorer prints the replies that took more than one request", p_.returncode == 0 and common.NOTE_CONTINUED in p_.stdout)
+    two.unlink(); run(script, good + "+twobig", eff, *extra, "--tag", "two"); R = rows(two)
+    check(f"{t}: two requests that each carry attached context are marked and not counted as continued", len(R) == n and all(r["context_tokens_high"] and r["requests"] == 2 for r in R) and not common.continued(R))
     two.unlink(); run(script, good + "+hidden", eff, *extra, "--tag", "two"); R = rows(two)
-    check(f"{t}: one request whose summed input passes the limit is marked, though the listed request is small", len(R) == n and all(r["context_tokens_high"] and r["requests"] == 1 for r in R))
+    check(f"{t}: one request whose summed input passes the limit is marked, though the listed request is small", len(R) == n and all(r["context_tokens_high"] and r["requests"] == 1
+          and r["context_tokens_max"] <= limit(r) < r["context_tokens"] for r in R))
     two.unlink(); run(script, good + "+bigiter", eff, *extra, "--tag", "two"); R = rows(two)
-    check(f"{t}: a single request above the limit is marked", len(R) == n and all(r["context_tokens_high"] and r["requests"] == 1 for r in R) and not common.continued(R))
+    check(f"{t}: a listed response above the limit is marked, though the summed input is small", len(R) == n and all(r["context_tokens_high"] and r["requests"] == 1
+          and r["context_tokens"] <= limit(r) < r["context_tokens_max"] == 90000 for r in R))
+    two.unlink(); run(script, good + "+odd", eff, *extra, "--tag", "two"); R = rows(two)
+    check(f"{t}: a malformed usage record still gives a usable row, without the unknown key", len(R) == n and all(not common.unusable(r) and r["context_tokens"] == 600 and r["requests"] == 1
+          and "new_key" not in r["usage"] and r["usage"]["iterations"] == 5 for r in R))
 
 # The reply-reading rules, case by case (#49, #50, #61). K is the key list of test 2.
 K = common.KEYS["features"]; A = {"pfam_domains": [], "transmembrane_helices": [], "signal_peptide": False, "protein_name": "x", "ec_number": None, "function": "y"}
