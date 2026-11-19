@@ -11,6 +11,7 @@ report:
     uv run python experiments/pseudo/score.py > expected/pseudo.txt
     uv run python experiments/structure/score.py > expected/structure.txt
     uv run python experiments/summary.py > expected/summary.txt
+    uv run python experiments/decoy_control/score_decoys.py > expected/decoy_control.txt
     uv run python figures/make_figures.py --values-only > expected/figures.txt
 
 # Recompute the numbers and fail if they differ from the committed expected/ files
@@ -24,6 +25,7 @@ check: verify-data
     uv run python experiments/pseudo/score.py > $tmp/pseudo.txt
     uv run python experiments/structure/score.py > $tmp/structure.txt
     uv run python experiments/summary.py > $tmp/summary.txt
+    uv run python experiments/decoy_control/score_decoys.py > $tmp/decoy_control.txt
     uv run python figures/make_figures.py --values-only > $tmp/figures.txt
     diff -r $tmp expected && echo "All reported numbers reproduce."
 

@@ -14,6 +14,10 @@ with a draft preprint describing the results.
 
 The manuscript is `manuscript.tex`, with a built copy in `manuscript.pdf`.
 
+`experiments/decoy_control/` holds a control for test 3 that is not in the manuscript: the same substitution
+at a non-catalytic position of each protein, and the test 3 mutants asked again on the same route. Its
+`README.md` and `RESULTS.md` describe it. Its calls are not in the call totals of `expected/summary.txt`.
+
 ## Where this came from
 
 This repository was split from the `projects/LLM_SEQUENCE_PROBE/manuscript`
@@ -77,6 +81,7 @@ pixel, so they are not byte-for-byte reproducible.
 | Figure 2, structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
 | Call totals in Methods (2,578 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
+| Decoy-substitution control for test 3 (not in the manuscript) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
 
 ## How the model answers were collected
 

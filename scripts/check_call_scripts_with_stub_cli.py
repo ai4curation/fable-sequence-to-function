@@ -1,4 +1,4 @@
-"""Exercise the four model-calling scripts and the reply-reading rules against a stub `claude` executable.
+"""Exercise the five model-calling scripts and the reply-reading rules against a stub `claude` executable.
 No model is called.
 
 Copies experiments/ (without results) to a temp dir, puts a stub named `claude` first on PATH and checks:
@@ -12,7 +12,7 @@ Copies experiments/ (without results) to a temp dir, puts a stub named `claude` 
   6. the reply-reading rules of common.py on the cases of #49, #50 and #61.
 Usage: check_call_scripts_with_stub_cli.py     Output: one line per check, exit 1 on failure.   2026-11-18
 """
-import hashlib, json, os, pathlib, shutil, subprocess, sys, tempfile
+import contextlib, hashlib, io, json, os, pathlib, shutil, subprocess, sys, tempfile
 REPO = pathlib.Path(__file__).resolve().parent.parent
 STUB = r'''#!/usr/bin/env python3
 import hashlib, json, os, sys
@@ -25,7 +25,7 @@ if mode == "flaky":   # two API errors with different messages and costs, then a
     if n < 3: print(json.dumps({"result": f"API Error: attempt {n}\nRequest ID: req_{n}" if n == 1 else {"error": f"attempt {n}"}, "is_error": True, "total_cost_usd": 0.125 * n, "usage": {}, "modelUsage": {}})); sys.exit(0)
     mode = "ok"; mod = "flakyok"
 if mode == "apierror": print(json.dumps({"result": "API Error: overloaded\n\nRequest ID: req_stub", "is_error": True, "total_cost_usd": 0.25, "usage": {}, "modelUsage": {}})); sys.exit(0)
-one = {"pfam_domains": [], "catalytically_active": "yes", "helices": [[1, 5]], "protein_name": "first"}
+one = {"pfam_domains": [], "catalytically_active": "yes", "helices": [[1, 5]], "protein_name": "first", "catalytic_residues": [{"role": "x", "residue": "Met", "position": 1}]}
 two = dict(one, protein_name="second")
 text = {"ok": json.dumps(one), "bigctx": json.dumps(one), "multi": json.dumps(one) + "\n\nCorrected version:\n\n" + json.dumps(two),
         "tool": "```bash\ncurl https://example.org\n```\n" + json.dumps(one), "peptide": "ACDEFGHIKL",
@@ -61,8 +61,13 @@ shutil.copytree(REPO / "experiments", exp, ignore=shutil.ignore_patterns("result
 (tmp / "bin").mkdir(); stub = tmp / "bin" / "claude"; stub.write_text(STUB); stub.chmod(0o755)
 LOG = tmp / "stub_calls.jsonl"; env = dict(os.environ, PATH=f"{tmp / 'bin'}{os.pathsep}{os.environ['PATH']}", STUB_LOG=str(LOG))
 assert shutil.which("claude", path=env["PATH"]) == str(stub), "the stub is not first on PATH; refusing to run"
-for t in ("features", "pseudo", "structure"):   # two questions' worth of truth is enough
+for t in ("features", "structure"):   # two questions' worth of truth is enough
     f = exp / t / "truth.json"; f.write_text(json.dumps(json.loads(f.read_text())[:2]))
+# Test 3 and its decoy control keep one protein of each group, so a script that drops or adds a group is caught (#68).
+f = exp / "decoy_control/decoys.json"; allD = json.loads(f.read_text()); g = exp / "pseudo/truth.json"; allT = json.loads(g.read_text())
+keep = [next(d["accession"] for d in allD if d["group"] == grp) for grp in ("kinase", "enzyme")] + [next(t["accession"] for t in allT if t["group"] == "pseudo")]
+f.write_text(json.dumps([d for d in allD if d["accession"] in keep])); g.write_text(json.dumps([t for t in allT if t["accession"] in keep]))
+assert [len([d for d in allD if d["accession"] == k]) for k in keep] == [2, 1, 0], "fixture: a kinase with two decoys, an enzyme with one, a pseudokinase with none"
 sys.path.insert(0, str(exp)); import common
 fails = 0
 def check(label, cond):
@@ -84,6 +89,7 @@ def hashes_ok(R): return {r["prompt_sha256"] for r in R} <= {c["stdin_sha256"] f
 for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], exp / "features/results/stub-model.jsonl"),
                                    ("pseudo", "pseudo/ask.py", "medium", [], exp / "pseudo/results/stub-model.jsonl"),
                                    ("structure", "structure/ask.py", "low", [], exp / "structure/results/stub-model.jsonl"),
+                                   ("decoy_control", "decoy_control/ask_decoys.py", "medium", [], exp / "decoy_control/results/stub-model.jsonl"),
                                    ("next_residue", "next_residue/run.py", "xhigh", ["2"], exp / "next_residue/results/xhigh/stub-model.jsonl")):
     good = "peptide" if t == "next_residue" else "multi"
     run(script, "fail", eff, *extra); R = rows(out); n = len(R)
@@ -128,7 +134,7 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
         check(f"{t}: the scorer prints the replies that took more than one request", p_.returncode == 0 and f"{common.NOTE_CONTINUED}: {n}" in p_.stdout)
     if t != "next_residue":
         named = two.with_name("claude-stub.jsonl"); shutil.copy(two, named)   # the test 2 scorer reads claude-*.jsonl
-        p_ = subprocess.run([sys.executable, str(exp / t / "score.py")], capture_output=True, text=True)
+        p_ = subprocess.run([sys.executable, str(exp / t / ("score_decoys.py" if t == "decoy_control" else "score.py"))], capture_output=True, text=True)
         named.unlink()
         check(f"{t}: the scorer prints the replies that took more than one request", p_.returncode == 0 and common.NOTE_CONTINUED in p_.stdout)
     two.unlink(); run(script, good + "+twobig", eff, *extra, "--tag", "two"); R = rows(two)
@@ -173,6 +179,51 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
     two.unlink(); run(script, good + "+odd", eff, *extra, "--tag", "two"); R = rows(two)
     check(f"{t}: a malformed usage record still gives a usable row, without the unknown key", len(R) == n and all(not common.unusable(r) and r["context_tokens"] == 603 and r["requests"] == 1
           and "new_key" not in r["usage"] and "new_key" in r["usage_keys_dropped"] and r["usage"]["iterations"] == 5 and r.get("thinking_tokens", r.get("thinking")) is None for r in R))
+
+# The decoy control asks the test 3 question: the text sent for a decoy is the test 3 prompt plus the decoy sequence (PR 10), and
+# --set original asks the test 3 mutants and wild types of the kinases and enzymes into bridge-MODEL.jsonl (#11).
+sys.path.insert(0, str(exp / "pseudo")); _argv = sys.argv; sys.argv = ["ask.py", "stub-model", "high", "--limit", "0", "--tag", "import-only"]
+with contextlib.redirect_stdout(io.StringIO()): import ask as pseudo_ask   # --limit 0: the import asks nothing
+sys.argv = _argv; (exp / "pseudo/results/stub-model-import-only.jsonl").unlink()
+decoys = json.loads((exp / "decoy_control/decoys.json").read_text()); out = exp / "decoy_control/results/stub-model.jsonl"
+def by_item(R): return {(r["accession"], r["variant"]): r["prompt_sha256"] for r in R}
+run("decoy_control/ask_decoys.py", "ok", "xhigh"); R = rows(out)
+check("decoy_control: each decoy row records the test 3 prompt followed by that decoy's sequence, at the effort asked for", len(R) == len(decoys) == 3 and all(r["effort"] == "xhigh" for r in R) and sent_ok("xhigh", 3, 1)
+      and by_item(R) == {(d["accession"], d["variant"]): common.sha(pseudo_ask.P + pseudo_ask.fasta(d["sequence"])) for d in decoys} and {c["stdin_sha256"] for c in rows(LOG)} == set(by_item(R).values()))
+truth = json.loads((exp / "pseudo/truth.json").read_text()); want = {(t["accession"], v): common.sha(pseudo_ask.P + pseudo_ask.fasta(s)) for t in truth if t["group"] in ("kinase", "enzyme") for v, s in t["variants"].items()}
+run("decoy_control/ask_decoys.py", "ok", "xhigh", "--set", "original"); B = rows(exp / "decoy_control/results/bridge-stub-model.jsonl")
+check("decoy_control: --set original asks every test 3 variant of the kinase and the enzyme and none of the pseudokinase, into bridge-MODEL.jsonl, and leaves the decoy file alone",
+      len(want) == 5 and by_item(B) == want and len(B) == 5 and rows(out) == R and {t["group"] for t in truth} == {"kinase", "enzyme", "pseudo"})
+run("decoy_control/ask_decoys.py", "ok", "xhigh", "--set", "original", "--only", "NOPE:wt")
+check("decoy_control: --only with no matching item asks nothing", len(rows(LOG)) == 0)
+one = decoys[0]; only = exp / "decoy_control/results/stub-model-only.jsonl"; run("decoy_control/ask_decoys.py", "ok", "xhigh", "--only", f"{one['accession']}:{one['variant']}", "--tag", "only"); R1 = rows(only)
+check("decoy_control: --only ACCESSION:VARIANT asks that one item, not the protein's other decoy", [(r["accession"], r["variant"]) for r in R1] == [(one["accession"], one["variant"])] and len(rows(LOG)) == 1
+      and sum(d["accession"] == one["accession"] for d in decoys) == 2)
+run("decoy_control/ask_decoys.py", "ok", "xhigh", "--limit", "0", "--tag", "none")
+check("decoy_control: a run that asks nothing creates no file", not (exp / "decoy_control/results/stub-model-none.jsonl").exists() and len(rows(LOG)) == 0)
+p_ = subprocess.run([sys.executable, str(exp / "decoy_control/ask_decoys.py"), "stub-model", "xhigh", "--limit", "-1"], env=dict(env, STUB_MODE="ok"), capture_output=True, text=True)
+check("decoy_control: a negative --limit is refused", p_.returncode != 0 and len(rows(out)) == 3)
+# The decoy scorer on the stub rows: it runs, skips nothing silently, and stops on a second usable row for a question (#71).
+def score(): return subprocess.run([sys.executable, str(exp / "decoy_control/score_decoys.py")], capture_output=True, text=True)
+shutil.copy(out, exp / "decoy_control/results/stub-model-b.jsonl"); p_ = score()
+check("decoy_control: the scorer scores each results file as its own block and checks every recorded prompt hash", p_.returncode == 0 and "\n== stub-model-b:" in p_.stdout
+      and p_.stdout.count("\n== stub-model") == sum(1 for f in (exp / "decoy_control/results").glob("*.jsonl") if not f.name.startswith("bridge-") and rows(f)) >= 2 and "hash is that of the test 3 prompt plus this sequence 3/3" in p_.stdout and "5/5" in p_.stdout)
+check("decoy_control: the scorer reads residues by position, including three-letter codes (every stub answer lists Met at position 1)", "the given sequence at the stated position 3/3" in p_.stdout)
+# A file with one wrong prompt hash and blank lines, and an empty file (#92, #75).
+bad = [dict(r) for r in rows(out)]; bad[0]["prompt_sha256"] = "0" * 64; c_ = exp / "decoy_control/results/stub-model-c.jsonl"
+c_.write_text("\n" + "\n\n".join(json.dumps(r) for r in bad) + "\n\n"); (exp / "decoy_control/results/stub-model-d.jsonl").write_text("")
+p_ = score(); blk = p_.stdout.split("\n== stub-model-c:")[1].split("\n== ")[0] if "\n== stub-model-c:" in p_.stdout else ""
+check("decoy_control: a wrong prompt hash is counted as wrong, blank lines are skipped, an empty file is not scored", p_.returncode == 0 and "plus this sequence 2/3" in blk
+      and "\n== stub-model-d:" not in p_.stdout)
+c_.unlink(); (exp / "decoy_control/results/stub-model-d.jsonl").unlink()
+with out.open("a") as fh: fh.write("\n")
+p_ = subprocess.run([sys.executable, str(exp / "decoy_control/ask_decoys.py"), "stub-model", "xhigh", "--limit", "0"], env=dict(env, STUB_MODE="ok"), capture_output=True, text=True)
+check("decoy_control: the call script's summary skips blank lines", p_.returncode == 0 and "3 rows" in p_.stdout)
+b_ = exp / "decoy_control/results/bridge-stub-model-y.jsonl"; shutil.copy(exp / "decoy_control/results/bridge-stub-model.jsonl", b_); p_ = score(); b_.unlink()
+check("decoy_control: a rerun file without a decoy file is reported", "WARNING: bridge-stub-model-y.jsonl has no decoy file" in p_.stdout)
+check("decoy_control: a decoy file without a stored test 3 file is reported", "WARNING: no stored test 3 file pseudo/results/stub-model.jsonl" in p_.stdout)
+with out.open("a") as fh: fh.write(lines(out)[0])
+p_ = score(); check("decoy_control: the scorer stops on a second usable row for one question", p_.returncode != 0 and "more than one usable row" in p_.stderr)
 
 # The reply-reading rules, case by case (#49, #50, #61). K is the key list of test 2.
 K = common.KEYS["features"]; A = {"pfam_domains": [], "transmembrane_helices": [], "signal_peptide": False, "protein_name": "x", "ec_number": None, "function": "y"}
