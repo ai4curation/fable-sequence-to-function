@@ -40,6 +40,7 @@ def original_prompt(path):
         if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "P" for t in node.targets): return ast.literal_eval(node.value)
     raise SystemExit(f"no prompt P found in {path}")
 P = original_prompt(a.probe_dir / "pseudo/ask.py")
+def money(r): c = r.get("cost"); return c if isinstance(c, (int, float)) and not isinstance(c, bool) else 0   # a cost that is not a number counts as 0
 def fasta(s, w=60): return "\n".join(s[i:i+w] for i in range(0, len(s), w))   # same line width as the original
 
 if a.set == "decoy":
@@ -62,4 +63,4 @@ if todo:   # nothing to ask: no file is created
         for r in ex.map(ask, todo): fh.write(json.dumps(r) + "\n"); fh.flush()
 rows = [json.loads(l) for l in out.open() if l.strip()] if out.exists() else []
 print(f"{a.model} {a.set}: asked {len(todo)}, already answered {sum((i['accession'], i['variant']) in done for i in items)} of {len(items)}, file {out}; in file: {len(rows)} rows, "
-      f"{failed(rows)} not usable (failed, API error or attached context), {sum(not r.get('ans') for r in rows) - failed(rows)} without an answer, cost ${sum(r.get('cost') or 0 for r in rows):.2f}")
+      f"{failed(rows)} not usable (failed, API error or attached context), {sum(not r.get('ans') for r in rows) - failed(rows)} without an answer, cost ${sum(money(r) for r in rows):.2f}")

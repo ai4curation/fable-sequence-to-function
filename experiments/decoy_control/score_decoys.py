@@ -48,6 +48,7 @@ SEQ = {k: d["sequence"] for k, d in D.items()}; SEQ.update({(t["accession"], v):
 def nocall(r): return str(r["ans"].get("catalytically_active")).lower() not in ("yes", "no", "uncertain")
 AA3 = dict(ALA="A", ARG="R", ASN="N", ASP="D", CYS="C", GLN="Q", GLU="E", GLY="G", HIS="H", ILE="I", LEU="L", LYS="K", MET="M", PHE="F", PRO="P", SER="S", THR="T", TRP="W", TYR="Y", VAL="V")
 def one_letter(res): x = str(res).strip().upper(); return AA3.get(x, x)   # "K", "k", "Lys" and "LYS" all read as K
+def money(r): c = r.get("cost"); return c if isinstance(c, (int, float)) and not isinstance(c, bool) else 0   # a cost that is not a number counts as 0
 def isnum(x): return isinstance(x, (int, float)) and not isinstance(x, bool)
 def ctx(r):
     """Input tokens of a row: context_tokens when recorded, else the sum of the counts that are numbers."""
@@ -111,7 +112,7 @@ for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.sta
     if not R: continue   # an empty file, as a zero-question run could leave
     tokens = sorted(map(ctx, dec.values()))
     print(f"\n== {m}: {len(R)} decoy calls, {len(dec)} answers scored, {len(R) - len(dec) - failed(R)} without an answer, effort {efforts(R)}, "
-          f"cost ${sum(r.get('cost') or 0 for r in R):.2f}, median input tokens {format(median(tokens), 'g') if tokens else 'n/a'}")
+          f"cost ${sum(money(r) for r in R):.2f}, median input tokens {format(median(tokens), 'g') if tokens else 'n/a'}")
     if failed(R): print(f"  {NOTE_FAILED}: {failed(R)}")
     if continued(R) or continued(B): print(f"  {NOTE_CONTINUED}: decoys {len(continued(R))}, rerun {len(continued(B))}")
     if tool_calls(R): print(f"  {NOTE_TOOL}: " + ", ".join(r["accession"] + " " + r["variant"] for r in tool_calls(R)))
@@ -119,7 +120,7 @@ for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.sta
     if B:
         refs.append(("rerun on this route", bridge)); both = sorted(set(bridge) & set(stored)); same = sum(active(bridge[x]) == active(stored[x]) for x in both)
         differ = [f"{acc} {v} (stored {stored[(acc, v)]['ans'].get('catalytically_active')}, rerun {bridge[(acc, v)]['ans'].get('catalytically_active')})" for acc, v in both if active(bridge[(acc, v)]) != active(stored[(acc, v)])]
-        print(f"  rerun of the test 3 mutants and wild types on this route: {len(B)} calls, {len(bridge)} answers, effort {efforts(B)}, cost ${sum(r.get('cost') or 0 for r in B):.2f}"
+        print(f"  rerun of the test 3 mutants and wild types on this route: {len(B)} calls, {len(bridge)} answers, effort {efforts(B)}, cost ${sum(money(r) for r in B):.2f}"
               + (f"; {NOTE_FAILED}: {failed(B)}" if failed(B) else "") + (f"; {NOTE_TOOL}: {len(tool_calls(B))}" if tool_calls(B) else ""))
         print(f"    same active/not-active call as the stored run in {same}/{len(both)}" + (": differ " + "; ".join(differ) if differ else ""))
     print("  per file (the stored run and the rerun: all 40 kinases and enzymes of test 3, 60 mutants; the decoys cover 38 of them):"); describe("decoys", R, dec); describe("stored run", S, stored)
@@ -177,9 +178,9 @@ for p in sorted((HERE / "results").glob("*.jsonl")):
     us = [r for r in R if isinstance(r.get("usage"), dict)]
     one = sum(max(r.get("requests") or 1, r.get("num_turns") or 1) == 1 and not any((r["usage"].get("server_tool_use") or {}).get(k) for k in ("web_search_requests", "web_fetch_requests")) for r in us)
     nohash = [f"{r.get('accession')} {r.get('variant')} at {str(r.get('asked_at'))[11:16]}" for r in R if not r.get("prompt_sha256")]
-    cost = sum(r.get("cost") or 0 for r in R); tot += cost if p.name.startswith("bridge-") else 0
+    cost = sum(money(r) for r in R); tot += cost if p.name.startswith("bridge-") else 0
     print(f"  {p.name}: {len(R)} rows, returned {window(R)}, cost ${cost:.4f}; input tokens " + ", ".join(f"{g} {a:,} to {b:,}" for g, (a, b) in rng.items())
-          + (f"; total input per row {', '.join(f'{ctx(r):,}' for r in R)}, cost per row {', '.join(f'${r.get("cost") or 0:.4f}' for r in R)}" if len(R) <= 3 else "")
+          + (f"; total input per row {', '.join(f'{ctx(r):,}' for r in R)}, cost per row {', '.join(f'${money(r):.4f}' for r in R)}" if len(R) <= 3 else "")
           + f"; rows with a prompt hash {len(R) - len(nohash)}" + (f" (without: {'; '.join(nohash)}; those with one returned {window([r for r in R if r.get('prompt_sha256')])})" if 0 < len(nohash) <= 3 and len(nohash) < len(R) else
                                                                     f" (without: {'; '.join(nohash)})" if 0 < len(nohash) <= 3 else "")
           + (f"; rows with a usage record {len(us)}, of them one request and no web search or fetch {one}" if us else ""))
@@ -187,4 +188,4 @@ print(f"  rerun files together: cost ${tot:.4f}")
 c = HERE / "results" / "cli_context_check.json"
 if c.exists():
     j = json.loads(c.read_text()); runs = j["original_flags"] + j["with_extra_flags"] + [j["description_with_extra_flags"]]
-    print(f"  cli_context_check.json: model {j['model']}, run {j['run_at']}, {len(runs)} calls, cost ${sum(r.get('cost') or 0 for r in runs):.4f}")
+    print(f"  cli_context_check.json: model {j['model']}, run {j['run_at']}, {len(runs)} calls, cost ${sum(money(r) for r in runs):.4f}")
