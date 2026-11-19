@@ -26,7 +26,11 @@ def cli_version(): return subprocess.run(["claude", "--version"], capture_output
 def call(model, effort, prompt, tries=3, timeout=3600):
     """Ask one question. Returns (reply text or None, record). The record always has effort, attempts, prompt_sha256,
     extra_flags, cli_version and asked_at; a failed call adds `error`, an answered one adds cost, served, token
-    counts, is_error and context_tokens_high. An API-error reply is tried again like a failed call."""
+    counts, is_error and context_tokens_high, and the tool's own turn count, stop reason and usage records. An
+    API-error reply is tried again like a failed call. The token counts are summed over the requests the tool made:
+    if it made more than one for a question (seen once, on a reply with 73,000 thinking tokens), the sum can pass
+    the limit without any attached context. Such a row is still marked, left unscored and asked again.
+    """
     rec = dict(effort=effort, prompt_sha256=sha(prompt), extra_flags=EXTRA, cli_version=cli_version()); j = None; why = ""
     for attempt in range(1, tries + 1):
         try:
@@ -42,7 +46,8 @@ def call(model, effort, prompt, tries=3, timeout=3600):
     u = j.get("usage") or {}; context = sum(u.get(k) or 0 for k in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens"))
     rec.update(cost=j.get("total_cost_usd"), served=list(j.get("modelUsage") or {}), thinking_tokens=(u.get("output_tokens_details") or {}).get("thinking_tokens"),
                input_tokens=u.get("input_tokens"), cache_creation_input_tokens=u.get("cache_creation_input_tokens"), cache_read_input_tokens=u.get("cache_read_input_tokens"),
-               output_tokens=u.get("output_tokens"), context_tokens=context, context_tokens_high=context > context_limit(prompt), is_error=bool(j.get("is_error")))
+               output_tokens=u.get("output_tokens"), context_tokens=context, context_tokens_high=context > context_limit(prompt), is_error=bool(j.get("is_error")),
+               num_turns=j.get("num_turns"), stop_reason=j.get("stop_reason"), duration_ms=j.get("duration_ms"), usage=u, model_usage=j.get("modelUsage"))   # as the tool reports them
     return j.get("result") or "", rec
 def unusable(r): return "error" in r or bool(r.get("is_error")) or bool(r.get("context_tokens_high"))
 _dec = json.JSONDecoder()
