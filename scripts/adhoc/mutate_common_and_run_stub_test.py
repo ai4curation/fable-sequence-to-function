@@ -18,14 +18,14 @@ MUTANTS = [   # name, text in common.py, replacement
     ("successful attempt's cost left out", "        spent += _num(j.get(\"total_cost_usd\"))\n        if not j.get(\"is_error\"): break\n",
      "        if not j.get(\"is_error\"): break\n        spent += _num(j.get(\"total_cost_usd\"))\n"),
     ("n = turns for any int", "n = max(_int(turns) or 1, 1)", "n = _int(turns) if _int(turns) is not None else 1"),
-    ("no-iterations fallback 0", "or [context / n])", "or [0])"),
     ("attempt_errors keeps the last only", "        errs.append(", "        errs[:] = []; errs.append("),
     ("raw cost added", "spent += _num(j.get(\"total_cost_usd\"))", "spent += j.get(\"total_cost_usd\") or 0"),
     ("unreadable counts read as 0", "    if bad: rec[\"usage_unreadable\"] = True", "    pass"),
     ("unusable ignores usage_unreadable", " or bool(r.get(\"usage_unreadable\"))", ""),
     ("_int rejects strings", "    if isinstance(x, str) and x.strip().isdigit(): return int(x.strip())\n", ""),
-    ("nested filter removed", "        out[\"server_tool_use\"] = _keep(out[\"server_tool_use\"], SERVER_TOOL_KEYS, dropped, \"server_tool_use.\")", "        pass"),
+    ("nested filter removed", "out[\"server_tool_use\"] = _keep(out[\"server_tool_use\"], SERVER_TOOL_KEYS, dropped, \"server_tool_use.\")", "pass"),
     ("dropped key names not recorded", "    if dropped: rec[\"usage_keys_dropped\"] = sorted(set(dropped))", "    pass"),
+    ("listed size without iterations recorded as 0", "or [context / n])", "or [0])"),
     ("top-level key filter removed", "usage=_usage(u, dropped)", "usage=u"),
 ]
 def tree():

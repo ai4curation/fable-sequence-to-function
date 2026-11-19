@@ -94,28 +94,45 @@ pixel, so they are not byte-for-byte reproducible.
   4. In test 1 it is the results folder (`results/low`, `results/high`). The
   test 2 rows of that date do not record it.
 - **Rows that record a prompt hash** (`prompt_sha256`; written from
-  2026-11-19 UTC) come from `call()` in `experiments/common.py`. It adds four flags to the command above
-  (`--setting-sources "" --strict-mcp-config --disable-slash-commands
-  --no-chrome`), because on a machine with user settings and account
-  connectors the original flags let instructions, skill listings or connector
-  tools into the call. Each of these rows records the effort, the number of
-  attempts, a hash of the question, the flags, the tool version, the time
-  (UTC), the token counts, and from the tool's own result the turn count,
-  stop reason, duration, session id and the known keys of its usage records
-  (which include its count of web search and fetch requests). A call whose
-  input is larger than the question allows (about 600 tokens of the tool's
-  own context plus the question) is marked `context_tokens_high` and is not
-  scored.
+  2026-11-19 UTC) come from `call()` in `experiments/common.py`. It adds
+  four flags to the command above (`--setting-sources "" --strict-mcp-config
+  --disable-slash-commands --no-chrome`), because on a machine with user
+  settings and account connectors the original flags let instructions, skill
+  listings or connector tools into the call. Each of these rows records the
+  effort, the number of attempts, a hash of the question, the flags, the tool
+  version, the time the call returned (UTC), the token counts and whether it
+  was marked. Fields were added as the code changed, so rows written earlier
+  lack the later ones:
+  - from commit `1ad08a5`: the tool's turn count (`num_turns`), stop reason,
+    duration, and its usage records (`usage`, `model_usage`, which include
+    its count of web search and fetch requests);
+  - from `4d3da97`: `requests`, `context_tokens_max` and `session_id`. In rows
+    written by `4d3da97` itself `requests` is wrong (1 where the turn count is
+    2 or 3); the scorers read the turn count as well;
+  - from `dbd62ed`: `attempt_errors` and `cost_all_attempts` on rows that
+    took more than one attempt;
+  - from the fix for #84: `usage_unreadable` and
+    `usage_keys_dropped` when they apply, and only known keys of the usage
+    records.
+
+  A call whose input is larger than the question allows (about 600 tokens of
+  the tool's own context plus the question) is marked `context_tokens_high`
+  and is not scored. The allowance is loose: in one-request rows of the
+  Opus 4.6 high-effort runs the input was 736 to 1,147 tokens below it, so a
+  smaller attachment would not be marked. A row whose usage record gives an
+  input count that is not a number is marked `usage_unreadable` and is not
+  scored either.
 - **More than one request per question.** The tool sometimes makes a second
   request by itself: when a reply reaches the model's output limit, when a
   safety classifier stops it, or when it has no visible text, the tool adds
-  a short message saying so and asks again. Its token counts are then sums over the requests, and its
-  usage record lists the last response only. So the number of requests is
-  taken from the turn count (`requests`), a row is marked when the listed
-  response is larger than one request may be or the sum is larger than that
-  many requests, and the scorers print how many replies took more than one
-  request. An attachment smaller than one request's allowance could go
-  unmarked in such a call.
+  a short message saying so and asks again. Its token counts are then sums
+  over the requests, and its usage record lists the last response only. So
+  the number of requests is taken from the turn count (`requests`), a row is
+  marked when the listed response is larger than one request may be or the
+  sum is larger than that many requests, and the scorers print how many
+  replies took more than one request. In such a call an attachment present
+  only in an earlier request could pass unmarked up to the number of
+  requests times the allowance, less the clean input.
 - **How a reply is read** (`experiments/common.py`, used by every scorer): the
   answer is the last complete JSON object in the reply that has at least two
   of the requested keys. Three Opus 4.6 replies in test 2 hold two objects,
