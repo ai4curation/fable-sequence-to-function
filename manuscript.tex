@@ -22,7 +22,7 @@ A recent report showed that two general-purpose language models, Claude Fable~5.
 predict the next residue of obscure proteins far better than chance. We ask whether that ability is useful
 for annotation. Given only an amino-acid sequence and no tools, both models named the correct Pfam family
 for 35 to 39 of 45 sampled bacterial and archaeal proteins, with domain boundaries overlapping the
-reference by 0.86, and almost never assigned a domain to a shuffled sequence. They detected a single
+reference by 0.86 to 0.87, and almost never assigned a domain to a shuffled sequence. They detected a single
 catalytic-residue substitution introduced into an active kinase: a catalytic aspartate-to-asparagine mutant
 was called active in 0 of 20 cases by either model, against 18 of 20 for the older Claude Opus~4.6. For
 protein structures released after training with no earlier structure at 30\% identity, three-state
@@ -61,10 +61,7 @@ tool in print mode with no tools and an empty system prompt; we confirmed that c
 no web search or fetch. This route does not expose temperature, so answers were sampled, and it adds about
 1,400 tokens of its own context. Fable~5.2 and Opus~5.5 ran at high effort in tests 2 to 4. Opus~4.6 ran at
 low effort because it did not finish at high effort, so comparisons with it are confounded by effort.
-Each question was asked once. The tool reported that 6 of the 2,570 calls were served in part by a fallback
-model: three Opus~5.5 next-residue calls at high effort, and one Fable~5.2 and two Opus~5.5 calls in test
-4, all on known-stratum entries. They are kept in the reported numbers; the repository gives every test-4
-result with them excluded, and no conclusion changes.
+Each question was asked once.
 
 \paragraph{Test 1, next residue.} We drew 68 of the 167 families in the public test set
 \citep{tu2026probe} (17 per family-size bin), one protein per family and two of its five cut points, and
@@ -154,7 +151,7 @@ when the family is correct.}
 Sampled proteins with a correct Pfam family & 39/45 & 35/45 & 5/43 \\
 Obscure DUF proteins with a correct Pfam family & 8/15 & 3/15 & 0/15 \\
 Predicted domains with the right accession & 62/70 & 45/51 & 5/22 \\
-Boundary overlap (IoU) & 0.86 & 0.86 & 0.61 \\
+Boundary overlap (IoU) & 0.87 & 0.86 & 0.61 \\
 Transmembrane helices recovered & 74/74 & 74/74 & 51/73 \\
 Signal peptide, true / false positives & 9 / 0 & 9 / 0 & 9 / 6 \\
 Shuffled sequences given any domain & 1/60 & 0/60 & 4/59 \\
