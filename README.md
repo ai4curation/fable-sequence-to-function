@@ -110,12 +110,12 @@ pixel, so they are not byte-for-byte reproducible.
   `context_tokens_high` and is not scored. The tool sometimes makes more
   than one request for a question: when a reply reaches the model's output
   limit, or when a safety classifier stops it, the tool adds a short message
-  saying so and asks again. The input is therefore checked per request, each
-  row records the number of requests, and the scorers count the answers that
-  took more than one. Rows written on 2026-11-19 before this was added were
-  checked on the sum; five such answers in
-  `features/results/claude-opus-4-6-high.jsonl` are marked; their questions
-  are asked again on the next run.
+  saying so and asks again. The token counts are then sums over the
+  requests, so the limit is applied per request, each row records the number
+  of requests, and the scorers count the answers that took more than one.
+  Rows written on 2026-11-19 before this was added were checked as one
+  request; six such answers in `features/results/claude-opus-4-6-high.jsonl`
+  are marked and stay unscored, and their questions were asked again.
 - **How a reply is read** (`experiments/common.py`, used by every scorer): the
   answer is the last complete JSON object in the reply that has at least two
   of the requested keys. Three Opus 4.6 replies in test 2 hold two objects,

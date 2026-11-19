@@ -17,10 +17,10 @@ REPO = pathlib.Path(__file__).resolve().parent.parent
 STUB = r'''#!/usr/bin/env python3
 import hashlib, json, os, sys
 if sys.argv[1:] == ["--version"]: print("0.0.0 (stub)"); sys.exit(0)
-q = sys.stdin.read(); mode, _, mod = os.environ.get("STUB_MODE", "ok").partition("+")   # "+two": the reply took two requests; "+bigiter": one large request
+q = sys.stdin.read(); mode, _, mod = os.environ.get("STUB_MODE", "ok").partition("+")   # "+two": the reply took two requests; "+hidden": one request, summed input too large; "+bigiter": one large request
 with open(os.environ["STUB_LOG"], "a") as fh: fh.write(json.dumps(dict(argv=sys.argv[1:], cwd=os.getcwd(), stdin_sha256=hashlib.sha256(q.encode()).hexdigest())) + "\n")
 if mode == "fail": print("not json"); sys.exit(0)
-if mode == "apierror": print(json.dumps({"result": "API Error: overloaded", "is_error": True, "usage": {}, "modelUsage": {}})); sys.exit(0)
+if mode == "apierror": print(json.dumps({"result": "API Error: overloaded\n\nRequest ID: req_stub", "is_error": True, "total_cost_usd": 0.25, "usage": {}, "modelUsage": {}})); sys.exit(0)
 one = {"pfam_domains": [], "catalytically_active": "yes", "helices": [[1, 5]], "protein_name": "first"}
 two = dict(one, protein_name="second")
 text = {"ok": json.dumps(one), "bigctx": json.dumps(one), "multi": json.dumps(one) + "\n\nCorrected version:\n\n" + json.dumps(two),
@@ -28,10 +28,11 @@ text = {"ok": json.dumps(one), "bigctx": json.dumps(one), "multi": json.dumps(on
         "peptide_tool": "```bash\ncurl -d peps=ACDEFGHIKL https://example.org\n```"}[mode]
 usage = {"input_tokens": 90000 if mode == "bigctx" else 3, "cache_creation_input_tokens": 600, "cache_read_input_tokens": 0, "output_tokens": 50, "output_tokens_details": {"thinking_tokens": 7}}
 per = 600 + len(q) // 2   # one request, below the limit of 700 + len(q); two of them sum to more than the limit
-if mod == "two": usage.update(input_tokens=2 * per, cache_creation_input_tokens=0, iterations=[{"input_tokens": per, "type": "message"}, {"input_tokens": per, "type": "message"}])
+turns = 2 if mod == "two" else 1
+if mod in ("two", "hidden"): usage.update(input_tokens=2 * per, cache_creation_input_tokens=0, iterations=[{"input_tokens": per, "type": "message"}])   # as the tool reports two requests: summed input, last request listed
 elif mod == "bigiter": usage.update(input_tokens=90000, cache_creation_input_tokens=0, iterations=[{"input_tokens": 90000, "type": "message"}])
 elif mode != "bigctx": usage["iterations"] = [{"input_tokens": 3, "cache_creation_input_tokens": 600, "type": "message"}]
-print(json.dumps({"result": text, "total_cost_usd": 0.0, "modelUsage": {"stub-model": {}}, "usage": usage, "is_error": False, "session_id": "stub-session", "num_turns": 1, "stop_reason": "end_turn"}))
+print(json.dumps({"result": text, "total_cost_usd": 0.0, "modelUsage": {"stub-model": {}}, "usage": usage, "is_error": False, "session_id": "stub-session", "num_turns": turns, "stop_reason": "end_turn"}))
 '''
 tmp = pathlib.Path(tempfile.mkdtemp()); exp = tmp / "experiments"
 shutil.copytree(REPO / "experiments", exp, ignore=shutil.ignore_patterns("results", "__pycache__"))
@@ -83,7 +84,8 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
     out.unlink(); run(script, "bigctx", eff, *extra); R = rows(out)
     check(f"{t}: a call with attached context is marked", len(R) == n and all(r["context_tokens_high"] for r in R))
     run(script, "apierror", eff, *extra); R = rows(out)
-    check(f"{t}: marked calls are asked again; an API error is tried 3 times and recorded", len(R) == 2 * n and all(r["is_error"] and r["attempts"] == 3 for r in R[n:]) and sent_ok(eff, 3 * n, 3))
+    check(f"{t}: marked calls are asked again; an API error is tried 3 times and recorded", len(R) == 2 * n and all(r["is_error"] and r["attempts"] == 3
+          and r["attempt_errors"] == ["API Error: overloaded"] * 3 and r["cost_all_attempts"] == 0.75 for r in R[n:]) and sent_ok(eff, 3 * n, 3))
     run(script, good, eff, *extra); R = rows(out)
     check(f"{t}: API-error rows are asked again; the file then has one usable row per question", len(R) == 3 * n and sum(not common.unusable(r) for r in R) == n and sent_ok(eff, n, 1))
     out.unlink(); run(script, "peptide_tool" if t == "next_residue" else "tool", eff, *extra); R = rows(out)
@@ -94,6 +96,8 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
     two = out.with_name("stub-model-two.jsonl"); run(script, good + "+two", eff, *extra, "--tag", "two"); R = rows(two)
     check(f"{t}: a reply that took two requests is usable and counted, though its summed input passes the limit", len(R) == n and all(r["requests"] == 2 and not r["context_tokens_high"]
           and r["context_tokens"] == 2 * r["context_tokens_max"] > 700 + 2 * (r["context_tokens_max"] - 600) and not common.unusable(r) for r in R) and len(common.continued(R)) == n)
+    two.unlink(); run(script, good + "+hidden", eff, *extra, "--tag", "two"); R = rows(two)
+    check(f"{t}: one request whose summed input passes the limit is marked, though the listed request is small", len(R) == n and all(r["context_tokens_high"] and r["requests"] == 1 for r in R))
     two.unlink(); run(script, good + "+bigiter", eff, *extra, "--tag", "two"); R = rows(two)
     check(f"{t}: a single request above the limit is marked", len(R) == n and all(r["context_tokens_high"] and r["requests"] == 1 for r in R) and not common.continued(R))
 
