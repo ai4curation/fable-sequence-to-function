@@ -11,7 +11,7 @@
 
 \title{Two recent Claude models read catalytic residues, domains and secondary structure from protein sequence alone}
 % TODO: confirm the author list, affiliations and corresponding author before posting.
-\author{Christopher J. Mungall \todo{confirm authors and affiliations}}
+\author{Marcin P. Joachimiak \and Christopher J. Mungall \todo{confirm affiliations}}
 \date{Draft of 19 November 2026}
 
 \begin{document}
@@ -23,9 +23,12 @@ predict the next residue of obscure proteins far better than chance. We ask whet
 for annotation. Given only an amino-acid sequence and no tools, both models named the correct Pfam family
 for 35 to 39 of 45 sampled bacterial and archaeal proteins, with domain boundaries overlapping the
 reference by 0.85, and almost never assigned a domain to a shuffled sequence. They detected a single
-catalytic-residue substitution introduced into an active kinase: a catalytic aspartate-to-asparagine mutant
-was called active in 0 of 20 cases by either model, against 18 of 20 for the older Claude Opus~4.6, which
-was run at a lower effort setting. For recently released protein structures with no earlier PDB entry at
+catalytic-residue substitution introduced into an active enzyme and named the changed position: a kinase
+with its catalytic aspartate changed to asparagine was called active in 0 of 20 cases by either model, and
+a matched substitution at an unannotated position left the protein called active in 58 of 58 cases. The
+older Claude Opus~4.6, at the same effort setting, also rejected the aspartate mutants (2 of 20 called
+active) but accepted 17 of 20 lysine mutants and 14 of 20 mutants of other enzymes, and assigned a Pfam
+domain to 28 of 60 shuffled sequences. For recently released protein structures with no earlier PDB entry at
 30\% sequence identity or more, three-state secondary structure accuracy was 73 to 76\%, against 57\% for
 the best single-state guess, and long-range contact precision was 19 to 37\%, against 2\% by chance. The models also fail in specific ways: they shift a catalytic role to a neighbouring identical
 residue, and they argue around a substitution they have just reported. The tests are small, each
@@ -66,16 +69,20 @@ no web search or fetch. This route does not expose temperature, so answers were 
 1,400 tokens of its own context. Eight Opus~5.5 next-residue questions at high effort, left unasked when
 that run was interrupted, were asked on 19 November (UTC) with Claude Code 2.1.328 and flags that keep user
 settings and connector tools out of the call; that route adds about 600 tokens. Fable~5.2 and Opus~5.5 ran
-at high effort in tests 2 to 4. Opus~4.6 ran at low effort because it did not finish at high effort in
-these runs, so comparisons with it are confounded by effort.
-Each question was asked once. For 6 of the 2,578 calls, the tool's usage record lists a second model
+at high effort in tests 2 to 4. Opus~4.6 was asked tests 2 to 4 twice: at low effort on 18 November by the
+original route, and at high effort on 19 November by the revised route. Unless stated, we report the
+high-effort run, which matches the effort of the other two models but not their route. Its answers were
+long: 7 of 120 replies in test 3 and 9 of 30 in test 4 took more than one request, because the tool asks again by
+itself after an output limit or a stopped reply, and in test 2 six such replies were asked again. In test 1 Opus~4.6 was run at
+low effort only.
+Each question was asked once per run. For 6 of the 2,854 calls in the four tests, the tool's usage record lists a second model
 besides the one requested: three Opus~5.5 next-residue calls at high effort, all on shuffled sequences, and
 in test 4 one Fable~5.2 and two Opus~5.5 calls, all on known-stratum entries. One of the Opus~5.5 test-4
 calls (PDB 7IMP) returned an API error instead of an answer and is excluded from the scores; for the other
 five, the record does not show which model wrote the answer, and they are kept in the reported numbers;
 the repository gives tests 1 and 4 with them excluded, and no conclusion changes.
 Where a reply held more than one JSON object, we scored the last one; this applies to three Opus~4.6
-replies in test 2, in which the second object corrects the first. One Opus~5.5 next-residue reply was a
+low-effort replies in test 2, in which the second object corrects the first. One Opus~5.5 next-residue reply was a
 written-out web request instead of a prediction; it is counted as invalid and as a wrong answer.
 
 \paragraph{Test 1, next residue.} We drew 68 of the 167 families in the public test set
@@ -98,6 +105,18 @@ also presented with the aspartate changed to asparagine and, separately, the lys
 methionine; each other enzyme with its first active-site residue changed to alanine. One prompt, used for
 every sequence, asked for the catalytic residues present, any that were substituted or missing, and
 whether the protein is catalytically active.
+
+\paragraph{Decoy control for test 3.} A model that calls any altered sequence inactive would pass test 3
+without reading the catalytic residues. For each catalytic-site mutant we therefore made a decoy: the same
+substitution type in the same protein at a position with no functional annotation. Kinase decoys lie
+inside the kinase domain; positions within three residues of any annotated site and, in kinases, the
+catalytic loop, the DFG motif and the subdomain~IX aspartate were excluded, and the position was then
+drawn with a fixed seed. Two enzymes had no eligible residue, giving 58 decoys in 38 proteins, a median of
+46 residues from the nearest curated catalytic position. Decoys were asked with the test-3 prompt by the
+revised route, and the wild types and catalytic-site mutants of the same proteins were asked again by
+that route so that all three are compared within one route. Fable~5.2 and Opus~5.5 ran at high effort and
+Opus~4.6 at low effort. The control added 174 decoy calls and 300 repeat calls. A substitution at another
+conserved position is not tested by this design.
 
 \paragraph{Test 4, structure and function.} From the PDB \citep{rcsb} we took X-ray entries released on
 or after 1 August 2026 with one protein entity of 100 to 350 residues and resolution of 2.5~\AA{} or
@@ -166,7 +185,9 @@ Fable~5.2 and Opus~5.5 named at least one correct Pfam family for 39 and 35 of t
 with boundaries close to the reference (mean overlap 0.85 for both, over the correctly named domains in these proteins;
 Table~\ref{tab:feat} pools all 60). Fable~5.2 also named the exact family for 8
 of 15 proteins from obscure domain-of-unknown-function families. Both models declined to annotate
-shuffled sequences. Errors were not marked as such: Fable~5.2 assigned one DUF968 protein to a different
+shuffled sequences. Opus~4.6 at high effort named a correct family for 7 of the 45 sampled proteins and
+assigned a domain to 28 of 60 shuffled sequences; at low effort the counts were 5 of 45 and 5 of 60, so
+more effort produced more invented domains and little more recall. Errors were not marked as such: Fable~5.2 assigned one DUF968 protein to a different
 family, and both models split helices in multi-pass transporters (85 and 87 predicted against 74
 annotated). Two test proteins carry implausible submitter names in UniProt, ``Glycerol dehydrogenase'' on
 a 128-residue DUF3119 membrane protein and ``Methylthioribose kinase'' on a DUF7147 protein; neither model
@@ -176,33 +197,65 @@ repeated them.
 \centering\small
 \caption{Annotation from sequence alone. IoU is the overlap of predicted and reference domain boundaries
 when the family is correct. The first two rows count proteins in each set; the other rows pool both sets,
-60 proteins. Three Opus~4.6 replies held two answers and are scored on the second.}
+60 proteins. All three models at high effort.}
 \label{tab:feat}
 \begin{tabular}{lrrr}
 \toprule
  & Fable 5.2 & Opus 5.5 & Opus 4.6 \\
 \midrule
-Sampled proteins with a correct Pfam family & 39/45 & 35/45 & 5/45 \\
+Sampled proteins with a correct Pfam family & 39/45 & 35/45 & 7/45 \\
 Obscure DUF proteins with a correct Pfam family & 8/15 & 3/15 & 0/15 \\
-Predicted domains with the right accession & 62/70 & 45/51 & 5/23 \\
-Boundary overlap (IoU) & 0.86 & 0.86 & 0.61 \\
-Transmembrane helices recovered & 74/74 & 74/74 & 51/74 \\
-Signal peptide, true / false positives & 9 / 0 & 9 / 0 & 9 / 7 \\
-Shuffled sequences given any domain & 1/60 & 0/60 & 5/60 \\
+Predicted domains with the right accession & 62/70 & 45/51 & 9/40 \\
+Boundary overlap (IoU) & 0.86 & 0.86 & 0.64 \\
+Transmembrane helices recovered & 74/74 & 74/74 & 67/74 \\
+Signal peptide, true / false positives & 9 / 0 & 9 / 0 & 9 / 4 \\
+Shuffled sequences given any domain & 1/60 & 0/60 & 28/60 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{A single catalytic substitution is detected}
+\subsection{A single catalytic substitution is detected, and a matched decoy is ignored}
 
 Both newer models called all 20 wild-type kinases active and none of the 20 aspartate-to-asparagine
 mutants (Figure~\ref{fig:pseudo}). Across the 60 mutant sequences they reported the mutated position as
-substituted in 57 (Fable~5.2) and 47 (Opus~5.5); Opus~4.6 reported none and called 18 of 20 mutants
-active. Opus~5.5 was weaker on the lysine, calling 7 of 20 lysine-to-methionine mutants active.
+substituted in 57 (Fable~5.2) and 47 (Opus~5.5). Opus~5.5 was weaker on the lysine, calling 7 of 20
+lysine-to-methionine mutants active.
+
+The older model detected only the most stereotyped case. At high effort Opus~4.6 called 2 of 20
+aspartate-to-asparagine mutants active and named the substituted position in 18, but it called 17 of 20
+lysine-to-methionine mutants and 14 of 20 mutants of other enzymes active, naming the position in 1 and 2.
+At low effort it called 18, 18 and 16 of 20 active and named no position, so its result on the aspartate
+depends on effort.
+
+The decoy control shows that the newer models respond to the catalytic position and not to any change
+(Table~\ref{tab:decoy}). Asked by one route, Fable~5.2 and Opus~5.5 called all 58 decoys active, and
+called 3 and 8 of the 58 catalytic-site mutants of the same proteins active. Neither named a decoy
+position as a lost residue. There was one exception in the other direction: Opus~5.5 did not call the
+wild type of a mannosyltransferase (P26725) active but called its decoy active. Opus~4.6, asked the decoys
+at low effort only, called decoys, mutants and wild types active at similar rates. The repeat of the
+mutants and wild types by the second route also serves as a replicate of test 3: the active-or-not call
+matched the first run for 99 of 100 questions for Fable~5.2 and 96 of 100 for Opus~5.5.
+
+\begin{table}[ht]
+\centering\small
+\caption{Decoy control, all columns asked by one route: 38 proteins, 58 catalytic-site mutants and 58
+decoys carrying the same substitution type at an unannotated position. Counts are sequences called
+catalytically active.}
+\label{tab:decoy}
+\begin{tabular}{lrrr}
+\toprule
+Model (effort) & Wild type & Catalytic-site mutant & Decoy \\
+\midrule
+Fable 5.2 (high) & 38/38 & 3/58 & 58/58 \\
+Opus 5.5 (high) & 37/38 & 8/58 & 58/58 \\
+Opus 4.6 (low) & 34/38 & 45/58 & 50/58 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 Natural pseudokinases were called inactive in 18 of 20 cases by both newer models, but in 17 of those 18
 answers, for each model, the model's own protein name already said ``inactive'' or ``pseudokinase'', so this set
-mostly measures recall of the entry. The exception is informative: both models called \textit{C.~elegans}
+mostly measures recall of the entry. Opus~4.6 at high effort called 12 of 20 inactive. The exception is informative: both models called \textit{C.~elegans}
 kin-32 (Q95YD4), named an inactive tyrosine kinase in Swiss-Prot, active, citing an intact glycine loop,
 VAVK lysine, HRD and DFG motifs, all of which are present in the sequence. We did not examine the basis of
 the Swiss-Prot name.
@@ -220,7 +273,7 @@ these data whether the models or the reference positions are right.
 \centering
 \includegraphics[width=\linewidth]{figures/fig1_pseudoenzyme.pdf}
 \caption{Share of sequences called catalytically active, 20 sequences per bar. Mutants carry one
-substitution introduced for this study. Opus~4.6 ran at low effort.}
+substitution introduced for this study. All three models at high effort.}
 \label{fig:pseudo}
 \end{figure}
 
@@ -230,9 +283,9 @@ For the 12 novel proteins, Fable~5.2 and Opus~5.5 reached 76\% and 73\% three-st
 57\% for the best single-state guess, and 37\% and 19\% long-range contact precision, against 2\% by
 chance (Figure~\ref{fig:struct}). Scores for the known stratum were a few points higher. Fable~5.2 said
 it recognised 2 of the 12 novel proteins (ASPRV1 and MrtR) and 14 of the 15 known entries; Opus~5.5 said
-it recognised none of the novel proteins. Opus~4.6, at low effort, scored below the single-state guess on
-secondary structure and near chance on contacts, which suggests that its low-effort answers say little
-about what it can do. These values are far short of dedicated
+it recognised none of the novel proteins. Opus~4.6 at high effort reached 54\% on secondary structure, below the single-state guess, and 8\%
+contact precision, above chance but far below the newer models; at low effort the values were 48\% and
+4\%. These values are far short of dedicated
 structure predictors \citep{jumper2021alphafold}; the point is that they are well above chance for a
 model given no alignment and no tools.
 
@@ -259,7 +312,7 @@ catalytic aspartate was replaced and that the construct was probably inactive.
 \includegraphics[width=\linewidth]{figures/fig2_structure.pdf}
 \caption{Structure prediction from sequence for PDB entries released from August 2026, with ASPRV1
 counted once. Novel: no PDB entity at 30\% identity or more released before June 2026. Known: at least 20
-such entities. (12 novel, 15 known; for Opus~5.5, the call for one known entry returned an API error instead of an answer). Dashed lines show the best single-state
+such entities. (12 novel, 15 known; for Opus~5.5, the call for one known entry returned an API error instead of an answer). All three models at high effort. Dashed lines show the best single-state
 guess (left) and the chance rate for a long-range pair (right).}
 \label{fig:struct}
 \end{figure}
@@ -269,9 +322,13 @@ guess (left) and the chance rate for a long-range pair (right).}
 Fable~5.2 and Opus~5.5 do more than recognise a family. They change their answer when one catalytic
 residue changes and name that residue, and they predict secondary structure and contacts above chance
 for proteins with no earlier PDB entry at 30\% identity. How far this extends is not established here. We
-tested two models from one vendor. The comparison with Opus~4.6 is not like for like, because it ran at a
-lower effort setting, and it is not a blank: at that setting it still found all 9 signal peptides, with 7
-false positives, and 51 of 74 transmembrane helices. The report that prompted this work found a graded
+tested two models from one vendor. The comparison with Opus~4.6 is matched for effort but not for call route. On that comparison the older
+model is not a blank: it found all 9 signal peptides, 67 of 74 transmembrane helices, and the kinase
+aspartate substitution. What separates the newer models is breadth and restraint. They also caught the
+lysine substitution and the active-site changes in other enzyme families, and they left shuffled
+sequences unannotated, where Opus~4.6 invented a domain for nearly half. The decoy control indicates
+that their calls track the catalytic position, within the limits of a control that avoided other conserved
+positions. The report that prompted this work found a graded
 next-residue signal across Claude models released between Opus~4.6 and Fable~5.2, and little or none in
 other vendors' models \citep{tu2026claude}; we tested none of those, so we cannot say whether reading
 catalytic residues tracks that signal.
@@ -284,7 +341,10 @@ sequence and a curated feature before it is used.
 
 \paragraph{Limitations.} Cells contain 12 to 68 items, and each question was asked once. Answers were
 sampled through a command-line tool that adds its own context, which probably lowers accuracy relative to
-direct greedy calls. Opus~4.6 ran at a lower effort setting. Swiss-Prot proteins are well known, so
+direct greedy calls. The Opus~4.6 high-effort runs used a revised call route and a later tool version than
+the runs of the other two models, and its decoys were asked at low effort only. The decoy positions were
+chosen by a rule written with the help of two of the tested models, and avoid conserved positions.
+Swiss-Prot proteins are well known, so
 wild-type results in test 3 may reflect recall; the mutants do not. Transmembrane and signal-peptide truth
 in test 2 is predicted. Function in test 4 was graded once, unblinded, by the agent that ran the tests. We did not test eukaryotic
 multi-domain proteins in test 2, membrane proteins in test 4, variant effects, or whether reasoning
@@ -301,13 +361,13 @@ Scripts, prompts, test sets and all raw model outputs are at
 scoring script from the committed model outputs, and \texttt{just check} verifies the data checksums and
 that the numbers reproduce. Test sets were drawn from live UniProt, InterPro and RCSB services on 18
 November 2026 and are committed as drawn, because re-querying those services returns different entries.
-Model calls used Claude Code 2.1.327, except the eight above, which used 2.1.328; repeating them will not
-return identical answers.
+Model calls used Claude Code 2.1.327, except the eight above, the Opus~4.6 high-effort runs and the decoy
+control, which used 2.1.328; repeating them will not return identical answers.
 
 \section*{Acknowledgements}
 
 The tests, analysis and first draft were produced by an AI coding agent (Claude Code) under the direction
-of the author; the agent is itself built on a Claude model. \todo{funding and other
+of the authors; the agent is itself built on a Claude model. \todo{funding and other
 acknowledgements}
 
 \bibliographystyle{unsrtnat}
