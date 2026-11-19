@@ -14,6 +14,17 @@ with a draft preprint describing the results.
 
 The manuscript is `manuscript.tex`, with a built copy in `manuscript.pdf`.
 
+## Where this came from
+
+This repository was split from the `projects/LLM_SEQUENCE_PROBE/manuscript`
+folder of [`ai4curation/ai-gene-review`](https://github.com/ai4curation/ai-gene-review)
+at commit `119ac18676`; the commit history of that folder is preserved here.
+The tests were first run in `projects/LLM_SEQUENCE_PROBE/` there, described on its
+[project page](https://github.com/ai4curation/ai-gene-review/blob/119ac1867699227b129baf1f400c10f271193475/projects/LLM_SEQUENCE_PROBE.md).
+The scripts, test sets and raw model outputs have since been copied into
+`experiments/` here, which is now the reproducible version. Test sets and model
+outputs are byte-identical to that commit; the scoring scripts were extended.
+
 ## Reproducing the reported numbers
 
 Needs [uv](https://docs.astral.sh/uv/) and [just](https://just.systems/). No
@@ -38,6 +49,10 @@ just pdf
 ```
 
 `just pdf` needs `pdflatex` and `bibtex`.
+
+The figure script also accepts another data folder, such as a checkout of the
+original project folder: `uv run python figures/make_figures.py /path/to/LLM_SEQUENCE_PROBE`.
+The committed figures were made with Matplotlib 3.10.5; `uv.lock` pins that version.
 
 ## What is reproducible, and what is not
 
