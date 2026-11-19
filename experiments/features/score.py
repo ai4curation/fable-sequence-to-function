@@ -1,16 +1,38 @@
 """Score Pfam, transmembrane and signal-peptide calls in results/*.jsonl against truth.json. Usage: score.py
 
 Set B is the 45 sampled UniProt proteins, set A the 15 obscure DUF proteins, "all" both together.
+The answer is read from each reply's text by common.answer: the last JSON object with the requested keys. Where a
+reply holds more than one, the headline counts are also printed for the first object and with those replies left out.
 """
 import json, glob, pathlib, re, collections
+import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from common import KEYS, json_objects, reparse
 HERE = pathlib.Path(__file__).parent
 T = {t["accession"]: t for t in json.load(open(HERE / "truth.json"))}
 norm = lambda s: re.sub(r"[^a-z0-9]", "", (s or "").lower())
 def ov(a, b): return max(0, min(a[1], b[1]) - max(a[0], b[0]) + 1)
+def fam(t, a):
+    """(given any Pfam domain, given at least one correct family) for one answer, by the rule used in the main loop."""
+    pd = [d for d in (a.get("pfam_domains") or []) if isinstance(d, dict)]
+    acc = {p["accession"] for p in t["pfam"]}; nm = {norm(p["short"]) for p in t["pfam"]} | {norm(p["name"]) for p in t["pfam"]}
+    return bool(pd), any(str(d.get("accession") or "").split(".")[0] in acc or norm(d.get("name")) in nm for d in pd)
+def headline(R, pick):
+    """Set all: real proteins with a correct family, and shuffled proteins given any domain, when `pick` chooses each row's answer."""
+    out = []
+    for cond, k in (("real", 1), ("shuffled", 0)):
+        x = [(r, a) for r in R if r["condition"] == cond and (a := pick(r))]
+        out.append(f"{sum(fam(T[r['accession']], a)[k] for r, a in x)}/{len(x)}")
+    return out
 for f in sorted(glob.glob(str(HERE / "results" / "claude-*.jsonl"))):
-    R = [json.loads(l) for l in open(f)]
+    R = [json.loads(l) for l in open(f)]; multi = reparse(R, KEYS["features"])
     ok = [r for r in R if r.get("ans")]
     print(f"\n== {pathlib.Path(f).stem}: {len(R)} calls, {len(R)-len(ok)} unparsed, cost ${sum(r.get('cost') or 0 for r in R):.2f}")
+    if multi:
+        ids = {id(r) for r in multi}; last = headline(R, lambda r: r["ans"])
+        first = headline(R, lambda r: (json_objects(r.get("text"), KEYS["features"]) or [None])[0]); out = headline(R, lambda r: None if id(r) in ids else r["ans"])
+        print(f"  replies with more than one JSON object, scored on the last: {len(multi)} ({', '.join(r['accession'] + ' ' + r['condition'] for r in multi)})")
+        print(f"    set all, real proteins with >=1 correct family and shuffled proteins given any Pfam domain: last object {last[0]} and {last[1]}; "
+              f"first object {first[0]} and {first[1]}; those replies left out {out[0]} and {out[1]}")
     for cond in ("real", "shuffled"):
         for st in ("B", "A", "all"):
             x = [r for r in ok if r["condition"] == cond and st in (T[r["accession"]]["set"], "all")]

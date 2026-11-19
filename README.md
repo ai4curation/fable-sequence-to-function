@@ -38,7 +38,8 @@ This verifies the checksums of every test set and raw model output
 (`SHA256SUMS`), re-runs the scoring scripts, and compares their output with the
 committed files in `expected/`. It prints "All reported numbers reproduce." when
 they match. Every number in the manuscript and both figures come from these
-scripts; none is typed in by hand.
+scripts; none is typed in by hand. The figure script takes its values from the
+same scoring code, and `expected/figures.txt` lists the plotted values.
 
 ```bash
 just figures
@@ -53,6 +54,8 @@ just pdf
 The figure script also accepts another data folder, such as a checkout of the
 original project folder: `uv run python figures/make_figures.py /path/to/LLM_SEQUENCE_PROBE`.
 The committed figures were made with Matplotlib 3.10.5; `uv.lock` pins that version.
+A rebuild gives the same bars and values, but the PNG files can differ by about a
+pixel, so they are not byte-for-byte reproducible.
 
 ## What is reproducible, and what is not
 
@@ -73,6 +76,7 @@ The committed figures were made with Matplotlib 3.10.5; `uv.lock` pins that vers
 | Figure 1, mutant positions flagged, recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
 | Figure 2, structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
 | Call totals in Methods (2,570 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
+| Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
 
 ## How the model answers were collected
 
@@ -84,9 +88,21 @@ The committed figures were made with Matplotlib 3.10.5; `uv.lock` pins that vers
   the `prompt` function) in each test's `ask.py` or `run.py`.
 - **Limits of that route:** temperature cannot be set, and the tool adds about
   1,400 tokens of its own context to each call.
-- **Effort:** recorded per answer. Fable 5.2 and Opus 5.5 ran at high effort in
-  tests 2 to 4; Opus 4.6 ran at low effort because it did not finish at high
-  effort. Test 1 has low and high runs.
+- **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; Opus
+  4.6 ran at low effort because it did not finish at high effort. Test 1 has
+  low and high runs. The committed rows record the effort in tests 3 and 4. In
+  test 1 it is the results folder (`results/low`, `results/high`). The test 2
+  rows do not record it. The scripts now write `effort`, the number of
+  attempts and a hash of the prompt into every new row.
+- **How a reply is read** (`experiments/common.py`, used by every scorer): the
+  answer is the last complete JSON object in the reply that has the requested
+  keys. Three Opus 4.6 replies in test 2 hold two objects, the second a
+  correction; `expected/features.txt` also gives the headline counts with the
+  first object and with those replies left out. A reply that contains a
+  written-out tool call instead of an answer is invalid and counts as wrong.
+  There is one: the Opus 5.5 high-effort test 1 reply for A0A518ICW8
+  (shuffled, cut 301) is a `curl` command with an HTTP response, not a
+  prediction. The stored record cannot show whether anything was run.
 - **One answer per question.** There are no repeat runs.
 - **Calls listing a second model:** for 6 of the 2,570 calls, the tool's usage
   record (the `served` field, from `modelUsage`) lists a second model besides
@@ -111,6 +127,12 @@ the checksums and expected outputs will no longer match until you run
 ```bash
 just ask pseudo claude-opus-5-5 high
 ```
+
+A run resumes where it stopped. A question whose earlier row is an error (no
+parseable output after three tries) is asked again, and the error row is moved
+to `retried_errors/` beside `results/`. `just check-calls` tests this, and the
+reply-reading rules, against a stub in place of the `claude` tool; it calls no
+model.
 
 ## Third-party data
 

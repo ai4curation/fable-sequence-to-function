@@ -13,19 +13,21 @@
   shuffled set all n=60: Pfam proteins with >=1 correct family 0/60; predicted domains 1 (correct by id 0, by id-or-name 0); true families 73; boundary IoU mean nan (n=0)
            (shuffled = hallucination check) proteins given any Pfam domain 1/60
 
-== claude-opus-4-6: 120 calls, 3 unparsed, cost $1.31
-  real     set B n=43: Pfam proteins with >=1 correct family 5/43; predicted domains 18 (correct by id 5, by id-or-name 5); true families 53; boundary IoU mean 0.613 (n=5)
-           TM: membrane yes/no agrees 38/43, helix count exact 33/43, helices recovered 38/58, predicted 55; signal peptide TP 8 FN 0 FP 6 TN 29
+== claude-opus-4-6: 120 calls, 0 unparsed, cost $1.31
+  replies with more than one JSON object, scored on the last: 3 (A0A1I4SBM8 real, A0ABU4WIK0 real, A0ABU4WRC2 shuffled)
+    set all, real proteins with >=1 correct family and shuffled proteins given any Pfam domain: last object 5/60 and 5/60; first object 5/60 and 4/60; those replies left out 5/58 and 4/59
+  real     set B n=45: Pfam proteins with >=1 correct family 5/45; predicted domains 19 (correct by id 5, by id-or-name 5); true families 56; boundary IoU mean 0.613 (n=5)
+           TM: membrane yes/no agrees 39/45, helix count exact 34/45, helices recovered 38/59, predicted 55; signal peptide TP 8 FN 0 FP 7 TN 30
   real     set A n=15: Pfam proteins with >=1 correct family 0/15; predicted domains 4 (correct by id 0, by id-or-name 0); true families 17; boundary IoU mean nan (n=0)
            TM: membrane yes/no agrees 15/15, helix count exact 12/15, helices recovered 13/15, predicted 19; signal peptide TP 1 FN 0 FP 0 TN 14
-  real     set all n=58: Pfam proteins with >=1 correct family 5/58; predicted domains 22 (correct by id 5, by id-or-name 5); true families 70; boundary IoU mean 0.613 (n=5)
-           TM: membrane yes/no agrees 53/58, helix count exact 45/58, helices recovered 51/73, predicted 74; signal peptide TP 9 FN 0 FP 6 TN 43
-  shuffled set B n=44: Pfam proteins with >=1 correct family 0/44; predicted domains 4 (correct by id 0, by id-or-name 0); true families 54; boundary IoU mean nan (n=0)
-           (shuffled = hallucination check) proteins given any Pfam domain 4/44
+  real     set all n=60: Pfam proteins with >=1 correct family 5/60; predicted domains 23 (correct by id 5, by id-or-name 5); true families 73; boundary IoU mean 0.613 (n=5)
+           TM: membrane yes/no agrees 54/60, helix count exact 46/60, helices recovered 51/74, predicted 74; signal peptide TP 9 FN 0 FP 7 TN 44
+  shuffled set B n=45: Pfam proteins with >=1 correct family 0/45; predicted domains 5 (correct by id 0, by id-or-name 0); true families 56; boundary IoU mean nan (n=0)
+           (shuffled = hallucination check) proteins given any Pfam domain 5/45
   shuffled set A n=15: Pfam proteins with >=1 correct family 0/15; predicted domains 0 (correct by id 0, by id-or-name 0); true families 17; boundary IoU mean nan (n=0)
            (shuffled = hallucination check) proteins given any Pfam domain 0/15
-  shuffled set all n=59: Pfam proteins with >=1 correct family 0/59; predicted domains 4 (correct by id 0, by id-or-name 0); true families 71; boundary IoU mean nan (n=0)
-           (shuffled = hallucination check) proteins given any Pfam domain 4/59
+  shuffled set all n=60: Pfam proteins with >=1 correct family 0/60; predicted domains 5 (correct by id 0, by id-or-name 0); true families 73; boundary IoU mean nan (n=0)
+           (shuffled = hallucination check) proteins given any Pfam domain 5/60
 
 == claude-opus-5-5: 120 calls, 0 unparsed, cost $3.44
   real     set B n=45: Pfam proteins with >=1 correct family 35/45; predicted domains 48 (correct by id 42, by id-or-name 42); true families 56; boundary IoU mean 0.851 (n=42)
