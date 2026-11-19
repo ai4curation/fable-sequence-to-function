@@ -179,7 +179,7 @@ for p in sorted((HERE / "results").glob("*.jsonl")):
     nohash = [f"{r.get('accession')} {r.get('variant')} at {str(r.get('asked_at'))[11:16]}" for r in R if not r.get("prompt_sha256")]
     cost = sum(r.get("cost") or 0 for r in R); tot += cost if p.name.startswith("bridge-") else 0
     print(f"  {p.name}: {len(R)} rows, returned {window(R)}, cost ${cost:.4f}; input tokens " + ", ".join(f"{g} {a:,} to {b:,}" for g, (a, b) in rng.items())
-          + (f"; total input per row {', '.join(f'{ctx(r):,}' for r in R)}" if len(R) <= 3 else "")
+          + (f"; total input per row {', '.join(f'{ctx(r):,}' for r in R)}, cost per row {', '.join(f'${r.get("cost") or 0:.4f}' for r in R)}" if len(R) <= 3 else "")
           + f"; rows with a prompt hash {len(R) - len(nohash)}" + (f" (without: {'; '.join(nohash)}; those with one returned {window([r for r in R if r.get('prompt_sha256')])})" if 0 < len(nohash) <= 3 and len(nohash) < len(R) else
                                                                     f" (without: {'; '.join(nohash)})" if 0 < len(nohash) <= 3 else "")
           + (f"; rows with a usage record {len(us)}, of them one request and no web search or fetch {one}" if us else ""))
