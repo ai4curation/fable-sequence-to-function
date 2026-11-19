@@ -39,6 +39,7 @@ elif mod == "bigiter": usage["iterations"] = [{"input_tokens": 3}, "noise", {"ca
 elif mod == "stritercount": usage["iterations"] = [{"input_tokens": "3", "cache_creation_input_tokens": 600, "type": "message"}]   # only the listed count is unreadable
 elif mod == "negcount": usage.update(input_tokens=-500, iterations=[{"input_tokens": 3, "cache_creation_input_tokens": 600, "type": "message"}])
 elif mod == "retried": usage.update(input_tokens=2 * per, cache_creation_input_tokens=0, iterations=[{"input_tokens": per, "type": "message"}])   # a retry inside the tool: summed, not a turn (#105)
+elif mod == "oddsum": lim = 700 + len(q); usage.update(input_tokens=int(2.4 * (lim - 1)), cache_creation_input_tokens=0, iterations=[{"input_tokens": lim - 1, "type": "message"}])   # 2.4 requests' worth: not a whole number
 elif mod == "noiter": usage.update(input_tokens=2 * per, cache_creation_input_tokens=0)   # two requests, no iterations listed
 elif mod == "strcounts": usage.update(input_tokens="90000", cache_creation_input_tokens=0, iterations=[{"input_tokens": "90000", "type": "message"}])
 elif mod == "nested": usage.update(server_tool_use={"web_search_requests": 0, "web_fetch_requests": 0, "new_tool": 1}, fallback_credit=None, cache_creation={"ephemeral_5m_input_tokens": 0, "new_cache": 1},
@@ -135,6 +136,8 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
     two.unlink(); run(script, good + "+retried", eff, *extra, "--tag", "two"); R = rows(two)
     check(f"{t}: a sum of twice the listed response with a turn count of 1 counts as two requests and is not marked (a retry inside the tool, #105)",
           len(R) == n and all(r["requests"] == 2 and r["requests_by_tokens"] == 2 and r["num_turns"] == 1 and not common.unusable(r) and r["context_tokens"] > limit(r) for r in R))
+    two.unlink(); run(script, good + "+oddsum", eff, *extra, "--tag", "two"); R = rows(two)
+    check(f"{t}: a summed input of 2.4 requests' worth, each request just under the limit, is marked", len(R) == n and all(r["requests"] == 2 and r["context_tokens_high"] and r["context_tokens_max"] < limit(r) for r in R))
     for m_, what in (("stritercount", "an unreadable count in the listed response"), ("negcount", "a negative count"), ("nousage", "no usage record")):
         two.unlink(); run(script, good + "+" + m_, eff, *extra, "--tag", "two"); R = rows(two)
         check(f"{t}: {what} makes the row unusable", len(R) == n and all(r.get("usage_unreadable") and common.unusable(r) for r in R))
