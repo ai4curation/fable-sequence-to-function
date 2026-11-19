@@ -20,11 +20,12 @@ the tool itself added (isMeta user messages) and of API-error messages, and noth
 into an issue without reading it.
 """
 import hashlib, json, pathlib, sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "experiments")); from common import requests_made   # tolerates odd turn counts (#108)
 args = [a for a in sys.argv[1:] if a != "--show-text"]; SHOW = "--show-text" in sys.argv
 if len(args) != 2: sys.exit(__doc__)
 res, sessions = map(pathlib.Path, args)
 R = [json.loads(l) for l in res.open() if l.strip()]
-rows = [r for r in R if r.get("context_tokens_high") or max(r.get("requests") or 1, r.get("num_turns") or 1) > 1]
+rows = [r for r in R if r.get("context_tokens_high") or requests_made(r) > 1]
 def label(r): return " ".join(str(r[k]) for k in ("accession", "pdb", "condition", "variant", "cut") if k in r)
 def records(f):
     for line in f.open():

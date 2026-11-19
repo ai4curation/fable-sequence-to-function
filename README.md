@@ -100,9 +100,10 @@ pixel, so they are not byte-for-byte reproducible.
   settings and account connectors the original flags let instructions, skill
   listings or connector tools into the call. Each of these rows records the
   effort, the number of attempts, a hash of the question, the flags, the tool
-  version, the time the call returned (UTC), the token counts and whether it
-  was marked. Fields were added as the code changed, so rows written earlier
-  lack the later ones:
+  version and the time the call returned (UTC); a row with an answer also
+  records the token counts and whether it was marked, and a failed call
+  records the error instead. Fields were added as the code changed, so rows
+  written earlier lack the later ones:
   - from commit `1ad08a5`: the tool's turn count (`num_turns`), stop reason,
     duration, and its usage records (`usage`, `model_usage`, which include
     its count of web search and fetch requests);
@@ -111,28 +112,32 @@ pixel, so they are not byte-for-byte reproducible.
     2 or 3); the scorers read the turn count as well;
   - from `dbd62ed`: `attempt_errors` and `cost_all_attempts` on rows that
     took more than one attempt;
-  - from the fix for #84: `usage_unreadable` and
-    `usage_keys_dropped` when they apply, and only known keys of the usage
-    records.
+  - from `bf728f4`: only known top-level keys of the usage records;
+  - from `c7221b5`: known keys at every level, `usage_keys_dropped` and
+    `usage_unreadable` when they apply;
+  - from the fix for #105: `requests_by_tokens`, and `cost_reported` when
+    the tool reports a cost that is not a number (`cost` is then empty).
 
   A call whose input is larger than the question allows (about 600 tokens of
   the tool's own context plus the question) is marked `context_tokens_high`
-  and is not scored. The allowance is loose: in one-request rows of the
-  Opus 4.6 high-effort runs the input was 736 to 1,147 tokens below it, so a
-  smaller attachment would not be marked. A row whose usage record gives an
-  input count that is not a number is marked `usage_unreadable` and is not
-  scored either.
+  and is not scored. The allowance is loose: in the rows of the Opus 4.6
+  high-effort runs scored as one request the input was 710 to 1,147 tokens
+  below it, so a smaller attachment would not be marked. A row with no usage
+  record, or one whose input counts are not non-negative numbers, is marked
+  `usage_unreadable` and is not scored either.
 - **More than one request per question.** The tool sometimes makes a second
   request by itself: when a reply reaches the model's output limit, when a
-  safety classifier stops it, or when it has no visible text, the tool adds
-  a short message saying so and asks again. Its token counts are then sums
-  over the requests, and its usage record lists the last response only. So
-  the number of requests is taken from the turn count (`requests`), a row is
-  marked when the listed response is larger than one request may be or the
-  sum is larger than that many requests, and the scorers print how many
-  replies took more than one request. In such a call an attachment present
-  only in an earlier request could pass unmarked up to the number of
-  requests times the allowance, less the clean input.
+  safety classifier stops it, or when it has no visible text, it adds a
+  short message saying so and asks again; and a request that fails inside
+  the tool is retried without counting as a turn (#105). Its token counts
+  are then sums over the requests, and its usage record lists the last
+  response only. So `requests` is the larger of the turn count and the
+  summed input divided by the listed response; a row is marked when the
+  listed response is larger than one request may be or the sum is larger
+  than that many requests; and the scorers print how many replies took more
+  than one request. An attachment resent with every request is marked; one
+  present only in earlier requests would be counted as further requests and
+  not marked.
 - **How a reply is read** (`experiments/common.py`, used by every scorer): the
   answer is the last complete JSON object in the reply that has at least two
   of the requested keys. Three Opus 4.6 replies in test 2 hold two objects,

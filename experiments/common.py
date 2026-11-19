@@ -28,6 +28,7 @@ USAGE_KEYS = INPUT_KEYS + ("output_tokens", "output_tokens_details", "server_too
 ITERATION_KEYS = INPUT_KEYS + ("output_tokens", "cache_creation", "type")
 SERVER_TOOL_KEYS = ("web_search_requests", "web_fetch_requests")
 CACHE_KEYS = ("ephemeral_1h_input_tokens", "ephemeral_5m_input_tokens")
+DETAIL_KEYS = ("thinking_tokens",)
 MODEL_USAGE_KEYS = ("inputTokens", "outputTokens", "cacheReadInputTokens", "cacheCreationInputTokens", "webSearchRequests", "costUSD", "contextWindow", "maxOutputTokens",
                     "thinkingTokens", "cacheCreationEphemeral5mInputTokens", "cacheCreationEphemeral1hInputTokens", "canonicalModel", "provider", "costBasis")
 def _num(x): return x if isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) else 0   # for costs: anything else is 0
@@ -35,13 +36,13 @@ def _count(x):
     """An input-token count: None if it is missing, the number if it is a finite number, and False if it is something else.
     A row with a count that is present but unreadable is marked (`usage_unreadable`), not read as 0 (#84)."""
     if x is None: return None
-    return x if isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) else False
+    return x if isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) and x >= 0 else False   # negative counts are unreadable too
 def _int(x):
     """A turn or request count as an int, or None: accepts an int, an integral float and a string of digits (#84)."""
     if isinstance(x, bool): return None
     if isinstance(x, int): return x
     if isinstance(x, float) and math.isfinite(x) and x == int(x): return int(x)
-    if isinstance(x, str) and x.strip().isdigit(): return int(x.strip())
+    if isinstance(x, str) and x.strip().isascii() and x.strip().isdecimal(): return int(x.strip())   # not "²", which isdigit() accepts
     return None
 def _keep(d, keys, dropped, where):
     """The entries of d whose key is in keys; the names of the others go to `dropped`."""
@@ -50,6 +51,7 @@ def _usage(u, dropped):
     out = _keep(u, USAGE_KEYS, dropped, "")
     if isinstance(out.get("server_tool_use"), dict): out["server_tool_use"] = _keep(out["server_tool_use"], SERVER_TOOL_KEYS, dropped, "server_tool_use.")
     if isinstance(out.get("cache_creation"), dict): out["cache_creation"] = _keep(out["cache_creation"], CACHE_KEYS, dropped, "cache_creation.")
+    if isinstance(out.get("output_tokens_details"), dict): out["output_tokens_details"] = _keep(out["output_tokens_details"], DETAIL_KEYS, dropped, "output_tokens_details.")
     if isinstance(out.get("iterations"), list):
         out["iterations"] = [_keep(i, ITERATION_KEYS, dropped, "iterations.") if isinstance(i, dict) else i for i in out["iterations"]]
         for i in out["iterations"]:
@@ -65,19 +67,22 @@ def call(model, effort, prompt, tries=3, timeout=3600):
     API-error reply is tried again like a failed call; `attempt_errors` keeps the first line of each such reply and
     `cost_all_attempts` the sum of the costs the attempts reported (`cost` is that of the last one only; an attempt
     that timed out or returned no parseable output reports none and adds nothing).
-    The tool can make more than one request for a question (#65). Its session records show three causes, all in
+    The tool can make more than one request for a question (#65). Its session records show four causes, all in
     the Opus 4.6 high-effort runs: the reply reached the output limit (64,000 tokens, all of it thinking), a
-    safety classifier stopped the reply, or the reply had no visible text. Each time the tool added a message
-    saying so and asked again; each later request carried 41 to 99 more input tokens than the one before (99 when
-    the tool also added a note that the date had changed), and nothing about the protein. The reported token
-    counts are then sums over the requests, while `iterations` in the usage record lists the last response only.
-    So `requests` is the tool's turn count, and a row is marked when the listed response (`context_tokens_max`)
-    is larger than one request may be, or the sum is larger than `requests` such requests. With no `iterations`
-    the listed response is taken as the sum divided by `requests`.
+    safety classifier stopped the reply, the reply had no visible text, or a request failed inside the tool and
+    was retried (#105). For the first three the tool added a message saying so and asked again; each later
+    request carried 20 to 99 more input tokens than the one before (99 when the tool also added a note that the
+    date had changed), and nothing about the protein. A request retried after a failure is counted in the token
+    sums but not in the turn count. The reported token counts are sums over the requests, while `iterations` in
+    the usage record lists the last response only. So `requests` is the larger of the turn count and the summed
+    input divided by the listed response, rounded (`requests_by_tokens`); with no `iterations` it is the turn
+    count and the listed size is the sum divided by it. A row is marked when the listed response
+    (`context_tokens_max`) is larger than one request may be, or the sum is larger than `requests` such requests.
     Limits of the mark: the allowance of 700 tokens plus one per character of the question is loose. In the
-    one-request rows of the Opus 4.6 high-effort runs the input was 736 to 1,147 tokens below it, so an attachment
-    of up to about that size goes unmarked in any call; in a call of n requests, one present only in an earlier,
-    unlisted request goes unmarked up to n times the limit less the clean sum. A follow-up request that resent a
+    rows of the Opus 4.6 high-effort runs scored as one request the input was 710 to 1,147 tokens below it, so an
+    attachment of up to about that size goes unmarked in any call. An attachment resent with every request is
+    marked through the listed response; one present only in earlier, unlisted requests is not, because it is
+    counted as further requests. A follow-up request that resent a
     long visible reply would be marked and asked again. `session_id` names the tool's local session record,
     which is not in the repository. Of the tool's usage records only the keys listed above are kept, and the
     names of any others are in `usage_keys_dropped`.
@@ -97,22 +102,27 @@ def call(model, effort, prompt, tries=3, timeout=3600):
     rec.update(attempts=attempt, asked_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))
     if attempt > 1: rec.update(attempt_errors=errs, cost_all_attempts=spent)
     if j is None: return None, dict(rec, error=why or "no parseable output")
-    u = j.get("usage"); u = u if isinstance(u, dict) else {}; mu = j.get("modelUsage"); mu = mu if isinstance(mu, dict) else {}
-    turns = j.get("num_turns"); n = max(_int(turns) or 1, 1)
+    u = j.get("usage"); bad = not isinstance(u, dict); u = u if isinstance(u, dict) else {}; mu = j.get("modelUsage"); mu = mu if isinstance(mu, dict) else {}
+    turns = j.get("num_turns")
     top = [_count(u.get(k)) for k in INPUT_KEYS]; its = u.get("iterations"); its = [i for i in its if isinstance(i, dict)] if isinstance(its, list) else []
-    each = [[_count(i.get(k)) for k in INPUT_KEYS] for i in its]; bad = any(c is False for c in top + sum(each, []))
-    context = sum(c or 0 for c in top)
-    largest = max([sum(c or 0 for c in e) for e in each] or [context / n])   # the listed response; without one, the mean request
+    each = [[_count(i.get(k)) for k in INPUT_KEYS] for i in its]; bad = bad or any(c is False for c in top + sum(each, []))
+    context = sum(c or 0 for c in top); listed = max([sum(c or 0 for c in e) for e in each] or [0])
+    # Requests: the turn count, or more when the summed input holds more requests than that (a request that failed
+    # inside the tool and was retried is summed but not counted as a turn, #105). Rounding the sum by the listed
+    # response is exact for clean requests, which differ by at most about 100 tokens.
+    by_tokens = round(context / listed) if listed else 1; n = max(_int(turns) or 1, by_tokens, 1)
+    largest = listed or context / n   # the listed response; without one, the mean request
     details = u.get("output_tokens_details"); dropped = []
-    rec.update(cost=j.get("total_cost_usd"), served=list(mu), thinking_tokens=details.get("thinking_tokens") if isinstance(details, dict) else None,
+    c = j.get("total_cost_usd"); rec.update(cost=c if _num(c) == c and c is not None else None, served=list(mu), thinking_tokens=details.get("thinking_tokens") if isinstance(details, dict) else None,
                input_tokens=u.get("input_tokens"), cache_creation_input_tokens=u.get("cache_creation_input_tokens"), cache_read_input_tokens=u.get("cache_read_input_tokens"),
-               output_tokens=u.get("output_tokens"), context_tokens=context, context_tokens_max=largest, requests=n,
+               output_tokens=u.get("output_tokens"), context_tokens=context, context_tokens_max=largest, requests=n, requests_by_tokens=by_tokens,
                context_tokens_high=largest > context_limit(prompt) or context > n * context_limit(prompt), is_error=bool(j.get("is_error")),
                num_turns=turns, stop_reason=j.get("stop_reason"), duration_ms=j.get("duration_ms"), session_id=j.get("session_id"),
                usage=_usage(u, dropped), model_usage={m: _keep(v, MODEL_USAGE_KEYS, dropped, f"modelUsage.{m}.") for m, v in mu.items() if isinstance(v, dict)})
-    if bad: rec["usage_unreadable"] = True   # an input count that is not a number: the size of the input is unknown
+    if bad: rec["usage_unreadable"] = True   # no usage record, or an input count that is not a non-negative number: the input size is unknown
     if dropped: rec["usage_keys_dropped"] = sorted(set(dropped))
-    return j.get("result") or "", rec
+    if rec["cost"] is None and c is not None: rec["cost_reported"] = c   # a cost that is not a number is kept apart, so the scorers' sums still work
+    text = j.get("result"); return (text if isinstance(text, str) else "" if text is None else json.dumps(text)), rec
 def unusable(r): return "error" in r or bool(r.get("is_error")) or bool(r.get("context_tokens_high")) or bool(r.get("usage_unreadable"))
 _dec = json.JSONDecoder()
 # The keys each test's prompt asks for; an answer object has at least one of them.
