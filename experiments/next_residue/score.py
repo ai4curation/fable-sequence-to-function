@@ -8,7 +8,7 @@ A reply that contains a tool invocation instead of an answer is invalid and coun
 """
 import collections, json, pathlib, random
 import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from common import NOTE_CONTINUED, NOTE_FAILED, continued, failed, has_tool_call, unusable
+from common import NOTE_CONTINUED, NOTE_COST, NOTE_FAILED, continued, cost_unknown, failed, has_tool_call, unusable
 HERE = pathlib.Path(__file__).parent
 AUTH = {}
 for l in open(HERE / "upstream" / "authors_outputs_subset.jsonl"):
@@ -32,6 +32,7 @@ for effort in ("low", "high"):
         print(f"\n== {model}, effort {effort}: {len(R)} answered; models in usage records {sorted({m for r in R for m in r['served']})}; cost ${sum(r['cost'] or 0 for r in R):.2f}; "
               f"calls whose usage record lists a second model: {sum(len(r['served']) > 1 for r in R)}")
         if bad: print(f"  {NOTE_FAILED}: {bad}")
+        if cost_unknown(R): print(f"  {NOTE_COST}: {len(cost_unknown(R))}")
         if continued(R): print(f"  {NOTE_CONTINUED}: {len(continued(R))}")
         for c in ("real", "shuffled", "reversed"):
             x = [r for r in R if r["condition"] == c]
