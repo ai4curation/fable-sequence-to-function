@@ -8,6 +8,9 @@ import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.paren
 from common import KEYS, NOTE_CONTINUED, NOTE_COST, NOTE_FAILED, NOTE_TOOL, efforts, continued, cost_unknown, failed, reparse, tool_calls
 HERE = pathlib.Path(__file__).parent
 T = {t["accession"]: t for t in json.loads((HERE / "truth.json").read_text())}
+# Enzymes whose curated active-site position is disputed by adjudication/ (the curated residue is probably not catalytic).
+# They stay in every count above; one extra line per file gives the enzyme mutants without them.
+DISPUTED = ("P64636", "Q08651")
 def positions(ans, key):
     return {d.get("position") for d in (ans.get(key) or []) if isinstance(d, dict)}
 def load(f):
@@ -46,4 +49,8 @@ def main():
                     f"; mutated position flagged as substituted {flagged[key]}/{n}, still listed as intact {still[key]}/{n}" if key[1] != "wt" else "")
             other = n - c["yes"] - c["no"] - c["uncertain"]   # e.g. a null catalytically_active
             print(f"  {key[0]:7s} {key[1]:11s} n={n}: active yes {c['yes']}  no {c['no']}  uncertain {c['uncertain']}" + (f"  other {other}" if other else "") + extra)
+        kept = [r for r in ok if r["group"] == "enzyme" and r["variant"] == "site_to_ala" and r["accession"] not in DISPUTED]
+        c = collections.Counter(str(r["ans"].get("catalytically_active")).lower() for r in kept)
+        print(f"  enzyme  site_to_ala without {' and '.join(DISPUTED)} (curated site disputed, see adjudication/) n={len(kept)}: active yes {c['yes']}  no {c['no']}  uncertain {c['uncertain']}; "
+              f"mutated position flagged as substituted {sum(T[r['accession']]['site'] in positions(r['ans'], 'substituted_or_missing') for r in kept)}/{len(kept)}")
 if __name__ == "__main__": main()
