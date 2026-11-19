@@ -45,18 +45,18 @@
   authors' stored run, same 136 real questions: 58.8%
   authors' stored run, same 136 shuffled questions: 10.3%
 
-== claude-opus-5-5, effort high: 264 answered; models in usage records ['claude-opus-5', 'claude-opus-5-5']; cost $2.29; calls whose usage record lists a second model: 3
-  real      n=132 invalid=0 first-residue=18.9%  exact10=1
-            with thinking n= 41 first-residue=39.0%
-            no thinking   n= 91 first-residue=9.9%
-  shuffled  n=132 invalid=1 first-residue=7.6%  exact10=0
-            with thinking n= 39 first-residue=7.7%
-            no thinking   n= 93 first-residue=7.5%
+== claude-opus-5-5, effort high: 272 answered; models in usage records ['claude-opus-5', 'claude-opus-5-5']; cost $2.34; calls whose usage record lists a second model: 3
+  real      n=136 invalid=0 first-residue=19.1%  exact10=1
+            with thinking n= 43 first-residue=37.2%
+            no thinking   n= 93 first-residue=10.8%
+  shuffled  n=136 invalid=1 first-residue=7.4%  exact10=0
+            with thinking n= 42 first-residue=7.1%
+            no thinking   n= 94 first-residue=7.4%
   replies with a tool invocation instead of an answer (invalid, counted as wrong): A0A518ICW8 shuffled cut 301
-  gap real-shuffled: +11.4 pts (95% CI +3.0 to +20.5), 66 families
-  authors' stored run, same 132 real questions: 40.9%
-  authors' stored run, same 132 shuffled questions: 7.6%
+  gap real-shuffled: +11.8 pts (95% CI +3.7 to +20.6), 68 families
+  authors' stored run, same 136 real questions: 39.7%
+  authors' stored run, same 136 shuffled questions: 7.4%
   calls listing a second model: A0A160F6W8 shuffled cut 680, A0A518ICW8 shuffled cut 301, A0A1S1Z485 shuffled cut 127
-  without them: real      n=132 first-residue=18.9%
-  without them: shuffled  n=129 first-residue=7.0%
-  without them: gap real-shuffled: +12.1 pts (95% CI +3.8 to +21.2), 66 families
+  without them: real      n=136 first-residue=19.1%
+  without them: shuffled  n=133 first-residue=6.8%
+  without them: gap real-shuffled: +12.5 pts (95% CI +4.4 to +21.3), 68 families

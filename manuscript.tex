@@ -61,7 +61,7 @@ tool in print mode with no tools and an empty system prompt; we confirmed that c
 no web search or fetch. This route does not expose temperature, so answers were sampled, and it adds about
 1,400 tokens of its own context. Fable~5.2 and Opus~5.5 ran at high effort in tests 2 to 4. Opus~4.6 ran at
 low effort because it did not finish at high effort, so comparisons with it are confounded by effort.
-Each question was asked once. For 6 of the 2,570 calls, the tool's usage record lists a second model
+Each question was asked once. For 6 of the 2,578 calls, the tool's usage record lists a second model
 besides the one requested: three Opus~5.5 next-residue calls at high effort, all on shuffled sequences, and
 in test 4 one Fable~5.2 and two Opus~5.5 calls, all on known-stratum entries. One of the Opus~5.5 test-4
 calls (PDB 7IMP) returned an API error instead of an answer and is excluded from the scores; for the other
@@ -115,13 +115,13 @@ all 3,340 cut points.
 
 Unlike the original report, we found that accuracy depended on whether the model reasoned before
 answering. At low effort Fable~5.2 was correct on 57.9\% of real cut points when it chose to think (38
-questions) and 12.2\% when it did not (98). At high effort Opus~5.5 was correct on 39.0\% with thinking
-(41) and 9.9\% without (91). The reasoning text is not available to us.
+questions) and 12.2\% when it did not (98). At high effort Opus~5.5 was correct on 37.2\% with thinking
+(43) and 10.8\% without (93). The reasoning text is not available to us.
 
 \begin{table}[ht]
 \centering\small
 \caption{Next-residue accuracy on a 68-family subsample. Gap is real minus shuffled, in percentage points,
-with a 95\% bootstrap interval over families. The Opus~5.5 high-effort run covers 132 of 136 questions.}
+with a 95\% bootstrap interval over families.}
 \label{tab:next}
 \begin{tabular}{llrrrl}
 \toprule
@@ -130,7 +130,7 @@ Model & Effort & Real & Shuffled & Reversed & Gap (95\% interval) \\
 Fable 5.2 & low & 25.0\% & 7.4\% & 8.8\% & $+17.6$ ($+9.6$ to $+26.5$) \\
 Fable 5.2 & high & 41.2\% & 11.8\% & -- & $+29.4$ ($+18.4$ to $+40.4$) \\
 Opus 5.5 & low & 16.9\% & 9.6\% & 12.5\% & $+7.4$ ($-1.5$ to $+16.2$) \\
-Opus 5.5 & high & 18.9\% & 7.6\% & -- & $+11.4$ ($+3.0$ to $+20.5$) \\
+Opus 5.5 & high & 19.1\% & 7.4\% & -- & $+11.8$ ($+3.7$ to $+20.6$) \\
 Opus 4.6 & low & 5.1\% & 7.4\% & 5.9\% & $-2.2$ ($-7.4$ to $+2.9$) \\
 \bottomrule
 \end{tabular}

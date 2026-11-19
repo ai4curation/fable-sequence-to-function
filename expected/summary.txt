@@ -1,16 +1,20 @@
 next_residue/results/high/claude-fable-5-2.jsonl calls  272  errors or API-error replies 0  listing a second model 0
-next_residue/results/high/claude-opus-5-5.jsonl  calls  264  errors or API-error replies 0  listing a second model 3
+next_residue/results/high/claude-opus-5-5.jsonl  calls  272  errors or API-error replies 0  listing a second model 3
 next_residue/results/low/claude-fable-5-2.jsonl  calls  408  errors or API-error replies 0  listing a second model 0
 next_residue/results/low/claude-opus-4-6.jsonl   calls  408  errors or API-error replies 0  listing a second model 0
 next_residue/results/low/claude-opus-5-5.jsonl   calls  408  errors or API-error replies 0  listing a second model 0
 features/results/claude-fable-5-2.jsonl          calls  120  errors or API-error replies 0  listing a second model 0
+features/results/claude-opus-4-6-high.jsonl      calls  126  errors or API-error replies 6  listing a second model 0  (tagged run, not in the manuscript)
 features/results/claude-opus-4-6.jsonl           calls  120  errors or API-error replies 0  listing a second model 0
 features/results/claude-opus-5-5.jsonl           calls  120  errors or API-error replies 0  listing a second model 0
 pseudo/results/claude-fable-5-2.jsonl            calls  120  errors or API-error replies 0  listing a second model 0
+pseudo/results/claude-opus-4-6-high.jsonl        calls  120  errors or API-error replies 0  listing a second model 0  (tagged run, not in the manuscript)
 pseudo/results/claude-opus-4-6.jsonl             calls  120  errors or API-error replies 0  listing a second model 0
 pseudo/results/claude-opus-5-5.jsonl             calls  120  errors or API-error replies 0  listing a second model 0
 structure/results/claude-fable-5-2.jsonl         calls   30  errors or API-error replies 0  listing a second model 1
+structure/results/claude-opus-4-6-high.jsonl     calls   30  errors or API-error replies 0  listing a second model 0  (tagged run, not in the manuscript)
 structure/results/claude-opus-4-6.jsonl          calls   30  errors or API-error replies 0  listing a second model 0
 structure/results/claude-opus-5-5.jsonl          calls   30  errors or API-error replies 1  listing a second model 2
 
-all tests: calls 2570, errors or API-error replies 1, listing a second model 6
+runs in the manuscript (files named MODEL.jsonl): calls 2578, errors or API-error replies 1, listing a second model 6
+tagged runs (MODEL-TAG.jsonl), not in the manuscript: calls 276, errors or API-error replies 6, listing a second model 0

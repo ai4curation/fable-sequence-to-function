@@ -75,7 +75,7 @@ pixel, so they are not byte-for-byte reproducible.
 | Table 2 (`set all` lines for rows 3 to 7); overlap of 0.85 in the abstract and Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
 | Figure 1, mutant positions flagged, recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
 | Figure 2, structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
-| Call totals in Methods (2,570 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
+| Call totals in Methods (2,578 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
 
 ## How the model answers were collected
@@ -88,9 +88,15 @@ pixel, so they are not byte-for-byte reproducible.
   the `prompt` function) in each test's `ask.py` or `run.py`.
 - **Limits of that route:** temperature cannot be set, and the tool adds about
   1,400 tokens of its own context to each call.
-- **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; Opus
-  4.6 ran at low effort because it did not finish at high effort. Test 1 has
-  low and high runs. The rows of 2026-11-18 record the effort in tests 3 and
+- **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; in
+  the runs the manuscript reports, Opus 4.6 ran at low effort because it did
+  not finish at high effort on 2026-11-18. On 2026-11-19 UTC, through
+  `call()`, Opus 4.6 was asked tests 2 to 4 at high effort and answered every
+  question (`results/claude-opus-4-6-high.jsonl`, #51); about one answer in
+  three in test 4 took a second request after reaching the 64,000-token
+  output limit. These tagged runs are scored in `expected/` but are not in
+  the manuscript text or the Methods call totals. Test 1 has low and high
+  runs; Opus 4.6 was not asked test 1 at high effort. The rows of 2026-11-18 record the effort in tests 3 and
   4. In test 1 it is the results folder (`results/low`, `results/high`). The
   test 2 rows of that date do not record it.
 - **Rows that record a prompt hash** (`prompt_sha256`; written from
@@ -147,7 +153,7 @@ pixel, so they are not byte-for-byte reproducible.
   Two limits: an example object written after the answer would be taken as
   the answer, and an answer wrapped in an outer object would not be found.
 - **One answer per question.** There are no repeat runs.
-- **Calls listing a second model:** for 6 of the 2,570 calls, the tool's usage
+- **Calls listing a second model:** for 6 of the 2,578 calls, the tool's usage
   record (the `served` field, from `modelUsage`) lists a second model besides
   the one requested. Three are Opus 5.5 next-residue calls at high effort; three
   are in test 4 (PDB 29BS for Fable 5.2, 15AY and 7IMP for Opus 5.5). The record
@@ -158,8 +164,10 @@ pixel, so they are not byte-for-byte reproducible.
   numbers; `expected/next_residue.txt` and `expected/structure.txt` also give
   tests 1 and 4 without them.
   `expected/summary.txt` gives the totals.
-- **Incomplete run:** the Opus 5.5 high-effort run of test 1 has 264 of 272
-  answers; a container restart stopped it.
+- **Completed run:** the Opus 5.5 high-effort run of test 1 stopped at 264 of
+  272 answers when a container restarted on 2026-11-18. The 8 missing
+  questions were asked on 2026-11-19 UTC through `call()`; they are the rows
+  of that file with a prompt hash.
 - **Random seeds:** question sampling uses `random.Random(20261118)`; shuffled
   sequences use the upstream seed, the CRC32 of the accession.
 
@@ -195,7 +203,9 @@ RCSB Protein Data Bank.
 - Author list, affiliations and funding (marked `TODO` in `manuscript.tex`).
 - This repository has no licence file yet.
 - Repeat runs, to give intervals for tests 2 to 4.
-- Opus 4.6 at high effort, for a like-for-like comparison.
+- How the Opus 4.6 high-effort runs of tests 2 to 4 (`results/claude-opus-4-6-high.jsonl`, #51) enter the
+  manuscript. They are scored in `expected/` but not used in the text, which still describes Opus 4.6 at
+  low effort only.
 - A blinded second grader for function in test 4.
 - Two enzymes where both models disagree with the curated active-site position
   (Q08651, P64636) have not been adjudicated.

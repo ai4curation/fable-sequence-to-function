@@ -10,6 +10,18 @@
   kinase  wt          n=20: active yes 20  no 0  uncertain 0; curated catalytic position(s) listed 19/20
   pseudo  wt          n=20: active yes 1  no 18  uncertain 1
 
+== claude-opus-4-6-high: 120 calls, 0 unparsed, effort high, cost $79.08
+  replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply; read like any other): 7
+  natural pseudokinases whose returned protein_name says inactive or pseudokinase: 10/20
+    of those called inactive: 10/12
+  calls whose usage record lists a second model: 0
+  enzyme  site_to_ala n=20: active yes 14  no 4  uncertain 2; mutated position flagged as substituted 2/20, still listed as intact 0/20
+  enzyme  wt          n=20: active yes 19  no 1  uncertain 0; curated catalytic position(s) listed 9/20
+  kinase  asp_to_asn  n=20: active yes 2  no 16  uncertain 2; mutated position flagged as substituted 18/20, still listed as intact 0/20
+  kinase  lys_to_met  n=20: active yes 17  no 1  uncertain 2; mutated position flagged as substituted 1/20, still listed as intact 0/20
+  kinase  wt          n=20: active yes 18  no 0  uncertain 2; curated catalytic position(s) listed 18/20
+  pseudo  wt          n=20: active yes 5  no 12  uncertain 3
+
 == claude-opus-4-6: 120 calls, 0 unparsed, effort low, cost $2.42
   natural pseudokinases whose returned protein_name says inactive or pseudokinase: 3/20
     of those called inactive: 2/3
