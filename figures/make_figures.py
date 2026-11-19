@@ -1,9 +1,17 @@
-"""Draw the manuscript figures from the committed model outputs. Usage: make_figures.py (no arguments)."""
-import collections, json, math, pathlib, statistics
+"""Draw the manuscript figures from the committed model outputs. Usage: make_figures.py PROBE_DIR
+
+PROBE_DIR is a checkout of projects/LLM_SEQUENCE_PROBE from ai4curation/ai-gene-review, the folder that holds
+pseudo/ and structure/. The committed figures were drawn from that folder at commit 119ac18676.
+"""
+import collections, json, math, pathlib, statistics, sys
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-HERE = pathlib.Path(__file__).parent; ROOT = HERE.parent.parent
+if len(sys.argv) != 2: sys.exit(__doc__)
+HERE = pathlib.Path(__file__).parent; ROOT = pathlib.Path(sys.argv[1])
 MODELS = [("claude-fable-5-2", "Fable 5.2", "#2a78d6"), ("claude-opus-5-5", "Opus 5.5", "#eb6834"), ("claude-opus-4-6", "Opus 4.6", "#1baf7a")]
+NEED = [ROOT / d / "truth.json" for d in ("pseudo", "structure")] + [ROOT / d / "results" / f"{m[0]}.jsonl" for d in ("pseudo", "structure") for m in MODELS]
+MISSING = [str(f) for f in NEED if not f.exists()]
+if MISSING: sys.exit("Missing input files:\n  " + "\n  ".join(MISSING) + "\n\n" + __doc__)   # stop before any figure is overwritten
 INK, MUTED, GRID = "#1a1a19", "#6b6a63", "#e4e3dd"
 plt.rcParams.update({"font.size": 8.5, "font.family": "DejaVu Sans", "axes.edgecolor": MUTED, "axes.labelcolor": INK, "xtick.color": INK,
                      "ytick.color": MUTED, "axes.spines.top": False, "axes.spines.right": False, "pdf.fonttype": 42})
