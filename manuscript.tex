@@ -166,8 +166,8 @@ mutants (Figure~\ref{fig:pseudo}). Across the 60 mutant sequences they reported 
 substituted in 57 (Fable~5.2) and 47 (Opus~5.5); Opus~4.6 reported none and called 18 of 20 mutants
 active. Opus~5.5 was weaker on the lysine, calling 7 of 20 lysine-to-methionine mutants active.
 
-Natural pseudokinases were called inactive in 18 of 20 cases by both newer models, but in 17 or 18 of
-those answers the model's own protein name already said ``inactive'' or ``pseudokinase'', so this set
+Natural pseudokinases were called inactive in 18 of 20 cases by both newer models, but in 17 of those 18
+answers, for each model, the model's own protein name already said ``inactive'' or ``pseudokinase'', so this set
 mostly measures recall of the entry. The exception is informative: both models called \textit{C.~elegans}
 kin-32 (Q95YD4), named an inactive tyrosine kinase in Swiss-Prot, active, citing an intact glycine loop,
 VAVK lysine, HRD and DFG motifs, all of which are present in the sequence. We did not examine the basis of
@@ -244,9 +244,12 @@ about it.
 
 \section*{Data and code availability}
 
-Scripts, test sets and all raw model outputs are in the \texttt{projects/LLM\_SEQUENCE\_PROBE} folder of
-the \texttt{ai4curation/ai-gene-review} repository. Test sets were drawn from live UniProt, InterPro and
-RCSB services on 18 November 2026; the committed \texttt{truth.json} files are the sets used.
+Scripts, prompts, test sets and all raw model outputs are at
+\url{https://github.com/ai4curation/fable-sequence-to-function}. Every number in this paper is printed by a
+scoring script from the committed model outputs, and \texttt{just check} verifies the data checksums and
+that the numbers reproduce. Test sets were drawn from live UniProt, InterPro and RCSB services on 18
+November 2026 and are committed as drawn, because re-querying those services returns different entries.
+Model calls used Claude Code 2.1.327; repeating them will not return identical answers.
 
 \section*{Acknowledgements}
 
