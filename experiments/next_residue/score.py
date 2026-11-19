@@ -15,7 +15,8 @@ for effort in ("low", "high"):
         model = f.stem
         R = [json.loads(l) for l in open(f)]
         R = [r for r in R if "error" not in r and not r.get("is_error")]
-        print(f"\n== {model}, effort {effort}: {len(R)} answered; served by {sorted({m for r in R for m in r['served']})}; cost ${sum(r['cost'] or 0 for r in R):.2f}")
+        print(f"\n== {model}, effort {effort}: {len(R)} answered; served by {sorted({m for r in R for m in r['served']})}; cost ${sum(r['cost'] or 0 for r in R):.2f}; "
+              f"calls served by more than one model (fallback): {sum(len(r['served']) > 1 for r in R)}")
         for c in ("real", "shuffled", "reversed"):
             x = [r for r in R if r["condition"] == c]
             if not x: continue

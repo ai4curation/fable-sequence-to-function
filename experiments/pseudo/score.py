@@ -20,10 +20,13 @@ for f in sorted(glob.glob(str(HERE / "results" / "*.jsonl"))):
             wtsite[key] += all(w in positions(a, "catalytic_residues") for w in want)
     named = [r for r in ok if r["group"] == "pseudo" and any(w in str(r["ans"].get("protein_name")).lower() for w in ("inactive", "pseudokinase"))]
     print(f"  natural pseudokinases whose returned protein_name says inactive or pseudokinase: {len(named)}/{sum(r['group'] == 'pseudo' for r in ok)}")
+    called_no = [r for r in ok if r["group"] == "pseudo" and str(r["ans"].get("catalytically_active")).lower() == "no"]
+    print(f"    of those called inactive: {sum(r in named for r in called_no)}/{len(called_no)}")
     mixed = [r for r in R if len(r.get("served") or []) > 1]
     print(f"  calls served by more than one model (fallback): {len(mixed)}")
     for key in sorted(rows):
         n = sum(rows[key].values()); c = rows[key]
         extra = f"; curated catalytic position(s) listed {wtsite[key]}/{n}" if key[1] == "wt" and key[0] != "pseudo" else (
                 f"; mutated position flagged as substituted {flagged[key]}/{n}, still listed as intact {still[key]}/{n}" if key[1] != "wt" else "")
-        print(f"  {key[0]:7s} {key[1]:11s} n={n}: active yes {c['yes']}  no {c['no']}  uncertain {c['uncertain']}{extra}")
+        other = n - c["yes"] - c["no"] - c["uncertain"]   # e.g. a null catalytically_active
+        print(f"  {key[0]:7s} {key[1]:11s} n={n}: active yes {c['yes']}  no {c['no']}  uncertain {c['uncertain']}" + (f"  other {other}" if other else "") + extra)

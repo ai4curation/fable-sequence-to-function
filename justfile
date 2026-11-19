@@ -25,11 +25,11 @@ check: verify-data
 
 # Check that test sets and raw model outputs match the recorded checksums
 verify-data:
-    sha256sum --check --quiet SHA256SUMS && echo "Data files match SHA256SUMS."
+    shasum -a 256 --check --quiet SHA256SUMS && echo "Data files match SHA256SUMS."
 
 # Rewrite SHA256SUMS (only after deliberately adding new runs)
 checksums:
-    find experiments -type f \( -name '*.json' -o -name '*.jsonl' -o -name '*.tsv' -o -name '*.yaml' \) | sort | xargs sha256sum > SHA256SUMS
+    find experiments -type f \( -name '*.json' -o -name '*.jsonl' -o -name '*.tsv' -o -name '*.yaml' \) | sort | xargs shasum -a 256 > SHA256SUMS
 
 # Redraw the figures from the committed model outputs
 figures:
