@@ -1,5 +1,5 @@
 
-== claude-fable-5-2, effort low: 408 answered; served by ['claude-fable-5-2']; cost $11.60; calls whose usage record lists a second model: 0
+== claude-fable-5-2, effort low: 408 answered; models in usage records ['claude-fable-5-2']; cost $11.60; calls whose usage record lists a second model: 0
   real      n=136 invalid=0 first-residue=25.0%  exact10=1
             with thinking n= 38 first-residue=57.9%
             no thinking   n= 98 first-residue=12.2%
@@ -14,7 +14,7 @@
   authors' stored run, same 136 real questions: 58.8%
   authors' stored run, same 136 shuffled questions: 10.3%
 
-== claude-opus-4-6, effort low: 408 answered; served by ['claude-opus-4-6']; cost $2.76; calls whose usage record lists a second model: 0
+== claude-opus-4-6, effort low: 408 answered; models in usage records ['claude-opus-4-6']; cost $2.76; calls whose usage record lists a second model: 0
   real      n=136 invalid=0 first-residue=5.1%  exact10=0
             with thinking n=  1 first-residue=0.0%
             no thinking   n=135 first-residue=5.2%
@@ -29,7 +29,7 @@
   authors' stored run, same 136 real questions: 6.6%
   authors' stored run, same 136 shuffled questions: 4.4%
 
-== claude-opus-5-5, effort low: 408 answered; served by ['claude-opus-5-5']; cost $5.54; calls whose usage record lists a second model: 0
+== claude-opus-5-5, effort low: 408 answered; models in usage records ['claude-opus-5-5']; cost $5.54; calls whose usage record lists a second model: 0
   real      n=136 invalid=0 first-residue=16.9%  exact10=0
   shuffled  n=136 invalid=0 first-residue=9.6%  exact10=0
   reversed  n=136 invalid=0 first-residue=12.5%  exact10=0
@@ -38,14 +38,14 @@
   authors' stored run, same 136 real questions: 39.7%
   authors' stored run, same 136 shuffled questions: 7.4%
 
-== claude-fable-5-2, effort high: 272 answered; served by ['claude-fable-5-2']; cost $6.21; calls whose usage record lists a second model: 0
+== claude-fable-5-2, effort high: 272 answered; models in usage records ['claude-fable-5-2']; cost $6.21; calls whose usage record lists a second model: 0
   real      n=136 invalid=0 first-residue=41.2%  exact10=2
   shuffled  n=136 invalid=0 first-residue=11.8%  exact10=0
   gap real-shuffled: +29.4 pts (95% CI +18.4 to +40.4), 68 families
   authors' stored run, same 136 real questions: 58.8%
   authors' stored run, same 136 shuffled questions: 10.3%
 
-== claude-opus-5-5, effort high: 264 answered; served by ['claude-opus-5', 'claude-opus-5-5']; cost $2.29; calls whose usage record lists a second model: 3
+== claude-opus-5-5, effort high: 264 answered; models in usage records ['claude-opus-5', 'claude-opus-5-5']; cost $2.29; calls whose usage record lists a second model: 3
   real      n=132 invalid=0 first-residue=18.9%  exact10=1
             with thinking n= 41 first-residue=39.0%
             no thinking   n= 91 first-residue=9.9%
@@ -55,3 +55,7 @@
   gap real-shuffled: +11.4 pts (95% CI +3.0 to +20.5), 66 families
   authors' stored run, same 132 real questions: 40.9%
   authors' stored run, same 132 shuffled questions: 7.6%
+  calls listing a second model: A0A160F6W8 shuffled cut 680, A0A518ICW8 shuffled cut 301, A0A1S1Z485 shuffled cut 127
+  without them: real      n=132 first-residue=18.9%
+  without them: shuffled  n=129 first-residue=7.0%
+  without them: gap real-shuffled: +12.1 pts (95% CI +3.8 to +21.2), 66 families
