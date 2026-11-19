@@ -6,6 +6,9 @@ Purpose: for each mutant (a literal text replacement in common.py), copy the com
 Inputs:  the working tree of this repository (copied with `git ls-files`; the live tree is never modified).
 Outputs: one line per mutant on standard output.     Serves: issues 78, 84, 86, 105 and 108 (pull request 53).     2026-11-19
 Usage:   mutate_common_and_run_stub_test.py
+
+A mutant that only removes the explicit check for a usage record that is not a dictionary is equivalent to the
+unmutated code (an empty record is marked by the next rule), so it is not listed.
 """
 import pathlib, shutil, subprocess, sys, tempfile
 REPO = pathlib.Path(__file__).resolve().parents[2]
@@ -21,18 +24,17 @@ MUTANTS = [   # name, text in common.py, replacement
     ("successful attempt's cost left out", "        spent += _num(j.get(\"total_cost_usd\"))\n        if not j.get(\"is_error\"): break\n",
      "        if not j.get(\"is_error\"): break\n        spent += _num(j.get(\"total_cost_usd\"))\n"),
     ("n = turns for any int", "turns_n = max(_int(turns) or 1, 1)", "turns_n = _int(turns) if _int(turns) is not None else 1"),
-    ("negative counts accepted", "and math.isfinite(x) and x >= 0 else False", "and math.isfinite(x) else False"),
-    ("missing usage record accepted", "bad = not isinstance(u, dict);", "bad = False;"),
+    ("negative counts accepted", "and _finite(x) and x >= 0 else False", "and _finite(x) else False"),
     ("listed counts not checked", "bad = bad or any(c is False for c in top + sum(each, []))", "bad = bad or any(c is False for c in top)"),
     ("output_tokens_details not filtered", "out[\"output_tokens_details\"] = _keep(out[\"output_tokens_details\"], DETAIL_KEYS, dropped, \"output_tokens_details.\")", "pass"),
     ("top-level cache_creation not filtered", "out[\"cache_creation\"] = _keep(out[\"cache_creation\"], CACHE_KEYS, dropped, \"cache_creation.\")", "pass"),
     ("error text not coerced", "errs.append((str(j.get(\"result\") or \"\")", "errs.append(((j.get(\"result\") or \"\")"),
-    ("non-numeric cost stored", "cost=c if _num(c) == c and c is not None else None", "cost=c"),
+    ("non-numeric cost stored", "rec.update(cost=c if ok_cost else None,", "rec.update(cost=c,"),
     ("attempt_errors keeps the last only", "        errs.append(", "        errs[:] = []; errs.append("),
     ("raw cost added", "spent += _num(j.get(\"total_cost_usd\"))", "spent += j.get(\"total_cost_usd\") or 0"),
     ("unreadable counts read as 0", "    if bad: rec[\"usage_unreadable\"] = True", "    pass"),
     ("unusable ignores usage_unreadable", " or bool(r.get(\"usage_unreadable\"))", ""),
-    ("_int rejects strings", "    if isinstance(x, str) and x.strip().isascii() and x.strip().isdecimal(): return int(x.strip())", "    pass"),
+    ("_int rejects strings", "    if isinstance(x, str) and x.strip().isascii() and x.strip().isdecimal() and len(x.strip()) < 10: return int(x.strip())", "    pass"),
     ("nested filter removed", "out[\"server_tool_use\"] = _keep(out[\"server_tool_use\"], SERVER_TOOL_KEYS, dropped, \"server_tool_use.\")", "pass"),
     ("dropped key names not recorded", "    if dropped: rec[\"usage_keys_dropped\"] = sorted(set(dropped))", "    pass"),
     ("listed size without iterations recorded as 0", "largest = listed or context / n", "largest = listed or 0"),
