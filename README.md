@@ -60,7 +60,7 @@ The committed figures were made with Matplotlib 3.10.5; `uv.lock` pins that vers
 |---|---|
 | Scoring, statistics, figures | Deterministic from committed files. The bootstrap uses a fixed seed. |
 | Test sets (`truth.json`, `upstream/`) | Committed exactly as drawn on 2026-11-18. The `build.py` scripts record how, but they query live UniProt, InterPro and RCSB services, so re-running them draws different entries. Do not re-run them to check the paper. |
-| Model answers (`results/*.jsonl`) | Committed in full, including raw reply text, thinking-token counts, cost and the model that served each call. Re-asking will not give identical answers: the route used does not expose temperature, and models change. |
+| Model answers (`results/*.jsonl`) | Committed in full, including raw reply text, thinking-token counts, cost and the models listed in each call's usage record. Re-asking will not give identical answers: the route used does not expose temperature, and models change. |
 | Function grading (`structure/function_grading.yaml`) | One unblinded manual pass, committed with a note per protein. |
 
 ## Where each number comes from
@@ -69,9 +69,10 @@ The committed figures were made with Matplotlib 3.10.5; `uv.lock` pins that vers
 |---|---|---|
 | Table 1, thinking split, authors' accuracy on the same questions | `uv run python experiments/next_residue/score.py` | `expected/next_residue.txt` |
 | No-model heuristics on all 3,340 cut points | `uv run python experiments/next_residue/baselines.py` | `expected/next_residue_baselines.txt` |
-| Table 2 (use the `set all` lines for combined rows) | `uv run python experiments/features/score.py` | `expected/features.txt` |
+| Table 2 (`set all` lines for rows 3 to 7); overlap of 0.85 in the abstract and Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
 | Figure 1, mutant positions flagged, recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
 | Figure 2, structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
+| Call totals in Methods (2,570 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 
 ## How the model answers were collected
 
@@ -87,11 +88,17 @@ The committed figures were made with Matplotlib 3.10.5; `uv.lock` pins that vers
   tests 2 to 4; Opus 4.6 ran at low effort because it did not finish at high
   effort. Test 1 has low and high runs.
 - **One answer per question.** There are no repeat runs.
-- **Fallback calls:** the tool reported 6 calls served partly by a fallback
-  model (the `served` field lists two models). Three are Opus 5.5 next-residue
-  calls at high effort; three are in test 4 (PDB 29BS for Fable 5.2, 15AY and
-  7IMP for Opus 5.5). They are kept in the reported numbers, and
-  `expected/structure.txt` also gives every test-4 line without them.
+- **Calls listing a second model:** for 6 of the 2,570 calls, the tool's usage
+  record (the `served` field, from `modelUsage`) lists a second model besides
+  the one requested. Three are Opus 5.5 next-residue calls at high effort; three
+  are in test 4 (PDB 29BS for Fable 5.2, 15AY and 7IMP for Opus 5.5). The record
+  has no per-model token counts, so it does not show which model wrote the
+  answer. One of them, the Opus 5.5 call for 7IMP, returned an API error
+  instead of an answer and is excluded from the scores (so Opus 5.5 has 14
+  known-stratum entries). The other calls are kept in the reported
+  numbers; `expected/next_residue.txt` and `expected/structure.txt` also give
+  tests 1 and 4 without them.
+  `expected/summary.txt` gives the totals.
 - **Incomplete run:** the Opus 5.5 high-effort run of test 1 has 264 of 272
   answers; a container restart stopped it.
 - **Random seeds:** question sampling uses `random.Random(20261118)`; shuffled
