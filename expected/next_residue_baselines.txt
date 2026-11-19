@@ -1,0 +1,4 @@
+repeat last residue      real 6.7  shuffled 7.1  reversed 6.9  (n=3340)
+most common in prefix    real 9.9  shuffled 10.5  reversed 9.5  (n=3340)
+most common in last 20   real 8.2  shuffled 10.0  reversed 8.2  (n=3340)
+bigram within prefix     real 7.2  shuffled 7.3  reversed 8.1  (n=3340)
