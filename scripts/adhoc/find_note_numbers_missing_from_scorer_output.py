@@ -1,8 +1,10 @@
 """List the numbers in a results note that do not appear in the frozen scorer output.
 
-Purpose: RESULTS.md of the decoy control says every number in it is printed by score_decoys.py (#90). This lists each
-         number token of the note (commas removed) that does not occur as a number in expected/decoy_control.txt,
-         with its line, so each can be checked by eye. Section numbers, list numbers and identifiers (accessions,
+Purpose: a coarse screen for the claim in RESULTS.md that its counts, rates and costs are printed by score_decoys.py
+         (#90, #106). It lists each number token of the note (commas removed) that does not occur as a number
+         anywhere in expected/decoy_control.txt, with its line, so each can be checked by eye. A number that is
+         found may be found in another context (a position that equals a count; the parts of a time), so an
+         empty list does not prove the claim; read the quoted lines against the output. Section numbers, list numbers and identifiers (accessions,
          variant names, issue numbers, file names) are reported too; they are not errors.
 Inputs:  NOTE (default experiments/decoy_control/RESULTS.md), OUTPUT (default expected/decoy_control.txt).
 Outputs: text on standard output.     Serves: pull request 10, issue 90.     2026-11-19

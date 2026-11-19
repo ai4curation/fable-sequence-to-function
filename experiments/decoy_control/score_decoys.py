@@ -24,7 +24,7 @@ where NAME is MODEL or MODEL-TAG. Empty files are skipped. A question may have o
 """
 import ast, collections, json, math, pathlib, re, sys
 HERE = pathlib.Path(__file__).resolve().parent; sys.path.insert(0, str(HERE.parent))
-from common import KEYS, NOTE_CONTINUED, NOTE_FAILED, NOTE_TOOL, continued, efforts, failed, reparse, sha, tool_calls, unusable
+from common import KEYS, NOTE_CONTINUED, NOTE_FAILED, NOTE_TOOL, continued, efforts, failed, reparse, requests_made, sha, tool_calls, unusable
 if len(sys.argv) > 2: sys.exit(__doc__)
 PROBE = pathlib.Path(sys.argv[1]) if len(sys.argv) == 2 else HERE.parent
 VARIANTS = [("asp_decoy_to_asn", "asp_to_asn"), ("lys_decoy_to_met", "lys_to_met"), ("site_decoy_to_ala", "site_to_ala")]
@@ -176,7 +176,7 @@ for p in sorted((HERE / "results").glob("*.jsonl")):
     if not R: continue
     rng = {g: (min(ctx(r) for r in R if r.get("group") == g), max(ctx(r) for r in R if r.get("group") == g)) for g in ("kinase", "enzyme") if any(r.get("group") == g for r in R)}
     us = [r for r in R if isinstance(r.get("usage"), dict)]
-    one = sum(max(r.get("requests") or 1, r.get("num_turns") or 1) == 1 and not any((r["usage"].get("server_tool_use") or {}).get(k) for k in ("web_search_requests", "web_fetch_requests")) for r in us)
+    one = sum(requests_made(r) == 1 and not any((r["usage"].get("server_tool_use") or {}).get(k) for k in ("web_search_requests", "web_fetch_requests")) for r in us)
     nohash = [f"{r.get('accession')} {r.get('variant')} at {str(r.get('asked_at'))[11:16]}" for r in R if not r.get("prompt_sha256")]
     cost = sum(money(r) for r in R); tot += cost if p.name.startswith("bridge-") else 0
     print(f"  {p.name}: {len(R)} rows, returned {window(R)}, cost ${cost:.4f}; input tokens " + ", ".join(f"{g} {a:,} to {b:,}" for g, (a, b) in rng.items())

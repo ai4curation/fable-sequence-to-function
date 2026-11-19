@@ -103,7 +103,7 @@ on handling downloaded files, the model name and knowledge cutoff, and a token b
 own account. The CLI help says `--bare` skips more, and that it accepts only an API key; it was not tried.
 
 All scored calls here use the four extra flags. A full kinase question then arrived with 1,128 to
-1,414 input tokens for Fable 5.2 and Opus 5.5 and 871 to 1,056 for Opus 4.6, depending on the length of the sequence. The decoy rows (01:56 to 02:07) were marked above
+1,414 input tokens for Fable 5.2 and Opus 5.5 and 871 to 1,056 for Opus 4.6, depending on the length of the sequence. The decoy rows (returned 01:56 to 02:06) were marked above
 2,500 input tokens; rows written since are marked by `call()` in `experiments/common.py` when the input is
 larger than the question allows, and
 `score_decoys.py` leaves marked rows out. None of the 174 decoy calls and none of the 300 rerun calls is marked

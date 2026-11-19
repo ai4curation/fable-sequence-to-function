@@ -192,6 +192,7 @@ p_ = subprocess.run([sys.executable, str(exp / "decoy_control/ask_decoys.py"), "
 check("decoy_control: the call script's summary skips blank lines", p_.returncode == 0 and "3 rows" in p_.stdout)
 b_ = exp / "decoy_control/results/bridge-stub-model-y.jsonl"; shutil.copy(exp / "decoy_control/results/bridge-stub-model.jsonl", b_); p_ = score(); b_.unlink()
 check("decoy_control: a rerun file without a decoy file is reported", "WARNING: bridge-stub-model-y.jsonl has no decoy file" in p_.stdout)
+check("decoy_control: a decoy file without a stored test 3 file is reported", "WARNING: no stored test 3 file pseudo/results/stub-model.jsonl" in p_.stdout)
 with out.open("a") as fh: fh.write(lines(out)[0])
 p_ = score(); check("decoy_control: the scorer stops on a second usable row for one question", p_.returncode != 0 and "more than one usable row" in p_.stderr)
 

@@ -11,8 +11,8 @@ Every count, rate and cost here is printed by `score_decoys.py` (its last sectio
 token ranges and costs of each file), whose output is frozen in `expected/decoy_control.txt` and recomputed by
 `just check`. A few are sums or roundings of printed values (300, 174 and 299 rows, 116 replies, $21.62, $1.90,
 $1.69), and the curated Lys position of P32328 (198) is from `pseudo/truth.json`.
-`scripts/adhoc/find_note_numbers_missing_from_scorer_output.py` lists the numbers of this note that the output
-does not hold. Intervals are 95% Wilson intervals. Two of the tested models worked on this
+`scripts/adhoc/find_note_numbers_missing_from_scorer_output.py` is a coarse screen: it lists the numbers of this
+note that the output does not hold anywhere. Intervals are 95% Wilson intervals. Two of the tested models worked on this
 control: Claude Fable 5.2 wrote the scripts, ran the calls and wrote the first version of this note, and
 Claude Opus 5.5 revised the scripts and this note after review. Independent read-only reviews found the
 problems listed in issues 11 to 17 and 66 to 76.
