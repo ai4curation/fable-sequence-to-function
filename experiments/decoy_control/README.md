@@ -1,7 +1,9 @@
 # Decoy-substitution control for the catalytic-activity test
 
-Added 2026-11-18. One of the three models tested here, Claude Fable 5.2, also wrote these scripts and this
-note, so a second reader should check the decoy rule and the scoring.
+Added 2026-11-18 (US Pacific; the first calls were made at 01:53 UTC on 2026-11-19). Two of the three models
+tested here worked on it: Claude Fable 5.2 wrote the scripts and the first version of these notes, and Claude
+Opus 5.5 revised them after review. A human reader should check the decoy rule and the scoring. Times below are
+UTC unless marked.
 
 ## Question
 
@@ -21,13 +23,13 @@ residue. Reading 2 predicts the opposite.
 | File | What it is |
 |---|---|
 | `build_decoys.py` | Picks the decoy positions by a seeded rule and writes `decoys.json`. The rule is in its header. |
-| `uniprot_features_snapshot.json` | The UniProt feature tables the rule used, fetched anonymously on 2026-11-18. |
+| `uniprot_features_snapshot.json` | The UniProt feature tables the rule used, fetched anonymously on 2026-11-18 (US Pacific). |
 | `decoys.json` | 58 decoy sequences for 38 proteins, with the position, the number of candidates and the motif positions that were excluded. |
 | `ask_decoys.py` | Asks a model through `call()` in `experiments/common.py`. The question is read from `pseudo/ask.py` as text, so the wording is identical. |
 | `score_decoys.py` | Prints the result tables; `just check` compares them with `expected/decoy_control.txt`. |
 | `check_cli_context.py` | Measures what the command line attaches to a one-sentence prompt; writes `results/cli_context_check.json`. |
 | `results/MODEL.jsonl` | One line per decoy answer, with token counts, cost and the CLI version. |
-| `results/bridge-MODEL.jsonl` | The catalytic-site mutants and wild types of the 40 kinases and enzymes of test 3, asked again on this route (100 questions per model, 2026-11-19), so that decoys and mutants are compared within one route. |
+| `results/bridge-MODEL.jsonl` | The catalytic-site mutants and wild types of the 40 kinases and enzymes of test 3, asked again on this route (100 questions per model, 2026-11-19 07:20 to 07:39 UTC; one Fable 5.2 row at 01:56), so that decoys and mutants are compared within one route. |
 | `results/canary-original-flags.jsonl` | The first two calls, made with the original flags. Not scored; kept as the record of the route problem below. |
 
 ## How to run
@@ -75,7 +77,7 @@ in the real protein. A model that calls such a decoy inactive is not necessarily
 ## The route, and a finding about it
 
 The original run called `claude -p --model M --system-prompt "" --tools "" --effort E --output-format json`.
-On the machine used here (CLI 2.1.328, 2026-11-18) that command does not isolate the question.
+On the machine used here (CLI 2.1.328, 2026-11-19 UTC) that command does not isolate the question.
 
 Saved evidence, from `check_cli_context.py` (one-sentence prompt, cheapest model, `results/cli_context_check.json`):
 
@@ -85,7 +87,8 @@ Saved evidence, from `check_cli_context.py` (one-sentence prompt, cheapest model
 | Original plus `--setting-sources "" --strict-mcp-config --disable-slash-commands --no-chrome` | 2 | 0 (no connectors) | 573 each |
 
 Saved evidence, from the first two canary calls with the original flags (`results/canary-original-flags.jsonl`):
-the first carried 97,811 input tokens and cost $1.69; the second, a minute later, carried 6,411 and cost $0.21.
+the first carried 97,811 input tokens and cost $1.69; the second, 23 seconds later (01:53:36 and 01:53:59), carried 6,411
+and cost $0.21.
 The two calls had different sequences of the same length, so the 91,400-token gap is not the question.
 
 Seen once and not saved: a one-sentence call with the original flags whose start-up record listed 97 tools, all
@@ -99,11 +102,12 @@ model listed account context, environment details (working directory, operating 
 on handling downloaded files, the model name and knowledge cutoff, and a token budget note. That is the model's
 own account. The CLI help says `--bare` skips more, and that it accepts only an API key; it was not tried.
 
-All scored calls here use the four extra flags. The full question for one kinase then arrived with 1,133 input
-tokens. The decoy rows of 2026-11-18 were marked above 2,500 input tokens; rows written since are marked by
-`call()` in `experiments/common.py` when a single request is larger than the question allows, and
+All scored calls here use the four extra flags. A full kinase question then arrived with 1,128 to
+1,414 input tokens, depending on the length of the sequence. The decoy rows (01:56 to 02:07) were marked above
+2,500 input tokens; rows written since are marked by `call()` in `experiments/common.py` when the input is
+larger than the question allows, and
 `score_decoys.py` leaves marked rows out. None of the 174 decoy calls and none of the 300 rerun calls is marked
-under either limit; the largest carried 1,414 input tokens.
+under either limit.
 
 **What this means for the stored run.** Its rows do not record input tokens. No test 3 call in it cost more than
 $0.40 for Fable 5.2, and a call with the 97 tools attached cost $1.69 here, so tools of that size were not

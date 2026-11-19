@@ -1,7 +1,19 @@
+Decoy positions: 58 decoys in 38 proteins; distance to the nearest curated catalytic position of the protein: median 46, minimum 5, within 10 residues 6, within 20 12
 
 == claude-fable-5-2: 58 decoy calls, 58 answers scored, 0 without an answer, effort high, cost $8.30, median input tokens 1174
   rerun of the test 3 mutants and wild types on this route: 100 calls, 100 answers, effort high, cost $14.48
     same active/not-active call as the stored run in 99/100: differ Q2PAY3 lys_to_met (stored yes, rerun no)
+  per file (the stored run and the rerun: all 40 kinases and enzymes of test 3, 60 mutants; the decoys cover 38 of them):
+    decoys: listed catalytic residues that match the given sequence at the stated position 395/397; answers that used thinking 58/58; rows whose recorded prompt hash is that of the test 3 prompt plus this sequence 0/0; rows without a recorded hash 58
+      decoy: calls yes 58; not called active with thinking 0/58, without thinking 0/0
+    stored run: listed catalytic residues that match the given sequence at the stated position 582/586; answers that used thinking 100/100; rows whose recorded prompt hash is that of the test 3 prompt plus this sequence 0/0; rows without a recorded hash 100
+      wild type: calls yes 40; not called active with thinking 0/40, without thinking 0/0
+      catalytic-site mutant: calls yes 4, no 56; not called active with thinking 56/60, without thinking 0/0
+      wild-type answers that do not list every curated catalytic position: 4 (P26725, P64636, Q08651, Q8VYY5)
+    rerun on this route: listed catalytic residues that match the given sequence at the stated position 583/584; answers that used thinking 100/100; rows whose recorded prompt hash is that of the test 3 prompt plus this sequence 99/99; rows without a recorded hash 1
+      wild type: calls yes 40; not called active with thinking 0/40, without thinking 0/0
+      catalytic-site mutant: calls yes 3, no 57; not called active with thinking 57/60, without thinking 0/0
+      wild-type answers that do not list every curated catalytic position: 2 (P64636, Q08651)
   asp_decoy_to_asn vs asp_to_asn
     decoy still called active            20/20 (100%, 84-100)
     catalytic-site mutant called active  0/20 (0%, 0-16)   (stored run, same proteins)
@@ -16,6 +28,7 @@
     decoy position listed as catalytic   0/20 (0%, 0-16)
     true catalytic residue still listed  20/20 (100%, 84-100)   (decoy answers)
     decoy position number in the reply   1/20 (5%, 1-24)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 33.5, within 5 residues 1, within 10 4, of 20 answers listing any   (in the model's own numbering)
   lys_decoy_to_met vs lys_to_met
     decoy still called active            20/20 (100%, 84-100)
     catalytic-site mutant called active  1/20 (5%, 1-24)   (stored run, same proteins)
@@ -30,6 +43,7 @@
     decoy position listed as catalytic   0/20 (0%, 0-16)
     true catalytic residue still listed  20/20 (100%, 84-100)   (decoy answers)
     decoy position number in the reply   0/20 (0%, 0-16)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 16, within 5 residues 1, within 10 7, of 20 answers listing any   (in the model's own numbering)
   site_decoy_to_ala vs site_to_ala
     decoy still called active            18/18 (100%, 82-100)
     catalytic-site mutant called active  3/18 (17%, 6-39)   (stored run, same proteins)
@@ -44,6 +58,7 @@
     decoy position listed as catalytic   0/18 (0%, 0-18)
     true catalytic residue still listed  16/18 (89%, 67-97)   (decoy answers)
     decoy position number in the reply   1/18 (6%, 1-26)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 39.5, within 5 residues 2, within 10 4, of 18 answers listing any   (in the model's own numbering)
   all three types
     decoy still called active            58/58 (100%, 94-100)
     catalytic-site mutant called active  4/58 (7%, 3-16)   (stored run, same proteins)
@@ -58,12 +73,24 @@
     decoy position listed as catalytic   0/58 (0%, 0-6)
     true catalytic residue still listed  56/58 (97%, 88-99)   (decoy answers)
     decoy position number in the reply   2/58 (3%, 1-12)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 33.5, within 5 residues 4, within 10 15, of 58 answers listing any   (in the model's own numbering)
   decoys not called active (0): none
   replies whose text holds the decoy position number (2): O48814 asp_decoy_to_asn pos 226; P0A6L2 site_decoy_to_ala pos 116
 
 == claude-opus-5-5: 58 decoy calls, 58 answers scored, 0 without an answer, effort high, cost $2.87, median input tokens 1174
   rerun of the test 3 mutants and wild types on this route: 100 calls, 100 answers, effort high, cost $5.12
     same active/not-active call as the stored run in 96/100: differ P18334 lys_to_met (stored yes, rerun no); P21965 lys_to_met (stored yes, rerun no); Q9C9U2 lys_to_met (stored yes, rerun no); Q9LWN0 lys_to_met (stored no, rerun yes)
+  per file (the stored run and the rerun: all 40 kinases and enzymes of test 3, 60 mutants; the decoys cover 38 of them):
+    decoys: listed catalytic residues that match the given sequence at the stated position 460/465; answers that used thinking 58/58; rows whose recorded prompt hash is that of the test 3 prompt plus this sequence 0/0; rows without a recorded hash 58
+      decoy: calls yes 58; not called active with thinking 0/58, without thinking 0/0
+    stored run: listed catalytic residues that match the given sequence at the stated position 638/640; answers that used thinking 100/100; rows whose recorded prompt hash is that of the test 3 prompt plus this sequence 0/0; rows without a recorded hash 100
+      wild type: calls yes 39, uncertain 1; not called active with thinking 1/40, without thinking 0/0
+      catalytic-site mutant: calls yes 10, no 47, uncertain 3; not called active with thinking 50/60, without thinking 0/0
+      wild-type answers that do not list every curated catalytic position: 4 (P26725, P64636, Q08651, Q9VLA1)
+    rerun on this route: listed catalytic residues that match the given sequence at the stated position 690/697; answers that used thinking 100/100; rows whose recorded prompt hash is that of the test 3 prompt plus this sequence 100/100; rows without a recorded hash 0; answers without an activity call, counted as not called active: Q8VYY5 lys_to_met
+      wild type: calls yes 39, no 1; not called active with thinking 1/40, without thinking 0/0
+      catalytic-site mutant: calls yes 8, no 51, none 1; not called active with thinking 52/60, without thinking 0/0
+      wild-type answers that do not list every curated catalytic position: 3 (P26725, P64636, Q08651)
   asp_decoy_to_asn vs asp_to_asn
     decoy still called active            20/20 (100%, 84-100)
     catalytic-site mutant called active  0/20 (0%, 0-16)   (stored run, same proteins)
@@ -78,6 +105,7 @@
     decoy position listed as catalytic   0/20 (0%, 0-16)
     true catalytic residue still listed  19/20 (95%, 76-99)   (decoy answers)
     decoy position number in the reply   0/20 (0%, 0-16)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 34.5, within 5 residues 2, within 10 6, of 20 answers listing any   (in the model's own numbering)
   lys_decoy_to_met vs lys_to_met
     decoy still called active            20/20 (100%, 84-100)
     catalytic-site mutant called active  7/20 (35%, 18-57)   (stored run, same proteins)
@@ -87,11 +115,13 @@
     catalytic-site mutant called active  5/20 (25%, 11-47)   (rerun on this route, same proteins)
     wild type called active              20/20 (100%, 84-100)   (rerun on this route, same proteins)
     paired: decoy active and mutant not  15; mutant active and decoy not 0; exact McNemar p = 6.1e-05   (rerun on this route)
+    without answers lacking a call       mutant called active 5/19 (26%, 12-49); paired 14 and 0, p = 0.00012   (rerun on this route)
     catalytic position named as lost     15/20 (75%, 53-89)   (rerun on this route, catalytic-site mutant)
     decoy position named as lost         0/20 (0%, 0-16);  any residue named as lost 2/20 (10%, 3-30)
     decoy position listed as catalytic   0/20 (0%, 0-16)
     true catalytic residue still listed  20/20 (100%, 84-100)   (decoy answers)
     decoy position number in the reply   0/20 (0%, 0-16)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 16, within 5 residues 1, within 10 7, of 20 answers listing any   (in the model's own numbering)
   site_decoy_to_ala vs site_to_ala
     decoy still called active            18/18 (100%, 82-100)
     catalytic-site mutant called active  3/18 (17%, 6-39)   (stored run, same proteins)
@@ -106,6 +136,7 @@
     decoy position listed as catalytic   0/18 (0%, 0-18)
     true catalytic residue still listed  15/18 (83%, 61-94)   (decoy answers)
     decoy position number in the reply   1/18 (6%, 1-26)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 34.5, within 5 residues 2, within 10 4, of 18 answers listing any   (in the model's own numbering)
   all three types
     decoy still called active            58/58 (100%, 94-100)
     catalytic-site mutant called active  10/58 (17%, 10-29)   (stored run, same proteins)
@@ -115,17 +146,30 @@
     catalytic-site mutant called active  8/58 (14%, 7-25)   (rerun on this route, same proteins)
     wild type called active              37/38 (97%, 87-100)   (rerun on this route, same proteins)
     paired: decoy active and mutant not  50; mutant active and decoy not 0; exact McNemar p = 1.8e-15   (rerun on this route)
+    without answers lacking a call       mutant called active 8/57 (14%, 7-25); paired 49 and 0, p = 3.6e-15   (rerun on this route)
     catalytic position named as lost     48/58 (83%, 71-90)   (rerun on this route, catalytic-site mutant)
     decoy position named as lost         0/58 (0%, 0-6);  any residue named as lost 5/58 (9%, 4-19)
     decoy position listed as catalytic   0/58 (0%, 0-6)
     true catalytic residue still listed  54/58 (93%, 84-97)   (decoy answers)
     decoy position number in the reply   1/58 (2%, 0-9)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 32, within 5 residues 5, within 10 17, of 58 answers listing any   (in the model's own numbering)
   decoys not called active (0): none
   replies whose text holds the decoy position number (1): P0A6L2 site_decoy_to_ala pos 116
 
 == claude-opus-4-6: 58 decoy calls, 58 answers scored, 0 without an answer, effort low, cost $1.37, median input tokens 899
   rerun of the test 3 mutants and wild types on this route: 100 calls, 100 answers, effort low, cost $2.01
     same active/not-active call as the stored run in 88/100: differ P26725 site_to_ala (stored yes, rerun uncertain); P53682 asp_to_asn (stored yes, rerun uncertain); P53682 lys_to_met (stored uncertain, rerun yes); P53682 wt (stored uncertain, rerun yes); Q2PAY3 lys_to_met (stored yes, rerun no); Q504J1 wt (stored uncertain, rerun yes); Q8RX88 wt (stored uncertain, rerun yes); Q8VYY5 asp_to_asn (stored yes, rerun uncertain); Q8VYY5 lys_to_met (stored uncertain, rerun yes); Q9S834 site_to_ala (stored yes, rerun uncertain); Q9VLA1 site_to_ala (stored yes, rerun uncertain); Q9ZNQ8 asp_to_asn (stored yes, rerun no)
+  per file (the stored run and the rerun: all 40 kinases and enzymes of test 3, 60 mutants; the decoys cover 38 of them):
+    decoys: listed catalytic residues that match the given sequence at the stated position 48/191; answers that used thinking 12/58; rows whose recorded prompt hash is that of the test 3 prompt plus this sequence 0/0; rows without a recorded hash 58
+      decoy: calls yes 50, no 2, uncertain 6; not called active with thinking 2/12, without thinking 6/46
+    stored run: listed catalytic residues that match the given sequence at the stated position 42/313; answers that used thinking 4/100; rows whose recorded prompt hash is that of the test 3 prompt plus this sequence 0/0; rows without a recorded hash 100
+      wild type: calls yes 33, no 1, uncertain 6; not called active with thinking 1/2, without thinking 6/38
+      catalytic-site mutant: calls yes 52, uncertain 8; not called active with thinking 1/2, without thinking 7/58
+      wild-type answers that do not list every curated catalytic position: 37
+    rerun on this route: listed catalytic residues that match the given sequence at the stated position 68/316; answers that used thinking 16/100; rows whose recorded prompt hash is that of the test 3 prompt plus this sequence 100/100; rows without a recorded hash 0
+      wild type: calls yes 36, uncertain 4; not called active with thinking 1/6, without thinking 3/34
+      catalytic-site mutant: calls yes 47, no 3, uncertain 10; not called active with thinking 5/10, without thinking 8/50
+      wild-type answers that do not list every curated catalytic position: 37
   asp_decoy_to_asn vs asp_to_asn
     decoy still called active            20/20 (100%, 84-100)
     catalytic-site mutant called active  18/20 (90%, 70-97)   (stored run, same proteins)
@@ -140,6 +184,7 @@
     decoy position listed as catalytic   0/20 (0%, 0-16)
     true catalytic residue still listed  4/20 (20%, 8-42)   (decoy answers)
     decoy position number in the reply   0/20 (0%, 0-16)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 32, within 5 residues 2, within 10 3, of 20 answers listing any   (in the model's own numbering)
   lys_decoy_to_met vs lys_to_met
     decoy still called active            18/20 (90%, 70-97)
     catalytic-site mutant called active  18/20 (90%, 70-97)   (stored run, same proteins)
@@ -154,6 +199,7 @@
     decoy position listed as catalytic   1/20 (5%, 1-24)
     true catalytic residue still listed  3/20 (15%, 5-36)   (decoy answers)
     decoy position number in the reply   1/20 (5%, 1-24)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 25, within 5 residues 3, within 10 7, of 20 answers listing any   (in the model's own numbering)
   site_decoy_to_ala vs site_to_ala
     decoy still called active            12/18 (67%, 44-84)
     catalytic-site mutant called active  14/18 (78%, 55-91)   (stored run, same proteins)
@@ -168,6 +214,7 @@
     decoy position listed as catalytic   0/18 (0%, 0-18)
     true catalytic residue still listed  1/18 (6%, 1-26)   (decoy answers)
     decoy position number in the reply   0/18 (0%, 0-18)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 47, within 5 residues 1, within 10 1, of 17 answers listing any   (in the model's own numbering)
   all three types
     decoy still called active            50/58 (86%, 75-93)
     catalytic-site mutant called active  50/58 (86%, 75-93)   (stored run, same proteins)
@@ -182,5 +229,6 @@
     decoy position listed as catalytic   1/58 (2%, 0-9)
     true catalytic residue still listed  8/58 (14%, 7-25)   (decoy answers)
     decoy position number in the reply   1/58 (2%, 0-9)   (anywhere in the text; read the replies listed below)
+    decoy to nearest residue the answer lists as catalytic: median 36, within 5 residues 6, within 10 11, of 57 answers listing any   (in the model's own numbering)
   decoys not called active (8): P26725 site_decoy_to_ala pos 427 -> uncertain, named lost []; P33018 site_decoy_to_ala pos 166 -> uncertain, named lost []; P53314 site_decoy_to_ala pos 45 -> no, named lost []; Q2PAY3 lys_decoy_to_met pos 422 -> no, named lost [319, 320, 321, 334]; Q504J1 site_decoy_to_ala pos 358 -> uncertain, named lost []; Q8RX88 site_decoy_to_ala pos 20 -> uncertain, named lost [301]; Q8VYY5 lys_decoy_to_met pos 244 -> uncertain, named lost [358]; Q9S834 site_decoy_to_ala pos 209 -> uncertain, named lost [180]
   replies whose text holds the decoy position number (1): P32328 lys_decoy_to_met pos 188

@@ -46,8 +46,13 @@ P = original_prompt(PROBE / "pseudo/ask.py")
 def fasta(s, w=60): return "\n".join(s[i:i+w] for i in range(0, len(s), w))
 SEQ = {k: d["sequence"] for k, d in D.items()}; SEQ.update({(t["accession"], v): s for t in T.values() for v, s in t["variants"].items()})
 def nocall(r): return str(r["ans"].get("catalytically_active")).lower() not in ("yes", "no", "uncertain")
+def call_of(r): c = str(r["ans"].get("catalytically_active")).lower(); return c if c in ("yes", "no", "uncertain") else "none"
+def curated(acc): t = T[acc]; return [t["asp"], t["lys"]] if t["group"] == "kinase" else [t["site"]]
 def describe(name, R, ans):
-    """Checks on one file that do not depend on the comparison: the question sent, the residue numbering, thinking, missing calls."""
+    """Checks on one file that do not depend on the comparison: the question sent, the residue numbering, thinking, missing calls.
+    R and ans are restricted to the questions of this control (kinases and enzymes), so every count has the same denominator."""
+    ours = lambda k: k in SEQ and T[k[0]]["group"] in ("kinase", "enzyme")
+    R = [r for r in R if ours((r["accession"], r["variant"]))]; ans = {k: r for k, r in ans.items() if ours(k)}
     h = [r for r in R if r.get("prompt_sha256")]; good = sum(r["prompt_sha256"] == sha(P + fasta(SEQ[(r["accession"], r["variant"])])) for r in h)
     listed = [(x.get("residue"), x.get("position"), SEQ[k]) for k, r in ans.items() for x in (r["ans"].get("catalytic_residues") or []) if isinstance(x, dict)]
     match = sum(isinstance(p, int) and 0 < p <= len(s) and s[p - 1] == str(res).strip().upper() for res, p, s in listed)
@@ -55,6 +60,15 @@ def describe(name, R, ans):
     print(f"    {name}: listed catalytic residues that match the given sequence at the stated position {match}/{len(listed)}; answers that used thinking {think}/{len(ans)}; "
           f"rows whose recorded prompt hash is that of the test 3 prompt plus this sequence {good}/{len(h)}; rows without a recorded hash {len(R) - len(h)}"
           + (f"; answers without an activity call, counted as not called active: {', '.join(none)}" if none else ""))
+    kind = lambda v: "wild type" if v == "wt" else "decoy" if "decoy" in v else "catalytic-site mutant"
+    for g in ("wild type", "catalytic-site mutant", "decoy"):
+        rs = [r for (a, v), r in ans.items() if kind(v) == g]
+        if not rs: continue
+        calls = collections.Counter(map(call_of, rs)); th = [r for r in rs if (r.get("thinking_tokens") or 0) > 0]; nt = [r for r in rs if not (r.get("thinking_tokens") or 0) > 0]
+        print(f"      {g}: calls " + ", ".join(f"{c} {calls[c]}" for c in ("yes", "no", "uncertain", "none") if calls[c]) +
+              f"; not called active with thinking {sum(not active(r) for r in th)}/{len(th)}, without thinking {sum(not active(r) for r in nt)}/{len(nt)}")
+    miss = sorted(a for (a, v), r in ans.items() if v == "wt" and not all(c in positions(r, "catalytic_residues") for c in curated(a)))
+    if any(v == "wt" for _, v in ans): print(f"      wild-type answers that do not list every curated catalytic position: {len(miss)}" + (f" ({', '.join(miss)})" if len(miss) <= 8 else ""))
 def mentions(r, pos): return bool(re.search(rf"(?<!\d){pos}(?!\d)", r.get("text") or ""))   # the position number anywhere in the reply
 def wilson(k, n, z=1.959964):
     if not n: return "n/a"
@@ -71,9 +85,14 @@ def versus(dec, pairs, ref):
         if o:
             k["pairs"] += 1; k["orig_active"] += active(o); k["orig_named_lost"] += site(acc, ov) in positions(o, "substituted_or_missing")
             k["decoy_yes_orig_no"] += active(r) and not active(o); k["decoy_no_orig_yes"] += (not active(r)) and active(o)
+            if call_of(r) != "none" and call_of(o) != "none":   # the same counts without answers that have no activity call
+                k["called_pairs"] += 1; k["called_orig_active"] += active(o); k["called_yes_no"] += active(r) and not active(o); k["called_no_yes"] += (not active(r)) and active(o)
     wt = [ref[(acc, "wt")] for acc in sorted({acc for acc, _, _ in pairs}) if (acc, "wt") in ref]   # once per protein: a kinase has two decoys
     k["wt_n"] = len(wt); k["wt_active"] = sum(map(active, wt)); return k
 
+dist = sorted(min(abs(d["position"] - c) for c in curated(d["accession"])) for d in D.values())
+print(f"Decoy positions: {len(D)} decoys in {len({d['accession'] for d in D.values()})} proteins; distance to the nearest curated catalytic position of the protein: "
+      f"median {(dist[len(dist) // 2 - 1] + dist[len(dist) // 2]) / 2 if len(dist) % 2 == 0 else dist[len(dist) // 2]:g}, minimum {dist[0]}, within 10 residues {sum(x <= 10 for x in dist)}, within 20 {sum(x <= 20 for x in dist)}")
 ORDER = ["claude-fable-5-2", "claude-opus-5-5", "claude-opus-4-6"]   # as in the manuscript; other files follow by name
 for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.startswith(("bridge-", "canary-"))), key=lambda p: (ORDER.index(p.stem) if p.stem in ORDER else len(ORDER), p.stem)):
     m = f.stem; R, dec = load(f); S, stored = load(PROBE / "pseudo/results" / f"{m}.jsonl"); B, bridge = load(HERE / "results" / f"bridge-{m}.jsonl")
@@ -91,7 +110,7 @@ for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.sta
         print(f"  rerun of the test 3 mutants and wild types on this route: {len(B)} calls, {len(bridge)} answers, effort {efforts(B)}, cost ${sum(r.get('cost') or 0 for r in B):.2f}"
               + (f"; {NOTE_FAILED}: {failed(B)}" if failed(B) else "") + (f"; {NOTE_TOOL}: {len(tool_calls(B))}" if tool_calls(B) else ""))
         print(f"    same active/not-active call as the stored run in {same}/{len(both)}" + (": differ " + "; ".join(differ) if differ else ""))
-    print("  per file:"); describe("decoys", R, dec); describe("stored run", S, {k: r for k, r in stored.items() if k in SEQ and T[k[0]]["group"] != "pseudo"})
+    print("  per file (the stored run and the rerun: all 40 kinases and enzymes of test 3, 60 mutants; the decoys cover 38 of them):"); describe("decoys", R, dec); describe("stored run", S, stored)
     if B: describe("rerun on this route", B, bridge)
     if not dec: continue
     for dv, ov in VARIANTS + [("all", "all")]:
@@ -105,11 +124,17 @@ for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.sta
             print(f"    catalytic-site mutant called active  {wilson(k['orig_active'], k['pairs'])}   ({name}, same proteins)")
             print(f"    wild type called active              {wilson(k['wt_active'], k['wt_n'])}   ({name}, same proteins)")
             print(f"    paired: decoy active and mutant not  {k['decoy_yes_orig_no']}; mutant active and decoy not {k['decoy_no_orig_yes']}; exact McNemar p = {mcnemar(k['decoy_yes_orig_no'], k['decoy_no_orig_yes']):.2g}   ({name})")
+            if k["called_pairs"] != k["pairs"]:
+                print(f"    without answers lacking a call       mutant called active {wilson(k['called_orig_active'], k['called_pairs'])}; paired {k['called_yes_no']} and {k['called_no_yes']}, "
+                      f"p = {mcnemar(k['called_yes_no'], k['called_no_yes']):.2g}   ({name})")
             print(f"    catalytic position named as lost     {wilson(k['orig_named_lost'], k['pairs'])}   ({name}, catalytic-site mutant)")
         print(f"    decoy position named as lost         {wilson(sum(p in positions(r, 'substituted_or_missing') for r, p, _ in d), n)};  any residue named as lost {wilson(sum(bool(positions(r, 'substituted_or_missing')) for r, _, _ in d), n)}")
         print(f"    decoy position listed as catalytic   {wilson(sum(p in positions(r, 'catalytic_residues') for r, p, _ in d), n)}")
         print(f"    true catalytic residue still listed  {wilson(sum(s in positions(r, 'catalytic_residues') for r, _, s in d), n)}   (decoy answers)")
         print(f"    decoy position number in the reply   {wilson(sum(mentions(r, p) for r, p, _ in d), n)}   (anywhere in the text; read the replies listed below)")
+        own = [min((abs(p - q) for q in positions(r, "catalytic_residues") if isinstance(q, int)), default=None) for r, p, _ in d]; own = sorted(x for x in own if x is not None)
+        if own: print(f"    decoy to nearest residue the answer lists as catalytic: median {own[len(own) // 2] if len(own) % 2 else (own[len(own) // 2 - 1] + own[len(own) // 2]) / 2:g}, "
+                      f"within 5 residues {sum(x <= 5 for x in own)}, within 10 {sum(x <= 10 for x in own)}, of {len(own)} answers listing any   (in the model's own numbering)")
     notyes = [(acc, v, D[(acc, v)]["position"], str(r["ans"].get("catalytically_active")), sorted(p for p in positions(r, "substituted_or_missing") if p)) for (acc, v), r in sorted(dec.items()) if not active(r)]
     print(f"  decoys not called active ({len(notyes)}): " + ("; ".join(f"{acc} {v} pos {p} -> {call}, named lost {lost}" for acc, v, p, call, lost in notyes) or "none"))
     seen = [f"{acc} {v} pos {D[(acc, v)]['position']}" for (acc, v), r in sorted(dec.items()) if mentions(r, D[(acc, v)]["position"])]
