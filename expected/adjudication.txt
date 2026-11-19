@@ -1,0 +1,76 @@
+== Case 1: YrfG (P64636), nucleophile Asp9 (UniProt) or Asp16 (models)?
+P64636 GMP/IMP nucleotidase YrfG, Escherichia coli (strain K12); 222 residues; sequence version 1, entry version 134, fetched 2026-11-19; PDB entries: 0
+  UniProt Active site  D9    Nucleophile                    evidence ECO:0000250 
+  UniProt Binding site D9    substrate                      evidence ECO:0000250 
+  UniProt Binding site D9    Mg(2+)                         evidence ECO:0000250 
+  UniProt Binding site D11   Mg(2+)                         evidence ECO:0000250 
+  UniProt Binding site K149  substrate                      evidence ECO:0000250 
+  UniProt Binding site D174  Mg(2+)                         evidence ECO:0000250 
+  residues 1-24: MHINIAWQDVDTVLLDMDGTLLDL   (Asp at [9, 11, 16, 18, 23])
+  Alignment of 11 reviewed relatives (v7.505 (2022/Apr/10)); UniProt query: (family:"HAD-like hydrolase superfamily") AND (reviewed:true) AND (ft_act_site_exp:*) AND (length:[150 TO 330])
+    P0A8Y5  Sugar phosphatase YidA                   Escherichia coli (strain D9    Nucleophile                    experimental     PDB  1 -> query D16
+    Q51645  (S)-2-haloacid dehalogenase 4A           Burkholderia cepacia     D11   Nucleophile                    experimental     PDB  2 -> query D16
+    Q53464  (S)-2-haloacid dehalogenase              Pseudomonas sp. (strain  D10   Nucleophile                    experimental     PDB  4 -> query D16
+    Q58989  Phosphoserine phosphatase                Methanocaldococcus janna D11   Nucleophile                    experimental     PDB  6 -> query D16
+    Q58989  Phosphoserine phosphatase                Methanocaldococcus janna D13   Proton donor                   experimental     PDB  6 -> query D18
+    Q60099  (S)-2-haloacid dehalogenase              Xanthobacter autotrophic D8    Nucleophile                    experimental     PDB  4 -> query D16
+    Q8CHP8  Phosphoglycolate phosphatase             Mus musculus             D34   Nucleophile                    experimental     PDB  3 -> query D16
+    Q96GD0  Chronophin                               Homo sapiens             D25   Nucleophile                    experimental     PDB  9 -> query D16
+    tally: 7 x Nucleophile (experimental) -> query D16
+    tally: 1 x Proton donor (experimental) -> query D18
+  AlphaFill (AlphaFold model with ligands transplanted from homologous structures); hetero groups ['LAC', 'MG']
+    Asp9   carboxylate oxygen to: Lys149 NZ  24.5   Asp173 carboxylate  23.0   Asp174 carboxylate  26.4   Thr116 OG1  28.2   Mg  27.0   (angstrom)
+    Asp11  carboxylate oxygen to: Lys149 NZ  21.1   Asp173 carboxylate  20.7   Asp174 carboxylate  25.0   Thr116 OG1  23.6   Mg  25.0   (angstrom)
+    Asp16  carboxylate oxygen to: Lys149 NZ   2.6   Asp173 carboxylate   4.0   Asp174 carboxylate   4.0   Thr116 OG1   4.2   Mg   3.3   (angstrom)
+    Asp18  carboxylate oxygen to: Lys149 NZ   7.8   Asp173 carboxylate   9.5   Asp174 carboxylate   8.2   Thr116 OG1   4.4   Mg   6.7   (angstrom)
+  SWISS-MODEL homology model, chain A; hetero groups ['MG']
+    Asp9   carboxylate oxygen to: Lys149 NZ  25.2   Asp173 carboxylate  24.9   Asp174 carboxylate  29.3   Thr116 OG1  27.2   Mg  29.7   (angstrom)
+    Asp11  carboxylate oxygen to: Lys149 NZ  19.2   Asp173 carboxylate  18.2   Asp174 carboxylate  22.2   Thr116 OG1  22.3   Mg  23.0   (angstrom)
+    Asp16  carboxylate oxygen to: Lys149 NZ   2.6   Asp173 carboxylate   3.4   Asp174 carboxylate   4.2   Thr116 OG1   3.3   Mg   3.1   (angstrom)
+    Asp18  carboxylate oxygen to: Lys149 NZ   8.3   Asp173 carboxylate   9.9   Asp174 carboxylate   8.1   Thr116 OG1   4.3   Mg   6.1   (angstrom)
+  What the tested models listed (not used as evidence): catalytic positions returned for P64636
+    claude-fable-5-2       wt          active=yes       catalytic D16 D173 D174 D18 K149 T116
+    claude-fable-5-2       site_to_ala active=yes       catalytic D16 D173 D174 D18 K149 T116
+    claude-opus-4-6-high   wt          active=yes       catalytic D11 D9 E87 H119 H121 H143 H2 H59 H63
+    claude-opus-4-6-high   site_to_ala active=yes       catalytic D173 H119 H121 H143 H156 K126
+    claude-opus-4-6        wt          active=yes       catalytic D14 D52 H186 H221 N91 Y167
+    claude-opus-4-6        site_to_ala active=yes       catalytic D117 D13 D26 D70 K142
+    claude-opus-5-5        wt          active=yes       catalytic D16 D173 D174 D18 K149 T116
+    claude-opus-5-5        site_to_ala active=yes       catalytic D16 D173 D174 D18 K149 T116
+
+== Case 2: ENV9 (Q08651), catalytic serine Ser172 (UniProt) or Ser173 (models)?
+Q08651 Probable oxidoreductase ENV9, Saccharomyces cerevisiae (strain ATCC 204508 / S288c); 330 residues; sequence version 1, entry version 174, fetched 2026-11-19; PDB entries: 0
+  UniProt Active site  S172  Proton donor                   evidence ECO:0000250 UniProtKB:O93868
+  UniProt Active site  Y202  Proton donor                   evidence ECO:0000250 UniProtKB:O93868
+  UniProt Active site  K206  Lowers pKa of active site Tyr  evidence ECO:0000250 UniProtKB:O93868
+  residues 166-178: GRIISLSSIGHHL
+  Alignment of 18 reviewed relatives (v7.505 (2022/Apr/10)); UniProt query: (xref:pfam-PF00106) AND (reviewed:true) AND (ft_act_site_exp:*) AND (length:[230 TO 360]); plus O93868
+    O93868  NADP-dependent mannitol dehydrogenase    Agaricus bisporus        S149  Proton donor                   not experimental PDB  1 -> query S173
+    O93868  NADP-dependent mannitol dehydrogenase    Agaricus bisporus        Y169  Proton acceptor                not experimental PDB  1 -> query Y202
+    O93868  NADP-dependent mannitol dehydrogenase    Agaricus bisporus        K173  Lowers pKa of active site Tyr  not experimental PDB  1 -> query K206
+    O70351  3-hydroxyacyl-CoA dehydrogenase type-2   Rattus norvegicus        Y168  Proton acceptor                experimental     PDB  3 -> query Y202
+    P00334  Alcohol dehydrogenase                    Drosophila melanogaster  Y153  Proton acceptor                experimental     PDB  1 -> query Y202
+    Q071N0  Salutaridine reductase                   Papaver somniferum       Y236  Proton acceptor                experimental     PDB  1 -> query Y202
+    Q99714  3-hydroxyacyl-CoA dehydrogenase type-2   Homo sapiens             Y168  Proton acceptor                experimental     PDB 15 -> query Y202
+    tally: 1 x Lowers pKa of active site Tyr (not experimental) -> query K206
+    tally: 4 x Proton acceptor (experimental) -> query Y202
+    tally: 1 x Proton acceptor (not experimental) -> query Y202
+    tally: 1 x Proton donor (not experimental) -> query S173
+    pairwise alignment with O93868 alone (MAFFT L-INS-i): S149 Proton donor -> query S173
+    pairwise alignment with O93868 alone (MAFFT L-INS-i): Y169 Proton acceptor -> query Y202
+    pairwise alignment with O93868 alone (MAFFT L-INS-i): K173 Lowers pKa of active site Tyr -> query K206
+  AlphaFill (AlphaFold model with ligands transplanted from homologous structures); cofactor copies with a nicotinamide C4: 5
+    Ser172 OG to: Tyr202 OH  7.0   Lys206 NZ  6.0   nearest nicotinamide C4  8.0   (angstrom); side chain points away from Tyr202 OH (cosine -0.65)
+    Ser173 OG to: Tyr202 OH  3.2   Lys206 NZ  6.6   nearest nicotinamide C4  4.4   (angstrom); side chain points towards Tyr202 OH (cosine +0.98)
+  SWISS-MODEL homology model, chain A; cofactor copies with a nicotinamide C4: 0
+    Ser172 OG to: Tyr202 OH  6.8   Lys206 NZ  4.8   nearest nicotinamide C4  nan   (angstrom); side chain points away from Tyr202 OH (cosine -0.82)
+    Ser173 OG to: Tyr202 OH  4.5   Lys206 NZ  6.2   nearest nicotinamide C4  nan   (angstrom); side chain points towards Tyr202 OH (cosine +0.67)
+  What the tested models listed (not used as evidence): catalytic positions returned for Q08651
+    claude-fable-5-2       wt          active=yes       catalytic K206 N146 S173 Y202
+    claude-fable-5-2       site_to_ala active=yes       catalytic K206 N146 S173 Y202
+    claude-opus-4-6-high   wt          active=yes       catalytic K206 N124 S186 Y202
+    claude-opus-4-6-high   site_to_ala active=uncertain catalytic N123 S149 Y147  substituted K>F@151
+    claude-opus-4-6        wt          active=yes       catalytic K171 S154 Y167
+    claude-opus-4-6        site_to_ala active=yes       catalytic K171 S154 Y167
+    claude-opus-5-5        wt          active=yes       catalytic G23 G27 G29 K206 N124 S173 Y202
+    claude-opus-5-5        site_to_ala active=yes       catalytic K206 N124 S173 Y202
