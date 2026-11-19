@@ -107,7 +107,7 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
           and r["context_tokens"] == 2 * r["context_tokens_max"] and r["context_tokens_max"] <= limit(r) < r["context_tokens"] and not common.unusable(r) for r in R) and len(common.continued(R)) == n)
     if t != "next_residue":   # the scorer of this test prints the count (test 1 needs the upstream answers for the stub's questions, so it is left out)
         named = two.with_name("claude-stub.jsonl"); shutil.copy(two, named)   # the test 2 scorer reads claude-*.jsonl
-        p_ = subprocess.run([sys.executable, str(exp / t / "score.py")], capture_output=True, text=True)
+        p_ = subprocess.run([sys.executable, str(exp / t / ("score_decoys.py" if t == "decoy_control" else "score.py"))], capture_output=True, text=True)
         named.unlink()
         check(f"{t}: the scorer prints the replies that took more than one request", p_.returncode == 0 and common.NOTE_CONTINUED in p_.stdout)
     two.unlink(); run(script, good + "+twobig", eff, *extra, "--tag", "two"); R = rows(two)
