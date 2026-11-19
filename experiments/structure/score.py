@@ -1,7 +1,7 @@
 """Score predicted secondary structure and contacts against the deposited PDB structures in truth.json. Usage: score.py
 
 Reports each stratum as drawn, and the novel stratum with human ASPRV1 counted once (it was drawn four times).
-A few calls were served partly by a fallback model; they are listed, and every line is repeated without them.
+A few calls list a second model in their usage record; they are listed, and every line is repeated without them.
 Also prints the counts from the manual function grading in function_grading.yaml.
 """
 import collections, json, math, pathlib, statistics
@@ -34,8 +34,8 @@ def line(label, S):
 for f in sorted((HERE / "results").glob("*.jsonl")):
     R = [json.loads(l) for l in open(f)]; ok = [r for r in R if r.get("ans")]
     mixed = {r["pdb"]: r["served"] for r in R if len(r.get("served") or []) > 1}
-    print(f"\n== {f.stem}: {len(R)} calls, {len(R)-len(ok)} unparsed, effort {ok[0]['effort']}, cost ${sum(r.get('cost') or 0 for r in R):.2f}; fallback-served calls: {mixed or 'none'}")
-    for tag, keep in (("", lambda r: True), (" [no fallback calls]", lambda r: r["pdb"] not in mixed)):
+    print(f"\n== {f.stem}: {len(R)} calls, {len(R)-len(ok)} unparsed, effort {ok[0]['effort']}, cost ${sum(r.get('cost') or 0 for r in R):.2f}; calls listing a second model: {mixed or 'none'}")
+    for tag, keep in (("", lambda r: True), (" [without those calls]", lambda r: r["pdb"] not in mixed)):
         if tag and not mixed: continue
         sel = [r for r in ok if keep(r)]
         for stratum in ("novel", "known"):

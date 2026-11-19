@@ -23,7 +23,7 @@ for f in sorted(glob.glob(str(HERE / "results" / "*.jsonl"))):
     called_no = [r for r in ok if r["group"] == "pseudo" and str(r["ans"].get("catalytically_active")).lower() == "no"]
     print(f"    of those called inactive: {sum(r in named for r in called_no)}/{len(called_no)}")
     mixed = [r for r in R if len(r.get("served") or []) > 1]
-    print(f"  calls served by more than one model (fallback): {len(mixed)}")
+    print(f"  calls whose usage record lists a second model: {len(mixed)}")
     for key in sorted(rows):
         n = sum(rows[key].values()); c = rows[key]
         extra = f"; curated catalytic position(s) listed {wtsite[key]}/{n}" if key[1] == "wt" and key[0] != "pseudo" else (

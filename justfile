@@ -10,6 +10,7 @@ report:
     uv run python experiments/features/score.py > expected/features.txt
     uv run python experiments/pseudo/score.py > expected/pseudo.txt
     uv run python experiments/structure/score.py > expected/structure.txt
+    uv run python experiments/summary.py > expected/summary.txt
 
 # Recompute the numbers and fail if they differ from the committed expected/ files
 check: verify-data
@@ -21,6 +22,7 @@ check: verify-data
     uv run python experiments/features/score.py > $tmp/features.txt
     uv run python experiments/pseudo/score.py > $tmp/pseudo.txt
     uv run python experiments/structure/score.py > $tmp/structure.txt
+    uv run python experiments/summary.py > $tmp/summary.txt
     diff -r $tmp expected && echo "All reported numbers reproduce."
 
 # Check that test sets and raw model outputs match the recorded checksums
