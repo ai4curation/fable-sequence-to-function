@@ -98,24 +98,29 @@ pixel, so they are not byte-for-byte reproducible.
   low and high runs. The rows of 2026-11-18 record the effort in tests 3 and
   4. In test 1 it is the results folder (`results/low`, `results/high`). The
   test 2 rows of that date do not record it.
-- **Rows written from 2026-11-19** come from `call()` in
+- **Rows written from 2026-11-19 (UTC)** come from `call()` in
   `experiments/common.py`. It adds four flags to the command above
   (`--setting-sources "" --strict-mcp-config --disable-slash-commands
   --no-chrome`), because on a machine with user settings and account
   connectors the original flags let instructions, skill listings or connector
   tools into the call. Each of these rows records the effort, the number of
-  attempts, a hash of the question, the flags, the tool version, the time and
-  the token counts. A call whose input is larger than the question allows
-  (about 600 tokens of the tool's own context plus the question) is marked
-  `context_tokens_high` and is not scored. The tool sometimes makes more
-  than one request for a question: when a reply reaches the model's output
-  limit, or when a safety classifier stops it, the tool adds a short message
-  saying so and asks again. The token counts are then sums over the
-  requests, so the limit is applied per request, each row records the number
-  of requests, and the scorers count the answers that took more than one.
-  Rows written on 2026-11-19 before this was added were checked as one
-  request; six such answers in `features/results/claude-opus-4-6-high.jsonl`
-  are marked and stay unscored, and their questions were asked again.
+  attempts, a hash of the question, the flags, the tool version, the time
+  (UTC), the token counts, and from the tool's own result the turn count,
+  stop reason, duration, session id and the known keys of its usage records
+  (which include its count of web search and fetch requests). A call whose
+  input is larger than the question allows (about 600 tokens of the tool's
+  own context plus the question) is marked `context_tokens_high` and is not
+  scored.
+- **More than one request per question.** The tool sometimes makes a second
+  request by itself: when a reply reaches the model's output limit, when a
+  safety classifier stops it, or when it has no visible text, the tool adds
+  a short message saying so and asks again. Its token counts are then sums over the requests, and its
+  usage record lists the last response only. So the number of requests is
+  taken from the turn count (`requests`), a row is marked when the listed
+  response is larger than one request may be or the sum is larger than that
+  many requests, and the scorers print how many replies took more than one
+  request. An attachment smaller than one request's allowance could go
+  unmarked in such a call.
 - **How a reply is read** (`experiments/common.py`, used by every scorer): the
   answer is the last complete JSON object in the reply that has at least two
   of the requested keys. Three Opus 4.6 replies in test 2 hold two objects,

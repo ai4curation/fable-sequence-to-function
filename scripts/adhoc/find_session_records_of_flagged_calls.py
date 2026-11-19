@@ -1,42 +1,52 @@
-"""Find the command line tool's own session record for each flagged call and show the messages it holds.
+"""Find the command line tool's own session record for marked or multi-request calls and show what requests it made.
 
-Purpose: five Opus 4.6 high-effort test 2 rows are marked context_tokens_high with about twice (once three times)
-         the input of a single request (#65). The tool keeps a session file per call under
-         <config dir>/projects/-private-tmp/. This script finds the session whose first user message hashes to the
-         row's prompt_sha256 and prints, per record, its type, role, stop reason, usage and the start of any text that
-         is not the question, so that what the second request carried can be read.
-Inputs:  RESULTS (a results .jsonl, whose rows hold prompt_sha256), SESSIONS (the directory of session files).
-Outputs: text on standard output. Nothing is written. Session files are read only.     Serves: #65, #51.     2026-11-19
-Usage:   find_session_records_of_flagged_calls.py RESULTS SESSIONS
+Purpose: the `claude` tool keeps a session file per call under <config dir>/projects/-private-tmp/. For each row of
+         a results file that is marked context_tokens_high, or took more than one request, this prints the
+         sequence of records in its session: type, role, stop reason, token counts, and the length of each text
+         part. That shows whether a second request followed an output limit or a classifier stop (#65).
+Inputs:  RESULTS (a results .jsonl), SESSIONS (the directory of session files).
+Outputs: text on standard output. Nothing is written. Session files are read only.     Serves: #65, #81, #51.
+Usage:   find_session_records_of_flagged_calls.py RESULTS SESSIONS [--show-text]     2026-11-19
+
+A row is matched by its session_id when it has one, and otherwise by the hash of the session's first user message
+(prompt_sha256). A hash can match several sessions (the call and later re-asks of the same question); each is
+printed with its start time, and the row's asked_at is printed for comparison. A session whose first user message
+is not exactly the question is not found by hash.
+By default no message text is printed, only lengths: session files hold the machine's environment block and, in a
+call with attached context, the start of that context. --show-text prints the first 80 characters of the messages
+the tool itself added (isMeta user messages) and of API-error messages, and nothing else. Do not paste that output
+into an issue without reading it.
 """
 import hashlib, json, pathlib, sys
-res, sessions = map(pathlib.Path, sys.argv[1:3])
-R = [json.loads(l) for l in res.open()]; flagged = [r for r in R if r.get("context_tokens_high")]
-files = sorted(sessions.glob("*.jsonl"), key=lambda p: p.stat().st_mtime)[-600:]
-def first_user_hash(f):
-    """SHA-256 of the first user message of a session file: the question as the tool received it."""
+args = [a for a in sys.argv[1:] if a != "--show-text"]; SHOW = "--show-text" in sys.argv
+if len(args) != 2: sys.exit(__doc__)
+res, sessions = map(pathlib.Path, args)
+R = [json.loads(l) for l in res.open() if l.strip()]
+rows = [r for r in R if r.get("context_tokens_high") or max(r.get("requests") or 1, r.get("num_turns") or 1) > 1]
+def label(r): return " ".join(str(r[k]) for k in ("accession", "pdb", "condition", "variant", "cut") if k in r)
+def records(f):
     for line in f.open():
-        try: j = json.loads(line)
+        try: yield json.loads(line)
         except ValueError: continue
+def text_of(content): return content if isinstance(content, str) else "".join(b.get("text") or "" for b in content or [] if isinstance(b, dict))
+def first_user_hash(f):
+    for j in records(f):
         m = j.get("message") or {}
-        if j.get("type") == "user" and m.get("role") == "user":
-            c = m.get("content"); text = c if isinstance(c, str) else "".join(b.get("text") or "" for b in c or [] if isinstance(b, dict))
-            return hashlib.sha256(text.encode()).hexdigest()
-by_hash = {}
-for f in files: by_hash.setdefault(first_user_hash(f), []).append(f)
-def flat(content):
-    if isinstance(content, str): return [("text", content)]
-    return [(b.get("type"), b.get("text") or b.get("thinking") or "") for b in content or [] if isinstance(b, dict)]
-for r in flagged:
-    hits = by_hash.get(r["prompt_sha256"], [])
-    print(f"\n=== {r['accession']} {r['condition']}: input {r['input_tokens']}, output {r['output_tokens']}; session files whose first user message has the row's prompt hash: {len(hits)}")
+        if j.get("type") == "user" and m.get("role") == "user": return hashlib.sha256(text_of(m.get("content")).encode()).hexdigest()
+files = sorted(sessions.glob("*.jsonl")); by_hash = {}
+if any(not r.get("session_id") for r in rows):   # only then is every session file read
+    for f in files: by_hash.setdefault(first_user_hash(f), []).append(f)
+print(f"{res}: {len(R)} rows, {len(rows)} marked or with more than one request; {len(files)} session files in {sessions}")
+for r in rows:
+    sid = r.get("session_id"); hits = [f for f in files if f.stem == sid] if sid else by_hash.get(r.get("prompt_sha256"), [])
+    print(f"\n=== {label(r)}: asked_at {r.get('asked_at')}, marked {bool(r.get('context_tokens_high'))}, requests {r.get('requests')}, turns {r.get('num_turns')}, "
+          f"summed input {r.get('context_tokens', r.get('input_tokens'))}, output {r.get('output_tokens')}; matched by {'session id' if sid else 'prompt hash'}: {len(hits)} session file(s)")
     for f in hits:
         print(f"  -- {f.name}")
-        for line in f.open():
-            try: j = json.loads(line)
-            except ValueError: continue
-            m = j.get("message") or {}; u = m.get("usage") or {}
-            parts = flat(m.get("content"))
-            desc = "; ".join(f"{k} {len(v)} chars" + (f": {v[:160]!r}" if k == "text" and hashlib.sha256(v.encode()).hexdigest() != r["prompt_sha256"] else "") for k, v in parts)
-            print(f"     {j.get('type')!s:10} {str(j.get('subtype') or m.get('role') or ''):10} stop={m.get('stop_reason')} in={u.get('input_tokens')} out={u.get('output_tokens')} "
-                  f"meta={j.get('isMeta')} api_error={j.get('isApiErrorMessage')} {str(j.get('timestamp'))[11:19]}  {desc[:420]}")
+        for j in records(f):
+            if j.get("type") not in ("user", "assistant", "system"): continue
+            m = j.get("message") or {}; u = m.get("usage") or {}; c = m.get("content"); added = j.get("isMeta") or j.get("isApiErrorMessage")
+            parts = [("text", c)] if isinstance(c, str) else [(b.get("type"), b.get("text") or b.get("thinking") or "") for b in c or [] if isinstance(b, dict)]
+            desc = "; ".join(f"{k} {len(v)} chars" + (f": {v[:80]!r}" if SHOW and added and k == "text" else "") for k, v in parts)
+            print(f"     {str(j.get('timestamp'))[11:19]} {j.get('type')!s:9} {str(j.get('subtype') or m.get('role') or ''):26} stop={m.get('stop_reason')} in={u.get('input_tokens')} out={u.get('output_tokens')} "
+                  f"added_by_tool={bool(j.get('isMeta'))} api_error={bool(j.get('isApiErrorMessage'))}  {desc}")
