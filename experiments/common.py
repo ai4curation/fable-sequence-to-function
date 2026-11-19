@@ -20,6 +20,7 @@ import datetime, functools, hashlib, json, os, pathlib, re, subprocess
 # skill listings and connector tools can be attached. EXTRA removes them; what is left is an environment block of
 # about 600 tokens that the tool adds itself. Rows written by call() record EXTRA and the token counts.
 EXTRA = ["--setting-sources", "", "--strict-mcp-config", "--disable-slash-commands", "--no-chrome"]
+INPUT_KEYS = ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")
 def context_limit(prompt): return 700 + len(prompt)   # environment block plus at most one token per character of the question
 @functools.cache
 def cli_version(): return subprocess.run(["claude", "--version"], capture_output=True, text=True).stdout.strip()
@@ -27,9 +28,14 @@ def call(model, effort, prompt, tries=3, timeout=3600):
     """Ask one question. Returns (reply text or None, record). The record always has effort, attempts, prompt_sha256,
     extra_flags, cli_version and asked_at; a failed call adds `error`, an answered one adds cost, served, token
     counts, is_error and context_tokens_high, and the tool's own turn count, stop reason and usage records. An
-    API-error reply is tried again like a failed call. The token counts are summed over the requests the tool made:
-    if it made more than one for a question (seen once, on a reply with 73,000 thinking tokens), the sum can pass
-    the limit without any attached context. Such a row is still marked, left unscored and asked again.
+    API-error reply is tried again like a failed call.
+    The tool can make more than one request for a question, and its token counts are then sums over the requests
+    (#65). Its session records show two causes, both in the Opus 4.6 high-effort run of test 2: the reply reached
+    the output limit (64,000 tokens, all of it thinking), or a safety classifier stopped the reply. Each time the
+    tool added a message of about 40 tokens saying so and asked again; nothing about the protein was added. So
+    the input is checked per request (`context_tokens_max`, from `iterations` in the usage record), `requests`
+    records how many there were, and the scorers count the answers that took more than one. `session_id` names
+    the tool's local session record, which is not in the repository. Without `iterations` the sum is checked.
     """
     rec = dict(effort=effort, prompt_sha256=sha(prompt), extra_flags=EXTRA, cli_version=cli_version()); j = None; why = ""
     for attempt in range(1, tries + 1):
@@ -43,11 +49,14 @@ def call(model, effort, prompt, tries=3, timeout=3600):
         if not j.get("is_error"): break
     rec.update(attempts=attempt, asked_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))
     if j is None: return None, dict(rec, error=why or "no parseable output")
-    u = j.get("usage") or {}; context = sum(u.get(k) or 0 for k in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens"))
+    u = j.get("usage") or {}; context = sum(u.get(k) or 0 for k in INPUT_KEYS)
+    its = [i for i in (u.get("iterations") or []) if isinstance(i, dict)]   # one record per request the tool made
+    largest = max([sum(i.get(k) or 0 for k in INPUT_KEYS) for i in its] or [context])
     rec.update(cost=j.get("total_cost_usd"), served=list(j.get("modelUsage") or {}), thinking_tokens=(u.get("output_tokens_details") or {}).get("thinking_tokens"),
                input_tokens=u.get("input_tokens"), cache_creation_input_tokens=u.get("cache_creation_input_tokens"), cache_read_input_tokens=u.get("cache_read_input_tokens"),
-               output_tokens=u.get("output_tokens"), context_tokens=context, context_tokens_high=context > context_limit(prompt), is_error=bool(j.get("is_error")),
-               num_turns=j.get("num_turns"), stop_reason=j.get("stop_reason"), duration_ms=j.get("duration_ms"), usage=u, model_usage=j.get("modelUsage"))   # as the tool reports them
+               output_tokens=u.get("output_tokens"), context_tokens=context, context_tokens_max=largest, requests=len(its) or None,
+               context_tokens_high=largest > context_limit(prompt), is_error=bool(j.get("is_error")),
+               num_turns=j.get("num_turns"), stop_reason=j.get("stop_reason"), duration_ms=j.get("duration_ms"), session_id=j.get("session_id"), usage=u, model_usage=j.get("modelUsage"))   # as the tool reports them
     return j.get("result") or "", rec
 def unusable(r): return "error" in r or bool(r.get("is_error")) or bool(r.get("context_tokens_high"))
 _dec = json.JSONDecoder()
@@ -108,5 +117,7 @@ def efforts(R):
     e = sorted({r["effort"] for r in R if r.get("effort")}); return ", ".join(e) if e else "not recorded in rows"
 def failed(R): return sum(unusable(r) for r in R)   # rows the scorers skip; the question is asked again on the next run
 def tool_calls(R): return [r for r in R if not unusable(r) and has_tool_call(r.get("text"))]
+def continued(R): return [r for r in R if not unusable(r) and (r.get("requests") or 1) > 1]
 NOTE_FAILED = "calls that failed, returned an API error or carried attached context (not scored)"
 NOTE_TOOL = "replies with a tool invocation (no answer taken)"
+NOTE_CONTINUED = "answers that took more than one request (output limit reached or reply stopped by a safety classifier, then asked again by the tool; scored)"
