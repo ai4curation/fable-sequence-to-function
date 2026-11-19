@@ -9,10 +9,10 @@
 \setlength{\parindent}{0pt}\setlength{\parskip}{6pt plus 2pt minus 1pt}
 \newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
 
-\title{General-purpose language models read catalytic residues, domains and structure directly from protein sequence}
+\title{Two recent Claude models read catalytic residues, domains and secondary structure from protein sequence alone}
 % TODO: confirm the author list, affiliations and corresponding author before posting.
 \author{Christopher J. Mungall \todo{confirm authors and affiliations}}
-\date{Draft of 18 November 2026}
+\date{Draft of 19 November 2026}
 
 \begin{document}
 \maketitle
@@ -24,12 +24,12 @@ for annotation. Given only an amino-acid sequence and no tools, both models name
 for 35 to 39 of 45 sampled bacterial and archaeal proteins, with domain boundaries overlapping the
 reference by 0.85, and almost never assigned a domain to a shuffled sequence. They detected a single
 catalytic-residue substitution introduced into an active kinase: a catalytic aspartate-to-asparagine mutant
-was called active in 0 of 20 cases by either model, against 18 of 20 for the older Claude Opus~4.6. For
-protein structures released after training with no earlier structure at 30\% identity, three-state
-secondary structure accuracy was 73 to 76\% and long-range contact precision 19 to 37\%, against 2\% by
-chance. The models also fail in specific ways: they shift a catalytic role to a neighbouring identical
-residue, and they argue around a substitution they have just reported. The tests are small and each
-question was asked once. We conclude that sequence-only reading by these models is good enough to triage
+was called active in 0 of 20 cases by either model, against 18 of 20 for the older Claude Opus~4.6, which
+was run at a lower effort setting. For recently released protein structures with no earlier PDB entry at
+30\% sequence identity or more, three-state secondary structure accuracy was 73 to 76\%, against 57\% for
+the best single-state guess, and long-range contact precision was 19 to 37\%, against 2\% by chance. The models also fail in specific ways: they shift a catalytic role to a neighbouring identical
+residue, and they argue around a substitution they have just reported. The tests are small, each
+question was asked once, and only models from one vendor were tested. We conclude that sequence-only reading by these models is good enough to triage
 pseudoenzyme over-annotation, and is not a citable source of evidence.
 \end{abstract}
 
@@ -37,10 +37,13 @@ pseudoenzyme over-annotation, and is not a citable source of evidence.
 
 Protein language models such as ESM-2 and ProtGPT2 learn sequence statistics from protein databases and
 support structure prediction and design \citep{lin2023esm2,ferruz2022protgpt2}. General-purpose language
-models were not expected to share this ability. Tu and Chen recently reported that two of them do: on
-proteins from little-studied domain-of-unknown-function families, Claude Fable~5.2 and Claude Opus~5.5
-predicted the next amino acid much more often for real sequences than for shuffled ones, at a level
-comparable to dedicated protein language models \citep{tu2026claude,tu2026probe}.
+models are trained for other purposes. Tu and Chen recently reported that two of them nevertheless carry
+sequence knowledge: on proteins from little-studied domain-of-unknown-function families, Claude Fable~5.2
+and Claude Opus~5.5 predicted the next amino acid much more often for real sequences than for shuffled
+ones, at a level comparable to dedicated protein language models. The same report found little or no such
+signal in the models it tested from other vendors, and a smaller one in earlier Claude models
+\citep{tu2026claude,tu2026probe}. Our tests cover the two models with the strongest reported signal and one
+earlier Claude model, and say nothing about language models in general.
 
 Next-residue accuracy does not say whether a model can do anything a curator needs. Function prediction
 tools make characteristic errors, and one of the most damaging is to assign a catalytic activity to a
@@ -51,7 +54,8 @@ model that only recognises the family will repeat this error; a model that reads
 We therefore ran four small tests, each with a control the model could not pass by recall: a subsample
 replication of the next-residue result; domain and membrane-feature annotation with shuffled sequences as
 a control; catalytic-activity calls on kinases carrying a single substitution that we introduced; and
-secondary structure, contact and function prediction for structures released after the models' training.
+secondary structure, contact and function prediction for structures released in the PDB in the three
+months before the tests.
 
 \section{Methods}
 
@@ -94,10 +98,15 @@ whether the protein is catalytically active.
 
 \paragraph{Test 4, structure and function.} From the PDB \citep{rcsb} we took X-ray entries released on
 or after 1 August 2026 with one protein entity of 100 to 350 residues and resolution of 2.5~\AA{} or
-better. We kept 15 ``novel'' entries, for which a sequence search found no PDB entity at 30\% identity
-or more released before 1 June 2026, and 15 ``known'' entries with at least 20. The model predicted helix
+better. We kept 15 entries for which a sequence search found no PDB entity at 30\% identity or more
+released before 1 June 2026, and 15 entries with at least 20. We call these strata ``novel'' and ``known''
+for short. The labels describe that criterion only. Novel entries may have more distant homologs in the
+PDB; 8 of the 12 distinct novel proteins have UniProt accessions, so their sequences were public earlier;
+structures are deposited months before release; and the work behind an entry may have been described in
+a preprint. We do not know the models' training cutoffs, and the two dates are our assumption that
+structures released from August 2026 were not in training. The model predicted helix
 and strand ranges, a fold, 20 residue pairs at least 24 apart in sequence that it expected to lie within
-8~\AA{} (C$\alpha$), and a function. Truth was the deposited coordinates and the depositors' helix and
+8~\AA{} (C$\alpha$), a function, and whether it recognised the sequence as a specific known protein. Truth was the deposited coordinates and the depositors' helix and
 sheet records, scored over resolved residues. One protein, human ASPRV1, was drawn four times in the novel
 set; we report results with it counted once (12 novel proteins). The function call for those 12 proteins was graded once, unblinded, against the
 deposited title by the AI agent that ran the tests.
@@ -106,17 +115,29 @@ deposited title by the AI agent that ran the tests.
 
 \subsection{The next-residue result replicates in direction}
 
-Both newer models predicted real sequence better than shuffled sequence, and Opus~4.6 did not
-(Table~\ref{tab:next}). Accuracy was well below the published values for the identical questions (58.8\%
+Fable~5.2 predicted real sequence better than shuffled sequence at both effort settings, and Opus~5.5 did
+so at high effort; at low effort the interval for Opus~5.5 includes zero. Opus~4.6, run at low effort only,
+showed no difference (Table~\ref{tab:next}). Accuracy was well below the published values for the identical questions (58.8\%
 for Fable~5.2 and about 40\% for Opus~5.5), which we attribute, without having tested it, to sampled
-answers and the extra context. Reversed sequence scored like shuffled sequence. Four no-model heuristics,
+answers and the extra context. Reversed sequence, tested at low effort only, scored like shuffled
+sequence for Fable~5.2 and between shuffled and real for Opus~5.5. Four no-model heuristics,
 such as repeating the last residue, scored 7 to 10\% on real, shuffled and reversed sequence alike over
 all 3,340 cut points.
 
-Unlike the original report, we found that accuracy depended on whether the model reasoned before
-answering. At low effort Fable~5.2 was correct on 57.9\% of real cut points when it chose to think (38
-questions) and 12.2\% when it did not (98). At high effort Opus~5.5 was correct on 39.0\% with thinking
-(41) and 9.9\% without (91). The reasoning text is not available to us.
+Accuracy on real sequence rose with the effort setting. For Fable~5.2 the same 136 real cut points gave
+25.0\% at low effort and 41.2\% at high effort, where every answer used thinking tokens; shuffled sequence
+gave 7.4\% and 11.8\%. This is the only controlled evidence here on reasoning, and it differs from the
+original report, in which answers without thinking were as accurate as those with it.
+
+Within a run, answers that used thinking were more often right, but the model chooses when to think, so
+this comparison is descriptive and not a measure of what thinking does. At low effort Fable~5.2 thought on
+38 of 136 real cut points and was correct on 57.9\% of them, against 12.2\% of the other 98. It thought on
+only 15 shuffled and 17 reversed cut points, and on shuffled sequence thinking did not help (0 of 15
+correct, against 10 of 121 without). At high effort, where it thought on every question, its accuracy on
+real sequence was 41.2\%, well below the 57.9\% of the questions it had selected itself. The model
+appears to think when it recognises something, so the split partly sorts questions by difficulty.
+Opus~5.5 at high effort was correct on 39.0\% of real cut points with thinking (41) and 9.9\% without
+(91). The reasoning text is not available to us.
 
 \begin{table}[ht]
 \centering\small
@@ -200,21 +221,29 @@ substitution introduced for this study. Opus~4.6 ran at low effort.}
 \label{fig:pseudo}
 \end{figure}
 
-\subsection{Structure is predicted for post-training entries, and function follows where the fold is catalytic}
+\subsection{Secondary structure and contacts are predicted above chance for recently released structures}
 
 For the 12 novel proteins, Fable~5.2 and Opus~5.5 reached 76\% and 73\% three-state accuracy, against
 57\% for the best single-state guess, and 37\% and 19\% long-range contact precision, against 2\% by
-chance (Figure~\ref{fig:struct}). Scores for proteins with earlier homologous structures were a few
-points higher. Opus~4.6 was at or below both baselines. These values are far short of dedicated
+chance (Figure~\ref{fig:struct}). Scores for the known stratum were a few points higher. Fable~5.2 said
+it recognised 2 of the 12 novel proteins (ASPRV1 and MrtR) and 14 of the 15 known entries; Opus~5.5 said
+it recognised none of the novel proteins. Opus~4.6, at low effort, scored below the single-state guess on
+secondary structure and near chance on contacts, which suggests that its low-effort answers say little
+about what it can do. These values are far short of dedicated
 structure predictors \citep{jumper2021alphafold}; the point is that they are well above chance for a
 model given no alignment and no tools.
 
 In the manual grading of function for the 12 novel proteins, Fable~5.2 was correct on 6, abstained on 5
 and was wrong on 1; Opus~5.5 was correct on 4, abstained on 7 and was wrong on 1. The correct calls were
-proteins whose fold carries a recognisable catalytic or ligand-binding signature. For a domain of
+mostly members of large, well-characterised families, and we did not test whether the models reached
+them through the predicted structure or by recognising the family from sequence. For a domain of
 \textit{Arabidopsis} AtDUC1 (PDB 9T71), deposited under the name ``EEIG1/EHBP1 protein amino-terminal
 domain protein'', Fable~5.2 predicted a papain-like cysteine peptidase with a Cys-His-Asp triad,
-``possibly a deubiquitinase''; the entry is the structure of its deubiquitinase domain. The wrong call
+``possibly a deubiquitinase''; the entry is the structure of its deubiquitinase domain. This call cannot
+be credited to inference from sequence alone: a preprint describing this protein family as
+deubiquitinases was posted in December 2025 \citep{lachmayer2025ducs}, eight months before the structure
+was released, and a model trained after that date could have learned it. We did not search for earlier
+descriptions of the other novel proteins. The wrong call
 from Fable~5.2 was the guanidine prenyltransferase NosH (9TGX), which it named a TenA-family thiaminase.
 Neither model identified the RNase~P subunit Rpp30 (10CW) or a designed cysteine protease (9YP0).
 
@@ -225,17 +254,24 @@ catalytic aspartate was replaced and that the construct was probably inactive.
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{figures/fig2_structure.pdf}
-\caption{Structure prediction from sequence for PDB entries released after training, with ASPRV1 counted
-once (12 novel, 15 known; for Opus~5.5, the call for one known entry returned an API error instead of an answer). Dashed lines show the best single-state
+\caption{Structure prediction from sequence for PDB entries released from August 2026, with ASPRV1
+counted once. Novel: no PDB entity at 30\% identity or more released before June 2026. Known: at least 20
+such entities. (12 novel, 15 known; for Opus~5.5, the call for one known entry returned an API error instead of an answer). Dashed lines show the best single-state
 guess (left) and the chance rate for a long-range pair (right).}
 \label{fig:struct}
 \end{figure}
 
 \section{Discussion}
 
-The two newer models do more than recognise a family. They change their answer when one catalytic
-residue changes, name that residue, and predict contacts for proteins with no earlier structural
-homolog. The older Opus~4.6 does none of this, so the ability is recent and specific to certain models.
+Fable~5.2 and Opus~5.5 do more than recognise a family. They change their answer when one catalytic
+residue changes and name that residue, and they predict secondary structure and contacts above chance
+for proteins with no earlier PDB entry at 30\% identity. How far this extends is not established here. We
+tested two models from one vendor. The comparison with Opus~4.6 is not like for like, because it ran at a
+lower effort setting, and it is not a blank: at that setting it still found all 9 signal peptides, with 7
+false positives, and 51 of 74 transmembrane helices. The report that prompted this work found a graded
+next-residue signal across Claude models released between Opus~4.6 and Fable~5.2, and little or none in
+other vendors' models \citep{tu2026claude}; we tested none of those, so we cannot say whether reading
+catalytic residues tracks that signal.
 
 For annotation review, the practical use is narrow. A sequence-only read can flag a probable pseudoenzyme
 before a catalytic term is accepted, and can question an implausible name. It cannot serve as evidence:
@@ -249,7 +285,10 @@ direct greedy calls. Opus~4.6 ran at a lower effort setting. Swiss-Prot proteins
 wild-type results in test 3 may reflect recall; the mutants do not. Transmembrane and signal-peptide truth
 in test 2 is predicted. Function in test 4 was graded once, unblinded, by the agent that ran the tests. We did not test eukaryotic
 multi-domain proteins in test 2, membrane proteins in test 4, variant effects, or whether reasoning
-improves tests 2 to 4. We have no information on how these models were trained and draw no conclusion
+improves tests 2 to 4. The novel stratum of test 4 excludes close homologs in the PDB and nothing else:
+most of its sequences were already public, remote homologs were not excluded, and at least one protein was
+described in a preprint before the structure was released. The split of test-1 accuracy by thinking is
+observational. We have no information on how these models were trained and draw no conclusion
 about it.
 
 \section*{Data and code availability}
