@@ -10,14 +10,17 @@ Usage:   mutate_common_and_run_stub_test.py
 import pathlib, shutil, subprocess, sys, tempfile
 REPO = pathlib.Path(__file__).resolve().parents[2]
 MUTANTS = [   # name, text in common.py, replacement
-    ("requests from the turn count only (#105)", "n = max(_int(turns) or 1, by_tokens, 1)", "n = max(_int(turns) or 1, 1)"),
+    ("requests from the turn count only (#105)", "n = turns_n + min(max(by_tokens - turns_n, 0), MAX_UNCOUNTED_RETRIES)", "n = turns_n"),
+    ("retry bound removed (#109)", "n = turns_n + min(max(by_tokens - turns_n, 0), MAX_UNCOUNTED_RETRIES)", "n = max(turns_n, by_tokens)"),
+    ("empty usage record accepted (#110)", "    bad = bad or all(c is None for c in top)", "    pass"),
+    ("negative cost stored (#110)", "and c is not None and c >= 0", "and c is not None"),
     ("sum rule dropped", " or context > n * context_limit(prompt)", ""),
     ("listed-response rule dropped", "context_tokens_high=largest > context_limit(prompt) or context", "context_tokens_high=context"),
     ("continued() reads only requests", "return max(_int(r.get(\"requests\")) or 1, _int(r.get(\"num_turns\")) or 1)", "return _int(r.get(\"requests\")) or 1"),
     ("continued() reads only num_turns", "return max(_int(r.get(\"requests\")) or 1, _int(r.get(\"num_turns\")) or 1)", "return _int(r.get(\"num_turns\")) or 1"),
     ("successful attempt's cost left out", "        spent += _num(j.get(\"total_cost_usd\"))\n        if not j.get(\"is_error\"): break\n",
      "        if not j.get(\"is_error\"): break\n        spent += _num(j.get(\"total_cost_usd\"))\n"),
-    ("n = turns for any int", "n = max(_int(turns) or 1, by_tokens, 1)", "n = _int(turns) if _int(turns) is not None else 1"),
+    ("n = turns for any int", "turns_n = max(_int(turns) or 1, 1)", "turns_n = _int(turns) if _int(turns) is not None else 1"),
     ("negative counts accepted", "and math.isfinite(x) and x >= 0 else False", "and math.isfinite(x) else False"),
     ("missing usage record accepted", "bad = not isinstance(u, dict);", "bad = False;"),
     ("listed counts not checked", "bad = bad or any(c is False for c in top + sum(each, []))", "bad = bad or any(c is False for c in top)"),

@@ -31,18 +31,21 @@ CACHE_KEYS = ("ephemeral_1h_input_tokens", "ephemeral_5m_input_tokens")
 DETAIL_KEYS = ("thinking_tokens",)
 MODEL_USAGE_KEYS = ("inputTokens", "outputTokens", "cacheReadInputTokens", "cacheCreationInputTokens", "webSearchRequests", "costUSD", "contextWindow", "maxOutputTokens",
                     "thinkingTokens", "cacheCreationEphemeral5mInputTokens", "cacheCreationEphemeral1hInputTokens", "canonicalModel", "provider", "costBasis")
-def _num(x): return x if isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) else 0   # for costs: anything else is 0
+def _finite(x):
+    try: return math.isfinite(x)
+    except OverflowError: return False   # an int too large for a float
+def _num(x): return x if isinstance(x, (int, float)) and not isinstance(x, bool) and _finite(x) else 0   # for costs: anything else is 0
 def _count(x):
     """An input-token count: None if it is missing, the number if it is a finite number, and False if it is something else.
     A row with a count that is present but unreadable is marked (`usage_unreadable`), not read as 0 (#84)."""
     if x is None: return None
-    return x if isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) and x >= 0 else False   # negative counts are unreadable too
+    return x if isinstance(x, (int, float)) and not isinstance(x, bool) and _finite(x) and x >= 0 else False   # negative counts are unreadable too
 def _int(x):
     """A turn or request count as an int, or None: accepts an int, an integral float and a string of digits (#84)."""
     if isinstance(x, bool): return None
     if isinstance(x, int): return x
     if isinstance(x, float) and math.isfinite(x) and x == int(x): return int(x)
-    if isinstance(x, str) and x.strip().isascii() and x.strip().isdecimal(): return int(x.strip())   # not "²", which isdigit() accepts
+    if isinstance(x, str) and x.strip().isascii() and x.strip().isdecimal() and len(x.strip()) < 10: return int(x.strip())   # not "²", which isdigit() accepts
     return None
 def _keep(d, keys, dropped, where):
     """The entries of d whose key is in keys; the names of the others go to `dropped`."""
@@ -57,6 +60,7 @@ def _usage(u, dropped):
         for i in out["iterations"]:
             if isinstance(i, dict) and isinstance(i.get("cache_creation"), dict): i["cache_creation"] = _keep(i["cache_creation"], CACHE_KEYS, dropped, "iterations.cache_creation.")
     return out
+MAX_UNCOUNTED_RETRIES = 1   # requests the tool may retry inside one call without counting a turn (#105, #109); real data shows one
 def context_limit(prompt): return 700 + len(prompt)   # environment block plus at most one token per character of the question
 @functools.cache
 def cli_version(): return subprocess.run(["claude", "--version"], capture_output=True, text=True).stdout.strip()
@@ -74,15 +78,18 @@ def call(model, effort, prompt, tries=3, timeout=3600):
     request carried 20 to 99 more input tokens than the one before (99 when the tool also added a note that the
     date had changed), and nothing about the protein. A request retried after a failure is counted in the token
     sums but not in the turn count. The reported token counts are sums over the requests, while `iterations` in
-    the usage record lists the last response only. So `requests` is the larger of the turn count and the summed
-    input divided by the listed response, rounded (`requests_by_tokens`); with no `iterations` it is the turn
-    count and the listed size is the sum divided by it. A row is marked when the listed response
-    (`context_tokens_max`) is larger than one request may be, or the sum is larger than `requests` such requests.
+    the usage record lists the last response only. So `requests` is the turn count, plus at most
+    MAX_UNCOUNTED_RETRIES (1) when the summed input divided by the listed response (`requests_by_tokens`) is
+    larger; with no `iterations` it is the turn count and the listed size is the sum divided by it. A row is
+    marked when the listed response (`context_tokens_max`) is larger than one request may be, or the sum is larger
+    than `requests` such requests (#109).
     Limits of the mark: the allowance of 700 tokens plus one per character of the question is loose. In the
     rows of the Opus 4.6 high-effort runs scored as one request the input was 710 to 1,147 tokens below it, so an
     attachment of up to about that size goes unmarked in any call. An attachment resent with every request is
-    marked through the listed response; one present only in earlier, unlisted requests is not, because it is
-    counted as further requests. A follow-up request that resent a
+    marked through the listed response. One present only in earlier, unlisted requests is marked once it exceeds
+    the allowance of one assumed retry (about one request's worth); below that it passes as a retry. More than
+    one uncounted retry in a call would mark a clean reply, which would then be asked again. A follow-up request
+    that resent a
     long visible reply would be marked and asked again. `session_id` names the tool's local session record,
     which is not in the repository. Of the tool's usage records only the keys listed above are kept, and the
     names of any others are in `usage_keys_dropped`.
@@ -106,14 +113,20 @@ def call(model, effort, prompt, tries=3, timeout=3600):
     turns = j.get("num_turns")
     top = [_count(u.get(k)) for k in INPUT_KEYS]; its = u.get("iterations"); its = [i for i in its if isinstance(i, dict)] if isinstance(its, list) else []
     each = [[_count(i.get(k)) for k in INPUT_KEYS] for i in its]; bad = bad or any(c is False for c in top + sum(each, []))
+    bad = bad or all(c is None for c in top)   # a usage record without any input count: the input size is unknown (#110)
     context = sum(c or 0 for c in top); listed = max([sum(c or 0 for c in e) for e in each] or [0])
-    # Requests: the turn count, or more when the summed input holds more requests than that (a request that failed
-    # inside the tool and was retried is summed but not counted as a turn, #105). Rounding the sum by the listed
-    # response is exact for clean requests, which differ by at most about 100 tokens.
-    by_tokens = round(context / listed) if listed else 1; n = max(_int(turns) or 1, by_tokens, 1)
+    # Requests: the turn count, plus at most MAX_UNCOUNTED_RETRIES when the summed input holds more requests than
+    # that (a request that failed inside the tool and was retried is summed but not counted as a turn, #105). The
+    # bound keeps the sum test working: input beyond that many requests is marked (#109). Dividing the sum by the
+    # listed response gives the count exactly up to 3 requests with the observed increments; beyond that it can
+    # be one low (#110).
+    turns_n = max(_int(turns) or 1, 1)
+    by_tokens = round(context / listed) if listed and math.isfinite(context / listed) else turns_n
+    n = turns_n + min(max(by_tokens - turns_n, 0), MAX_UNCOUNTED_RETRIES)
     largest = listed or context / n   # the listed response; without one, the mean request
     details = u.get("output_tokens_details"); dropped = []
-    c = j.get("total_cost_usd"); rec.update(cost=c if _num(c) == c and c is not None else None, served=list(mu), thinking_tokens=details.get("thinking_tokens") if isinstance(details, dict) else None,
+    c = j.get("total_cost_usd"); ok_cost = _num(c) == c and not isinstance(c, bool) and c is not None and c >= 0
+    rec.update(cost=c if ok_cost else None, served=list(mu), thinking_tokens=details.get("thinking_tokens") if isinstance(details, dict) else None,
                input_tokens=u.get("input_tokens"), cache_creation_input_tokens=u.get("cache_creation_input_tokens"), cache_read_input_tokens=u.get("cache_read_input_tokens"),
                output_tokens=u.get("output_tokens"), context_tokens=context, context_tokens_max=largest, requests=n, requests_by_tokens=by_tokens,
                context_tokens_high=largest > context_limit(prompt) or context > n * context_limit(prompt), is_error=bool(j.get("is_error")),
@@ -188,4 +201,6 @@ def requests_made(r):
 def continued(R): return [r for r in R if not unusable(r) and requests_made(r) > 1]
 NOTE_FAILED = "calls that failed, returned an API error, carried attached context or had an unreadable usage record (not scored)"
 NOTE_TOOL = "replies with a tool invocation (no answer taken)"
-NOTE_CONTINUED = "replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply; read like any other)"
+def cost_unknown(R): return [r for r in R if r.get("cost_reported") is not None]   # rows whose reported cost was not a usable number
+NOTE_COST = "rows whose reported cost is not a non-negative number (left out of the cost total; see cost_reported)"
+NOTE_CONTINUED = "replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply, or retried a failed request; read like any other)"

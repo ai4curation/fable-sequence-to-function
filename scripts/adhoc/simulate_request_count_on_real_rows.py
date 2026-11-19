@@ -1,12 +1,13 @@
 """Apply the request-count and marking rule of call() to stored rows that carry the tool's usage record.
 
-Purpose: issue 105 changed how call() counts requests (the larger of the turn count and the summed input divided by
-         the listed response). This recomputes, for every stored row with a usage record, the turn count, the count
-         from tokens, and whether the row would be marked under the new rule and under the turn count alone, and
-         lists rows where the two disagree. Nothing is written; stored marks are not changed.
-Inputs:  results .jsonl files given as arguments; each row's prompt length comes from its stored context only if the
-         prompt is not available, so the limit is recomputed from the row's question where the test's prompt can be
-         rebuilt (tests 2 to 4 and the decoy control); otherwise the row is skipped for marking.
+Purpose: issues 105 and 109 changed how call() counts requests (the turn count plus at most one retry inferred from
+         the summed input divided by the listed response). This recomputes, for every stored row with a usage
+         record, the turn count, the count from tokens, and whether the row would be marked under the new rule and
+         under the turn count alone, and lists rows where they differ. Nothing is written; stored marks are not
+         changed.
+Inputs:  results .jsonl files of tests 2 to 4 given as arguments. The limit needs the question's length, which is
+         rebuilt from the test's prompt and the row's sequence (real sequences only); rows whose question cannot
+         be rebuilt (shuffled test 2 sequences) are counted and skipped.
 Outputs: text on standard output.     Serves: issue 105 (pull request 53).     2026-11-19
 Usage:   simulate_request_count_on_real_rows.py RESULTS.jsonl ...
 """
@@ -32,7 +33,7 @@ for f in map(pathlib.Path, sys.argv[1:]):
         u = r.get("usage")
         if not isinstance(u, dict) or not isinstance(u.get("iterations"), list) or not u["iterations"]: continue
         seen += 1; ctx = r["context_tokens"]; listed = max(sum(i.get(k) or 0 for k in common.INPUT_KEYS) for i in u["iterations"] if isinstance(i, dict))
-        turns = common._int(r.get("num_turns")) or 1; by_tokens = round(ctx / listed) if listed else 1; n = max(turns, by_tokens)
+        turns = common._int(r.get("num_turns")) or 1; by_tokens = round(ctx / listed) if listed else 1; n = turns + min(max(by_tokens - turns, 0), common.MAX_UNCOUNTED_RETRIES)
         L = SEQ.get(r.get("prompt_sha256")); lim = 700 + L if L else None
         if lim is None: unknown += 1; continue
         old = listed > lim or ctx > turns * lim; new = listed > lim or ctx > n * lim
