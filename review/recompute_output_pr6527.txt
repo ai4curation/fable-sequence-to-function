@@ -1,0 +1,172 @@
+============================== TEST 1: next residue
+
+-- claude-fable-5-2 effort=low: 408 answered, 0 errors; served-model sets: {('claude-fable-5-2',): 408}
+   real      n=136 correct 34/136 (25.0%) invalid=0 | thinking: 22/38 (57.9%) invalid=0 | no thinking: 12/98 (12.2%) invalid=0
+   shuffled  n=136 correct 10/136 (7.4%) invalid=0 | thinking: 0/15 (0.0%) invalid=0 | no thinking: 10/121 (8.3%) invalid=0
+   reversed  n=136 correct 12/136 (8.8%) invalid=0 | thinking: 1/17 (5.9%) invalid=0 | no thinking: 11/119 (9.2%) invalid=0
+   gap real-shuffled +17.6 (95% +9.6 to +26.5), 68 families
+   real answers: median reply length 10 chars, max 11; replies with more than one residue run (parser takes the last): 0
+   real, by family-size bin (n, thinking, correct): {'1000-3000': (34, 4, 4), '10000-max': (34, 18, 14), '300-1000': (34, 4, 6), '3000-10000': (34, 12, 10)}
+
+-- claude-opus-5-5 effort=low: 408 answered, 0 errors; served-model sets: {('claude-opus-5-5',): 408}
+   real      n=136 correct 23/136 (16.9%) invalid=0 | thinking: 0/0 invalid=0 | no thinking: 23/136 (16.9%) invalid=0
+   shuffled  n=136 correct 13/136 (9.6%) invalid=0 | thinking: 0/0 invalid=0 | no thinking: 13/136 (9.6%) invalid=0
+   reversed  n=136 correct 17/136 (12.5%) invalid=0 | thinking: 0/0 invalid=0 | no thinking: 17/136 (12.5%) invalid=0
+   gap real-shuffled +7.4 (95% -1.5 to +16.2), 68 families
+   real answers: median reply length 10 chars, max 114; replies with more than one residue run (parser takes the last): 5
+   real, by family-size bin (n, thinking, correct): {'1000-3000': (34, 0, 3), '10000-max': (34, 0, 6), '300-1000': (34, 0, 8), '3000-10000': (34, 0, 6)}
+
+-- claude-opus-4-6 effort=low: 408 answered, 0 errors; served-model sets: {('claude-opus-4-6',): 408}
+   real      n=136 correct 7/136 (5.1%) invalid=0 | thinking: 0/1 (0.0%) invalid=0 | no thinking: 7/135 (5.2%) invalid=0
+   shuffled  n=136 correct 10/136 (7.4%) invalid=0 | thinking: 1/2 (50.0%) invalid=0 | no thinking: 9/134 (6.7%) invalid=0
+   reversed  n=136 correct 8/136 (5.9%) invalid=0 | thinking: 0/1 (0.0%) invalid=0 | no thinking: 8/135 (5.9%) invalid=0
+   gap real-shuffled -2.2 (95% -7.4 to +2.9), 68 families
+   real answers: median reply length 10 chars, max 175; replies with more than one residue run (parser takes the last): 10
+   real, by family-size bin (n, thinking, correct): {'1000-3000': (34, 1, 2), '10000-max': (34, 0, 2), '300-1000': (34, 0, 0), '3000-10000': (34, 0, 3)}
+
+-- claude-fable-5-2 effort=high: 272 answered, 0 errors; served-model sets: {('claude-fable-5-2',): 272}
+   real      n=136 correct 56/136 (41.2%) invalid=0 | thinking: 56/136 (41.2%) invalid=0 | no thinking: 0/0 invalid=0
+   shuffled  n=136 correct 16/136 (11.8%) invalid=0 | thinking: 16/136 (11.8%) invalid=0 | no thinking: 0/0 invalid=0
+   gap real-shuffled +29.4 (95% +18.4 to +40.4), 68 families
+   real answers: median reply length 10 chars, max 82; replies with more than one residue run (parser takes the last): 1
+   real, by family-size bin (n, thinking, correct): {'1000-3000': (34, 34, 10), '10000-max': (34, 34, 16), '300-1000': (34, 34, 13), '3000-10000': (34, 34, 17)}
+
+-- claude-opus-5-5 effort=high: 264 answered, 0 errors; served-model sets: {('claude-opus-5-5',): 261, ('claude-opus-5', 'claude-opus-5-5'): 3}
+   real      n=132 correct 25/132 (18.9%) invalid=0 | thinking: 16/41 (39.0%) invalid=0 | no thinking: 9/91 (9.9%) invalid=0
+   shuffled  n=132 correct 10/132 (7.6%) invalid=0 | thinking: 3/39 (7.7%) invalid=0 | no thinking: 7/93 (7.5%) invalid=0
+   gap real-shuffled +11.4 (95% +3.0 to +20.5), 66 families
+   real answers: median reply length 10 chars, max 148; replies with more than one residue run (parser takes the last): 1
+   real, by family-size bin (n, thinking, correct): {'1000-3000': (34, 6, 2), '10000-max': (34, 16, 9), '300-1000': (34, 8, 7), '3000-10000': (30, 11, 7)}
+
+============================== TEST 2: domains / membrane features
+truth: set sizes {'B': 45, 'A': 15} | proteins with TM 18 | with signal 9 | reference Pfam matches (set B) 60 | distinct reference families (set B) 56
+
+-- claude-fable-5-2: 120 calls, 0 unparsed; served sets {('claude-fable-5-2',): 120}
+   set B real n=45: proteins with >=1 correct family (id or name) 39, by accession only 39; predicted domains 59, right accession 52, right id-or-name 52; reference families recovered by accession 46/56 (82.1%); IoU 0.85 (n=52)
+       TM helices recovered 59/59, predicted 67; signal TP 8 FN 0 FP 0 TN 37
+   set A real n=15: proteins with >=1 correct family (id or name) 8, by accession only 8; predicted domains 11, right accession 10, right id-or-name 10; reference families recovered by accession 9/17 (52.9%); IoU 0.94 (n=10)
+       TM helices recovered 15/15, predicted 18; signal TP 1 FN 0 FP 0 TN 14
+   shuffled: given any Pfam domain 1/60
+
+-- claude-opus-5-5: 120 calls, 0 unparsed; served sets {('claude-opus-5-5',): 120}
+   set B real n=45: proteins with >=1 correct family (id or name) 35, by accession only 35; predicted domains 48, right accession 42, right id-or-name 42; reference families recovered by accession 39/56 (69.6%); IoU 0.85 (n=42)
+       TM helices recovered 59/59, predicted 67; signal TP 8 FN 0 FP 0 TN 37
+   set A real n=15: proteins with >=1 correct family (id or name) 3, by accession only 3; predicted domains 3, right accession 3, right id-or-name 3; reference families recovered by accession 3/17 (17.6%); IoU 0.93 (n=3)
+       TM helices recovered 15/15, predicted 20; signal TP 1 FN 0 FP 0 TN 14
+   shuffled: given any Pfam domain 0/60
+
+-- claude-opus-4-6: 120 calls, 3 unparsed; served sets {('claude-opus-4-6',): 120}
+   set B real n=43: proteins with >=1 correct family (id or name) 5, by accession only 5; predicted domains 18, right accession 5, right id-or-name 5; reference families recovered by accession 5/53 (9.4%); IoU 0.61 (n=5)
+       TM helices recovered 38/58, predicted 55; signal TP 8 FN 0 FP 6 TN 29
+   set A real n=15: proteins with >=1 correct family (id or name) 0, by accession only 0; predicted domains 4, right accession 0, right id-or-name 0; reference families recovered by accession 0/17 (0.0%); IoU nan (n=0)
+       TM helices recovered 13/15, predicted 19; signal TP 1 FN 0 FP 0 TN 14
+   shuffled: given any Pfam domain 4/59
+
+============================== TEST 3: pseudoenzymes
+truth groups: {'kinase': 20, 'pseudo': 20, 'enzyme': 20}
+other-enzyme mutated residue types: {'D': 4, 'Y': 2, 'H': 4, 'S': 4, 'C': 2, 'E': 3, 'T': 1}
+
+-- claude-fable-5-2: 120 calls, 0 unparsed; effort {'high'}; served sets {('claude-fable-5-2',): 120}
+   enzyme  site_to_ala n=20: yes 3 no 17 uncertain 0 other 0 | mutated position flagged 17
+   enzyme  wt          n=20: yes 20 no 0 uncertain 0 other 0
+   kinase  asp_to_asn  n=20: yes 0 no 20 uncertain 0 other 0 | mutated position flagged 20
+   kinase  lys_to_met  n=20: yes 1 no 19 uncertain 0 other 0 | mutated position flagged 20
+   kinase  wt          n=20: yes 20 no 0 uncertain 0 other 0
+   pseudo  wt          n=20: yes 1 no 18 uncertain 1 other 0
+   kinase wild type: answers listing any substituted/missing residue 2/20
+   enzyme wild type: answers listing any substituted/missing residue 0/20
+
+-- claude-opus-5-5: 120 calls, 0 unparsed; effort {'high'}; served sets {('claude-opus-5-5',): 120}
+   enzyme  site_to_ala n=20: yes 3 no 15 uncertain 2 other 0 | mutated position flagged 15
+   enzyme  wt          n=20: yes 19 no 0 uncertain 1 other 0
+   kinase  asp_to_asn  n=20: yes 0 no 20 uncertain 0 other 0 | mutated position flagged 19
+   kinase  lys_to_met  n=20: yes 7 no 12 uncertain 1 other 0 | mutated position flagged 13
+   kinase  wt          n=20: yes 20 no 0 uncertain 0 other 0
+   pseudo  wt          n=20: yes 1 no 18 uncertain 0 other {'none': 1}
+   kinase wild type: answers listing any substituted/missing residue 3/20
+   enzyme wild type: answers listing any substituted/missing residue 1/20
+
+-- claude-opus-4-6: 120 calls, 0 unparsed; effort {'low'}; served sets {('claude-opus-4-6',): 120}
+   enzyme  site_to_ala n=20: yes 16 no 0 uncertain 4 other 0 | mutated position flagged 0
+   enzyme  wt          n=20: yes 15 no 1 uncertain 4 other 0
+   kinase  asp_to_asn  n=20: yes 18 no 0 uncertain 2 other 0 | mutated position flagged 0
+   kinase  lys_to_met  n=20: yes 18 no 0 uncertain 2 other 0 | mutated position flagged 0
+   kinase  wt          n=20: yes 18 no 0 uncertain 2 other 0
+   pseudo  wt          n=20: yes 16 no 3 uncertain 1 other 0
+   kinase wild type: answers listing any substituted/missing residue 2/20
+   enzyme wild type: answers listing any substituted/missing residue 3/20
+
+============================== TEST 4: structure
+strata: {'known': 15, 'novel': 15} | release dates 2026-08-05 to 2026-11-18
+novel entries:
+   12WN rel 2026-11-18 len 236 resolved 228 | ['synthetic construct'] | uniprot None | De novo protein design, desE2D
+   9SA5 rel 2026-08-05 len 340 resolved 311 | ['Bacillus cereus'] | uniprot None | Inhibition by ATP regulates the activity of a CBASS antiphage nucleotide cyclase
+   37QB rel 2026-09-23 len 309 resolved 302 | ['Mycobacterium tuberculosis'] | uniprot ['A5U8S8'] | Crystal Structure of the Ketopantoate Reductase PanG with NADP from Mycobacteriu
+   27IK rel 2026-09-02 len 137 resolved 137 | ['Homo sapiens'] | uniprot ['Q53RT3'] | Crystal structure of the mature form of human ASPRV1
+   27JP rel 2026-09-02 len 137 resolved 117 | ['Homo sapiens'] | uniprot ['Q53RT3'] | Crystal structure of the mature form of human ASPRV1
+   9TGX rel 2026-11-04 len 258 resolved 237 | ['Nostoc flagelliforme CCNUN1'] | uniprot ['A0A2K8SKL8'] | Guanidine prenyltransferase NosH in complex with guanidine
+   9WIA rel 2026-09-02 len 101 resolved 95 | ['Helicoverpa armigera'] | uniprot None | Crystal structure of Helicoverpa armigera oral secretion R-like protein 1
+   9T71 rel 2026-11-18 len 270 resolved 242 | ['Arabidopsis thaliana'] | uniprot ['A0A1P8B2L4'] | Crystal structure of the deubiquitinase domain of AtDUC1.
+   10ZI rel 2026-09-23 len 241 resolved 241 | ['Mesorhizobium tianshanense'] | uniprot ['Q45NF4'] | Crystal structure of MrtR bound to 3O-C8 homoserine lactone and tetraethylene gl
+   27JO rel 2026-09-02 len 136 resolved 120 | ['Homo sapiens'] | uniprot ['Q53RT3'] | Crystal structure of the mature form of human ASPRV1 bound to indinavir
+   23AA rel 2026-08-12 len 108 resolved 104 | ['Streptococcus gallolyticus'] | uniprot ['A0A1H9L9M4'] | Type II-A Anti-CRISPR protein AcrIIA17 from Streptococcus gallolyticus
+   9ZWQ rel 2026-09-23 len 182 resolved 155 | ['Homo sapiens'] | uniprot ['Q86UW6'] | Crystal structure of the N4BP2 polynucleotide kinase (PNK) domain in complex wit
+   10CW rel 2026-08-26 len 179 resolved 178 | ['Pyrobaculum neutrophilum'] | uniprot ['B1YD41'] | Crystal structure of Thermoproteus neutrophilus Rpp30
+   9YP0 rel 2026-09-09 len 187 resolved 185 | ['synthetic construct'] | uniprot None | Crystal structure of de novo cysteine protease (HC34 WT apo)
+   27IQ rel 2026-09-02 len 142 resolved 142 | ['Homo sapiens'] | uniprot ['Q53RT3'] | Crystal structure of the mature form of human ASPRV1 bound to filaggrin peptide
+
+-- claude-fable-5-2: 30 calls, 0 unparsed; effort {'high'}
+   novel (ASPRV1 once) n=12: Q3 76.3 vs best-constant 56.6 (difference +19.7, 95% +13.0 to +25.9; proteins at or below baseline 1)
+       contact precision 36.6 (95% 19.8 to 54.4; n=12) vs all-long-range chance 1.8 vs separation-matched chance 4.0; scorable pairs 229, dropped 11; says recognised 2/12
+         10CW: Q3 62 base 56 contacts 37 sep-chance 5 recognised=False
+         10ZI: Q3 79 base 65 contacts 25 sep-chance 1 recognised=True
+         12WN: Q3 72 base 60 contacts 55 sep-chance 7 recognised=False
+         23AA: Q3 78 base 58 contacts 11 sep-chance 2 recognised=False
+         27IK: Q3 75 base 45 contacts 75 sep-chance 6 recognised=True
+         37QB: Q3 84 base 63 contacts 80 sep-chance 6 recognised=False
+         9SA5: Q3 78 base 54 contacts 30 sep-chance 2 recognised=False
+         9T71: Q3 75 base 39 contacts 11 sep-chance 1 recognised=False
+         9TGX: Q3 82 base 86 contacts 0 sep-chance 1 recognised=False
+         9WIA: Q3 75 base 57 contacts 21 sep-chance 6 recognised=False
+         9YP0: Q3 79 base 43 contacts 0 sep-chance 1 recognised=False
+         9ZWQ: Q3 76 base 53 contacts 95 sep-chance 10 recognised=False
+       not-recognised only (n=10): Q3 76.1, contact precision 33.9
+   known (ASPRV1 once) n=15: Q3 81.8 vs best-constant 55.4 (difference +26.5, 95% +18.8 to +33.1; proteins at or below baseline 1)
+       contact precision 48.3 (95% 34.1 to 62.5; n=15) vs all-long-range chance 1.7 vs separation-matched chance 4.1; scorable pairs 289, dropped 11; says recognised 14/15
+
+-- claude-opus-5-5: 30 calls, 1 unparsed; effort {'high'}
+   novel (ASPRV1 once) n=12: Q3 73.4 vs best-constant 56.6 (difference +16.8, 95% +11.4 to +22.2; proteins at or below baseline 1)
+       contact precision 19.0 (95% 9.4 to 29.6; n=12) vs all-long-range chance 1.8 vs separation-matched chance 3.2; scorable pairs 208, dropped 32; says recognised 0/12
+         10CW: Q3 65 base 56 contacts 6 sep-chance 4 recognised=False
+         10ZI: Q3 76 base 65 contacts 20 sep-chance 1 recognised=False
+         12WN: Q3 80 base 60 contacts 33 sep-chance 5 recognised=False
+         23AA: Q3 73 base 58 contacts 5 sep-chance 2 recognised=False
+         27IK: Q3 69 base 45 contacts 25 sep-chance 4 recognised=False
+         37QB: Q3 81 base 63 contacts 60 sep-chance 6 recognised=False
+         9SA5: Q3 71 base 54 contacts 26 sep-chance 2 recognised=False
+         9T71: Q3 70 base 39 contacts 0 sep-chance 1 recognised=False
+         9TGX: Q3 84 base 86 contacts 0 sep-chance 1 recognised=False
+         9WIA: Q3 64 base 57 contacts 12 sep-chance 7 recognised=False
+         9YP0: Q3 76 base 43 contacts 0 sep-chance 1 recognised=False
+         9ZWQ: Q3 72 base 53 contacts 40 sep-chance 4 recognised=False
+   known (ASPRV1 once) n=14: Q3 78.3 vs best-constant 55.2 (difference +23.1, 95% +16.3 to +29.6; proteins at or below baseline 1)
+       contact precision 31.4 (95% 20.3 to 43.3; n=14) vs all-long-range chance 1.7 vs separation-matched chance 3.4; scorable pairs 259, dropped 21; says recognised 9/14
+
+-- claude-opus-4-6: 30 calls, 0 unparsed; effort {'low'}
+   novel (ASPRV1 once) n=12: Q3 48.1 vs best-constant 56.6 (difference -8.5, 95% -12.2 to -4.6; proteins at or below baseline 10)
+       contact precision 4.1 (95% 0.6 to 8.6; n=12) vs all-long-range chance 1.8 vs separation-matched chance 2.4; scorable pairs 224, dropped 16; says recognised 1/12
+         10CW: Q3 50 base 56 contacts 0 sep-chance 1 recognised=False
+         10ZI: Q3 49 base 65 contacts 0 sep-chance 1 recognised=False
+         12WN: Q3 61 base 60 contacts 15 sep-chance 8 recognised=False
+         23AA: Q3 56 base 58 contacts 0 sep-chance 1 recognised=False
+         27IK: Q3 33 base 45 contacts 0 sep-chance 2 recognised=False
+         37QB: Q3 46 base 63 contacts 0 sep-chance 3 recognised=False
+         9SA5: Q3 47 base 54 contacts 0 sep-chance 1 recognised=False
+         9T71: Q3 43 base 39 contacts 0 sep-chance 1 recognised=True
+         9TGX: Q3 70 base 86 contacts 7 sep-chance 1 recognised=False
+         9WIA: Q3 40 base 57 contacts 22 sep-chance 7 recognised=False
+         9YP0: Q3 34 base 43 contacts 0 sep-chance 0 recognised=False
+         9ZWQ: Q3 48 base 53 contacts 5 sep-chance 1 recognised=False
+       not-recognised only (n=11): Q3 48.6, contact precision 4.5
+   known (ASPRV1 once) n=15: Q3 45.1 vs best-constant 55.4 (difference -10.2, 95% -14.8 to -5.7; proteins at or below baseline 13)
+       contact precision 4.0 (95% 1.8 to 6.4; n=15) vs all-long-range chance 1.7 vs separation-matched chance 2.5; scorable pairs 272, dropped 28; says recognised 9/15
