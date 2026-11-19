@@ -17,11 +17,14 @@ decoys' route. Only the second compares answers collected the same way.
 Intervals are 95% Wilson score intervals. The paired test is an exact two-sided McNemar (binomial) test on the
 pairs where the decoy and the catalytic-site mutant got different calls. In the "all three types" block each
 kinase contributes two pairs, so those pairs are not independent; the per-type blocks have one pair per protein.
-"Active" means the answer "yes"; "no" and "uncertain" both count as not called active, as in Figure 1.
+"Active" means the answer "yes"; "no", "uncertain" and an answer without the field all count as not called active,
+as in Figure 1; answers without the field are listed.
+Files: results/NAME.jsonl is one block, compared with PROBE_DIR/pseudo/results/NAME.jsonl and results/bridge-NAME.jsonl,
+where NAME is MODEL or MODEL-TAG. Empty files are skipped. A question may have one usable row per file; a second one stops the script.
 """
-import collections, json, math, pathlib, re, sys
+import ast, collections, json, math, pathlib, re, sys
 HERE = pathlib.Path(__file__).resolve().parent; sys.path.insert(0, str(HERE.parent))
-from common import KEYS, NOTE_FAILED, NOTE_TOOL, efforts, failed, reparse, tool_calls
+from common import KEYS, NOTE_CONTINUED, NOTE_FAILED, NOTE_TOOL, continued, efforts, failed, reparse, sha, tool_calls, unusable
 if len(sys.argv) > 2: sys.exit(__doc__)
 PROBE = pathlib.Path(sys.argv[1]) if len(sys.argv) == 2 else HERE.parent
 VARIANTS = [("asp_decoy_to_asn", "asp_to_asn"), ("lys_decoy_to_met", "lys_to_met"), ("site_decoy_to_ala", "site_to_ala")]
@@ -30,10 +33,28 @@ T = {t["accession"]: t for t in json.loads((PROBE / "pseudo/truth.json").read_te
 def site(acc, variant): t = T[acc]; return {"asp_to_asn": t.get("asp"), "lys_to_met": t.get("lys"), "site_to_ala": t.get("site")}[variant]
 def load(path):
     """Rows of one results file with `ans` read from the reply text; the answered rows by (accession, variant)."""
-    R = [json.loads(l) for l in path.open()] if path.exists() else []; reparse(R, KEYS["pseudo"])
+    R = [json.loads(l) for l in path.open() if l.strip()] if path.exists() else []; reparse(R, KEYS["pseudo"])
+    twice = sorted(k for k, n in collections.Counter((r["accession"], r["variant"]) for r in R if not unusable(r)).items() if n > 1)
+    if twice: sys.exit(f"{path}: more than one usable row for {twice}; a question is scored on one answer")
     return R, {(r["accession"], r["variant"]): r for r in R if r.get("ans")}
 def active(r): return str(r["ans"].get("catalytically_active")).lower() == "yes"
 def positions(r, key): return {x.get("position") for x in (r["ans"].get(key) or []) if isinstance(x, dict)}
+def original_prompt(path):
+    """The string assigned to P in pseudo/ask.py, read without running that file (as ask_decoys.py does)."""
+    return next(ast.literal_eval(n.value) for n in ast.parse(path.read_text()).body if isinstance(n, ast.Assign) and any(getattr(t, "id", "") == "P" for t in n.targets))
+P = original_prompt(PROBE / "pseudo/ask.py")
+def fasta(s, w=60): return "\n".join(s[i:i+w] for i in range(0, len(s), w))
+SEQ = {k: d["sequence"] for k, d in D.items()}; SEQ.update({(t["accession"], v): s for t in T.values() for v, s in t["variants"].items()})
+def nocall(r): return str(r["ans"].get("catalytically_active")).lower() not in ("yes", "no", "uncertain")
+def describe(name, R, ans):
+    """Checks on one file that do not depend on the comparison: the question sent, the residue numbering, thinking, missing calls."""
+    h = [r for r in R if r.get("prompt_sha256")]; good = sum(r["prompt_sha256"] == sha(P + fasta(SEQ[(r["accession"], r["variant"])])) for r in h)
+    listed = [(x.get("residue"), x.get("position"), SEQ[k]) for k, r in ans.items() for x in (r["ans"].get("catalytic_residues") or []) if isinstance(x, dict)]
+    match = sum(isinstance(p, int) and 0 < p <= len(s) and s[p - 1] == str(res).strip().upper() for res, p, s in listed)
+    think = sum((r.get("thinking_tokens") or 0) > 0 for r in ans.values()); none = sorted(f"{a} {v}" for (a, v), r in ans.items() if nocall(r))
+    print(f"    {name}: listed catalytic residues that match the given sequence at the stated position {match}/{len(listed)}; answers that used thinking {think}/{len(ans)}; "
+          f"rows whose recorded prompt hash is that of the test 3 prompt plus this sequence {good}/{len(h)}; rows without a recorded hash {len(R) - len(h)}"
+          + (f"; answers without an activity call, counted as not called active: {', '.join(none)}" if none else ""))
 def mentions(r, pos): return bool(re.search(rf"(?<!\d){pos}(?!\d)", r.get("text") or ""))   # the position number anywhere in the reply
 def wilson(k, n, z=1.959964):
     if not n: return "n/a"
@@ -56,10 +77,12 @@ def versus(dec, pairs, ref):
 ORDER = ["claude-fable-5-2", "claude-opus-5-5", "claude-opus-4-6"]   # as in the manuscript; other files follow by name
 for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.startswith(("bridge-", "canary-"))), key=lambda p: (ORDER.index(p.stem) if p.stem in ORDER else len(ORDER), p.stem)):
     m = f.stem; R, dec = load(f); S, stored = load(PROBE / "pseudo/results" / f"{m}.jsonl"); B, bridge = load(HERE / "results" / f"bridge-{m}.jsonl")
+    if not R: continue   # an empty file, as a zero-question run could leave
     ctx = sorted(r["context_tokens"] if "context_tokens" in r else sum(r.get(x) or 0 for x in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")) for r in dec.values())
     print(f"\n== {m}: {len(R)} decoy calls, {len(dec)} answers scored, {len(R) - len(dec) - failed(R)} without an answer, effort {efforts(R)}, "
           f"cost ${sum(r.get('cost') or 0 for r in R):.2f}, median input tokens {ctx[len(ctx) // 2] if ctx else 'n/a'}")
     if failed(R): print(f"  {NOTE_FAILED}: {failed(R)}")
+    if continued(R) or continued(B): print(f"  {NOTE_CONTINUED}: decoys {len(continued(R))}, rerun {len(continued(B))}")
     if tool_calls(R): print(f"  {NOTE_TOOL}: " + ", ".join(r["accession"] + " " + r["variant"] for r in tool_calls(R)))
     refs = [("stored run", stored)]
     if B:
@@ -68,6 +91,8 @@ for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.sta
         print(f"  rerun of the test 3 mutants and wild types on this route: {len(B)} calls, {len(bridge)} answers, effort {efforts(B)}, cost ${sum(r.get('cost') or 0 for r in B):.2f}"
               + (f"; {NOTE_FAILED}: {failed(B)}" if failed(B) else "") + (f"; {NOTE_TOOL}: {len(tool_calls(B))}" if tool_calls(B) else ""))
         print(f"    same active/not-active call as the stored run in {same}/{len(both)}" + (": differ " + "; ".join(differ) if differ else ""))
+    print("  per file:"); describe("decoys", R, dec); describe("stored run", S, {k: r for k, r in stored.items() if k in SEQ and T[k[0]]["group"] != "pseudo"})
+    if B: describe("rerun on this route", B, bridge)
     if not dec: continue
     for dv, ov in VARIANTS + [("all", "all")]:
         pairs = sorted((acc, v, dict(VARIANTS)[v]) for acc, v in dec if dv in (v, "all"))

@@ -28,7 +28,10 @@ HERE = pathlib.Path(__file__).resolve().parent; sys.path.insert(0, str(HERE.pare
 ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
 ap.add_argument("model"); ap.add_argument("effort")
 ap.add_argument("--set", choices=("decoy", "original"), default="decoy"); ap.add_argument("--only", nargs="*", default=None)
-ap.add_argument("--limit", type=int, default=None); ap.add_argument("--tag", default=None); ap.add_argument("--probe-dir", type=pathlib.Path, default=HERE.parent)
+def count(x):
+    if int(x) < 0: raise argparse.ArgumentTypeError("--limit takes a number of questions, 0 or more")
+    return int(x)
+ap.add_argument("--limit", type=count, default=None); ap.add_argument("--tag", default=None); ap.add_argument("--probe-dir", type=pathlib.Path, default=HERE.parent)
 a = ap.parse_args()
 
 def original_prompt(path):
@@ -54,8 +57,9 @@ def ask(i):
     if text is None: return dict(row, **rec)
     return dict(row, text=text, ans=answer(text, KEYS["pseudo"]), **rec)
 
-with ThreadPoolExecutor(8) as ex, out.open("a") as fh:
-    for r in ex.map(ask, todo): fh.write(json.dumps(r) + "\n"); fh.flush()
-rows = [json.loads(l) for l in out.open()]
+if todo:   # nothing to ask: no file is created
+    with ThreadPoolExecutor(8) as ex, out.open("a") as fh:
+        for r in ex.map(ask, todo): fh.write(json.dumps(r) + "\n"); fh.flush()
+rows = [json.loads(l) for l in out.open() if l.strip()] if out.exists() else []
 print(f"{a.model} {a.set}: asked {len(todo)}, already answered {sum((i['accession'], i['variant']) in done for i in items)} of {len(items)}, file {out}; in file: {len(rows)} rows, "
       f"{failed(rows)} not usable (failed, API error or attached context), {sum(not r.get('ans') for r in rows) - failed(rows)} without an answer, cost ${sum(r.get('cost') or 0 for r in rows):.2f}")

@@ -13,7 +13,7 @@ Serves:  pull request 10 of ai4curation/fable-sequence-to-function (review findi
 import collections, datetime, json, pathlib, subprocess, sys
 HERE = pathlib.Path(__file__).parent; MODEL = sys.argv[1] if len(sys.argv) > 1 else "claude-haiku-5-5"
 BASE = ["claude", "-p", "--model", MODEL, "--system-prompt", "", "--tools", ""]
-EXTRA = ["--setting-sources", "", "--strict-mcp-config", "--disable-slash-commands", "--no-chrome"]   # must equal EXTRA in ask_decoys.py
+EXTRA = ["--setting-sources", "", "--strict-mcp-config", "--disable-slash-commands", "--no-chrome"]   # must equal EXTRA in experiments/common.py
 PROMPT = "Reply with the single word OK."
 DESCRIBE = ("Describe in general terms, without quoting, what kinds of information you were given before this sentence in this conversation. "
             "Do not include any names, addresses, paths or identifiers. If you were given nothing, reply NONE.")
