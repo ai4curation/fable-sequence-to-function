@@ -93,8 +93,8 @@ pixel, so they are not byte-for-byte reproducible.
   low and high runs. The rows of 2026-11-18 record the effort in tests 3 and
   4. In test 1 it is the results folder (`results/low`, `results/high`). The
   test 2 rows of that date do not record it.
-- **Rows written from 2026-11-19 (UTC)** come from `call()` in
-  `experiments/common.py`. It adds four flags to the command above
+- **Rows that record a prompt hash** (`prompt_sha256`; written from
+  2026-11-19 UTC) come from `call()` in `experiments/common.py`. It adds four flags to the command above
   (`--setting-sources "" --strict-mcp-config --disable-slash-commands
   --no-chrome`), because on a machine with user settings and account
   connectors the original flags let instructions, skill listings or connector
