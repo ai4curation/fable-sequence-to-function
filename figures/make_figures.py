@@ -64,7 +64,7 @@ for mid, _, _ in MODELS:
         if mid == MODELS[0][0]: base[t["stratum"]].append(100 * v["base"]); chance[t["stratum"]].append(100 * v["chance"])
     q3[mid] = [statistics.mean(q[s]) for s in ("novel", "known")]; cp[mid] = [statistics.mean(p[s]) for s in ("novel", "known")]
 fig, axs = plt.subplots(1, 2, figsize=(6.6, 2.7))
-labels = ["Novel\n(no prior homolog)", "Known\n(prior homologs)"]
+labels = ["Novel\n(no earlier entry\nat 30% identity)", "Known\n(20 or more\nearlier entries)"]
 for ax, v, ymax, ylab, ref, name in ((axs[0], q3, 100, "Secondary structure accuracy, Q3 (%)", base, "best single\nstate"),
                                      (axs[1], cp, 62, "Long-range contact precision (%)", chance, "chance")):
     bars(ax, labels, v, ymax, "{:.0f}"); ax.set_ylabel(ylab); ax.set_xlim(-0.55, 1.95)
