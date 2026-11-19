@@ -1,0 +1,5562 @@
+{
+ "A0A126GUP6": {
+  "entry_version": 58,
+  "features": [
+   {
+    "description": "",
+    "end": 22,
+    "start": 1,
+    "type": "Signal"
+   },
+   {
+    "description": "Activation peptide",
+    "end": 137,
+    "start": 23,
+    "type": "Propeptide"
+   },
+   {
+    "description": "Melanization protease 1",
+    "end": 400,
+    "start": 138,
+    "type": "Chain"
+   },
+   {
+    "description": "Clip",
+    "end": 91,
+    "start": 28,
+    "type": "Domain"
+   },
+   {
+    "description": "Peptidase S1",
+    "end": 399,
+    "start": 138,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 120,
+    "start": 98,
+    "type": "Region"
+   },
+   {
+    "description": "Charge relay system",
+    "end": 183,
+    "start": 183,
+    "type": "Active site"
+   },
+   {
+    "description": "Charge relay system",
+    "end": 248,
+    "start": 248,
+    "type": "Active site"
+   },
+   {
+    "description": "Charge relay system",
+    "end": 346,
+    "start": 346,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 201,
+    "start": 201,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 203,
+    "start": 203,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 206,
+    "start": 206,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 209,
+    "start": 209,
+    "type": "Binding site"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 142,
+    "start": 142,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 296,
+    "start": 296,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "",
+    "end": 90,
+    "start": 29,
+    "type": "Disulfide bond"
+   },
+   {
+    "description": "",
+    "end": 70,
+    "start": 39,
+    "type": "Disulfide bond"
+   },
+   {
+    "description": "",
+    "end": 91,
+    "start": 45,
+    "type": "Disulfide bond"
+   },
+   {
+    "description": "",
+    "end": 268,
+    "start": 130,
+    "type": "Disulfide bond"
+   },
+   {
+    "description": "",
+    "end": 184,
+    "start": 168,
+    "type": "Disulfide bond"
+   },
+   {
+    "description": "",
+    "end": 220,
+    "start": 210,
+    "type": "Disulfide bond"
+   },
+   {
+    "description": "",
+    "end": 332,
+    "start": 315,
+    "type": "Disulfide bond"
+   },
+   {
+    "description": "",
+    "end": 375,
+    "start": 342,
+    "type": "Disulfide bond"
+   },
+   {
+    "description": "in isoform A",
+    "end": 88,
+    "start": 79,
+    "type": "Alternative sequence"
+   },
+   {
+    "description": "in isoform C",
+    "end": 88,
+    "start": 79,
+    "type": "Alternative sequence"
+   }
+  ],
+  "sequence": "MEPHFFFTVLWMLLMGTSSTYAQEIFGYCRTPDENSGTCINLRECGYLFELLQSEEVTEQDRRFLQASQCGYRNGQVLEKHFCFTNVQICCANSRMRNQQPQWGNHPQPTQTTKPTKRSGTKLLPMAPNCGENFGDRVVGGNETTKREFPWMALIEYTKPGNVKGHHCGGSLINHRYVLTAAHCVSAIPSDWELTGVRLGEWDASTNPDCTVGKNGRRDCNEPYVDYPVEERIPHPQYPGNSRDQLNDIALLRLRDEVQYSDFILPVCLPTLASQHNNIFLGRKVVVAGWGRTETNFTSNIKLKAELDTVPTSECNQRYATQRRTVTTKQMCAGGVEGVDSCRGDSGGPLLLEDYSNGNSNYYIAGVVSYGPTPCGLKGWPGVYTRVEAYLNWIENNVRA",
+  "sequence_version": 1
+ },
+ "G5EGQ3": {
+  "entry_version": 99,
+  "features": [
+   {
+    "description": "Serine/threonine-protein kinase max-2",
+    "end": 646,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "CRIB",
+    "end": 54,
+    "start": 41,
+    "type": "Domain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 627,
+    "start": 376,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 40,
+    "start": 19,
+    "type": "Region"
+   },
+   {
+    "description": "Disordered",
+    "end": 345,
+    "start": 136,
+    "type": "Region"
+   },
+   {
+    "description": "Basic and acidic residues",
+    "end": 33,
+    "start": 22,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Low complexity",
+    "end": 157,
+    "start": 142,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Low complexity",
+    "end": 180,
+    "start": 167,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Polar residues",
+    "end": 205,
+    "start": 196,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Pro residues",
+    "end": 223,
+    "start": 214,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Low complexity",
+    "end": 245,
+    "start": 229,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Pro residues",
+    "end": 262,
+    "start": 246,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Low complexity",
+    "end": 307,
+    "start": 273,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Low complexity",
+    "end": 334,
+    "start": 323,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 496,
+    "start": 496,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 390,
+    "start": 382,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 405,
+    "start": 405,
+    "type": "Binding site"
+   },
+   {
+    "description": "in isoform d",
+    "end": 377,
+    "start": 1,
+    "type": "Alternative sequence"
+   },
+   {
+    "description": "in isoform b",
+    "end": 263,
+    "start": 1,
+    "type": "Alternative sequence"
+   },
+   {
+    "description": "in isoform a",
+    "end": 311,
+    "start": 263,
+    "type": "Alternative sequence"
+   },
+   {
+    "description": "In cy2; probable loss of activity. Partial sensitivity to the heavy metal Cu(2+). During development, DD and DV motoneuron axons fail to reach the dorsal cord. Axonal growth is not affected. Mild defect in locomotion. In pak-1 mutants, causes lateral displacement of the VD neuron. In mig-10 mutants, failure of HSN axons to migrate to the ventral nerve cord.",
+    "end": 388,
+    "start": 388,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Probable loss of activity. Partial sensitivity to the heavy metal Cu(2+) and loss of kgb-1 phosphorylation upon Cu(2+) treatment. Does not affect interaction with mlk-1.",
+    "end": 405,
+    "start": 405,
+    "type": "Mutagenesis"
+   }
+  ],
+  "sequence": "MSTSKSSKVRIRNFIGRIFSPSDKDKDRDDEMKPSSSAMDISQPYNTVHRVHVGYDGQKFSGLPQPWMDILLRDISLADQKKDPNAVVTALKFYAQSMKENEKTKFMTTNSVFTNSDDDDVDVQLTGQVTEHLRNLQCSNGSATSPSTSVSASSSSARPLTNGNNHLSTASSTDTSLSLSERNNVPSPAPVPYSESAPQLKTFTGETPKLHPRSPFPPQPPVLPQRSKTASAVATTTTNPTTSNGAPPPVPGSKGPPVPPKPSHLKIASSTVSSGCSSPQQYSSARSVGNSLSNGSVVSTTSSDGDVQLSNKENSNDKSVGDKNGNTTTNKTTVEPPPPEEPPVRVRASHREKLSDSEVLNQLREIVNPSNPLGKYEMKKQIGVGASGTVFVANVAGSTDVVAVKRMAFKTQPKKEMLLTEIKVMKQYRHPNLVNYIESYLVDADDLWVVMDYLEGGNLTDVVVKTELDEGQIAAVLQECLKALHFLHRHSIVHRDIKSDNVLLGMNGEVKLTDMGFCAQIQPGSKRDTVVGTPYWMSPEILNKKQYNYKVDIWSLGIMALEMIDGEPPYLRETPLKAIYLIAQNGKPEIKQRDRLSSEFNNFLDKCLVVDPDQRADTTELLAHPFLKKAKPLSSLIPYIRAVREK",
+  "sequence_version": 1
+ },
+ "O14132": {
+  "entry_version": 139,
+  "features": [
+   {
+    "description": "Sporulation protein kinase pit1",
+    "end": 650,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 336,
+    "start": 36,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 428,
+    "start": 397,
+    "type": "Region"
+   },
+   {
+    "description": "Disordered",
+    "end": 560,
+    "start": 526,
+    "type": "Region"
+   },
+   {
+    "description": "Basic residues",
+    "end": 417,
+    "start": 403,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Polar residues",
+    "end": 556,
+    "start": 536,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 161,
+    "start": 161,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 50,
+    "start": 42,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 66,
+    "start": 66,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 200,
+    "start": 200,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 469,
+    "start": 469,
+    "type": "Modified residue"
+   }
+  ],
+  "sequence": "MKKYLWGTPTTNTVFTGKQPKYTKEVRKCISIDEVYNVVRKVGDGTFGSVYLATTKTPSKEVVAIKSMKKKLAKVSDATRLREVHSLLRLSENENIVNIFDLYIDQFRCLHIVMEFLDCNLYQLISTRKNDPLTLEQVQDIMRQIFKGLNHIHTNGFFHRDMKPENILISSNSDSSSFNVKIADFGLAREINSRPPYTEYVSTRWYRAPELLLRDSYYSFPVDIYAAGCMAFEIATLQPIFPGNDDFDQLYKMCEILGSPDEQSQNTGDKGGGIWDRAELLANKLGISLPKMAPLDFGDLFSPPWNLAFASMLSQLLKWDPAKRPTAEMCLDLEFCRVSAPADAVASKEEVNKNTDFRVSISYFPSSSSIPDECNTEEESRINPSTSKFLKQLNKGFNGFTKPFRKSRKQSKNRKNKSSVATQFSEESEDIADSITSSTFFPVLPQIRPSTPLNLKLRNFIISSSEDSTSPKAKEFDRPLPSTEFLVAINKSQEALLNNSPNSKSGSTQLSASTCLSDLISPQLSILSHEDKRENQSVNSESSKYSPRSSNHSPTLHSKDLHRDMATVNNYAKSPPSFHATQDLLRKTLAYTNSSGTSTVLSNDSSAISSTFLDRDFPDFGITSLAGSLTLPDSKIIDRSKTHVSTQLLP",
+  "sequence_version": 1
+ },
+ "O31662": {
+  "entry_version": 158,
+  "features": [
+   {
+    "description": "Methylthioribose-1-phosphate isomerase",
+    "end": 353,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Proton donor",
+    "end": 240,
+    "start": 240,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 53,
+    "start": 51,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 94,
+    "start": 94,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 199,
+    "start": 199,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 251,
+    "start": 250,
+    "type": "Binding site"
+   },
+   {
+    "description": "Transition state stabilizer",
+    "end": 160,
+    "start": 160,
+    "type": "Site"
+   },
+   {
+    "description": "",
+    "end": 6,
+    "start": 2,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 13,
+    "start": 10,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 21,
+    "start": 18,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 25,
+    "start": 23,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 28,
+    "start": 26,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 35,
+    "start": 32,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 46,
+    "start": 38,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 68,
+    "start": 53,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 91,
+    "start": 76,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 110,
+    "start": 98,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 113,
+    "start": 111,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 146,
+    "start": 117,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 149,
+    "start": 147,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 158,
+    "start": 155,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 166,
+    "start": 164,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 170,
+    "start": 167,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 174,
+    "start": 172,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 182,
+    "start": 175,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 192,
+    "start": 188,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 198,
+    "start": 195,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 204,
+    "start": 200,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 209,
+    "start": 205,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 212,
+    "start": 210,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 218,
+    "start": 214,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 222,
+    "start": 220,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 229,
+    "start": 223,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 237,
+    "start": 234,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 243,
+    "start": 240,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 251,
+    "start": 248,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 263,
+    "start": 254,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 271,
+    "start": 268,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 276,
+    "start": 274,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 286,
+    "start": 284,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 298,
+    "start": 295,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 320,
+    "start": 315,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 324,
+    "start": 322,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 330,
+    "start": 326,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 335,
+    "start": 333,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 346,
+    "start": 339,
+    "type": "Helix"
+   }
+  ],
+  "sequence": "MTHSFAVPRSVEWKETAITILNQQKLPDETEYLELTTKEDVFDAIVTLKVRGAPAIGITAAFGLALAAKDIETDNVTEFRRRLEDIKQYLNSSRPTAINLSWALERLSHSVENAISVNEAKTNLVHEAIQIQVEDEETCRLIGQNALQLFKKGDRIMTICNAGSIATSRYGTALAPFYLAKQKDLGLHIYACETRPVLQGSRLTAWELMQGGIDVTLITDSMAAHTMKEKQISAVIVGADRIAKNGDTANKIGTYGLAILANAFDIPFFVAAPLSTFDTKVKCGADIPIEERDPEEVRQISGVRTAPSNVPVFNPAFDITPHDLISGIITEKGIMTGNYEEEIEQLFKGEKVH",
+  "sequence_version": 1
+ },
+ "O48814": {
+  "entry_version": 182,
+  "features": [
+   {
+    "description": "Removed",
+    "end": 1,
+    "start": 1,
+    "type": "Initiator methionine"
+   },
+   {
+    "description": "Serine/threonine-protein kinase BIK1",
+    "end": 395,
+    "start": 2,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 356,
+    "start": 67,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 395,
+    "start": 354,
+    "type": "Region"
+   },
+   {
+    "description": "Required for physical interaction with and phosphorylation of downstream signaling proteins (e.g. WRKY33, WRKY50, WRKY51 and WRKY57) to activate EFR-mediated immune signaling",
+    "end": 90,
+    "start": 89,
+    "type": "Motif"
+   },
+   {
+    "description": "Polar residues",
+    "end": 365,
+    "start": 354,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 202,
+    "start": 202,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 81,
+    "start": 73,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 105,
+    "start": 105,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 26,
+    "start": 26,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 32,
+    "start": 32,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 33,
+    "start": 33,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 34,
+    "start": 34,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 35,
+    "start": 35,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 42,
+    "start": 42,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis and BAK1",
+    "end": 48,
+    "start": 48,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 50,
+    "start": 50,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis",
+    "end": 54,
+    "start": 54,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by autocatalysis",
+    "end": 56,
+    "start": 56,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 64,
+    "start": 64,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis and BAK1",
+    "end": 71,
+    "start": 71,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by EFR",
+    "end": 89,
+    "start": 89,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by EFR",
+    "end": 90,
+    "start": 90,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by EFR",
+    "end": 120,
+    "start": 120,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis",
+    "end": 129,
+    "start": 129,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by EFR",
+    "end": 129,
+    "start": 129,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 150,
+    "start": 150,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine; by autocatalysis",
+    "end": 168,
+    "start": 168,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 193,
+    "start": 193,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis and BAK1",
+    "end": 206,
+    "start": 206,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine; by autocatalysis",
+    "end": 214,
+    "start": 214,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 219,
+    "start": 219,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis",
+    "end": 233,
+    "start": 233,
+    "type": "Modified residue"
+   },
+   {
+    "description": "O-UMP-serine; by Xanthomonas campestris effector XopAC/AvrAC; alternate",
+    "end": 236,
+    "start": 236,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis and BAK1; alternate",
+    "end": 236,
+    "start": 236,
+    "type": "Modified residue"
+   },
+   {
+    "description": "O-UMP-threonine; by Xanthomonas campestris effector XopAC/AvrAC; alternate",
+    "end": 237,
+    "start": 237,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by autocatalysis and BAK1; alternate",
+    "end": 237,
+    "start": 237,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by autocatalysis and BAK1",
+    "end": 242,
+    "start": 242,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 243,
+    "start": 243,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine; by autocatalysis",
+    "end": 250,
+    "start": 250,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis",
+    "end": 252,
+    "start": 252,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis",
+    "end": 253,
+    "start": 253,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by autocatalysis",
+    "end": 314,
+    "start": 314,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 341,
+    "start": 341,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis and BAK1",
+    "end": 360,
+    "start": 360,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by autocatalysis and BAK1",
+    "end": 362,
+    "start": 362,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by autocatalysis and BAK1",
+    "end": 368,
+    "start": 368,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 375,
+    "start": 375,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 377,
+    "start": 377,
+    "type": "Modified residue"
+   },
+   {
+    "description": "N-myristoyl glycine",
+    "end": 2,
+    "start": 2,
+    "type": "Lipidation"
+   },
+   {
+    "description": "S-palmitoyl cysteine",
+    "end": 4,
+    "start": 4,
+    "type": "Lipidation"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 31,
+    "start": 31,
+    "type": "Cross-link"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 41,
+    "start": 41,
+    "type": "Cross-link"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 95,
+    "start": 95,
+    "type": "Cross-link"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 170,
+    "start": 170,
+    "type": "Cross-link"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 186,
+    "start": 186,
+    "type": "Cross-link"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 286,
+    "start": 286,
+    "type": "Cross-link"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 337,
+    "start": 337,
+    "type": "Cross-link"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 358,
+    "start": 358,
+    "type": "Cross-link"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 366,
+    "start": 366,
+    "type": "Cross-link"
+   },
+   {
+    "description": "Mis-localization and impaired phosphorylation and ubiquitination upon flagellin (flg22) treatment, but conserved kinase activity and autophosphorylation.",
+    "end": 2,
+    "start": 2,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Drastic reduction of plasma membrane localization and strong increase of cytoplasmic localization.",
+    "end": 2,
+    "start": 2,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired flg22-induced ubiquitination, internalization of BIK1 and FLS2 from the plasma membrane and reactive oxygen species (ROS) production, as well as enhanced susceptibility to the bacterial pathogen Pseudomonas syringae pv. tomato (Pst) DC3000 and to the fungal pathogen Botrytis cinerea, but normal phosphorylation; when associated with R-41, R-95, R-170, R-186, R-286, R-337, R-358 and R-366.",
+    "end": 31,
+    "start": 31,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired flg22-induced ubiquitination, internalization of BIK1 and FLS2 from the plasma membrane and reactive oxygen species (ROS) production, as well as enhanced susceptibility to the bacterial pathogen Pseudomonas syringae pv. tomato (Pst) DC3000 and to the fungal pathogen Botrytis cinerea, but normal phosphorylation; when associated with R-31, R-95, R-170, R-186, R-286, R-337, R-358 and R-366.",
+    "end": 41,
+    "start": 41,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired sensitivity toward elf18-mediated growth inhibition and increased sensitivity to Pseudomonas syringae pv. tomato (Pst) DC3000 bacteria, but no growth defect in normal conditions and normal mitogen-activated protein kinases (MAPKs) activation during EFR-mediated signaling. Enhanced interaction with the WRKY transcription factors WRKY33, WRKY50, WRKY51 and WRKY57 involved in the regulation of jasmonic acid (JA) and salicylic acid (SA) biosynthesis.",
+    "end": 90,
+    "start": 89,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Phosphomimetic, associated with an increased sensitivity toward elf18-mediated growth inhibition and an enhanced resistance to Pseudomonas syringae pv. tomato (Pst) DC3000 bacteria despite a normal mitogen-activated protein kinases (MAPKs) activation during EFR-mediated signaling. Growth defect in normal conditions. Reduced interaction with EFR. Increased jasmonic acid (JA) and salicylic acid (SA) levels. Reduced interaction with and phosphorylation of the WRKY transcription factors WRKY33, WRKY50, WRKY51 and WRKY57 involved in the regulation of jasmonic acid (JA) and salicylic acid (SA) biosynthesis.",
+    "end": 90,
+    "start": 89,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired flg22-induced ubiquitination, internalization of BIK1 and FLS2 from the plasma membrane and reactive oxygen species (ROS) production, as well as enhanced susceptibility to the bacterial pathogen Pseudomonas syringae pv. tomato (Pst) DC3000 and to the fungal pathogen Botrytis cinerea, but normal phosphorylation; when associated with R-31, R-41, R-170, R-186, R-286, R-337, R-358 and R-366.",
+    "end": 95,
+    "start": 95,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Loss of kinase activity; when associated with A-106.",
+    "end": 105,
+    "start": 105,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Loss of autophosphorylation.",
+    "end": 105,
+    "start": 105,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Loss of kinase activity; when associated with A-105.",
+    "end": 106,
+    "start": 106,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired kinase activity.",
+    "end": 106,
+    "start": 106,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Normal sensitivity toward elf18-mediated growth inhibition. Normal sensitivity toward elf18-mediated growth inhibition; when associated with A-129.",
+    "end": 120,
+    "start": 120,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Normal sensitivity toward elf18-mediated growth inhibition. Normal sensitivity toward elf18-mediated growth inhibition; when associated with A-120.",
+    "end": 129,
+    "start": 129,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Loss of function in innate immunity.",
+    "end": 150,
+    "start": 150,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired flg22-induced ubiquitination, internalization of BIK1 and FLS2 from the plasma membrane and reactive oxygen species (ROS) production, as well as enhanced susceptibility to the bacterial pathogen Pseudomonas syringae pv. tomato (Pst) DC3000 and to the fungal pathogen Botrytis cinerea, but normal phosphorylation; when associated with R-31, R-41, R-95, R-186, R-286, R-337, R-358 and R-366.",
+    "end": 170,
+    "start": 170,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired flg22-induced ubiquitination, internalization of BIK1 and FLS2 from the plasma membrane and reactive oxygen species (ROS) production, as well as enhanced susceptibility to the bacterial pathogen Pseudomonas syringae pv. tomato (Pst) DC3000 and to the fungal pathogen Botrytis cinerea, but normal phosphorylation; when associated with R-31, R-41, R-95, R-170, R-286, R-337, R-358 and R-366.",
+    "end": 186,
+    "start": 186,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Abolishes kinase activity.",
+    "end": 202,
+    "start": 202,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Compromised flg22-induced ubiquitination and reduced phosphorylation.",
+    "end": 204,
+    "start": 204,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Compromised flg22-induced ubiquitination.",
+    "end": 237,
+    "start": 237,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Loss of function in innate immunity.",
+    "end": 243,
+    "start": 243,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Compromised flg22-induced ubiquitination.",
+    "end": 250,
+    "start": 250,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Loss of function in innate immunity.",
+    "end": 250,
+    "start": 250,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired flg22-induced ubiquitination, internalization of BIK1 and FLS2 from the plasma membrane and reactive oxygen species (ROS) production, as well as enhanced susceptibility to the bacterial pathogen Pseudomonas syringae pv. tomato (Pst) DC3000 and to the fungal pathogen Botrytis cinerea, but normal phosphorylation; when associated with R-31, R-41, R-95, R-170, R-186, R-337, R-358 and R-366.",
+    "end": 286,
+    "start": 286,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired flg22-induced ubiquitination, internalization of BIK1 and FLS2 from the plasma membrane and reactive oxygen species (ROS) production, as well as enhanced susceptibility to the bacterial pathogen Pseudomonas syringae pv. tomato (Pst) DC3000 and to the fungal pathogen Botrytis cinerea, but normal phosphorylation; when associated with R-31, R-41, R-95, R-170, R-186, R-286, R-358 and R-366.",
+    "end": 337,
+    "start": 337,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired flg22-induced ubiquitination, internalization of BIK1 and FLS2 from the plasma membrane and reactive oxygen species (ROS) production, as well as enhanced susceptibility to the bacterial pathogen Pseudomonas syringae pv. tomato (Pst) DC3000 and to the fungal pathogen Botrytis cinerea, but normal phosphorylation; when associated with R-31, R-41, R-95, R-170, R-186, R-286, R-337 and R-366.",
+    "end": 358,
+    "start": 358,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Impaired flg22-induced ubiquitination, internalization of BIK1 and FLS2 from the plasma membrane and reactive oxygen species (ROS) production, as well as enhanced susceptibility to the bacterial pathogen Pseudomonas syringae pv. tomato (Pst) DC3000 and to the fungal pathogen Botrytis cinerea, but normal phosphorylation; when associated with R-31, R-41, R-95, R-170, R-186, R-286, R-337 and R-358.",
+    "end": 366,
+    "start": 366,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "",
+    "end": 55,
+    "start": 53,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 63,
+    "start": 57,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 67,
+    "start": 64,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 86,
+    "start": 82,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 90,
+    "start": 88,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 106,
+    "start": 98,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 126,
+    "start": 115,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 144,
+    "start": 136,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 151,
+    "start": 146,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 161,
+    "start": 158,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 192,
+    "start": 174,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 196,
+    "start": 194,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 207,
+    "start": 205,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 210,
+    "start": 208,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 218,
+    "start": 216,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 253,
+    "start": 248,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 274,
+    "start": 258,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 294,
+    "start": 290,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 297,
+    "start": 295,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 305,
+    "start": 301,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 312,
+    "start": 310,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 315,
+    "start": 313,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 331,
+    "start": 318,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 338,
+    "start": 336,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 354,
+    "start": 342,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 357,
+    "start": 355,
+    "type": "Turn"
+   }
+  ],
+  "sequence": "MGSCFSSRVKADIFHNGKSSDLYGLSLSSRKSSSTVAAAQKTEGEILSSTPVKSFTFNELKLATRNFRPDSVIGEGGFGCVFKGWLDESTLTPTKPGTGLVIAVKKLNQEGFQGHREWLTEINYLGQLSHPNLVKLIGYCLEDEHRLLVYEFMQKGSLENHLFRRGAYFKPLPWFLRVNVALDAAKGLAFLHSDPVKVIYRDIKASNILLDADYNAKLSDFGLARDGPMGDLSYVSTRVMGTYGYAAPEYMSSGHLNARSDVYSFGVLLLEILSGKRALDHNRPAKEENLVDWARPYLTSKRKVLLIVDNRLDTQYLPEEAVRMASVAVQCLSFEPKSRPTMDQVVRALQQLQDNLGKPSQTNPVKDTKKLGFKTGTTKSSEKRFTQKPFGRHLV",
+  "sequence_version": 1
+ },
+ "O49840": {
+  "entry_version": 170,
+  "features": [
+   {
+    "description": "Removed",
+    "end": 1,
+    "start": 1,
+    "type": "Initiator methionine"
+   },
+   {
+    "description": "Probable serine/threonine-protein kinase PBL3",
+    "end": 426,
+    "start": 2,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 366,
+    "start": 83,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 42,
+    "start": 1,
+    "type": "Region"
+   },
+   {
+    "description": "Disordered",
+    "end": 426,
+    "start": 367,
+    "type": "Region"
+   },
+   {
+    "description": "Low complexity",
+    "end": 42,
+    "start": 7,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Polar residues",
+    "end": 394,
+    "start": 367,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 216,
+    "start": 216,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 97,
+    "start": 89,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 121,
+    "start": 121,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 72,
+    "start": 72,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 166,
+    "start": 166,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 250,
+    "start": 250,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 251,
+    "start": 251,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 256,
+    "start": 256,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 264,
+    "start": 264,
+    "type": "Modified residue"
+   },
+   {
+    "description": "N-myristoyl glycine",
+    "end": 2,
+    "start": 2,
+    "type": "Lipidation"
+   },
+   {
+    "description": "S-palmitoyl cysteine",
+    "end": 4,
+    "start": 4,
+    "type": "Lipidation"
+   },
+   {
+    "description": "Drastic reduction of plasma membrane localization and strong increase of nuclear localization.",
+    "end": 2,
+    "start": 2,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "in Ref. 5; BAC42058",
+    "end": 295,
+    "start": 295,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MGNCLDSSAKVDSSSHSPHANSASLSSRVSSKTSRSTVPSSLSINSYSSVESLPTPRTEGEILSSPNLKAFTFNELKNATRNFRPDSLLGEGGFGYVFKGWIDGTTLTASKPGSGIVVAVKKLKTEGYQGHKEWLTEVNYLGQLSHPNLVKLVGYCVEGENRLLVYEFMPKGSLENHLFRRGAQPLTWAIRMKVAIGAAKGLTFLHDAKSQVIYRDFKAANILLDAEFNSKLSDFGLAKAGPTGDKTHVSTQVMGTHGYAAPEYVATGRLTAKSDVYSFGVVLLELLSGRRAVDKSKVGMEQSLVDWATPYLGDKRKLFRIMDTRLGGQYPQKGAYTAASLALQCLNPDAKLRPKMSEVLAKLDQLESTKPGTGVGNRQAQIDSPRGSNGSIVQKSPRRYSYDRPLLHITPGASPLPTHNHSPRVR",
+  "sequence_version": 1
+ },
+ "P00358": {
+  "entry_version": 233,
+  "features": [
+   {
+    "description": "Removed",
+    "end": 1,
+    "start": 1,
+    "type": "Initiator methionine"
+   },
+   {
+    "description": "Glyceraldehyde-3-phosphate dehydrogenase 2",
+    "end": 332,
+    "start": 2,
+    "type": "Chain"
+   },
+   {
+    "description": "Nucleophile",
+    "end": 150,
+    "start": 150,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 11,
+    "start": 11,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 12,
+    "start": 12,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 33,
+    "start": 33,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 120,
+    "start": 120,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 151,
+    "start": 149,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 180,
+    "start": 180,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 210,
+    "start": 209,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 232,
+    "start": 232,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 314,
+    "start": 314,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 318,
+    "start": 318,
+    "type": "Binding site"
+   },
+   {
+    "description": "Activates thiol group during catalysis",
+    "end": 177,
+    "start": 177,
+    "type": "Site"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 302,
+    "start": 302,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 46,
+    "start": 46,
+    "type": "Cross-link"
+   },
+   {
+    "description": "Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin)",
+    "end": 63,
+    "start": 63,
+    "type": "Cross-link"
+   },
+   {
+    "description": "in Ref. 5; AA sequence",
+    "end": 77,
+    "start": 77,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MVRVAINGFGRIGRLVMRIALQRKNVEVVALNDPFISNDYSAYMFKYDSTHGRYAGEVSHDDKHIIVDGHKIATFQERDPANLPWASLNIDIAIDSTGVFKELDTAQKHIDAGAKKVVITAPSSTAPMFVMGVNEEKYTSDLKIVSNASCTTNCLAPLAKVINDAFGIEEGLMTTVHSMTATQKTVDGPSHKDWRGGRTASGNIIPSSTGAAKAVGKVLPELQGKLTGMAFRVPTVDVSVVDLTVKLNKETTYDEIKKVVKAAAEGKLKGVLGYTEDAVVSSDFLGDSNSSIFDAAAGIQLSPKFVKLVSWYDNEYGYSTRVVDLVEHVAKA",
+  "sequence_version": 3
+ },
+ "P0A6L2": {
+  "entry_version": 162,
+  "features": [
+   {
+    "description": "4-hydroxy-tetrahydrodipicolinate synthase",
+    "end": 292,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Proton donor/acceptor",
+    "end": 133,
+    "start": 133,
+    "type": "Active site"
+   },
+   {
+    "description": "Schiff-base intermediate with substrate",
+    "end": 161,
+    "start": 161,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 45,
+    "start": 45,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 203,
+    "start": 203,
+    "type": "Binding site"
+   },
+   {
+    "description": "Part of a proton relay during catalysis",
+    "end": 44,
+    "start": 44,
+    "type": "Site"
+   },
+   {
+    "description": "L-lysine inhibitor binding; via carbonyl oxygen",
+    "end": 49,
+    "start": 49,
+    "type": "Site"
+   },
+   {
+    "description": "L-lysine inhibitor binding",
+    "end": 80,
+    "start": 80,
+    "type": "Site"
+   },
+   {
+    "description": "L-lysine inhibitor binding",
+    "end": 84,
+    "start": 84,
+    "type": "Site"
+   },
+   {
+    "description": "L-lysine inhibitor binding",
+    "end": 106,
+    "start": 106,
+    "type": "Site"
+   },
+   {
+    "description": "Part of a proton relay during catalysis",
+    "end": 107,
+    "start": 107,
+    "type": "Site"
+   },
+   {
+    "description": "8% of wild-type activity. 4-fold decrease in affinity for pyruvate, but nearly no change in that for (S)-ASA.",
+    "end": 44,
+    "start": 44,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Reduced kcat by 99.9%.",
+    "end": 44,
+    "start": 44,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Reduced kcat by 90%.",
+    "end": 107,
+    "start": 107,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Reduced activity by 95%. Reduced affinity for both substrates. Exists as a mixture of monomer, dimer and tetramer in solution. Has significantly lower thermal stability than the wild-type enzyme.",
+    "end": 107,
+    "start": 107,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Reduced kcat by 99.7%. Reduced affinity for both substrates.",
+    "end": 133,
+    "start": 133,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Strongly increased KM for L-aspartate 4-semialdehyde. No effect on KM for pyruvate. Reduced activity by 99.7%.",
+    "end": 138,
+    "start": 138,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "0.1% of wild-type activity. 3-fold decrease in affinity for pyruvate, and 2-fold decrease in that for (S)-ASA.",
+    "end": 161,
+    "start": 161,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "0.35% of wild-type activity. 3-fold decrease in affinity for pyruvate, but nearly no change in that for (S)-ASA.",
+    "end": 161,
+    "start": 161,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "1.4 to 2.5% of wild-type activity. Decrease in affinity for pyruvate, but nearly no change in that for (S)-ASA. Exists as a dimer in solution.",
+    "end": 197,
+    "start": 197,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "in Ref. 1; AAA23665",
+    "end": 207,
+    "start": 207,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; AAA23665",
+    "end": 224,
+    "start": 224,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "",
+    "end": 8,
+    "start": 4,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 19,
+    "start": 17,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 34,
+    "start": 21,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 43,
+    "start": 38,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 47,
+    "start": 44,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 50,
+    "start": 48,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 67,
+    "start": 53,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 76,
+    "start": 73,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 91,
+    "start": 82,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 94,
+    "start": 92,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 103,
+    "start": 98,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 123,
+    "start": 112,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 133,
+    "start": 130,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 139,
+    "start": 136,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 152,
+    "start": 145,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 159,
+    "start": 157,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 174,
+    "start": 168,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 186,
+    "start": 184,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 190,
+    "start": 188,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 196,
+    "start": 191,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 205,
+    "start": 201,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 208,
+    "start": 206,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 222,
+    "start": 211,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 242,
+    "start": 226,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 247,
+    "start": 245,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 258,
+    "start": 250,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 263,
+    "start": 261,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 288,
+    "start": 276,
+    "type": "Helix"
+   }
+  ],
+  "sequence": "MFTGSIVAIVTPMDEKGNVCRASLKKLIDYHVASGTSAIVSVGTTGESATLNHDEHADVVMMTLDLADGRIPVIAGTGANATAEAISLTQRFNDSGIVGCLTVTPYYNRPSQEGLYQHFKAIAEHTDLPQILYNVPSRTGCDLLPETVGRLAKVKNIIGIKEATGNLTRVNQIKELVSDDFVLLSGDDASALDFMQLGGHGVISVTANVAARDMAQMCKLAAEGHFAEARVINQRLMPLHNKLFVEPNPIPVKWACKELGLVATDTLRLPMTPITDSGRETVRAALKHAGLL",
+  "sequence_version": 1
+ },
+ "P18334": {
+  "entry_version": 186,
+  "features": [
+   {
+    "description": "Casein kinase II subunit alpha",
+    "end": 360,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 323,
+    "start": 38,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 360,
+    "start": 334,
+    "type": "Region"
+   },
+   {
+    "description": "Low complexity",
+    "end": 354,
+    "start": 338,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 155,
+    "start": 155,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 52,
+    "start": 44,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 67,
+    "start": 67,
+    "type": "Binding site"
+   }
+  ],
+  "sequence": "MPPIPSRARVYAEVNPSRPREYWDYEAHMIEWGQIDDYQLVRKLGRGKYSEVFEGFKMSTDEKVVVKILKPVKKKKIKREIKILENLRGGTNIITLLDVVKDPISRTPALIFEHVNNSDFKQLYQTLSDYDIRYYLYELLKALDFCHSQGIMHRDVKPHNVMIDAEKRELRLIDWGLAEFYHPRQDYNVRVASRYFKGPELLVDYQCYDYSLDMWSLGCMLASMIFRKEPFFHGHDNYDQLVRIAKVLGTDELYEYIARYHIDLDPRFNDILGRHSRKRWERFIHAENQHLVTPEALDFLDKLLRYDHAERLTAQEAMGHEYFRPVVEAHARANGTEQADGQGASNSASSQSSDAKIDGA",
+  "sequence_version": 1
+ },
+ "P19881": {
+  "entry_version": 186,
+  "features": [
+   {
+    "description": "Phosphoglycolate phosphatase",
+    "end": 312,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Nucleophile",
+    "end": 30,
+    "start": 30,
+    "type": "Active site"
+   },
+   {
+    "description": "Proton donor",
+    "end": 32,
+    "start": 32,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 30,
+    "start": 30,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 32,
+    "start": 32,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 254,
+    "start": 254,
+    "type": "Binding site"
+   },
+   {
+    "description": "in Ref. 1; CAB56540",
+    "end": 50,
+    "start": 50,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; CAB56540",
+    "end": 96,
+    "start": 96,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; CAB56540",
+    "end": 284,
+    "start": 284,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; CAB56540",
+    "end": 306,
+    "start": 306,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MTAQQGVPIKITNKEIAQEFLDKYDTFLFDCDGVLWLGSQALPYTLEILNLLKQLGKQLIFVTNNSTKSRLAYTKKFASFGIDVKEEQIFTSGYASAVYIRDFLKLQPGKDKVWVFGESGIGEELKLMGYESLGGADSRLDTPFDAAKSPFLVNGLDKDVSCVIAGLDTKVNYHRLAVTLQYLQKDSVHFVGTNVDSTFPQKGYTFPGAGSMIESLAFSSNRRPSYCGKPNQNMLNSIISAFNLDRSKCCMVGDRLNTDMKFGVEGGLGGTLLVLSGIETEERALKISHDYPRPKFYIDKLGDIYTLTNNEL",
+  "sequence_version": 2
+ },
+ "P21965": {
+  "entry_version": 226,
+  "features": [
+   {
+    "description": "Removed",
+    "end": 1,
+    "start": 1,
+    "type": "Initiator methionine"
+   },
+   {
+    "description": "Protein kinase MCK1",
+    "end": 375,
+    "start": 2,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 327,
+    "start": 35,
+    "type": "Domain"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 164,
+    "start": 164,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 49,
+    "start": 41,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 68,
+    "start": 68,
+    "type": "Binding site"
+   },
+   {
+    "description": "N-acetylserine",
+    "end": 2,
+    "start": 2,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 198,
+    "start": 198,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 199,
+    "start": 199,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 202,
+    "start": 202,
+    "type": "Modified residue"
+   }
+  ],
+  "sequence": "MSTEEQNGVPLQRGSEFIADDVTSNKSNNTRRMLVKEYRKIGRGAFGTVVQAYLTQDKKNWLGPFAIKKVPAHTEYKSRELQILRIADHPNIVKLQYFFTHLSPQDNKVYQHLAMECLPETLQIEINRYVTNKLEMPLKHIRLYTYQIARGMLYLHGLGVCHRDIKPSNVLVDPETGVLKICDFGSAKKLEHNQPSISYICSRFYRAPELIIGCTQYTTQIDIWGLGCVMGEMLIGKAIFQGQEPLLQLREIAKLLGPPDKRFIFFSNPAYDGPLFSKPLFSGSSQQRFEKYFGHSGPDGIDLLMKILVYEPQQRLSPRRILAHQFFNELRNDDTFLPRGFTEPIKLPNLFDFNDFELQILGEFADKIKPTKVAE",
+  "sequence_version": 1
+ },
+ "P23594": {
+  "entry_version": 216,
+  "features": [
+   {
+    "description": "Serine/threonine-protein phosphatase PP2A-1 catalytic subunit",
+    "end": 369,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Disordered",
+    "end": 57,
+    "start": 1,
+    "type": "Region"
+   },
+   {
+    "description": "Disordered",
+    "end": 369,
+    "start": 348,
+    "type": "Region"
+   },
+   {
+    "description": "Proton donor",
+    "end": 178,
+    "start": 178,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 117,
+    "start": 117,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 119,
+    "start": 119,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 145,
+    "start": 145,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 145,
+    "start": 145,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 177,
+    "start": 177,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 227,
+    "start": 227,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 301,
+    "start": 301,
+    "type": "Binding site"
+   },
+   {
+    "description": "Leucine methyl ester",
+    "end": 369,
+    "start": 369,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Reduced interaction with TAP42.",
+    "end": 99,
+    "start": 99,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Reduced interaction with TAP42.",
+    "end": 102,
+    "start": 102,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Reduced interaction with TAP42.",
+    "end": 103,
+    "start": 103,
+    "type": "Mutagenesis"
+   }
+  ],
+  "sequence": "MDTDLDVPMQDAVTEQLTPTVSEDMDLNNNSSDNNAEEFSVDDLKPGSSGIADHKSSKPLELNNTNINQLDQWIEHLSKCEPLSEDDVARLCKMAVDVLQFEENVKPINVPVTICGDVHGQFHDLLELFKIGGPCPDTNYLFMGDYVDRGYYSVETVSYLVAMKVRYPHRITILRGNHESRQITQVYGFYDECLRKYGSANVWKMFTDLFDYFPITALVDNKIFCLHGGLSPMIETIDQVRELNRIQEVPHEGPMCDLLWSDPDDRGGWGISPRGAGFTFGQDVSEQFNHTNDLSLIARAHQLVMEGYAWSHQQNVVTIFSAPNYCYRCGNQAAIMEVDENHNRQFLQYDPSVRPGEPSVSRKTPDYFL",
+  "sequence_version": 1
+ },
+ "P26725": {
+  "entry_version": 190,
+  "features": [
+   {
+    "description": "Probable mannosyltransferase YUR1",
+    "end": 428,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Cytoplasmic",
+    "end": 3,
+    "start": 1,
+    "type": "Topological domain"
+   },
+   {
+    "description": "Helical; Signal-anchor for type II membrane protein",
+    "end": 24,
+    "start": 4,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Lumenal",
+    "end": 428,
+    "start": 25,
+    "type": "Topological domain"
+   },
+   {
+    "description": "Stem region",
+    "end": 88,
+    "start": 25,
+    "type": "Region"
+   },
+   {
+    "description": "Catalytic",
+    "end": 428,
+    "start": 89,
+    "type": "Region"
+   },
+   {
+    "description": "Nucleophile",
+    "end": 313,
+    "start": 313,
+    "type": "Active site"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 77,
+    "start": 77,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 82,
+    "start": 82,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 92,
+    "start": 92,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 167,
+    "start": 167,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 414,
+    "start": 414,
+    "type": "Glycosylation"
+   }
+  ],
+  "sequence": "MAKGGSLYIVGIFLPIWTFMIYIFGKELFLIRKYQKIDSTYTALSQRVKEQYDTSRRRNYFPKVKLSRNSYDDYTLNYTRQNDSDSFHLRENATILMLVRNSELEGALDSMRSLEDRFNNKYHYDWTFLNDVPFDQDFIEATTSMASGKTQYALIPPEDWNRPQWINDTLFEERLRVMEDEGVLYGGSKSYRNMCRFNSGFFFRQSILDNYDYYFRVEPNVKYYCDFPYDPFRVMRLKGKKYGFVISLYEYEETIPTLWDAVEEYLVASEETILRKEDSAYAFLTDSGLVGKHYPVVEANSDYNLCHFWSNFEIGDLNFFRSDEYKHFFETLDAKGGFYYERWGDAPVHSIGVSLLLRPDEIIHFDELGYFHSPFGTCPASYAVRLDQRCRCKSDDESVIDITPHSCLMRWWKNGSGKYFLKEEQDEI",
+  "sequence_version": 1
+ },
+ "P32328": {
+  "entry_version": 221,
+  "features": [
+   {
+    "description": "Serine/threonine-protein kinase DBF20",
+    "end": 564,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 469,
+    "start": 169,
+    "type": "Domain"
+   },
+   {
+    "description": "AGC-kinase C-terminal",
+    "end": 547,
+    "start": 470,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 62,
+    "start": 24,
+    "type": "Region"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 292,
+    "start": 292,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 183,
+    "start": 175,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 198,
+    "start": 198,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 17,
+    "start": 17,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 366,
+    "start": 366,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 536,
+    "start": 536,
+    "type": "Modified residue"
+   },
+   {
+    "description": "in Ref. 4; AAT92874",
+    "end": 81,
+    "start": 81,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; AAB05204",
+    "end": 337,
+    "start": 337,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; AAB05204",
+    "end": 350,
+    "start": 350,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MFSRSDREVDDLAGNMSHLGFYDLNIPKPTSPQAQYRPARKSENGRLTPGLPRSYKPCDSDDQDTFKNRISLNHSPKKLPKDFHERASQSKTQRVVNVCQLYFLDYYCDMFDYVISRRQRTKQVLRYLEQQRSVKNVSNKVLNEEWALYLQREHEVLRKRRLKPKHKDFQILTQVGQGGYGQVYLAKKKDSDEICALKILNKKLLFKLNETNHVLTERDILTTTRSDWLVKLLYAFQDPESLYLAMEFVPGGDFRTLLINTRILKSGHARFYISEMFCAVNALHELGYTHRDLKPENFLIDATGHIKLTDFGLAAGTVSNERIESMKIRLEEVKNLEFPAFTERSIEDRRKIYHNMRKTEINYANSMVGSPDYMALEVLEGKKYDFTVDYWSLGCMLFESLVGYTPFSGSSTNETYENLRYWKKTLRRPRTEDRRAAFSDRTWDLITRLIADPINRVRSFEQVRKMSYFAEINFETLRTSSPPFIPQLDDETDAGYFDDFTNEEDMAKYADVFKRQNKLSAMVDDSAVDSKLVGFTFRHRDGKQGSSGILYNGSEHSDPFSTFY",
+  "sequence_version": 2
+ },
+ "P33018": {
+  "entry_version": 160,
+  "features": [
+   {
+    "description": "S-formylglutathione hydrolase YeiG",
+    "end": 278,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Charge relay system",
+    "end": 145,
+    "start": 145,
+    "type": "Active site"
+   },
+   {
+    "description": "Charge relay system",
+    "end": 223,
+    "start": 223,
+    "type": "Active site"
+   },
+   {
+    "description": "Charge relay system",
+    "end": 256,
+    "start": 256,
+    "type": "Active site"
+   },
+   {
+    "description": "Reduces catalytic efficiency, but has no effect on affinity for substrate.",
+    "end": 26,
+    "start": 26,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Reduces affinity for substrate and catalytic efficiency.",
+    "end": 54,
+    "start": 54,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Increases affinity for substrate, but reduces catalytic efficiency.",
+    "end": 80,
+    "start": 80,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Loss of activity.",
+    "end": 145,
+    "start": 145,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Reduces catalytic efficiency, but has no effect on affinity for substrate.",
+    "end": 199,
+    "start": 199,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Reduces affinity for substrate and catalytic efficiency.",
+    "end": 218,
+    "start": 218,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Loss of activity.",
+    "end": 223,
+    "start": 223,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Increases affinity for substrate, but reduces catalytic efficiency.",
+    "end": 255,
+    "start": 255,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Loss of activity.",
+    "end": 256,
+    "start": 256,
+    "type": "Mutagenesis"
+   }
+  ],
+  "sequence": "MEMLEEHRCFEGWQQRWRHDSSTLNCPMTFSIFLPPPRDHTPPPVLYWLSGLTCNDENFTTKAGAQRVAAELGIVLVMPDTSPRGEKVANDDGYDLGQGAGFYLNATQPPWATHYRMYDYLRDELPALVQSQFNVSDRCAISGHSMGGHGALIMALKNPGKYTSVSAFAPIVNPCSVPWGIKAFSSYLGEDKNAWLEWDSCALMYASNAQDAIPTLIDQGDNDQFLADQLQPAVLAEAARQKAWPMTLRIQPGYDHSYYFIASFIEDHLRFHAQYLLK",
+  "sequence_version": 1
+ },
+ "P38624": {
+  "entry_version": 232,
+  "features": [
+   {
+    "description": "Removed in mature form",
+    "end": 19,
+    "start": 1,
+    "type": "Propeptide"
+   },
+   {
+    "description": "Proteasome subunit beta type-1",
+    "end": 215,
+    "start": 20,
+    "type": "Chain"
+   },
+   {
+    "description": "Nucleophile",
+    "end": 20,
+    "start": 20,
+    "type": "Active site"
+   },
+   {
+    "description": "N-acetylmethionine",
+    "end": 1,
+    "start": 1,
+    "type": "Modified residue"
+   },
+   {
+    "description": "",
+    "end": 9,
+    "start": 6,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 27,
+    "start": 22,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 35,
+    "start": 30,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 41,
+    "start": 39,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 49,
+    "start": 44,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 57,
+    "start": 53,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 67,
+    "start": 60,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 89,
+    "start": 68,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 107,
+    "start": 94,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 111,
+    "start": 108,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 122,
+    "start": 114,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 125,
+    "start": 123,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 132,
+    "start": 126,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 136,
+    "start": 134,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 147,
+    "start": 139,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 153,
+    "start": 148,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 160,
+    "start": 154,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 184,
+    "start": 167,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 187,
+    "start": 185,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 198,
+    "start": 192,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 207,
+    "start": 201,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 212,
+    "start": 209,
+    "type": "Helix"
+   }
+  ],
+  "sequence": "MNGIQVDINRLKKGEVSLGTSIMAVTFKDGVILGADSRTTTGAYIANRVTDKLTRVHDKIWCCRSGSAADTQAIADIVQYHLELYTSQYGTPSTETAASVFKELCYENKDNLTAGIIVAGYDDKNKGEVYTIPLGGSVHKLPYAIAGSGSTFIYGYCDKNFRENMSKEETVDFIKHSLSQAIKWDGSSGGVIRMVVLTAAGVERLIFYPDEYEQL",
+  "sequence_version": 2
+ },
+ "P38991": {
+  "entry_version": 230,
+  "features": [
+   {
+    "description": "Aurora kinase",
+    "end": 367,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 355,
+    "start": 104,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 52,
+    "start": 1,
+    "type": "Region"
+   },
+   {
+    "description": "Polar residues",
+    "end": 29,
+    "start": 1,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Polar residues",
+    "end": 48,
+    "start": 37,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 227,
+    "start": 227,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 118,
+    "start": 110,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 133,
+    "start": 133,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis",
+    "end": 5,
+    "start": 5,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 76,
+    "start": 76,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by autocatalysis",
+    "end": 260,
+    "start": 260,
+    "type": "Modified residue"
+   },
+   {
+    "description": "In IPL1-4; causes missegregation of chromosomes at 37 degrees Celsius.",
+    "end": 260,
+    "start": 260,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "In IPL1-1; causes missegregation of chromosomes at 37 degrees Celsius.",
+    "end": 340,
+    "start": 340,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "In IPL1-2; causes missegregation of chromosomes at 37 degrees Celsius.",
+    "end": 352,
+    "start": 352,
+    "type": "Mutagenesis"
+   }
+  ],
+  "sequence": "MQRNSLVNIKLNANSPSKKTTTRPNTSRINKPWRISHSPQQRNPNSKIPSPVREKLNRLPVNNKKFLDMESSKIPSPIRKATSSKMIHENKKLPKFKSLSLDDFELGKKLGKGKFGKVYCVRHRSTGYICALKVMEKEEIIKYNLQKQFRREVEIQTSLNHPNLTKSYGYFHDEKRVYLLMEYLVNGEMYKLLRLHGPFNDILASDYIYQIANALDYMHKKNIIHRDIKPENILIGFNNVIKLTDFGWSIINPPENRRKTVCGTIDYLSPEMVESREYDHTIDAWALGVLAFELLTGAPPFEEEMKDTTYKRIAALDIKMPSNISQDAQDLILKLLKYDPKDRMRLGDVKMHPWILRNKPFWENKRL",
+  "sequence_version": 1
+ },
+ "P53314": {
+  "entry_version": 166,
+  "features": [
+   {
+    "description": "2',3'-cyclic-nucleotide 3'-phosphodiesterase",
+    "end": 239,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Proton donor/acceptor",
+    "end": 39,
+    "start": 39,
+    "type": "Active site"
+   },
+   {
+    "description": "Proton donor/acceptor",
+    "end": 150,
+    "start": 150,
+    "type": "Active site"
+   },
+   {
+    "description": "Abolishes cyclic nucleotide phosphodiesterase activity.",
+    "end": 39,
+    "start": 39,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Strongly reduces cyclic nucleotide phosphodiesterase activity.",
+    "end": 41,
+    "start": 41,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Abolishes cyclic nucleotide phosphodiesterase activity.",
+    "end": 150,
+    "start": 150,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Strongly reduces cyclic nucleotide phosphodiesterase activity.",
+    "end": 152,
+    "start": 152,
+    "type": "Mutagenesis"
+   }
+  ],
+  "sequence": "MAIALWYCPPQGSVAYETLQMLIFSFQTLFPDSPVFEPHVTVTSHLVCNSKDDVNKILTSCVAAIQSIRSHQTAKKGRKGQVSHAVAAPLVSFNGCSVGKQYFKKIVLECNKNKILYGVAQVMREMYVEIDPETRSSRAATWVHEEFHPHVSLLYSDIHPVSQASLRVVQQRIEDALDVQLVPREKRKGSGNADGSNEVQMRWDFDVSSSLSWNIPGTFKVVNCVGPVQEWEVLGRVDV",
+  "sequence_version": 1
+ },
+ "P53682": {
+  "entry_version": 178,
+  "features": [
+   {
+    "description": "Removed",
+    "end": 1,
+    "start": 1,
+    "type": "Initiator methionine"
+   },
+   {
+    "description": "Calcium-dependent protein kinase 23",
+    "end": 534,
+    "start": 2,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 331,
+    "start": 73,
+    "type": "Domain"
+   },
+   {
+    "description": "EF-hand 1",
+    "end": 408,
+    "start": 374,
+    "type": "Domain"
+   },
+   {
+    "description": "EF-hand 2; degenerate",
+    "end": 443,
+    "start": 409,
+    "type": "Domain"
+   },
+   {
+    "description": "EF-hand 3",
+    "end": 479,
+    "start": 444,
+    "type": "Domain"
+   },
+   {
+    "description": "EF-hand 4",
+    "end": 513,
+    "start": 480,
+    "type": "Domain"
+   },
+   {
+    "description": "Autoinhibitory domain",
+    "end": 367,
+    "start": 337,
+    "type": "Region"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 197,
+    "start": 197,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 87,
+    "start": 79,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 102,
+    "start": 102,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 387,
+    "start": 387,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 398,
+    "start": 398,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 423,
+    "start": 423,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 425,
+    "start": 425,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 427,
+    "start": 427,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 432,
+    "start": 432,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 457,
+    "start": 457,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 459,
+    "start": 459,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 461,
+    "start": 461,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 468,
+    "start": 468,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 491,
+    "start": 491,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 493,
+    "start": 493,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 495,
+    "start": 495,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 497,
+    "start": 497,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 502,
+    "start": 502,
+    "type": "Binding site"
+   },
+   {
+    "description": "N-myristoyl glycine",
+    "end": 2,
+    "start": 2,
+    "type": "Lipidation"
+   },
+   {
+    "description": "in Ref. 1; BAA02698 and 2; ABL74562",
+    "end": 317,
+    "start": 317,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MGNSCQNGTYGNNYQNSNRFQNDRFASRYVDGNDTEDCYSGSSRASLAGALRQGLNLKSPVLGYKTPNVRELYTLGRELGQGQFGKTYLCTEISTGCQYACKTILKSNLRCVSDIEDVRREIQIMHHLSGQKNIVTIKDTYEDEQAVHIVMELCAGGELFSKIQKRGHYSERKAAELIKIIVGIIETCHSHGVMHRDLKPENFLLLDADDEFSVKAIDFGLSVFFRPGQVFREVVGSPYYIAPEVLEKRYGPEADIWTAGVILYVLLTGVPPFWADTQSGIYEKVLDGRIDFKSNRWPRISDSAKDLIKKMLCPYPSERLKAHEVLKHPWICDNGVATNRALDPSVLPRLKQFSAMNRLKKLSLQIIAERLSEEEIVGLREMFKAMDTKNRSVVTFGELKGLKRYSSVFKDTEINDLMEAADDTTSTINWEEFIAAAVSLNKIEREKHLMAAFTYFDKDGSGFITVDKLQKACMERNMEDTFLEEMILEVDQNNDGQIDYAEFVTMMQSNNFGLGWQTVESSLNVALREAPQVY",
+  "sequence_version": 2
+ },
+ "P64636": {
+  "entry_version": 134,
+  "features": [
+   {
+    "description": "GMP/IMP nucleotidase YrfG",
+    "end": 222,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Nucleophile",
+    "end": 9,
+    "start": 9,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 11,
+    "start": 9,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 9,
+    "start": 9,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 11,
+    "start": 11,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 149,
+    "start": 149,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 174,
+    "start": 174,
+    "type": "Binding site"
+   }
+  ],
+  "sequence": "MHINIAWQDVDTVLLDMDGTLLDLAFDNYFWQKLVPETWGAKNGVTPQEAMEYMRQQYHDVQHTLNWYCLDYWSEQLGLDICAMTTEMGPRAVLREDTIPFLEALKASGKQRILLTNAHPHNLAVKLEHTGLDAHLDLLLSTHTFGYPKEDQRLWHAVAEATGLKAERTLFIDDSEAILDAAAQFGIRYCLGVTNPDSGIAEKQYQRHPSLNDYRRLIPSLM",
+  "sequence_version": 1
+ },
+ "P77625": {
+  "entry_version": 173,
+  "features": [
+   {
+    "description": "Hexitol phosphatase A",
+    "end": 216,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Nucleophile",
+    "end": 9,
+    "start": 9,
+    "type": "Active site"
+   },
+   {
+    "description": "Proton donor",
+    "end": 11,
+    "start": 11,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 11,
+    "start": 9,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 9,
+    "start": 9,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 11,
+    "start": 11,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 107,
+    "start": 106,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 138,
+    "start": 138,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 163,
+    "start": 163,
+    "type": "Binding site"
+   }
+  ],
+  "sequence": "MRCKGFLFDLDGTLVDSLPAVERAWSNWARRHGLAPEEVLAFIHGKQAITSLRHFMAGKSEADIAAEFTRLEHIEATETEGITALPGAIALLSHLNKAGIPWAIVTSGSMPVARARHKIAGLPAPEVFVTAERVKRGKPEPDAYLLGAQLLGLAPQECVVVEDAPAGVLSGLAAGCHVIAVNAPADTPRLNEVDLVLHSLEQITVTKQPNGDVIIQ",
+  "sequence_version": 2
+ },
+ "P93031": {
+  "entry_version": 165,
+  "features": [
+   {
+    "description": "GDP-mannose 4,6 dehydratase 2",
+    "end": 373,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Disordered",
+    "end": 21,
+    "start": 1,
+    "type": "Region"
+   },
+   {
+    "description": "Polar residues",
+    "end": 15,
+    "start": 1,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "",
+    "end": 162,
+    "start": 162,
+    "type": "Active site"
+   },
+   {
+    "description": "Nucleophile",
+    "end": 164,
+    "start": 164,
+    "type": "Active site"
+   },
+   {
+    "description": "Nucleophile",
+    "end": 185,
+    "start": 185,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 40,
+    "start": 35,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 60,
+    "start": 60,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 92,
+    "start": 91,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 117,
+    "start": 113,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 117,
+    "start": 117,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 128,
+    "start": 128,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 162,
+    "start": 162,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 185,
+    "start": 185,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 189,
+    "start": 189,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 214,
+    "start": 214,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 215,
+    "start": 215,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 228,
+    "start": 220,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 220,
+    "start": 220,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 247,
+    "start": 247,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 253,
+    "start": 253,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 317,
+    "start": 314,
+    "type": "Binding site"
+   },
+   {
+    "description": "In mur1-2; strong reduction in L-fucose in the cell walls.",
+    "end": 107,
+    "start": 107,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "In mur1-7; strong reduction in L-fucose in the cell walls.",
+    "end": 139,
+    "start": 139,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "In mur1-5; strong reduction in L-fucose in the cell walls.",
+    "end": 153,
+    "start": 153,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "In mur1-1; strong reduction in L-fucose in the cell walls.",
+    "end": 162,
+    "start": 162,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "In mur1-3; strong reduction in L-fucose in the cell walls.",
+    "end": 191,
+    "start": 191,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "In mur1-6; strong reduction in L-fucose in the cell walls.",
+    "end": 202,
+    "start": 202,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "In mur1-4; strong reduction in L-fucose in the cell walls.",
+    "end": 210,
+    "start": 210,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "in Ref. 6; AAM61140",
+    "end": 55,
+    "start": 55,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 2; CAB62638",
+    "end": 181,
+    "start": 179,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "",
+    "end": 34,
+    "start": 30,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 37,
+    "start": 35,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 50,
+    "start": 39,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 59,
+    "start": 54,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 73,
+    "start": 68,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 89,
+    "start": 85,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 105,
+    "start": 95,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 112,
+    "start": 108,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 124,
+    "start": 119,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 130,
+    "start": 126,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 135,
+    "start": 131,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 151,
+    "start": 136,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 162,
+    "start": 156,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 166,
+    "start": 163,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 173,
+    "start": 171,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 203,
+    "start": 184,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 212,
+    "start": 206,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 238,
+    "start": 225,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 247,
+    "start": 244,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 254,
+    "start": 252,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 269,
+    "start": 258,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 273,
+    "start": 271,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 279,
+    "start": 276,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 286,
+    "start": 284,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 297,
+    "start": 287,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 304,
+    "start": 302,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 308,
+    "start": 306,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 312,
+    "start": 310,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 332,
+    "start": 328,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 363,
+    "start": 340,
+    "type": "Helix"
+   }
+  ],
+  "sequence": "MASENNGSRSDSESITAPKADSTVVEPRKIALITGITGQDGSYLTEFLLGKGYEVHGLIRRSSNFNTQRINHIYIDPHNVNKALMKLHYADLTDASSLRRWIDVIKPDEVYNLAAQSHVAVSFEIPDYTADVVATGALRLLEAVRSHTIDSGRTVKYYQAGSSEMFGSTPPPQSETTPFHPRSPYAASKCAAHWYTVNYREAYGLFACNGILFNHESPRRGENFVTRKITRALGRIKVGLQTKLFLGNLQASRDWGFAGDYVEAMWLMLQQEKPDDYVVATEEGHTVEEFLDVSFGYLGLNWKDYVEIDQRYFRPAEVDNLQGDASKAKEVLGWKPQVGFEKLVKMMVDEDLELAKREKVLVDAGYMDAKQQP",
+  "sequence_version": 3
+ },
+ "Q08651": {
+  "entry_version": 174,
+  "features": [
+   {
+    "description": "Probable oxidoreductase ENV9",
+    "end": 330,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Helical",
+    "end": 47,
+    "start": 27,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Helical",
+    "end": 265,
+    "start": 245,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Proton donor",
+    "end": 172,
+    "start": 172,
+    "type": "Active site"
+   },
+   {
+    "description": "Proton donor",
+    "end": 202,
+    "start": 202,
+    "type": "Active site"
+   },
+   {
+    "description": "Lowers pKa of active site Tyr",
+    "end": 206,
+    "start": 206,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 28,
+    "start": 28,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 97,
+    "start": 97,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 124,
+    "start": 124,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 202,
+    "start": 202,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 206,
+    "start": 206,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 233,
+    "start": 233,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 237,
+    "start": 237,
+    "type": "Binding site"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 282,
+    "start": 282,
+    "type": "Glycosylation"
+   }
+  ],
+  "sequence": "MLDPRILPYYDPAVERKIAVVTGGNTGIGWYTVLHLYLHGFVVYICGRNSHKISKAIQEILAEAKKRCHEDDDGSSPGAGPGPSIQRLGSLHYIHLDLTDLKCVERAALKILKLEDHIDVLVNNAGIMAVPLEMTKDGFEVQLQTNYISHFIFTMRLLPLLRHCRGRIISLSSIGHHLEFMYWKLSKTWDYKPNMLFTWFRYAMSKTALIQCTKMLAIKYPDVLCLSVHPGLVMNTNLFSYWTRLPIVGIFFWLLFQVVGFFFGVSNEQGSLASLKCALDPNLSVEKDNGKYFTTGGKESKSSYVSNNVDEAASTWIWTVHQLRDRGFDI",
+  "sequence_version": 1
+ },
+ "Q08E52": {
+  "entry_version": 147,
+  "features": [
+   {
+    "description": "Removed",
+    "end": 1,
+    "start": 1,
+    "type": "Initiator methionine"
+   },
+   {
+    "description": "Serine/threonine-protein kinase PAK 1",
+    "end": 544,
+    "start": 2,
+    "type": "Chain"
+   },
+   {
+    "description": "CRIB",
+    "end": 88,
+    "start": 75,
+    "type": "Domain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 520,
+    "start": 269,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 77,
+    "start": 1,
+    "type": "Region"
+   },
+   {
+    "description": "Autoregulatory region",
+    "end": 140,
+    "start": 70,
+    "type": "Region"
+   },
+   {
+    "description": "GTPase-binding",
+    "end": 105,
+    "start": 75,
+    "type": "Region"
+   },
+   {
+    "description": "Disordered",
+    "end": 193,
+    "start": 161,
+    "type": "Region"
+   },
+   {
+    "description": "Disordered",
+    "end": 250,
+    "start": 212,
+    "type": "Region"
+   },
+   {
+    "description": "Basic and acidic residues",
+    "end": 77,
+    "start": 68,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Acidic residues",
+    "end": 183,
+    "start": 174,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Polar residues",
+    "end": 230,
+    "start": 219,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 388,
+    "start": 388,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 283,
+    "start": 275,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 298,
+    "start": 298,
+    "type": "Binding site"
+   },
+   {
+    "description": "N-acetylserine",
+    "end": 2,
+    "start": 2,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by PKB and autocatalysis",
+    "end": 21,
+    "start": 21,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by OXSR1",
+    "end": 84,
+    "start": 84,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 115,
+    "start": 115,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 131,
+    "start": 131,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 142,
+    "start": 142,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis",
+    "end": 144,
+    "start": 144,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis",
+    "end": 149,
+    "start": 149,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine; by JAK2",
+    "end": 153,
+    "start": 153,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 174,
+    "start": 174,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 184,
+    "start": 184,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis",
+    "end": 198,
+    "start": 198,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine; by JAK2",
+    "end": 200,
+    "start": 200,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine; by autocatalysis",
+    "end": 203,
+    "start": 203,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 211,
+    "start": 211,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 218,
+    "start": 218,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 219,
+    "start": 219,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 222,
+    "start": 222,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 224,
+    "start": 224,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 228,
+    "start": 228,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 229,
+    "start": 229,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine; by JAK2",
+    "end": 284,
+    "start": 284,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by autocatalysis, BRSK2 and PDPK1",
+    "end": 422,
+    "start": 422,
+    "type": "Modified residue"
+   }
+  ],
+  "sequence": "MSNNGLDIQDKPPAPPMRNTSTMIGAGSKDAGTLNHGSKPLPPNPEEKKKKDRFYRAILPGDKTNKKKEKERPEISLPSDFEHTIHVGFDAVTGEFTGMPEQWARLLQTSNITKSEQKKNPQAVLDVLEFYNSKKTSNSQKYMSFTDKSAEDYNSSNTLNVKAVSETPAVPPVSEDEDDDDDGTPPPVIAPRPEHTKSVYTRSVIEPLPITPTRDVATSPISPTENNTTPPDALTRNTEKQKKKPKMSDEEILEKLRSIVSVGDPKKKYTRFEKIGQGASGTVYTAMDVATGQEVAIKQMNLQQQPKKELIINEILVMRENKNPNIVNYLDSYLVGDELWVVMEYLAGGSLTDVVTETCMDEGQIAAVCRECLQALEFLHSNQVIHRDIKSDNILLGMDGSVKLTDFGFCAQITPEQSKRSTMVGTPYWMAPEVVTRKAYGPKVDIWSLGIMAIEMIEGEPPYLNENPLRALYLIATNGTPELQNPEKLSAIFRDFLNRCLEMDVEKRGSAKELLQHQFLKIAKPLSSLTPLIAAAKEATKNNH",
+  "sequence_version": 1
+ },
+ "Q2PAY3": {
+  "entry_version": 88,
+  "features": [
+   {
+    "description": "",
+    "end": 21,
+    "start": 1,
+    "type": "Signal"
+   },
+   {
+    "description": "Serine/threonine-protein kinase ROP17",
+    "end": 608,
+    "start": 22,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 579,
+    "start": 283,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 608,
+    "start": 583,
+    "type": "Region"
+   },
+   {
+    "description": "Polar residues",
+    "end": 597,
+    "start": 587,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 436,
+    "start": 436,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 297,
+    "start": 289,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 312,
+    "start": 312,
+    "type": "Binding site"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 76,
+    "start": 76,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "Reduces translocation of GRA24 across the parasitophorous vacuole membrane in Toxoplasma-infected host cells.",
+    "end": 312,
+    "start": 312,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Reduces translocation of GRA24 across the parasitophorous vacuole membrane in Toxoplasma-infected host cells.",
+    "end": 436,
+    "start": 436,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Predicted catalytic residue. Reduces translocation of GRA24 across the parasitophorous vacuole membrane in Toxoplasma-infected host cells.",
+    "end": 454,
+    "start": 454,
+    "type": "Mutagenesis"
+   }
+  ],
+  "sequence": "MELVLCFVIITISGVIRESSALLLRSPTSNDVFGELVASAERAQPLATRLTKRISRLNFNDREDDFWEDHGDASWNNSYTLVNGRTTLGSENRRRPASHSLIERPYYRDGRLSPVLGVQERRGRSVHSYHEEPVSFFDQRAFDEYTFRRRSQLHRQRARAGLRSRIKQNVRRLWTSARGAVRGWGRRVRRKIGDLFVGHLMPQLRRLRFWDQGLPPVVPPLIGNEPGQASVALVAERMEARLREKTLTEKNPTEAQQAVGTYLINSAENTWFISIPGGRYILLKKRGFLGGGGFGLVYHVEHPTTGQPFALKIFVQRVMNNEVGDKISDLIEDEFGVMKYFPPEWTPARMYSELRFMVPLLKLRVLGKPEFQDARNHLRIFSVCALFPKAQGDLEEAAALLADMDRTNAYNMRMSSTIQMVKLLARFHAFGLVHGDVKLQNFLVDKSGLLLLSDFTQILRTNERRYPPVVTVLYMSPEIATCLITRLRNAIPYTAEIDSWMLGISLYRLWCGDFPFGITLDATALQVAGIVIRSSASSLDFASCHDIPEQFREMIVGFLRKTPGVRLSPQQALEQFSLLNWKGPSPASDTASESEPVSTEEAALLQKE",
+  "sequence_version": 1
+ },
+ "Q46925": {
+  "entry_version": 189,
+  "features": [
+   {
+    "description": "Cysteine desulfurase CsdA",
+    "end": 401,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Cysteine persulfide intermediate",
+    "end": 358,
+    "start": 358,
+    "type": "Active site"
+   },
+   {
+    "description": "N6-(pyridoxal phosphate)lysine",
+    "end": 222,
+    "start": 222,
+    "type": "Modified residue"
+   },
+   {
+    "description": "No loss of activity.",
+    "end": 100,
+    "start": 100,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "No loss of activity.",
+    "end": 176,
+    "start": 176,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "No loss of activity.",
+    "end": 323,
+    "start": 323,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Loss of cysteine desulfurization.",
+    "end": 358,
+    "start": 358,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "",
+    "end": 10,
+    "start": 6,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 19,
+    "start": 16,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 27,
+    "start": 25,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 44,
+    "start": 33,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 75,
+    "start": 55,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 83,
+    "start": 81,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 89,
+    "start": 84,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 96,
+    "start": 90,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 102,
+    "start": 97,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 105,
+    "start": 103,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 115,
+    "start": 111,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 122,
+    "start": 120,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 133,
+    "start": 124,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 140,
+    "start": 136,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 148,
+    "start": 146,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 152,
+    "start": 150,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 156,
+    "start": 153,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 169,
+    "start": 161,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 173,
+    "start": 171,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 188,
+    "start": 179,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 196,
+    "start": 192,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 203,
+    "start": 200,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 212,
+    "start": 208,
+    "type": "Turn"
+   },
+   {
+    "description": "",
+    "end": 219,
+    "start": 214,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 222,
+    "start": 220,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 234,
+    "start": 230,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 241,
+    "start": 236,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 256,
+    "start": 248,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 262,
+    "start": 259,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 269,
+    "start": 267,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 289,
+    "start": 276,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 312,
+    "start": 294,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 320,
+    "start": 318,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 333,
+    "start": 327,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 347,
+    "start": 338,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 355,
+    "start": 353,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 366,
+    "start": 360,
+    "type": "Helix"
+   },
+   {
+    "description": "",
+    "end": 375,
+    "start": 372,
+    "type": "Beta strand"
+   },
+   {
+    "description": "",
+    "end": 399,
+    "start": 382,
+    "type": "Helix"
+   }
+  ],
+  "sequence": "MNVFNPAQFRAQFPALQDAGVYLDSAATALKPEAVVEATQQFYSLSAGNVHRSQFAEAQRLTARYEAAREKVAQLLNAPDDKTIVWTRGTTESINMVAQCYARPRLQPGDEIIVSVAEHHANLVPWLMVAQQTGAKVVKLPLNAQRLPDVDLLPELITPRSRILALGQMSNVTGGCPDLARAITFAHSAGMVVMVDGAQGAVHFPADVQQLDIDFYAFSGHKLYGPTGIGVLYGKSELLEAMSPWLGGGKMVHEVSFDGFTTQSAPWKLEAGTPNVAGVIGLSAALEWLADYDINQAESWSRSLATLAEDALAKRPGFRSFRCQDSSLLAFDFAGVHHSDMVTLLAEYGIALRAGQHCAQPLLAELGVTGTLRASFAPYNTKSDVDALVNAVDRALELLVD",
+  "sequence_version": 1
+ },
+ "Q504J1": {
+  "entry_version": 154,
+  "features": [
+   {
+    "description": "",
+    "end": 171,
+    "start": 1,
+    "type": "Propeptide"
+   },
+   {
+    "description": "Caspase b subunit p20",
+    "end": 300,
+    "start": 172,
+    "type": "Chain"
+   },
+   {
+    "description": "",
+    "end": 316,
+    "start": 301,
+    "type": "Propeptide"
+   },
+   {
+    "description": "Caspase b subunit p10",
+    "end": 404,
+    "start": 317,
+    "type": "Chain"
+   },
+   {
+    "description": "Pyrin",
+    "end": 80,
+    "start": 8,
+    "type": "Domain"
+   },
+   {
+    "description": "",
+    "end": 249,
+    "start": 249,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 296,
+    "start": 296,
+    "type": "Active site"
+   },
+   {
+    "description": "Abolishes catalytic activity. Abolishes pyroptosis induced by bacterial lipopolysaccharides (LPS).",
+    "end": 296,
+    "start": 296,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "in Ref. 3; AAY44398 and 2; AAG45230",
+    "end": 18,
+    "start": 18,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 2; AAG45230",
+    "end": 192,
+    "start": 192,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 2; AAG45230",
+    "end": 213,
+    "start": 213,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 2; AAG45230",
+    "end": 274,
+    "start": 274,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 3; AAY44398 and 2; AAG45230",
+    "end": 380,
+    "start": 380,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MEDITQLLSDVLEDLVESELKQFTRQLWIGVKPGVEPIPRGKLENKDRQDVVDSMVQQYSEDAGTITVQTLRKIKQNERAKRLESNLLKVQSQGQENKQNSEEPQPIPQIISQPIQQIISQPINNAGSEDLQPIQADWQRPRQIIPCSQETKNTLLKAHGDDIYTPRSGTQRKGLALLITNIQFANTQHNRNGADRDEENAEWLLRSLGFAVIKYRNLSGKDIRRAVENFSKRREHEDADSTFIVIMSHGTRIDNKDAIVGVSDDVYFIEETFSHLNSVNCPALIDKPKVILIQACRGGQSSGVLAQDSVFASDSWVHMEKDFVCFMSTMPNTFAYRNPIEGSFFISYIVDVFCSSAHRDDIMELFRKVTLRMEKDQRFQGQAKLLPCIERTSISKRFYLFPGL",
+  "sequence_version": 1
+ },
+ "Q54QB1": {
+  "entry_version": 135,
+  "features": [
+   {
+    "description": "Extracellular signal-regulated kinase 2",
+    "end": 369,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 304,
+    "start": 14,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 369,
+    "start": 346,
+    "type": "Region"
+   },
+   {
+    "description": "TXY",
+    "end": 178,
+    "start": 176,
+    "type": "Motif"
+   },
+   {
+    "description": "Polar residues",
+    "end": 369,
+    "start": 355,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 137,
+    "start": 137,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 28,
+    "start": 20,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 43,
+    "start": 43,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 176,
+    "start": 176,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 178,
+    "start": 178,
+    "type": "Modified residue"
+   },
+   {
+    "description": "in Ref. 1; L33043",
+    "end": 18,
+    "start": 17,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; L33043",
+    "end": 30,
+    "start": 30,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; L33043",
+    "end": 38,
+    "start": 36,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; L33043",
+    "end": 285,
+    "start": 285,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MSSEDIDKHVLRKYEVLQKIGKGAYGIVWKAIDKKTKQTVALKKIFDAFQNATDAQRTFREIMFLQELHGHENIIKLLNVIKADNDRDIYLVFEHMETDLHAVIRAKILEEIHKQYTIYQLLKALKYMHSANVLHRDIKPSNLLLNSECLVKVADFGLARSITSLESIAEANPVLTEYVATRWYRAPEILLGSTKYTKGVDMWSIGCILGELLGEKAMFPGNSTMNQLDLIIEVTGRPSAEDIEAIKSPFAGTMLESLPPSNPRSLSDMYPSASVDALDLLKKLLQFNPDKRITAEEALAHPFVTQFHNPAEEPHFDRIIKISIDDGQKFPIAEYRNRLYNDIIKKKKEERKKQTNPTKPDTTAPTLST",
+  "sequence_version": 1
+ },
+ "Q57YS8": {
+  "entry_version": 144,
+  "features": [
+   {
+    "description": "Serine/threonine-protein kinase tousled-like 2",
+    "end": 650,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 601,
+    "start": 320,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 54,
+    "start": 1,
+    "type": "Region"
+   },
+   {
+    "description": "Disordered",
+    "end": 88,
+    "start": 69,
+    "type": "Region"
+   },
+   {
+    "description": "",
+    "end": 139,
+    "start": 112,
+    "type": "Coiled coil"
+   },
+   {
+    "description": "",
+    "end": 241,
+    "start": 207,
+    "type": "Coiled coil"
+   },
+   {
+    "description": "Basic and acidic residues",
+    "end": 17,
+    "start": 1,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Polar residues",
+    "end": 49,
+    "start": 34,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Low complexity",
+    "end": 85,
+    "start": 71,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 450,
+    "start": 450,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 334,
+    "start": 326,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 349,
+    "start": 349,
+    "type": "Binding site"
+   },
+   {
+    "description": "Kinase-dead mutant. Does not affect nuclear localization of the protein.",
+    "end": 349,
+    "start": 349,
+    "type": "Mutagenesis"
+   }
+  ],
+  "sequence": "MKNNDANHMRKRSREDPTNAEAAEFSEDQGVGGQQTEVKGTKSSSTSRVSPEIPDESACIYEYVSGPTAVSTSGGNSGNSPGSTHPSERKLKQATLPSYGLVNDTAVFRKELADRDAQIDELREKLAAVETRMSERETTLVNTQAQLQEAVDRNNRYQVVLREEMLRAARQERCDARRALHLKQFELGQIAVWHSNGREVWVEGNKMRQLTMQLEELSVRRDEVEELKKTAEKRARQILRSNDEDSMAPEAQAALMELQEAALLYTAEFAALGSAIQSLKQQQQDLNHEKKVFLKEIRRVNDEDASAFVAVPALGHNGRYVMMHLLGKGGFSEVWKAFDLQEARYVACKIHRVQREWSQQVRQHYRDRAVRELKIMRMLEHPHLTRLFDAFDHGTATFVSVMEFSAGTDLDTHLKRCGTLREVEARLIIMQVVSALRYFAAQHQPVIHYDLKPANILLHSSNQSSLLIKITDFGLSKLIPKRDGASDNPTIELTSQGAGTYWYLPPECFDTTATPRISNKVDVWSCGVIFYQMLFGRRPFAEGESQQQIWQNKLIVSSAHTLTFPDTPRVSQEAKDLIQKCLEYHPADRYDVMQLSQDPYLQRNTRRLSRTERTLPAATQNSSTTVVTTAAAASGVTLTGSVEEKLSNIP",
+  "sequence_version": 1
+ },
+ "Q6GMI9": {
+  "entry_version": 141,
+  "features": [
+   {
+    "description": "UDP-glucuronic acid decarboxylase 1",
+    "end": 418,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Cytoplasmic",
+    "end": 17,
+    "start": 1,
+    "type": "Topological domain"
+   },
+   {
+    "description": "Helical; Signal-anchor for type II membrane protein",
+    "end": 38,
+    "start": 18,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Lumenal",
+    "end": 418,
+    "start": 39,
+    "type": "Topological domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 418,
+    "start": 397,
+    "type": "Region"
+   },
+   {
+    "description": "Basic residues",
+    "end": 418,
+    "start": 406,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 229,
+    "start": 229,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 96,
+    "start": 96,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 97,
+    "start": 97,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 98,
+    "start": 98,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 117,
+    "start": 117,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 118,
+    "start": 118,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 120,
+    "start": 120,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 121,
+    "start": 121,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 122,
+    "start": 122,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 142,
+    "start": 142,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 143,
+    "start": 143,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 147,
+    "start": 147,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 148,
+    "start": 148,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 157,
+    "start": 157,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 159,
+    "start": 159,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 175,
+    "start": 175,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 176,
+    "start": 176,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 183,
+    "start": 183,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 186,
+    "start": 186,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 189,
+    "start": 189,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 190,
+    "start": 190,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 198,
+    "start": 198,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 229,
+    "start": 229,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 233,
+    "start": 233,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 243,
+    "start": 243,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 246,
+    "start": 246,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 247,
+    "start": 247,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 259,
+    "start": 259,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 265,
+    "start": 265,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 270,
+    "start": 270,
+    "type": "Binding site"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 314,
+    "start": 314,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 383,
+    "start": 383,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "In Man o' war (mow) mutant; characterized by severe craniofacial defects. Fishes show defective organization and morphogenesis of chondrocytes, perichondrium and bone.",
+    "end": 234,
+    "start": 234,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "in Ref. 1; AAM34679",
+    "end": 334,
+    "start": 333,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; AAM34679",
+    "end": 350,
+    "start": 350,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; AAM34679",
+    "end": 361,
+    "start": 361,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; AAM34679",
+    "end": 365,
+    "start": 365,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MMRMSWMVTVINRRMMKILIALALIAYIASVWGTYANMRSIQEHGEMKIEQRIDEAVGPLREKIRELELSFTQKYPPVKFLSEKDRKRILITGGAGFVGSHLTDKLMMDGHEVTVVDNFFTGRKRNVEHWIGHENFELINHDVVEPLYIEVDQIYHLASPASPPNYMYNPIKTLKTNTIGTLNMLGLAKRVGARLLLASTSEVYGDPEVHPQNEDYWGHVNPIGPRACYDEGKRVAETMCYAYMKQEGVEVRVARIFNTFGSRMHMNDGRVVSNFILQALQGEALTVYGSGSQTRAFQYVSDLVNGLVSLMNSNISSPVNLGNPEEHTILEFAQLIKSLVASRSHIQFLPEAQDDPQRRRPDIRKAKLLLGWEPVVPLEEGLNKTIQYFSRELEHQANNQYIPKPKAARMKKGRPRHN",
+  "sequence_version": 2
+ },
+ "Q8RX88": {
+  "entry_version": 133,
+  "features": [
+   {
+    "description": "CAAX prenyl protease 1 homolog",
+    "end": 424,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Helical",
+    "end": 23,
+    "start": 3,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Helical",
+    "end": 87,
+    "start": 67,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Helical",
+    "end": 129,
+    "start": 109,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Helical",
+    "end": 175,
+    "start": 155,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Helical",
+    "end": 205,
+    "start": 185,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Helical",
+    "end": 315,
+    "start": 295,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Helical",
+    "end": 352,
+    "start": 332,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "",
+    "end": 285,
+    "start": 285,
+    "type": "Active site"
+   },
+   {
+    "description": "Proton donor",
+    "end": 366,
+    "start": 366,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 284,
+    "start": 284,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 288,
+    "start": 288,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 362,
+    "start": 362,
+    "type": "Binding site"
+   },
+   {
+    "description": "Loss of activity.",
+    "end": 284,
+    "start": 284,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "in Ref. 5; AAL07084",
+    "end": 81,
+    "start": 81,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 5; AAL07084",
+    "end": 266,
+    "start": 266,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 1; AAK39514",
+    "end": 399,
+    "start": 399,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MAIPFMETVVGFMIVMYIFETYLDLRQLTALKLPTLPKTLVGVISQEKFEKSRAYSLDKSYFHFVHEFVTILMDSAILFFGILPWFWKMSGAVLPRLGLDPENEILHTLSFLAGVMTWSQITDLPFSLYSTFVIESRHGFNKQTIWMFIRDMIKGTFLSVILGPPIVAAIIFIVQKGGPYLAIYLWAFMFILSLVMMTIYPVLIAPLFNKFTPLPDGDLREKIEKLASSLKFPLKKLFVVDGSTRSSHSNAYMYGFFKNKRIVLYDTLIQQCKNEDEIVAVIAHELGHWKLNHTTYSFIAVQILAFLQFGGYTLVRNSTDLFRSFGFDTQPVLIGLIIFQHTVIPLQHLVSFGLNLVSRAFEFQADAFAVKLGYAKDLRPALVKLQEENLSAMNTDPLYSAYHYSHPPLVERLRAIDGEDKKTD",
+  "sequence_version": 1
+ },
+ "Q8VYY5": {
+  "entry_version": 164,
+  "features": [
+   {
+    "description": "",
+    "end": 23,
+    "start": 1,
+    "type": "Signal"
+   },
+   {
+    "description": "Receptor-like serine/threonine-protein kinase NCRK",
+    "end": 565,
+    "start": 24,
+    "type": "Chain"
+   },
+   {
+    "description": "Extracellular",
+    "end": 103,
+    "start": 24,
+    "type": "Topological domain"
+   },
+   {
+    "description": "Helical",
+    "end": 124,
+    "start": 104,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Cytoplasmic",
+    "end": 565,
+    "start": 125,
+    "type": "Topological domain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 495,
+    "start": 210,
+    "type": "Domain"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 339,
+    "start": 339,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 224,
+    "start": 216,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 238,
+    "start": 238,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 378,
+    "start": 378,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 383,
+    "start": 383,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 391,
+    "start": 391,
+    "type": "Modified residue"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 27,
+    "start": 27,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 37,
+    "start": 37,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 45,
+    "start": 45,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 77,
+    "start": 77,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 85,
+    "start": 85,
+    "type": "Glycosylation"
+   }
+  ],
+  "sequence": "MKMRVETALAILLVLISIQQCYGGVSNYTCTCFSSGNRSDILESNCSTSCNCRPDRDQWVCLCPANGFPVIAIGGSNSSCFTSCNCSAGATKSSKKQYLSRKLVIVILLFCGVLISLAFLASMICYICRKDKFSGQTPSVSSDRESSWHSSANLINRKSSVSQSKISISSSVAGCFFQNASLFCVSKPETIHGAIFQFSYTELEQATNKFSSNSVIGHGGSSCVYRGQLKDGKTAAIKRLNTPKGDDTDTLFSTEVELLSRLHHYHVVPLIGYCSEFHGKHAERLLVFEYMSYGSLRDCLDGELGEKMTWNIRISVALGAARGLEYLHEAAAPRILHRDVKSTNILLDENWHAKITDLGMAKCLSSDGLQSGSSSPTTGLQGTFGYFAPEYAIAGCASQMSDVFSFGVVLLELITGRKPIQKPSNNKGEESLVIWAVPRLQDSKRVIEELPDPRLNGKFAEEEMQIMAYLAKECLLLDPESRPTMREVVQILSTITPDTSSRRRNFPINYLFQSNEKKKESKVGWSRGGSKSGQEEETVDLTEPRFESFCLPNVKPVLLEPSAHI",
+  "sequence_version": 1
+ },
+ "Q9C9U2": {
+  "entry_version": 172,
+  "features": [
+   {
+    "description": "Cyclin-dependent kinase D-1",
+    "end": 398,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 291,
+    "start": 11,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 318,
+    "start": 296,
+    "type": "Region"
+   },
+   {
+    "description": "Basic and acidic residues",
+    "end": 318,
+    "start": 308,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 133,
+    "start": 133,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 25,
+    "start": 17,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 40,
+    "start": 40,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 22,
+    "start": 22,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 160,
+    "start": 160,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 166,
+    "start": 166,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Prevents autophosphorylation.",
+    "end": 40,
+    "start": 40,
+    "type": "Mutagenesis"
+   }
+  ],
+  "sequence": "MEQPKKVADRYLKREVLGQGTYGVVFKATDTKNGETVAIKKIRLGKEKEGVNVTALREIKLLKELKHPHIIELIDAFPHKENLHIVFEFMETDLEAVIRDRNLYLSPGDVKSYLQMILKGLEYCHGKWVLHRDMKPNNLLIGPNGQLKLADFGLARIFGSPGRKFTHQVFARWYRAPELLFGAKQYDGAVDVWAAGCIFAELLLRRPFLQGNSDIDQLSKIFAAFGTPKADQWPDMICLPDYVEYQFVPAPSLRSLLPTVSEDALDLLSKMFTYDPKSRISIQQALKHRYFTSAPSPTDPLKLPRPVSKQDAKSSDSKLEAIKVLSPAHKFRRVMPDRGKSGNGFKDQSVDVMRQASHDGQAPMSLDFTILAERPPNRPTITSADRSHLKRKLDLEFL",
+  "sequence_version": 1
+ },
+ "Q9DGE0": {
+  "entry_version": 153,
+  "features": [
+   {
+    "description": "Dual specificity mitogen-activated protein kinase kinase 6",
+    "end": 361,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 341,
+    "start": 80,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 61,
+    "start": 1,
+    "type": "Region"
+   },
+   {
+    "description": "D domain",
+    "end": 46,
+    "start": 30,
+    "type": "Region"
+   },
+   {
+    "description": "DVD domain",
+    "end": 361,
+    "start": 338,
+    "type": "Region"
+   },
+   {
+    "description": "Basic and acidic residues",
+    "end": 11,
+    "start": 1,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Basic and acidic residues",
+    "end": 48,
+    "start": 37,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 206,
+    "start": 206,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 94,
+    "start": 86,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 109,
+    "start": 109,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphoserine; by MAPK3",
+    "end": 234,
+    "start": 234,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine; by MAPK3",
+    "end": 238,
+    "start": 238,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Acts as a dominant negative. Inhibits activation of MAP kinase p38 and disrupts cleavage.",
+    "end": 109,
+    "start": 109,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Constitutively active.",
+    "end": 238,
+    "start": 234,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "in Ref. 1; BAB11809 and 2; AAH44129",
+    "end": 28,
+    "start": 28,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MEGGSDKESKVFCDSPSPNPKGEMSVPSNVRGKKKLPKELKLPKEVFEKPAPAPTPPRDLDSKAYVTIGEKNFVVKADDLEQIGELGRGAYGVVDKMRHVPSGVIMAVKRIRATVNTQEQKRLLMDLDISMRTVDCFYTVTFYGALFREGDVWICMELMDTSLDKFYKQVHEKGKTIPEDILGKITVSIVKALEHLHSNLSVIHRDVKPSNVLINMQGQVKMCDFGISGYLVDSVAKTMDAGCKPYMAPERINPETNQKGYNVKSDIWSLGITMIELAILRFPYDSWGTPFQQLKQVVEEPSPQLPADRFSADFVDFTSQCLRKNSTERPTYTELMQHPFFTLHDSKDTDVASFVKTILGD",
+  "sequence_version": 2
+ },
+ "Q9LWN0": {
+  "entry_version": 139,
+  "features": [
+   {
+    "description": "Shaggy-related protein kinase GSK1",
+    "end": 407,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 352,
+    "start": 68,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 21,
+    "start": 1,
+    "type": "Region"
+   },
+   {
+    "description": "Pro residues",
+    "end": 19,
+    "start": 1,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 193,
+    "start": 193,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 82,
+    "start": 74,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 97,
+    "start": 97,
+    "type": "Binding site"
+   }
+  ],
+  "sequence": "MEAPPGPEPMELDAPPPPAAVAAAAATAGISEKVLQKKEEGGGDAVTGHIISTTIGGKNGEPKRTISYMAERVVGTGSFGIVFQAKCLETGETVAIKKVLQDRRYKNRELQLMRAMEHPNVICLKHCFFSTTSRDELFLNLVMEYVPETLYRVLKHYSNANQRMPLIYVKLYIYQLFRGLAYIHTVPGVCHRDVKPQNVLVDPLTHQVKLCDFGSAKVLVPGEPNISYICSRYYRAPELIFGATEYTTSIDIWSAGCVLAELLLGQPLFPGESAVDQLVEIIKVLGTPTREEIRCMNPNYTEFKFPQIKAHPWHKIFHKRMPPEAIDLASRLLQYSPSLRCTALDACAHSFFDELREPNARLPNGRPFPPLFNFKHELASASPELIHRLIPDHIRRQHGLNFAHAGS",
+  "sequence_version": 1
+ },
+ "Q9S834": {
+  "entry_version": 149,
+  "features": [
+   {
+    "description": "Chloroplast",
+    "end": 100,
+    "start": 1,
+    "type": "Transit peptide"
+   },
+   {
+    "description": "ATP-dependent Clp protease proteolytic subunit 5, chloroplastic",
+    "end": 298,
+    "start": 101,
+    "type": "Chain"
+   },
+   {
+    "description": "Nucleophile",
+    "end": 193,
+    "start": 193,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 218,
+    "start": 218,
+    "type": "Active site"
+   },
+   {
+    "description": "N-acetylglycine",
+    "end": 101,
+    "start": 101,
+    "type": "Modified residue"
+   },
+   {
+    "description": "in Ref. 8; AA sequence",
+    "end": 115,
+    "start": 115,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 8; AA sequence",
+    "end": 246,
+    "start": 246,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 8; AA sequence",
+    "end": 253,
+    "start": 253,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 8; AA sequence",
+    "end": 267,
+    "start": 267,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 8; AA sequence",
+    "end": 280,
+    "start": 280,
+    "type": "Sequence conflict"
+   },
+   {
+    "description": "in Ref. 8; AA sequence",
+    "end": 285,
+    "start": 285,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MAHACVSTSASSLRFTAGFVSASPNGSSFDSPKLSLPFEPLRSRKTNKLVSDRKNWKNSTPKAVYSGNLWTPEIPSPQGVWSIRDDLQVPSSPYFPAYAQGQGPPPMVQERFQSIISQLFQYRIIRCGGAVDDDMANIIVAQLLYLDAVDPTKDIVMYVNSPGGSVTAGMAIFDTMRHIRPDVSTVCVGLAASMGAFLLSAGTKGKRYSLPNSRIMIHQPLGGAQGGQTDIDIQANEMLHHKANLNGYLAYHTGQSLEKINQDTDRDFFMSAKEAKEYGLIDGVIMNPLKALQPLAAA",
+  "sequence_version": 1
+ },
+ "Q9SF86": {
+  "entry_version": 187,
+  "features": [
+   {
+    "description": "Serine/threonine-protein kinase PCRK1",
+    "end": 418,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 369,
+    "start": 84,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 63,
+    "start": 36,
+    "type": "Region"
+   },
+   {
+    "description": "Polar residues",
+    "end": 63,
+    "start": 36,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 218,
+    "start": 218,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 98,
+    "start": 90,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 118,
+    "start": 118,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 373,
+    "start": 373,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 377,
+    "start": 377,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 385,
+    "start": 385,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Abolishes kinase activity. Abolishes PCRK1 function in pattern-triggered immunity (PTI).",
+    "end": 118,
+    "start": 118,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Abolishes PCRK1 function in pattern-triggered immunity (PTI); when associated with A-377 and A-385.",
+    "end": 373,
+    "start": 373,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "No effect on PCRK1 function in pattern-triggered immunity (PTI); when associated with D-377 and D-385.",
+    "end": 373,
+    "start": 373,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Abolishes PCRK1 function in pattern-triggered immunity (PTI); when associated with A-373 and A-385.",
+    "end": 377,
+    "start": 377,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "No effect on PCRK1 function in pattern-triggered immunity (PTI); when associated with D-373 and D-385.",
+    "end": 377,
+    "start": 377,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "Abolishes PCRK1 function in pattern-triggered immunity (PTI); when associated with A-373 and A-377.",
+    "end": 385,
+    "start": 385,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "No effect on PCRK1 function in pattern-triggered immunity (PTI); when associated with D-373 and D-377.",
+    "end": 385,
+    "start": 385,
+    "type": "Mutagenesis"
+   },
+   {
+    "description": "in Ref. 5; BAH19927",
+    "end": 395,
+    "start": 395,
+    "type": "Sequence conflict"
+   }
+  ],
+  "sequence": "MKCFLFSGGDKRGEQKTPISVSLTSIFSDREINRSGSEFNSRDVSGTSTESSMGRKNSYPPVSTRASNLREFSITDLKSATKNFSRSVMIGEGGFGCVFRGTVRNLEDSSVKIEVAVKQLGKRGLQGHKEWVTEVNFLGIVEHTNLVKLLGYCAEDDERGIQRLLVYEYMPNRSVEFHLSPRSLTVLTWDLRLRIAQDAARGLTYLHEEMEFQIIFRDFKSSNILLDEDWKAKLSDFGLARLGPSEGLTHVSTDVVGTMGYAAPEYIQTGRLTSKSDVWGYGVFLYELITGRRPVDRNRPKGEQKLLEWVRPYLSDTRKFKLILDPRLEGKYPIKSVQKLAVVANRCLVRNSKARPKMSEVLEMVNKIVEASSGNGSPQLVPLNSVKASRDARGKNNGGGGEGGWFGKLWNPKTIRAC",
+  "sequence_version": 1
+ },
+ "Q9SJG9": {
+  "entry_version": 170,
+  "features": [
+   {
+    "description": "Mitogen-activated protein kinase 20",
+    "end": 606,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 316,
+    "start": 25,
+    "type": "Domain"
+   },
+   {
+    "description": "TXY",
+    "end": 189,
+    "start": 187,
+    "type": "Motif"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 151,
+    "start": 151,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 39,
+    "start": 31,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 54,
+    "start": 54,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 187,
+    "start": 187,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 189,
+    "start": 189,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 192,
+    "start": 192,
+    "type": "Modified residue"
+   }
+  ],
+  "sequence": "MQQDNRKKNNLEMEFFSDYGDANRFKVQEVIGKGSYGVVCSAIDTLTGEKVAIKKIHDIFEHISDAARILREIKLLRLLRHPDIVEIKHIMLPPSRREFKDIYVVFELMESDLHQVIKANDDLTREHYQFFLYQLLRALKYIHTANVYHRDLKPKNILANANCKLKICDFGLARVAFNDTPTTIFWTDYVATRWYRAPELCGSFYSKYTPAIDIWSIGCIFAEVLMGKPLFPGKNVVHQLDLMTDLLGTPSLDTISRVRNEKARRYLTSMRKKPPIPFAQKFPNADPLSLKLLERLLAFDPKDRPTAEEALADPYFKGLAKVEREPSCQPITKMEFEFERRKVTKEDIRELISREILEYHPQLLKDHMNGADKASFLYPSAVDQFRRQFAHLEENSGKTGPVAPLERKHASLPRSTVIHSTAVARGGQPKLMNNTNTLNPETTQNIPFNHATIQAQQRNLSAAKPSTFMGPVAPFDNGRISRDAYDPRSFIRSTNLPFSQQSAATVAMGKQQERRTTMEPEKQARQISQYNRYAPDVAINIDNNPFIMARTGMNKAENISDRIIIDTNLLQATAGIGVAAAAAAAAPGGSAHRKVGAVRYGMSKMY",
+  "sequence_version": 2
+ },
+ "Q9VLA1": {
+  "entry_version": 162,
+  "features": [
+   {
+    "description": "Galactosylgalactosylxylosylprotein 3-beta-glucuronosyltransferase S",
+    "end": 409,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Cytoplasmic",
+    "end": 53,
+    "start": 1,
+    "type": "Topological domain"
+   },
+   {
+    "description": "Helical; Signal-anchor for type II membrane protein",
+    "end": 73,
+    "start": 54,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Lumenal",
+    "end": 409,
+    "start": 74,
+    "type": "Topological domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 45,
+    "start": 1,
+    "type": "Region"
+   },
+   {
+    "description": "Disordered",
+    "end": 409,
+    "start": 389,
+    "type": "Region"
+   },
+   {
+    "description": "Basic and acidic residues",
+    "end": 409,
+    "start": 398,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 318,
+    "start": 318,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 235,
+    "start": 235,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 9,
+    "start": 9,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 11,
+    "start": 11,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 12,
+    "start": 12,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 32,
+    "start": 32,
+    "type": "Modified residue"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 102,
+    "start": 102,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 223,
+    "start": 223,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 338,
+    "start": 338,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "in isoform a",
+    "end": 82,
+    "start": 1,
+    "type": "Alternative sequence"
+   },
+   {
+    "description": "in isoform a",
+    "end": 93,
+    "start": 83,
+    "type": "Alternative sequence"
+   }
+  ],
+  "sequence": "MSSARLLESQTSDEDNEDIERRPHQSHSRSCSNNTTPTHPPHPMVRKGGVARRICLIGGALFLLLVALCYLTLSGDTRLGGSEDSEEGSHHGLDSMNFRPLNETVHICSESYEDRRQFMQDKPQSDYVQLPVIYFVTPTYPRREQIPELTRLAHTLLHIPRLHWLVADDQEKCNDYMDTLLYRFGMPFTHMVSPMPSKFRNEKPAPRGVANRRAALQWIRQHNLTNGILYFGDDDNTYDLRLFSEIRKTQRVSMFPVGLIADYGVSGPVVRKGKVVAFLDSWVAGRRWPVDMAGFAVNLEYMAQYPYVNMPYKPGYEEDLFLRSIGLQMNLIEPRGNNCTEILVWHTQTKSKKLGMVRLESKYLDDRSNLGALLHNLKLMGVTSTTESEGRNALISKNGRENPHSKILS",
+  "sequence_version": 2
+ },
+ "Q9ZNQ8": {
+  "entry_version": 169,
+  "features": [
+   {
+    "description": "Proline-rich receptor-like protein kinase PERK4",
+    "end": 633,
+    "start": 1,
+    "type": "Chain"
+   },
+   {
+    "description": "Extracellular",
+    "end": 151,
+    "start": 1,
+    "type": "Topological domain"
+   },
+   {
+    "description": "Helical",
+    "end": 172,
+    "start": 152,
+    "type": "Transmembrane"
+   },
+   {
+    "description": "Cytoplasmic",
+    "end": 633,
+    "start": 173,
+    "type": "Topological domain"
+   },
+   {
+    "description": "Protein kinase",
+    "end": 562,
+    "start": 284,
+    "type": "Domain"
+   },
+   {
+    "description": "Disordered",
+    "end": 145,
+    "start": 1,
+    "type": "Region"
+   },
+   {
+    "description": "Disordered",
+    "end": 255,
+    "start": 193,
+    "type": "Region"
+   },
+   {
+    "description": "Disordered",
+    "end": 633,
+    "start": 608,
+    "type": "Region"
+   },
+   {
+    "description": "Low complexity",
+    "end": 29,
+    "start": 1,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Pro residues",
+    "end": 41,
+    "start": 30,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Pro residues",
+    "end": 65,
+    "start": 48,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Gly residues",
+    "end": 90,
+    "start": 77,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Low complexity",
+    "end": 135,
+    "start": 106,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Gly residues",
+    "end": 145,
+    "start": 136,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Low complexity",
+    "end": 222,
+    "start": 193,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Polar residues",
+    "end": 619,
+    "start": 608,
+    "type": "Compositional bias"
+   },
+   {
+    "description": "Proton acceptor",
+    "end": 408,
+    "start": 408,
+    "type": "Active site"
+   },
+   {
+    "description": "",
+    "end": 298,
+    "start": 290,
+    "type": "Binding site"
+   },
+   {
+    "description": "",
+    "end": 312,
+    "start": 312,
+    "type": "Binding site"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 273,
+    "start": 273,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 357,
+    "start": 357,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphoserine",
+    "end": 441,
+    "start": 441,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 442,
+    "start": 442,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphothreonine",
+    "end": 447,
+    "start": 447,
+    "type": "Modified residue"
+   },
+   {
+    "description": "Phosphotyrosine",
+    "end": 455,
+    "start": 455,
+    "type": "Modified residue"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 12,
+    "start": 12,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 24,
+    "start": 24,
+    "type": "Glycosylation"
+   },
+   {
+    "description": "N-linked (GlcNAc...) asparagine",
+    "end": 66,
+    "start": 66,
+    "type": "Glycosylation"
+   }
+  ],
+  "sequence": "MASSPESAPPTNSTSSPSPPSNTNSTTSSPPAPSPPSPTPPQGDSSSSPPPDSTSPPAPQAPNPPNSSNNSPSPPSQGGGGERGNGGNNGGNDTPPSRGSPPSPPSRSNGDNGGSRSSPPGDTGGSRSDNPPSSGGSSGGGGGGRSNTNTAIIVGVLVGAGLLMIVLIIVCLRRKKKRKDSFYPEPMKGNQYQYYGNNNNNNASQNYPNWHLNSQGQNQQSTGGWGGGGPSPPPPPRMPTSGEDSSMYSGPSRPVLPPPSPALALGFNKSTFTYQELAAATGGFTDANLLGQGGFGYVHKGVLPSGKEVAVKSLKAGSGQGEREFQAEVDIISRVHHRYLVSLVGYCIADGQRMLVYEFVPNKTLEYHLHGKNLPVMEFSTRLRIALGAAKGLAYLHEDCHPRIIHRDIKSANILLDFNFDAMVADFGLAKLTSDNNTHVSTRVMGTFGYLAPEYASSGKLTEKSDVFSYGVMLLELITGKRPVDNSITMDDTLVDWARPLMARALEDGNFNELADARLEGNYNPQEMARMVTCAAASIRHSGRKRPKMSQIVRALEGEVSLDALNEGVKPGHSNVYGSLGASSDYSQTSYNADMKKFRQIALSSQEFPVSDCEGTSSNDSRDMGTKSPTPPK",
+  "sequence_version": 1
+ }
+}
