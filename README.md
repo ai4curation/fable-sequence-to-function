@@ -137,8 +137,9 @@ pixel, so they are not byte-for-byte reproducible.
   is larger than one request may be or the sum is larger than that many
   requests; and the scorers print how many replies took more than one
   request. An attachment resent with every request is marked; one present
-  only in earlier requests is marked once it is larger than about one
-  request, and passes below that (#109). A call with two or more uncounted
+  only in earlier requests is marked once the sum passes that many limits
+  (in real rows roughly two limits, for example about 3,700 tokens for a
+  question with a limit of 1,858), and passes below that (#109, #111). A call with two or more uncounted
   retries would be marked although clean, and asked again.
 - **How a reply is read** (`experiments/common.py`, used by every scorer): the
   answer is the last complete JSON object in the reply that has at least two
