@@ -1,6 +1,11 @@
-import json, pathlib, random, subprocess, sys, zlib, re
+"""Ask a model to annotate domains, membrane helices and signal peptides from sequence alone. Usage: ask.py MODEL EFFORT [--tag TAG] [--limit N]
+
+Appends to results/MODEL.jsonl (results/MODEL-TAG.jsonl with --tag) and resumes; see common.call for the route.
+"""
+import json, pathlib, random, sys, zlib
 from concurrent.futures import ThreadPoolExecutor
-HERE = pathlib.Path(__file__).parent; model, eff = sys.argv[1], sys.argv[2]; out = str(HERE / "results" / f"{model}.jsonl")
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent)); from common import KEYS, answer, call, options, out_path, resume
+HERE = pathlib.Path(__file__).parent; (model, eff), TAG, LIMIT = options(sys.argv); out = out_path(HERE, model, eff, TAG)
 T = json.load(open(HERE / "truth.json"))
 def fasta(s, w=60): return "\n".join(s[i:i+w] for i in range(0, len(s), w))
 def shuffled(seq, acc):
@@ -12,25 +17,14 @@ P = ('Below is a protein sequence in one-letter amino acid codes. Annotate it us
      '"protein_name": string; "ec_number": string or null; "function": one sentence. '
      'Do not guess identifiers you are not confident of: leave a field empty or null instead.\n\n>sequence\n')
 qs = [(t, c) for t in T for c in ("real", "shuffled")]
-done = set()
-try:
-    for l in open(out): d = json.loads(l); done.add((d["accession"], d["condition"]))
-except FileNotFoundError: pass
+done = resume(out, lambda d: (d["accession"], d["condition"]), eff)   # a question whose only rows are unusable is asked again
 def ask(tc):
     t, c = tc; seq = t["sequence"] if c == "real" else shuffled(t["sequence"], t["accession"])
-    j = None
-    for _ in range(3):
-        p = subprocess.run(["claude", "-p", "--model", model, "--system-prompt", "", "--tools", "", "--effort", eff, "--output-format", "json"],
-                           input=P + fasta(seq), capture_output=True, text=True, cwd="/tmp")
-        try: j = json.loads(p.stdout); break
-        except Exception: pass
-    if j is None: return dict(accession=t["accession"], condition=c, error=True)
-    text = j.get("result") or ""; m = re.search(r"\{.*\}", text, re.S); ans = None
-    try: ans = json.loads(m.group(0)) if m else None
-    except Exception: pass
-    return dict(accession=t["accession"], condition=c, text=text, ans=ans, cost=j.get("total_cost_usd"),
-                thinking=j.get("usage", {}).get("output_tokens_details", {}).get("thinking_tokens"), served=list(j.get("modelUsage", {})))
-todo = [q for q in qs if (q[0]["accession"], q[1]) not in done]
+    text, rec = call(model, eff, P + fasta(seq)); row = dict(accession=t["accession"], condition=c)
+    if text is None: return dict(row, **rec)
+    rec["thinking"] = rec.pop("thinking_tokens")   # the name this test's rows have always used
+    return dict(row, text=text, ans=answer(text, KEYS["features"]), **rec)
+todo = [q for q in qs if (q[0]["accession"], q[1]) not in done][:LIMIT]
 with ThreadPoolExecutor(8) as ex, open(out, "a") as fh:
     for r in ex.map(ask, todo): fh.write(json.dumps(r) + "\n"); fh.flush()
 print(model, "done", len(todo))

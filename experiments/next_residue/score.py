@@ -4,8 +4,11 @@ Prints, per effort and model: first-residue accuracy by condition, the real-minu
 gaps with a 95% bootstrap interval over families (10,000 resamples, fixed seed), accuracy split by whether the model
 used thinking tokens, and the authors' stored accuracy on the identical questions (upstream/authors_outputs_subset.jsonl).
 Runs with calls whose usage record lists a second model are also scored without those calls.
+A reply that contains a tool invocation instead of an answer is invalid and counts as wrong (common.has_tool_call).
 """
 import collections, json, pathlib, random
+import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from common import NOTE_CONTINUED, NOTE_COST, NOTE_FAILED, continued, cost_unknown, failed, has_tool_call, unusable
 HERE = pathlib.Path(__file__).parent
 AUTH = {}
 for l in open(HERE / "upstream" / "authors_outputs_subset.jsonl"):
@@ -23,15 +26,21 @@ for effort in ("low", "high"):
     for f in sorted((HERE / "results" / effort).glob("claude-*.jsonl")):
         model = f.stem
         R = [json.loads(l) for l in open(f)]
-        R = [r for r in R if "error" not in r and not r.get("is_error")]
+        bad = failed(R); R = [r for r in R if not unusable(r)]
+        tool = [r for r in R if has_tool_call(r["text"])]
+        for r in tool: r.update(valid=False, first_correct=False, exact10=False)
         print(f"\n== {model}, effort {effort}: {len(R)} answered; models in usage records {sorted({m for r in R for m in r['served']})}; cost ${sum(r['cost'] or 0 for r in R):.2f}; "
               f"calls whose usage record lists a second model: {sum(len(r['served']) > 1 for r in R)}")
+        if bad: print(f"  {NOTE_FAILED}: {bad}")
+        if cost_unknown(R): print(f"  {NOTE_COST}: {len(cost_unknown(R))}")
+        if continued(R): print(f"  {NOTE_CONTINUED}: {len(continued(R))}")
         for c in ("real", "shuffled", "reversed"):
             x = [r for r in R if r["condition"] == c]
             if not x: continue
             print(f"  {c:9s} n={len(x)} invalid={sum(not r['valid'] for r in x)} first-residue={pct([r['first_correct'] for r in x]):.1f}%  exact10={sum(r['exact10'] for r in x)}")
             for label, y in (("with thinking", [r for r in x if r["thinking"]]), ("no thinking", [r for r in x if not r["thinking"]])):
                 if y and len(y) != len(x): print(f"            {label:13s} n={len(y):3d} first-residue={pct([r['first_correct'] for r in y]):.1f}%")
+        if tool: print("  replies with a tool invocation instead of an answer (invalid, counted as wrong): " + ", ".join(f"{r['accession']} {r['condition']} cut {r['cut']}" for r in tool))
         gaps(R)
         for c in ("real", "shuffled"):
             x = [(r, AUTH[(model, r["accession"], c, r["cut"])]) for r in R if r["condition"] == c and (model, r["accession"], c, r["cut"]) in AUTH]

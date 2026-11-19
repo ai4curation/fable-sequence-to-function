@@ -67,6 +67,9 @@ in test 4 one Fable~5.2 and two Opus~5.5 calls, all on known-stratum entries. On
 calls (PDB 7IMP) returned an API error instead of an answer and is excluded from the scores; for the other
 five, the record does not show which model wrote the answer, and they are kept in the reported numbers;
 the repository gives tests 1 and 4 with them excluded, and no conclusion changes.
+Where a reply held more than one JSON object, we scored the last one; this applies to three Opus~4.6
+replies in test 2, in which the second object corrects the first. One Opus~5.5 next-residue reply was a
+written-out web request instead of a prediction; it is counted as invalid and as a wrong answer.
 
 \paragraph{Test 1, next residue.} We drew 68 of the 167 families in the public test set
 \citep{tu2026probe} (17 per family-size bin), one protein per family and two of its five cut points, and
@@ -149,19 +152,19 @@ repeated them.
 \centering\small
 \caption{Annotation from sequence alone. IoU is the overlap of predicted and reference domain boundaries
 when the family is correct. The first two rows count proteins in each set; the other rows pool both sets,
-60 proteins (for Opus~4.6, 58 real and 59 shuffled answers, as 3 replies could not be parsed).}
+60 proteins. Three Opus~4.6 replies held two answers and are scored on the second.}
 \label{tab:feat}
 \begin{tabular}{lrrr}
 \toprule
  & Fable 5.2 & Opus 5.5 & Opus 4.6 \\
 \midrule
-Sampled proteins with a correct Pfam family & 39/45 & 35/45 & 5/43 \\
+Sampled proteins with a correct Pfam family & 39/45 & 35/45 & 5/45 \\
 Obscure DUF proteins with a correct Pfam family & 8/15 & 3/15 & 0/15 \\
-Predicted domains with the right accession & 62/70 & 45/51 & 5/22 \\
+Predicted domains with the right accession & 62/70 & 45/51 & 5/23 \\
 Boundary overlap (IoU) & 0.86 & 0.86 & 0.61 \\
-Transmembrane helices recovered & 74/74 & 74/74 & 51/73 \\
-Signal peptide, true / false positives & 9 / 0 & 9 / 0 & 9 / 6 \\
-Shuffled sequences given any domain & 1/60 & 0/60 & 4/59 \\
+Transmembrane helices recovered & 74/74 & 74/74 & 51/74 \\
+Signal peptide, true / false positives & 9 / 0 & 9 / 0 & 9 / 7 \\
+Shuffled sequences given any domain & 1/60 & 0/60 & 5/60 \\
 \bottomrule
 \end{tabular}
 \end{table}

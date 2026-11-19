@@ -1,13 +1,15 @@
-"""Subsample replication of the next-amino-acid probe. Usage: run.py MODEL EFFORT [CONDITIONS]
+"""Subsample replication of the next-amino-acid probe. Usage: run.py MODEL EFFORT [CONDITIONS] [--tag TAG] [--limit N]
 
 Reads upstream/confirm_sequences.tsv, copied from github.com/XinmingTu/LLM-bioseq-probe at commit 0d8d086.
 CONDITIONS is 2 (real, shuffled) or 3 (adds reversed). Calls the local
-`claude` CLI with no tools and an empty system prompt. Appends to results/EFFORT/MODEL.jsonl and resumes.
+`claude` CLI with no tools and an empty system prompt (see common.call for the route). Appends to
+results/EFFORT/MODEL.jsonl and resumes; questions whose earlier row is unusable are asked again (see common.resume).
 """
-import csv, json, pathlib, random, subprocess, sys, zlib, re, collections
+import csv, json, pathlib, random, sys, zlib, re, collections
 from concurrent.futures import ThreadPoolExecutor
-model = sys.argv[1]; EFF = sys.argv[2]; NCOND = int(sys.argv[3]) if len(sys.argv) > 3 else 2
-HERE = pathlib.Path(__file__).parent; (HERE / "results" / EFF).mkdir(parents=True, exist_ok=True); out = str(HERE / "results" / EFF / f"{model}.jsonl")
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent)); from common import call, has_tool_call, options, out_path, resume
+ARGS, TAG, LIMIT = options(sys.argv); model, EFF = ARGS[0], ARGS[1]; NCOND = int(ARGS[2]) if len(ARGS) > 2 else 2
+HERE = pathlib.Path(__file__).parent; out = out_path(HERE, model, EFF, TAG, by_effort=True)
 AA = "ACDEFGHIKLMNPQRSTVWY"
 def fasta(s, w=60): return "\n".join(s[i:i+w] for i in range(0, len(s), w))
 def prompt(prefix):
@@ -32,31 +34,17 @@ for b in sorted(bins):
             for cond, s in list(variants.items())[:NCOND]:
                 qs.append(dict(model=model, accession=acc, pfam=f, size_bin=b, fam_n=int(r["family_proteins"]),
                                condition=cond, cut=cut, prefix=s[:cut], target=s[cut:cut+10]))
-done = set()
-try:
-    for l in open(out):
-        d = json.loads(l); done.add((d["accession"], d["condition"], d["cut"]))
-except FileNotFoundError: pass
-todo = [q for q in qs if (q["accession"], q["condition"], q["cut"]) not in done]
+done = resume(out, lambda d: (d["accession"], d["condition"], d["cut"]), EFF)
+todo = [q for q in qs if (q["accession"], q["condition"], q["cut"]) not in done][:LIMIT]
 print(len(qs), "questions,", len(todo), "to run", flush=True)
 def ask(q):
-    for attempt in range(3):
-        p = subprocess.run(["claude", "-p", "--model", model, "--system-prompt", "", "--tools", "",
-                            "--effort", EFF, "--output-format", "json"],
-                           input=prompt(q["prefix"]), capture_output=True, text=True, cwd="/tmp")
-        try:
-            j = json.loads(p.stdout); break
-        except Exception: j = None
-    if j is None: return dict(q, error=p.stdout[-300:] + p.stderr[-300:])
-    text = j.get("result", "") or ""
-    cands = re.findall(r"[ACDEFGHIKLMNPQRSTVWY]{5,}", text.replace(" ", ""))
-    pred = cands[-1] if cands else ""
-    served = list(j.get("modelUsage", {}).keys())
+    text, rec = call(model, EFF, prompt(q["prefix"]))
     q = dict(q); del q["prefix"]
-    return dict(q, text=text, pred=pred, valid=bool(pred), first_correct=bool(pred) and pred[0] == q["target"][0],
-                exact10=pred[:10] == q["target"], served=served,
-                thinking=j.get("usage", {}).get("output_tokens_details", {}).get("thinking_tokens"),
-                cost=j.get("total_cost_usd"), is_error=j.get("is_error"))
+    if text is None: return dict(q, **rec)
+    cands = re.findall(r"[ACDEFGHIKLMNPQRSTVWY]{5,}", text.replace(" ", ""))
+    pred = cands[-1] if cands else ""; valid = bool(pred) and not has_tool_call(text)   # a written-out tool call is not an answer
+    rec["thinking"] = rec.pop("thinking_tokens")   # the name this test's rows have always used
+    return dict(q, text=text, pred=pred, valid=valid, first_correct=valid and pred[0] == q["target"][0], exact10=valid and pred[:10] == q["target"], **rec)
 with ThreadPoolExecutor(8) as ex, open(out, "a") as fh:
     for i, r in enumerate(ex.map(ask, todo)):
         fh.write(json.dumps(r) + "\n"); fh.flush()

@@ -49,9 +49,10 @@
   real      n=132 invalid=0 first-residue=18.9%  exact10=1
             with thinking n= 41 first-residue=39.0%
             no thinking   n= 91 first-residue=9.9%
-  shuffled  n=132 invalid=0 first-residue=7.6%  exact10=0
+  shuffled  n=132 invalid=1 first-residue=7.6%  exact10=0
             with thinking n= 39 first-residue=7.7%
             no thinking   n= 93 first-residue=7.5%
+  replies with a tool invocation instead of an answer (invalid, counted as wrong): A0A518ICW8 shuffled cut 301
   gap real-shuffled: +11.4 pts (95% CI +3.0 to +20.5), 66 families
   authors' stored run, same 132 real questions: 40.9%
   authors' stored run, same 132 shuffled questions: 7.6%
