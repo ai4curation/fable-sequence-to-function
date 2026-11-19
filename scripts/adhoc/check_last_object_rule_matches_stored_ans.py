@@ -1,19 +1,17 @@
-"""Check that a 'last top-level JSON object in the reply' rule reproduces the stored `ans` for every row of
-tests 2 to 4 that already has one. Inputs: experiments/{features,pseudo,structure}/results/*.jsonl.
-Output: stdout counts. Serves issue #50. 2026-11-18."""
-import json, glob
-dec = json.JSONDecoder()
-def last(text):
-    out, i = [], 0
-    while (i := text.find("{", i)) >= 0:
-        try: obj, n = dec.raw_decode(text[i:]); out.append(obj); i += n
-        except Exception: i += 1
-    out = [b for b in out if isinstance(b, dict)]
-    return out[-1] if out else None
-for f in sorted(glob.glob("experiments/*/results/claude-*.jsonl")):
-    R = [json.loads(l) for l in open(f)]; same = diff = null_now_parsed = still_null = 0
-    for r in R:
-        b = last(r.get("text") or "")
-        if r.get("ans"): same += b == r["ans"]; diff += b != r["ans"]
-        else: null_now_parsed += b is not None; still_null += b is None
-    print(f"{f}: same={same} differ={diff} newly_parsed={null_now_parsed} still_unparsed={still_null}")
+"""Check that common.answer (the rule the scorers use) reproduces the `ans` stored at run time for every row of
+tests 2 to 4, and that common.has_tool_call hits no reply but the known one. Rows written before the rule existed
+are the point of the check; later rows were stored with the rule itself.
+Inputs: experiments/{features,pseudo,structure,next_residue}/results/**/*.jsonl. Output: stdout counts.
+Serves issues #50, #49 and #59. 2026-11-18."""
+import glob, json, pathlib, sys
+sys.path.insert(0, "experiments"); from common import KEYS, answer, has_tool_call
+tot = same = 0
+for f in sorted(glob.glob("experiments/*/results/**/*.jsonl", recursive=True)):
+    test = pathlib.Path(f).parts[1]; R = [json.loads(l) for l in open(f)]
+    tool = [r for r in R if has_tool_call(r.get("text"))]
+    line = f"{f}: rows={len(R)} tool-call replies={len(tool)}" + "".join(f" [{r.get('accession') or r.get('pdb')} {r.get('condition', '')} {r.get('cut', '')}]" for r in tool)
+    if test != "next_residue":
+        eq = sum(answer(r.get("text"), KEYS[test]) == r.get("ans") for r in R); tot += len(R); same += eq
+        line += f" derived answer equals stored ans={eq} differs={len(R) - eq}"
+    print(line)
+print(f"\ntests 2 to 4: {same} of {tot} rows have a derived answer equal to the stored one")

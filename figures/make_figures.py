@@ -12,14 +12,14 @@ import matplotlib.pyplot as plt
 ARGS = [a for a in sys.argv[1:] if a != "--values-only"]; DRAW = "--values-only" not in sys.argv[1:]
 if len(ARGS) > 1: sys.exit(__doc__)
 HERE = pathlib.Path(__file__).parent; ROOT = pathlib.Path(ARGS[0]) if ARGS else HERE.parent / "experiments"
-def scorer(test):   # the scoring module of one test, loaded from this repository
-    spec = importlib.util.spec_from_file_location(f"{test}_score", HERE.parent / "experiments" / test / "score.py")
-    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); return mod
-PSEUDO, STRUCT = scorer("pseudo"), scorer("structure")
 MODELS = [("claude-fable-5-2", "Fable 5.2", "#2a78d6"), ("claude-opus-5-5", "Opus 5.5", "#eb6834"), ("claude-opus-4-6", "Opus 4.6", "#1baf7a")]
 NEED = [ROOT / d / "truth.json" for d in ("pseudo", "structure")] + [ROOT / d / "results" / f"{m[0]}.jsonl" for d in ("pseudo", "structure") for m in MODELS]
 MISSING = [str(f) for f in NEED if not f.exists()]
 if MISSING: sys.exit("Missing input files:\n  " + "\n  ".join(MISSING) + "\n\n" + __doc__)   # stop before any figure is overwritten
+def scorer(test):   # the scoring module of one test, loaded from this repository
+    spec = importlib.util.spec_from_file_location(f"{test}_score", HERE.parent / "experiments" / test / "score.py")
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); return mod
+PSEUDO, STRUCT = scorer("pseudo"), scorer("structure")
 INK, MUTED, GRID = "#1a1a19", "#6b6a63", "#e4e3dd"
 plt.rcParams.update({"font.size": 8.5, "font.family": "DejaVu Sans", "axes.edgecolor": MUTED, "axes.labelcolor": INK, "xtick.color": INK,
                      "ytick.color": MUTED, "axes.spines.top": False, "axes.spines.right": False, "pdf.fonttype": 42})

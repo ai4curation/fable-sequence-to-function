@@ -9,7 +9,7 @@ figures/make_figures.py imports load() and one() from this file, so the figures 
 import collections, json, math, pathlib, statistics
 import yaml
 import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from common import KEYS, reparse
+from common import KEYS, NOTE_FAILED, NOTE_TOOL, efforts, failed, reparse, tool_calls
 HERE = pathlib.Path(__file__).parent
 T = {t["pdb"]: t for t in json.loads((HERE / "truth.json").read_text())}
 ASPRV1_REPEATS = {"27JP", "27JO", "27IQ"}   # 27IK is kept as the single ASPRV1 entry
@@ -42,9 +42,12 @@ def main():
     for f in sorted((HERE / "results").glob("*.jsonl")):
         R, multi = load(f); ok = [r for r in R if r.get("ans")]
         mixed = {r["pdb"]: r["served"] for r in R if len(r.get("served") or []) > 1}
-        api = sum((r.get("text") or "").lstrip().startswith("API Error") for r in R)
-        print(f"\n== {f.stem}: {len(R)} calls, {len(R)-len(ok)-api} unparsed, {api} API-error replies (no answer; excluded), effort {ok[0]['effort']}, cost ${sum(r.get('cost') or 0 for r in R):.2f}; calls listing a second model: {mixed or 'none'}")
+        isapi = lambda r: bool(r.get("is_error")) or (r.get("text") or "").lstrip().startswith("API Error")
+        api = sum(isapi(r) for r in R); bad = failed([r for r in R if not isapi(r)]); tool = tool_calls(R)   # bad: failed calls and attached context
+        print(f"\n== {f.stem}: {len(R)} calls, {len(R)-len(ok)-api-bad} unparsed, {api} API-error replies (no answer; excluded), effort {efforts(R)}, cost ${sum(r.get('cost') or 0 for r in R):.2f}; calls listing a second model: {mixed or 'none'}")
         if multi: print(f"  replies with more than one JSON object, scored on the last: {len(multi)}")
+        if bad: print(f"  {NOTE_FAILED}: {bad}")
+        if tool: print(f"  {NOTE_TOOL}: " + ", ".join(r["pdb"] for r in tool))
         for tag, keep in (("", lambda r: True), (" [without those calls]", lambda r: r["pdb"] not in mixed)):
             if tag and not mixed: continue
             sel = [r for r in ok if keep(r)]

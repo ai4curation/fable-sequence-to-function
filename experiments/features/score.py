@@ -6,7 +6,7 @@ reply holds more than one, the headline counts are also printed for the first ob
 """
 import json, glob, pathlib, re, collections
 import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from common import KEYS, json_objects, reparse
+from common import KEYS, NOTE_FAILED, NOTE_TOOL, efforts, failed, json_objects, reparse, tool_calls
 HERE = pathlib.Path(__file__).parent
 T = {t["accession"]: t for t in json.load(open(HERE / "truth.json"))}
 norm = lambda s: re.sub(r"[^a-z0-9]", "", (s or "").lower())
@@ -26,7 +26,10 @@ def headline(R, pick):
 for f in sorted(glob.glob(str(HERE / "results" / "claude-*.jsonl"))):
     R = [json.loads(l) for l in open(f)]; multi = reparse(R, KEYS["features"])
     ok = [r for r in R if r.get("ans")]
-    print(f"\n== {pathlib.Path(f).stem}: {len(R)} calls, {len(R)-len(ok)} unparsed, cost ${sum(r.get('cost') or 0 for r in R):.2f}")
+    bad = failed(R); tool = tool_calls(R)
+    print(f"\n== {pathlib.Path(f).stem}: {len(R)} calls, {len(R)-len(ok)-bad} unparsed, effort {efforts(R)}, cost ${sum(r.get('cost') or 0 for r in R):.2f}")
+    if bad: print(f"  {NOTE_FAILED}: {bad}")
+    if tool: print(f"  {NOTE_TOOL}: " + ", ".join(r["accession"] + " " + r["condition"] for r in tool))
     if multi:
         ids = {id(r) for r in multi}; last = headline(R, lambda r: r["ans"])
         first = headline(R, lambda r: (json_objects(r.get("text"), KEYS["features"]) or [None])[0]); out = headline(R, lambda r: None if id(r) in ids else r["ans"])
@@ -42,15 +45,14 @@ for f in sorted(glob.glob(str(HERE / "results" / "claude-*.jsonl"))):
                 t = T[r["accession"]]; a = r["ans"]
                 pd = [d for d in (a.get("pfam_domains") or []) if isinstance(d, dict)]
                 true_acc = {p["accession"] for p in t["pfam"]}; true_nm = {norm(p["short"]) for p in t["pfam"]} | {norm(p["name"]) for p in t["pfam"]}
-                npred += len(pd); ntrue += len(true_acc); prot_any += bool(pd); hit = False
+                npred += len(pd); ntrue += len(true_acc); given, right = fam(t, a); prot_any += given; prot_hit += right
                 for d in pd:
                     ia = str(d.get("accession") or "").split(".")[0] in true_acc; im = norm(d.get("name")) in true_nm
-                    tp_id += ia; tp_nm += (ia or im); hit |= (ia or im)
+                    tp_id += ia; tp_nm += (ia or im)
                     if (ia or im) and isinstance(d.get("start"), int) and isinstance(d.get("end"), int):
                         best = max(((ov((d["start"], d["end"]), (p["start"], p["end"])) / (max(d["end"], p["end"]) - min(d["start"], p["start"]) + 1)) for p in t["pfam"]
                                     if p["accession"] == str(d.get("accession")).split(".")[0] or norm(d.get("name")) in (norm(p["short"]), norm(p["name"]))), default=None)
                         if best is not None: iou.append(best)
-                prot_hit += hit
                 ph = [h for h in (a.get("transmembrane_helices") or []) if isinstance(h, list) and len(h) == 2 and all(isinstance(v, int) for v in h)]
                 tmn += 1; tmexact += len(ph) == len(t["tm"]); tmc += (bool(ph) == bool(t["tm"]))
                 helix_true += len(t["tm"]); helix_pred += len(ph); helix_hit += sum(any(ov(h, u) >= 10 for h in ph) for u in t["tm"])

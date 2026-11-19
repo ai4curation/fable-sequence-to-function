@@ -90,19 +90,32 @@ pixel, so they are not byte-for-byte reproducible.
   1,400 tokens of its own context to each call.
 - **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; Opus
   4.6 ran at low effort because it did not finish at high effort. Test 1 has
-  low and high runs. The committed rows record the effort in tests 3 and 4. In
-  test 1 it is the results folder (`results/low`, `results/high`). The test 2
-  rows do not record it. The scripts now write `effort`, the number of
-  attempts and a hash of the prompt into every new row.
+  low and high runs. The rows of 2026-11-18 record the effort in tests 3 and
+  4. In test 1 it is the results folder (`results/low`, `results/high`). The
+  test 2 rows of that date do not record it.
+- **Rows written from 2026-11-19** come from `call()` in
+  `experiments/common.py`. It adds four flags to the command above
+  (`--setting-sources "" --strict-mcp-config --disable-slash-commands
+  --no-chrome`), because on a machine with user settings and account
+  connectors the original flags let instructions, skill listings or connector
+  tools into the call. Each of these rows records the effort, the number of
+  attempts, a hash of the question, the flags, the tool version, the time and
+  the token counts. A call whose input is larger than the question allows
+  (about 600 tokens of the tool's own context plus the question) is marked
+  `context_tokens_high` and is not scored.
 - **How a reply is read** (`experiments/common.py`, used by every scorer): the
-  answer is the last complete JSON object in the reply that has the requested
-  keys. Three Opus 4.6 replies in test 2 hold two objects, the second a
-  correction; `expected/features.txt` also gives the headline counts with the
-  first object and with those replies left out. A reply that contains a
-  written-out tool call instead of an answer is invalid and counts as wrong.
-  There is one: the Opus 5.5 high-effort test 1 reply for A0A518ICW8
-  (shuffled, cut 301) is a `curl` command with an HTTP response, not a
-  prediction. The stored record cannot show whether anything was run.
+  answer is the last complete JSON object in the reply that has at least two
+  of the requested keys. Three Opus 4.6 replies in test 2 hold two objects,
+  the second a correction; `expected/features.txt` also gives the headline
+  counts with the first object and with those replies left out. A reply that
+  contains a written-out tool call (a shell block, a web request or tool-call
+  markup) has no answer. In test 1 it is invalid and counts as wrong; in
+  tests 2 to 4 it is left out like any reply without an answer, and the
+  scorer lists it. There is one: the Opus 5.5 high-effort test 1 reply for
+  A0A518ICW8 (shuffled, cut 301) is a `curl` command with an HTTP response,
+  not a prediction. The stored record cannot show whether anything was run.
+  Two limits: an example object written after the answer would be taken as
+  the answer, and an answer wrapped in an outer object would not be found.
 - **One answer per question.** There are no repeat runs.
 - **Calls listing a second model:** for 6 of the 2,570 calls, the tool's usage
   record (the `served` field, from `modelUsage`) lists a second model besides
@@ -128,11 +141,14 @@ the checksums and expected outputs will no longer match until you run
 just ask pseudo claude-opus-5-5 high
 ```
 
-A run resumes where it stopped. A question whose earlier row is an error (no
-parseable output after three tries) is asked again, and the error row is moved
-to `retried_errors/` beside `results/`. `just check-calls` tests this, and the
-reply-reading rules, against a stub in place of the `claude` tool; it calls no
-model.
+A run resumes where it stopped, and results files are only ever appended to.
+A failed call, an API-error reply and a call with attached context each leave
+a row; the scorers skip it, `expected/summary.txt` counts it, and the next run
+asks the question again. Do not start two runs on the same file. A run at
+another effort stops unless it gets its own file: `--tag high` writes to
+`results/MODEL-high.jsonl`. `--limit 1` asks a single question, as a canary
+before a batch. `just check-calls` tests all of this, and the reply-reading
+rules, against a stub in place of the `claude` tool; it calls no model.
 
 ## Third-party data
 

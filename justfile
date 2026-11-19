@@ -47,11 +47,11 @@ pdf:
     pdflatex -interaction=nonstopmode manuscript.tex > /dev/null
     pdflatex -interaction=nonstopmode manuscript.tex | grep -E "Warning|^!|Output written" || true
 
-# Run the model-calling scripts against a stub CLI: resume, retry and parsing rules. Calls no model.
+# Run the model-calling scripts and the reply-reading rules against a stub CLI. Calls no model.
 check-calls:
     uv run python scripts/check_call_scripts_with_stub_cli.py
 
 # Ask one model the questions of one test again (costs money; appends to results and resumes).
-# Example: just ask pseudo claude-opus-5-5 high
-ask test model effort:
-    python3 experiments/{{test}}/{{ if test == "next_residue" { "run.py" } else { "ask.py" } }} {{model}} {{effort}}
+# Example: just ask pseudo claude-opus-5-5 high        (add --limit 1 for a single canary call, --tag NAME for a separate file)
+ask test model effort *args:
+    python3 experiments/{{test}}/{{ if test == "next_residue" { "run.py" } else { "ask.py" } }} {{model}} {{effort}} {{args}}
