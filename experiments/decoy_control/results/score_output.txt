@@ -1,0 +1,107 @@
+
+== claude-fable-5-2: 58 decoy answers scored, 0 excluded (failed, unparsed or high context), effort ['high'], cost $8.30, median input tokens 1174
+  asp_decoy_to_asn vs asp_to_asn
+    decoy still called active            20/20 (100%, 84-100)
+    catalytic-site mutant called active  0/20 (0%, 0-16)   (stored run, same proteins)
+    wild type called active              20/20 (100%, 84-100)   (stored run, same proteins)
+    paired: decoy active and mutant not  20; mutant active and decoy not 0; exact McNemar p = 1.9e-06
+    decoy position named as lost         0/20 (0%, 0-16);  any residue named as lost 1/20 (5%, 1-24)
+    catalytic position named as lost     20/20 (100%, 84-100)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  20/20 (100%, 84-100)   (decoy answers)
+    bridge: mutants rerun on this route  1 rerun, same call as stored run in 1, called active 0
+  lys_decoy_to_met vs lys_to_met
+    decoy still called active            20/20 (100%, 84-100)
+    catalytic-site mutant called active  1/20 (5%, 1-24)   (stored run, same proteins)
+    wild type called active              20/20 (100%, 84-100)   (stored run, same proteins)
+    paired: decoy active and mutant not  19; mutant active and decoy not 0; exact McNemar p = 3.8e-06
+    decoy position named as lost         0/20 (0%, 0-16);  any residue named as lost 2/20 (10%, 3-30)
+    catalytic position named as lost     20/20 (100%, 84-100)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  20/20 (100%, 84-100)   (decoy answers)
+  site_decoy_to_ala vs site_to_ala
+    decoy still called active            18/18 (100%, 82-100)
+    catalytic-site mutant called active  3/18 (17%, 6-39)   (stored run, same proteins)
+    wild type called active              18/18 (100%, 82-100)   (stored run, same proteins)
+    paired: decoy active and mutant not  15; mutant active and decoy not 0; exact McNemar p = 6.1e-05
+    decoy position named as lost         0/18 (0%, 0-18);  any residue named as lost 0/18 (0%, 0-18)
+    catalytic position named as lost     15/18 (83%, 61-94)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  16/18 (89%, 67-97)   (decoy answers)
+  all three types
+    decoy still called active            58/58 (100%, 94-100)
+    catalytic-site mutant called active  4/58 (7%, 3-16)   (stored run, same proteins)
+    wild type called active              58/58 (100%, 94-100)   (stored run, same proteins)
+    paired: decoy active and mutant not  54; mutant active and decoy not 0; exact McNemar p = 1.1e-16
+    decoy position named as lost         0/58 (0%, 0-6);  any residue named as lost 3/58 (5%, 2-14)
+    catalytic position named as lost     55/58 (95%, 86-98)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  56/58 (97%, 88-99)   (decoy answers)
+    bridge: mutants rerun on this route  1 rerun, same call as stored run in 1, called active 0
+  decoys not called active (0): none
+
+== claude-opus-5-5: 58 decoy answers scored, 0 excluded (failed, unparsed or high context), effort ['high'], cost $2.87, median input tokens 1174
+  asp_decoy_to_asn vs asp_to_asn
+    decoy still called active            20/20 (100%, 84-100)
+    catalytic-site mutant called active  0/20 (0%, 0-16)   (stored run, same proteins)
+    wild type called active              20/20 (100%, 84-100)   (stored run, same proteins)
+    paired: decoy active and mutant not  20; mutant active and decoy not 0; exact McNemar p = 1.9e-06
+    decoy position named as lost         0/20 (0%, 0-16);  any residue named as lost 3/20 (15%, 5-36)
+    catalytic position named as lost     19/20 (95%, 76-99)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  19/20 (95%, 76-99)   (decoy answers)
+  lys_decoy_to_met vs lys_to_met
+    decoy still called active            20/20 (100%, 84-100)
+    catalytic-site mutant called active  7/20 (35%, 18-57)   (stored run, same proteins)
+    wild type called active              20/20 (100%, 84-100)   (stored run, same proteins)
+    paired: decoy active and mutant not  13; mutant active and decoy not 0; exact McNemar p = 0.00024
+    decoy position named as lost         0/20 (0%, 0-16);  any residue named as lost 2/20 (10%, 3-30)
+    catalytic position named as lost     13/20 (65%, 43-82)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  20/20 (100%, 84-100)   (decoy answers)
+  site_decoy_to_ala vs site_to_ala
+    decoy still called active            18/18 (100%, 82-100)
+    catalytic-site mutant called active  3/18 (17%, 6-39)   (stored run, same proteins)
+    wild type called active              17/18 (94%, 74-99)   (stored run, same proteins)
+    paired: decoy active and mutant not  15; mutant active and decoy not 0; exact McNemar p = 6.1e-05
+    decoy position named as lost         0/18 (0%, 0-18);  any residue named as lost 0/18 (0%, 0-18)
+    catalytic position named as lost     13/18 (72%, 49-88)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  15/18 (83%, 61-94)   (decoy answers)
+  all three types
+    decoy still called active            58/58 (100%, 94-100)
+    catalytic-site mutant called active  10/58 (17%, 10-29)   (stored run, same proteins)
+    wild type called active              57/58 (98%, 91-100)   (stored run, same proteins)
+    paired: decoy active and mutant not  48; mutant active and decoy not 0; exact McNemar p = 7.1e-15
+    decoy position named as lost         0/58 (0%, 0-6);  any residue named as lost 5/58 (9%, 4-19)
+    catalytic position named as lost     45/58 (78%, 65-86)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  54/58 (93%, 84-97)   (decoy answers)
+  decoys not called active (0): none
+
+== claude-opus-4-6: 58 decoy answers scored, 0 excluded (failed, unparsed or high context), effort ['low'], cost $1.37, median input tokens 899
+  asp_decoy_to_asn vs asp_to_asn
+    decoy still called active            20/20 (100%, 84-100)
+    catalytic-site mutant called active  18/20 (90%, 70-97)   (stored run, same proteins)
+    wild type called active              18/20 (90%, 70-97)   (stored run, same proteins)
+    paired: decoy active and mutant not  2; mutant active and decoy not 0; exact McNemar p = 0.5
+    decoy position named as lost         0/20 (0%, 0-16);  any residue named as lost 2/20 (10%, 3-30)
+    catalytic position named as lost     0/20 (0%, 0-16)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  4/20 (20%, 8-42)   (decoy answers)
+  lys_decoy_to_met vs lys_to_met
+    decoy still called active            18/20 (90%, 70-97)
+    catalytic-site mutant called active  18/20 (90%, 70-97)   (stored run, same proteins)
+    wild type called active              18/20 (90%, 70-97)   (stored run, same proteins)
+    paired: decoy active and mutant not  1; mutant active and decoy not 1; exact McNemar p = 1
+    decoy position named as lost         0/20 (0%, 0-16);  any residue named as lost 2/20 (10%, 3-30)
+    catalytic position named as lost     0/20 (0%, 0-16)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  3/20 (15%, 5-36)   (decoy answers)
+  site_decoy_to_ala vs site_to_ala
+    decoy still called active            12/18 (67%, 44-84)
+    catalytic-site mutant called active  14/18 (78%, 55-91)   (stored run, same proteins)
+    wild type called active              13/18 (72%, 49-88)   (stored run, same proteins)
+    paired: decoy active and mutant not  0; mutant active and decoy not 2; exact McNemar p = 0.5
+    decoy position named as lost         0/18 (0%, 0-18);  any residue named as lost 3/18 (17%, 6-39)
+    catalytic position named as lost     0/18 (0%, 0-18)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  1/18 (6%, 1-26)   (decoy answers)
+  all three types
+    decoy still called active            50/58 (86%, 75-93)
+    catalytic-site mutant called active  50/58 (86%, 75-93)   (stored run, same proteins)
+    wild type called active              49/58 (84%, 73-92)   (stored run, same proteins)
+    paired: decoy active and mutant not  3; mutant active and decoy not 3; exact McNemar p = 1
+    decoy position named as lost         0/58 (0%, 0-6);  any residue named as lost 7/58 (12%, 6-23)
+    catalytic position named as lost     0/58 (0%, 0-6)   (stored run, catalytic-site mutant)
+    true catalytic residue still listed  8/58 (14%, 7-25)   (decoy answers)
+  decoys not called active (8): P26725 site_decoy_to_ala pos 427 -> uncertain, named lost []; P33018 site_decoy_to_ala pos 166 -> uncertain, named lost []; P53314 site_decoy_to_ala pos 45 -> no, named lost []; Q2PAY3 lys_decoy_to_met pos 422 -> no, named lost [319, 320, 321, 334]; Q504J1 site_decoy_to_ala pos 358 -> uncertain, named lost []; Q8RX88 site_decoy_to_ala pos 20 -> uncertain, named lost [301]; Q8VYY5 lys_decoy_to_met pos 244 -> uncertain, named lost [358]; Q9S834 site_decoy_to_ala pos 209 -> uncertain, named lost [180]
