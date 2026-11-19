@@ -34,7 +34,8 @@ def line(label, S):
 for f in sorted((HERE / "results").glob("*.jsonl")):
     R = [json.loads(l) for l in open(f)]; ok = [r for r in R if r.get("ans")]
     mixed = {r["pdb"]: r["served"] for r in R if len(r.get("served") or []) > 1}
-    print(f"\n== {f.stem}: {len(R)} calls, {len(R)-len(ok)} unparsed, effort {ok[0]['effort']}, cost ${sum(r.get('cost') or 0 for r in R):.2f}; calls listing a second model: {mixed or 'none'}")
+    api = sum((r.get("text") or "").lstrip().startswith("API Error") for r in R)
+    print(f"\n== {f.stem}: {len(R)} calls, {len(R)-len(ok)-api} unparsed, {api} API-error replies (no answer; excluded), effort {ok[0]['effort']}, cost ${sum(r.get('cost') or 0 for r in R):.2f}; calls listing a second model: {mixed or 'none'}")
     for tag, keep in (("", lambda r: True), (" [without those calls]", lambda r: r["pdb"] not in mixed)):
         if tag and not mixed: continue
         sel = [r for r in ok if keep(r)]

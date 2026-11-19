@@ -93,8 +93,9 @@ The committed figures were made with Matplotlib 3.10.5; `uv.lock` pins that vers
   the one requested. Three are Opus 5.5 next-residue calls at high effort; three
   are in test 4 (PDB 29BS for Fable 5.2, 15AY and 7IMP for Opus 5.5). The record
   has no per-model token counts, so it does not show which model wrote the
-  answer. One of them, Opus 5.5 on 7IMP, returned an API error instead of an
-  answer and is counted as unanswered. These calls are kept in the reported
+  answer. One of them, the Opus 5.5 call for 7IMP, returned an API error
+  instead of an answer and is excluded from the scores (so Opus 5.5 has 14
+  known-stratum entries). The other calls are kept in the reported
   numbers; `expected/next_residue.txt` and `expected/structure.txt` also give
   tests 1 and 4 without them.
   `expected/summary.txt` gives the totals.
