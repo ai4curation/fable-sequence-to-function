@@ -32,8 +32,8 @@ domain to 28 of 60 shuffled sequences. For recently released protein structures 
 30\% sequence identity or more, three-state secondary structure accuracy was 73 to 76\%, against 57\% for
 the best single-state guess, and long-range contact precision was 19 to 37\%, against 2\% by chance. The models also fail in specific ways: they shift a catalytic role to a neighbouring identical
 residue, and they argue around a substitution they have just reported. The tests are small, most
-questions were asked once per model and effort setting, and only models from one vendor were tested. We conclude that sequence-only reading by these models is good enough to triage
-pseudoenzyme over-annotation, and is not a citable source of evidence.
+questions were asked once per model and effort setting, and only models from one vendor were tested. We conclude that sequence-only reading by these models can flag the loss of a catalytic
+residue for a curator to check, and is not a citable source of evidence.
 \end{abstract}
 
 \section{Introduction}
@@ -50,9 +50,18 @@ earlier Claude model, and say nothing about language models in general.
 
 Next-residue accuracy does not say whether a model can do anything a curator needs. Function prediction
 tools make characteristic errors, and one of the most damaging is to assign a catalytic activity to a
-protein that keeps the fold of an enzyme and has lost its catalytic residues
-\citep{decrecy2025limitations}. Pseudokinases are the best-known case \citep{kwon2019pseudokinases}. A
-model that only recognises the family will repeat this error; a model that reads the residues should not.
+protein that keeps the fold of an enzyme and has lost the activity
+\citep{decrecy2025limitations}. Such proteins are called pseudoenzymes, or dead enzymes
+\citep{murphy2017biozombie,adrain2020dead}. They make up an estimated 5 to 10\% of the proteins in enzyme
+families \citep{ribeiro2019pseudoenzymes}, and many act as regulators \citep{adrain2020dead}.
+Pseudokinases are the best-studied case \citep{kwon2019pseudokinases}. A model that only recognises the
+family will repeat the error; a model that reads the residues should not.
+
+Reading the residues has a known limit. The loss of a catalytic residue predicts inactivity and does not
+prove it. A survey of enzyme families found that mutation of catalytic residues is not always a good
+indication of lack of activity \citep{ribeiro2020pitfalls}, and in some proteins the residues needed for
+catalysis have moved elsewhere in the sequence \citep{goldberg2023pseudoenzymes}: WNK1 lacks the catalytic
+lysine at its usual position and is a protein kinase \citep{xu2000wnk1}.
 
 We therefore ran four small tests, each with a control the model could not pass by recall: a subsample
 replication of the next-residue result; domain and membrane-feature annotation with shuffled sequences as
@@ -100,7 +109,11 @@ with coordinates \citep{mistry2021pfam}, transmembrane helices, a signal-peptide
 function. Truth was the InterPro Pfam matches and the UniProt transmembrane and signal features, which in
 unreviewed entries are themselves predicted. Each protein was also presented shuffled.
 
-\paragraph{Test 3, pseudoenzymes.} From Swiss-Prot, excluding human, mouse and rat, we took 20 active
+\paragraph{Test 3, dead mutants and natural pseudoenzymes.} A dead mutant here is an active enzyme in
+which we substituted one catalytic residue; a natural pseudoenzyme is an evolved homologue, which usually
+differs from active relatives at many positions. UniProt curates pseudoenzymes in Swiss-Prot
+\citep{zaru2020uniprot}; on 18 November 2026, 688 reviewed entries carried ``inactive'' in the protein
+name, 107 of them in the protein kinase superfamily. From Swiss-Prot, excluding human, mouse and rat, we took 20 active
 protein kinases with a curated proton-acceptor aspartate and ATP-binding lysine; 20 kinase-fold proteins
 whose name contains ``inactive''; and 20 non-kinase enzymes with a curated active site. Each kinase was
 also presented with the aspartate changed to asparagine and, separately, the lysine changed to
@@ -269,15 +282,18 @@ Natural pseudokinases were called inactive in 18 of 20 cases by both newer model
 answers, for each model, the model's own protein name already said ``inactive'' or ``pseudokinase'', so this set
 mostly measures recall of the entry. Opus~4.6 at high effort called 12 of 20 inactive. The exception is informative: both models called \textit{C.~elegans}
 kin-32 (Q95YD4), named an inactive tyrosine kinase in Swiss-Prot, active, citing an intact glycine loop,
-VAVK lysine, HRD and DFG motifs, all of which are present in the sequence. We did not examine the basis of
-the Swiss-Prot name.
+VAVK lysine, HRD and DFG motifs, all of which are present in the sequence. The Swiss-Prot name rests on an assay,
+not on the sequence: the entry records that the protein ``has apparently no tyrosine kinase activity in
+vitro when expressed in mammalian cells''. kin-32 is thus a pseudoenzyme that keeps its catalytic motifs,
+a class that no reading of catalytic residues can detect.
 
 Two failure modes recurred. In the first, the model moved the catalytic role to a neighbouring identical
 residue: with Glu318 of a glucuronosyltransferase (Q9VLA1) changed to alanine, both models named Glu317
 as the catalytic base and called the enzyme active, although Fable~5.2 had named Glu318 in the wild type.
 In the second, the model reported the substitution and then argued around it: for the
 \textit{Toxoplasma} kinase ROP17 (Q2PAY3), Fable~5.2 noted methionine at the lysine position and proposed
-that a nearby lysine would take its place. Two further apparent failures are probably errors in the reference. For the nucleotidase YrfG (P64636)
+that a nearby lysine would take its place. A displaced catalytic lysine has a precedent in WNK1
+\citep{xu2000wnk1}; here the argument was applied to a substitution we had made in an active kinase. Two further apparent failures are probably errors in the reference. For the nucleotidase YrfG (P64636)
 and the reductase ENV9 (Q08651), both newer models placed the catalytic residue at a different position
 from UniProt, in wild type and mutant alike, and so called the mutants active. Both UniProt positions are
 annotated by similarity, and neither protein has an experimental structure. For YrfG, UniProt gives the
@@ -361,8 +377,13 @@ next-residue signal across Claude models released between Opus~4.6 and Fable~5.2
 other vendors' models \citep{tu2026claude}; we tested none of those, so we cannot say whether reading
 catalytic residues tracks that signal.
 
-For annotation review, the practical use is narrow. A sequence-only read can flag a probable pseudoenzyme
-before a catalytic term is accepted, and can question an implausible name. It cannot serve as evidence:
+For annotation review, the practical use is narrow. A sequence-only read can flag a protein that has
+lost a canonical catalytic residue before a catalytic term is accepted, and can question an implausible
+name. It cannot show that the protein is inactive, since catalytic residues can be displaced
+\citep{goldberg2023pseudoenzymes}, and it cannot find pseudoenzymes that keep every catalytic residue,
+such as kin-32. A flag should prompt a curator to check the catalytic term; it says nothing against the
+protein having a function, since dead enzymes commonly act as regulators \citep{adrain2020dead}. Nor can
+the read serve as evidence:
 the output has no provenance, its errors are stated as confidently as its correct calls, and both failure
 modes we observed end in a confident ``active''. A named catalytic position should be checked against the
 sequence and a curated feature before it is used.
@@ -377,7 +398,9 @@ the runs of the other two models, and its decoys were asked at low effort only. 
 chosen by a rule written with the help of two of the tested models, and avoid conserved positions. The
 adjudication of the two reference sites rests on alignment and predicted structures, not on experiment.
 Swiss-Prot proteins are well known, so
-wild-type results in test 3 may reflect recall; the mutants do not. Transmembrane and signal-peptide truth
+wild-type results in test 3 may reflect recall; the mutants do not. Dead mutants made by one substitution
+are not natural pseudoenzymes, which usually differ from active relatives at many positions and can be
+inactive for reasons that leave the catalytic residues intact; we examined no over-annotated entry. Transmembrane and signal-peptide truth
 in test 2 is predicted. Function in test 4 was graded once, unblinded, by the agent that ran the tests. We did not test eukaryotic
 multi-domain proteins in test 2, membrane proteins in test 4, variant effects, or whether reasoning
 improves tests 2 to 4. The novel stratum of test 4 excludes close homologs in the PDB and nothing else:

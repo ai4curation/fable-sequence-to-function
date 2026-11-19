@@ -4,6 +4,22 @@ Written 2026-11-18 by Claude Fable 5.2, one of the models the manuscript evaluat
 `manuscript.tex` on `main` (commit `3dbfa9b`). Look-ups are reproduced by `review/scripts/pseudoenzyme_lookups.sh`;
 the saved output is `review/pseudoenzyme_lookups_2026-11-18.txt`.
 
+## Status, 19 November 2026
+
+Edits E1 to E8 are applied to `manuscript.tex` in the same pull request as this note, and the seven references of
+section 5 are in `references.bib`. Before applying them, each DOI was checked again in CrossRef, and the statements
+taken from the abstracts of Ribeiro et al. 2019 and 2020, Goldberg and Sreelatha 2023 and Adrain 2020, and the
+kin-32 function note in UniProt, were read at source. Three edits differ from the wording suggested below:
+
+- **E2 and E5** do not say WNK1's lysine was relocated or where to. They say only what the title of Xu et al.
+  states: WNK1 lacks the catalytic lysine at its usual position and is a protein kinase.
+- **E3** cites Zaru et al. for UniProt's curation of pseudoenzymes, not for the naming convention, because the
+  full text could not be opened.
+- **E1 and E6** say dead enzymes act as regulators, the word in Adrain's abstract; "scaffolds" is dropped.
+
+E9, the decoy control, was already in the manuscript. E10 (a keyword) is not applied: the draft has no keywords.
+The four experiments of section 4 have not been run. Line numbers below refer to the old draft.
+
 ## 1. Is there a database of dead proteins?
 
 Not a single dedicated one that I could find. Two web searches and the reviews below turned up no cross-family
