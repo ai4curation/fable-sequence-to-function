@@ -9,7 +9,7 @@ figures/make_figures.py imports load() and one() from this file, so the figures 
 import collections, json, math, pathlib, statistics
 import yaml
 import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from common import KEYS, NOTE_FAILED, NOTE_TOOL, efforts, failed, reparse, tool_calls
+from common import KEYS, NOTE_CONTINUED, NOTE_FAILED, NOTE_TOOL, efforts, continued, failed, reparse, tool_calls
 HERE = pathlib.Path(__file__).parent
 T = {t["pdb"]: t for t in json.loads((HERE / "truth.json").read_text())}
 ASPRV1_REPEATS = {"27JP", "27JO", "27IQ"}   # 27IK is kept as the single ASPRV1 entry
@@ -47,6 +47,7 @@ def main():
         print(f"\n== {f.stem}: {len(R)} calls, {len(R)-len(ok)-api-bad} unparsed, {api} API-error replies (no answer; excluded), effort {efforts(R)}, cost ${sum(r.get('cost') or 0 for r in R):.2f}; calls listing a second model: {mixed or 'none'}")
         if multi: print(f"  replies with more than one JSON object, scored on the last: {len(multi)}")
         if bad: print(f"  {NOTE_FAILED}: {bad}")
+        if continued(R): print(f"  {NOTE_CONTINUED}: {len(continued(R))}")
         if tool: print(f"  {NOTE_TOOL}: " + ", ".join(r["pdb"] for r in tool))
         for tag, keep in (("", lambda r: True), (" [without those calls]", lambda r: r["pdb"] not in mixed)):
             if tag and not mixed: continue

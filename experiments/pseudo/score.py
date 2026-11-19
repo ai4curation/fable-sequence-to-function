@@ -5,7 +5,7 @@ figures/make_figures.py imports load() from this file, so Figure 1 reads the ans
 """
 import collections, glob, json, pathlib
 import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from common import KEYS, NOTE_FAILED, NOTE_TOOL, efforts, failed, reparse, tool_calls
+from common import KEYS, NOTE_CONTINUED, NOTE_FAILED, NOTE_TOOL, efforts, continued, failed, reparse, tool_calls
 HERE = pathlib.Path(__file__).parent
 T = {t["accession"]: t for t in json.loads((HERE / "truth.json").read_text())}
 def positions(ans, key):
@@ -19,6 +19,7 @@ def main():
         bad = failed(R); tool = tool_calls(R)
         print(f"\n== {pathlib.Path(f).stem}: {len(R)} calls, {len(R)-len(ok)-bad} unparsed, effort {efforts(R)}, cost ${sum(r.get('cost') or 0 for r in R):.2f}")
         if bad: print(f"  {NOTE_FAILED}: {bad}")
+        if continued(R): print(f"  {NOTE_CONTINUED}: {len(continued(R))}")
         if tool: print(f"  {NOTE_TOOL}: " + ", ".join(r["accession"] + " " + r["variant"] for r in tool))
         if multi: print(f"  replies with more than one JSON object, scored on the last: {len(multi)}")
         rows = collections.defaultdict(collections.Counter); flagged = collections.Counter(); still = collections.Counter(); wtsite = collections.Counter()
