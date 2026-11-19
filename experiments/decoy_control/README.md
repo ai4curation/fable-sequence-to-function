@@ -25,6 +25,7 @@ residue. Reading 2 predicts the opposite.
 | `decoys.json` | 58 decoy sequences for 38 proteins, with the position, the number of candidates and the motif positions that were excluded. |
 | `ask_decoys.py` | Asks a model. The question is read from the original `pseudo/ask.py` as text, so the wording is identical. |
 | `score_decoys.py` | Prints the result tables. |
+| `check_cli_context.py` | Measures what the command line attaches to a one-sentence prompt; writes `results/cli_context_check.json`. |
 | `results/MODEL.jsonl` | One line per decoy answer, with token counts, cost and the CLI version. |
 | `results/bridge-MODEL.jsonl` | Original mutants rerun on this route, to check that it gives the same answers as the stored run. |
 | `results/canary-original-flags.jsonl` | The first two calls, made with the original flags. Not scored; kept as the record of the route problem below. |
@@ -53,8 +54,15 @@ Add `--only ACCESSION:VARIANT` for a single call, and `--set original` to rerun 
 - **Excluded positions:** within three residues of any UniProt active site, binding site, site, modified residue,
   disulfide bond, cross-link, lipidation, glycosylation or mutagenesis feature; inside a cleaved peptide; and,
   for kinases, the catalytic loop, the DFG motif and the invariant Asp of subdomain IX.
-- **Choice:** one position drawn from the remainder with a generator seeded by accession and variant. The rule
-  was fixed before any model saw a decoy.
+- **Choice:** one position drawn from the remainder with a generator seeded by accession and variant.
+- **When the rule was set:** it was revised twice after looking at which positions it picked (the DFG pattern
+  was widened and the subdomain IX exclusion added), and last changed before the first model call. Git cannot
+  show this: the first commit of the rule is later than the first call, and answer rows do not store the
+  sequence. `decoys.json` has not changed since that first commit.
+- **Known gaps:** the subdomain IX pattern finds nothing in 7 of the 20 kinases, so their invariant Asp stayed a
+  candidate, though none was drawn. Enzyme decoys have no domain restriction, and some are easy: one is the
+  second-to-last residue (P26725), one lies in a disordered region (P23594) and one in a transmembrane helix
+  (Q8RX88).
 
 **Limit of the label.** A decoy position has no functional annotation. That is not a measurement that the
 substitution is harmless. Some decoys fall in conserved stretches, and a few may reduce activity or stability
@@ -63,26 +71,41 @@ in the real protein. A model that calls such a decoy inactive is not necessarily
 ## The route, and a finding about it
 
 The original run called `claude -p --model M --system-prompt "" --tools "" --effort E --output-format json`.
-On the machine used here (CLI 2.1.328, 2026-11-18) that command does not isolate the question:
+On the machine used here (CLI 2.1.328, 2026-11-18) that command does not isolate the question.
 
-| Flags | What reached the model with a one-sentence prompt |
-|---|---|
-| Original, connectors ready in time | 97 connector tools attached; 97,266 input tokens |
-| Original, connectors not ready | No tools; 5,866 input tokens (user instructions and skill listings) |
-| Original plus `--setting-sources "" --strict-mcp-config --disable-slash-commands --no-chrome` | No tools; 588 input tokens |
+Saved evidence, from `check_cli_context.py` (one-sentence prompt, cheapest model, `results/cli_context_check.json`):
 
-`--tools ""` removes the built-in tools only. Whether connector tools are attached depends on timing, so two
-identical calls can differ. The remaining 588 tokens are an environment block the CLI adds even with an empty
-system prompt; the model described it as naming the working directory, platform, shell, date and model, with
-some file-handling guidance. Removing it needs `--bare`, which needs an API key.
+| Flags | Runs | Tools attached | Input tokens |
+|---|---|---|---|
+| Original | 4 | 0 (seven account connectors still pending) | 5,851 each |
+| Original plus `--setting-sources "" --strict-mcp-config --disable-slash-commands --no-chrome` | 2 | 0 (no connectors) | 573 each |
+
+Saved evidence, from the first two canary calls with the original flags (`results/canary-original-flags.jsonl`):
+the first carried 97,811 input tokens and cost $1.69; the second, a minute later, carried 6,411 and cost $0.21.
+The two calls had different sequences of the same length, so the 91,400-token gap is not the question.
+
+Seen once and not saved: a one-sentence call with the original flags whose start-up record listed 97 tools, all
+from account connectors, with the connectors connected, and 97,266 input tokens. The four saved runs above did
+not repeat it. The reading that fits all of this is that `--tools ""` removes only the built-in tools and that
+connector tools are attached when the connectors finish connecting before the request is sent. That is an
+interpretation of three observations, not a documented behaviour.
+
+The remaining 573 tokens are added by the CLI even with an empty system prompt. Asked to describe them, the
+model listed account context, environment details (working directory, operating system, shell, date), guidance
+on handling downloaded files, the model name and knowledge cutoff, and a token budget note. That is the model's
+own account. The CLI help says `--bare` skips more, and that it accepts only an API key; it was not tried.
 
 All scored calls here use the four extra flags. The full question for one kinase then arrived with 1,133 input
 tokens. `ask_decoys.py` marks any call above 2,500 input tokens and `score_decoys.py` leaves it out.
+All 174 scored calls were below it.
 
 **What this means for the stored run.** Its rows do not record input tokens. No test 3 call in it cost more than
 $0.40 for Fable 5.2, and a call with the 97 tools attached cost $1.69 here, so tools of that size were not
-attached there. Whether a few thousand tokens of user instructions were present cannot be told from the stored
-rows. This is an inference from cost, not a measurement.
+attached there. This is an inference from cost, not a measurement. The independent reviewer of this folder
+went further: fitting cost to tokens on the rows here and applying it to the stored rows, every stored call
+costs slightly more than this route predicts, by a near-constant amount that would correspond to several
+hundred more input tokens per call. That estimate has not been rechecked here. The two routes should be
+treated as different until the original mutants are rerun on this one.
 
 ## Results
 

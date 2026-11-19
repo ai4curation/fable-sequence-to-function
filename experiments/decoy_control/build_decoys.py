@@ -17,8 +17,11 @@ Rule, fixed before any model was asked:
   residue, disulfide bond, cross-link, lipidation, glycosylation or mutagenesis feature, or inside a signal
   peptide, transit peptide, propeptide or initiator methionine. For kinases three more places are excluded, since
   UniProt does not annotate them in every entry: the catalytic loop (catalytic Asp -2..+7); the DFG motif (first
-  D[FLYWM][GT] that starts 10 to 45 residues after the catalytic Asp); and the invariant structural Asp of
-  subdomain IX (any D.W[SAG] that starts 30 to 110 residues after the catalytic Asp; Hanks and Hunter 1995).
+  D[FLYWM][GT] that starts 10 to 46 residues after the catalytic Asp); and the invariant structural Asp of
+  subdomain IX (any D.W[SAG] that starts 30 to 111 residues after the catalytic Asp; Hanks and Hunter 1995).
+  Known gap: that pattern finds no subdomain IX Asp in 7 of the 20 kinases, whose motif reads differently, so in
+  those the invariant Asp stayed a candidate. None was drawn. The pattern is left as it was when the models were
+  asked, because changing it now would change the candidate lists and could change the seeded draw.
   One position is drawn from what remains with a random generator seeded by SEED, accession and variant.
 "Decoy" therefore means "no functional annotation", not "measured to be harmless".
 """
