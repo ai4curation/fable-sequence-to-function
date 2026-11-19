@@ -34,6 +34,10 @@ MODEL_USAGE_KEYS = ("inputTokens", "outputTokens", "cacheReadInputTokens", "cach
 def _finite(x):
     try: return math.isfinite(x)
     except OverflowError: return False   # an int too large for a float
+def _ratio(a, b):
+    """a / b as a float, or infinity when it cannot be represented (#111)."""
+    try: return a / b
+    except (OverflowError, ZeroDivisionError): return math.inf
 def _num(x): return x if isinstance(x, (int, float)) and not isinstance(x, bool) and _finite(x) else 0   # for costs: anything else is 0
 def _count(x):
     """An input-token count: None if it is missing, the number if it is a finite number, and False if it is something else.
@@ -86,8 +90,9 @@ def call(model, effort, prompt, tries=3, timeout=3600):
     Limits of the mark: the allowance of 700 tokens plus one per character of the question is loose. In the
     rows of the Opus 4.6 high-effort runs scored as one request the input was 710 to 1,147 tokens below it, so an
     attachment of up to about that size goes unmarked in any call. An attachment resent with every request is
-    marked through the listed response. One present only in earlier, unlisted requests is marked once it exceeds
-    the allowance of one assumed retry (about one request's worth); below that it passes as a retry. More than
+    marked through the listed response. One present only in earlier, unlisted requests is marked once the sum
+    exceeds `requests` limits: about the limit plus, for each request, the unused part of the allowance (for
+    Q9VLA1 about 3,700 tokens, roughly two limits); below that it passes as a retry (#111). More than
     one uncounted retry in a call would mark a clean reply, which would then be asked again. A follow-up request
     that resent a
     long visible reply would be marked and asked again. `session_id` names the tool's local session record,
@@ -121,9 +126,10 @@ def call(model, effort, prompt, tries=3, timeout=3600):
     # listed response gives the count exactly up to 3 requests with the observed increments; beyond that it can
     # be one low (#110).
     turns_n = max(_int(turns) or 1, 1)
-    by_tokens = round(context / listed) if listed and math.isfinite(context / listed) else turns_n
+    ratio = _ratio(context, listed) if listed else 0
+    by_tokens = round(ratio) if _finite(ratio) and ratio >= 1 else turns_n   # an infinite sum is marked below; no input count gives the turn count (#111)
     n = turns_n + min(max(by_tokens - turns_n, 0), MAX_UNCOUNTED_RETRIES)
-    largest = listed or context / n   # the listed response; without one, the mean request
+    largest = listed or _ratio(context, n)   # the listed response; without one, the mean request
     details = u.get("output_tokens_details"); dropped = []
     c = j.get("total_cost_usd"); ok_cost = _num(c) == c and not isinstance(c, bool) and c is not None and c >= 0
     rec.update(cost=c if ok_cost else None, served=list(mu), thinking_tokens=details.get("thinking_tokens") if isinstance(details, dict) else None,

@@ -37,7 +37,7 @@ MUTANTS = [   # name, text in common.py, replacement
     ("_int rejects strings", "    if isinstance(x, str) and x.strip().isascii() and x.strip().isdecimal() and len(x.strip()) < 10: return int(x.strip())", "    pass"),
     ("nested filter removed", "out[\"server_tool_use\"] = _keep(out[\"server_tool_use\"], SERVER_TOOL_KEYS, dropped, \"server_tool_use.\")", "pass"),
     ("dropped key names not recorded", "    if dropped: rec[\"usage_keys_dropped\"] = sorted(set(dropped))", "    pass"),
-    ("listed size without iterations recorded as 0", "largest = listed or context / n", "largest = listed or 0"),
+    ("listed size without iterations recorded as 0", "largest = listed or _ratio(context, n)", "largest = listed or 0"),
     ("top-level key filter removed", "usage=_usage(u, dropped)", "usage=u"),
 ]
 def tree():
