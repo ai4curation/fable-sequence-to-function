@@ -34,7 +34,7 @@ for f in sorted(glob.glob(str(HERE / "results" / "claude-*.jsonl"))):
                 helix_true += len(t["tm"]); helix_pred += len(ph); helix_hit += sum(any(ov(h, u) >= 10 for h in ph) for u in t["tm"])
                 sp[(bool(a.get("signal_peptide")), t["signal"])] += 1
             print(f"  {cond:8s} set {st} n={len(x)}: Pfam proteins with >=1 correct family {prot_hit}/{len(x)}; predicted domains {npred} (correct by id {tp_id}, by id-or-name {tp_nm}); true families {ntrue}; "
-                  f"boundary IoU mean {sum(iou)/len(iou) if iou else float("nan"):.3f} (n={len(iou)})")
+                  f"boundary IoU mean {sum(iou)/len(iou) if iou else float('nan'):.3f} (n={len(iou)})")
             if cond == "real":
                 print(f"           TM: membrane yes/no agrees {tmc}/{tmn}, helix count exact {tmexact}/{tmn}, helices recovered {helix_hit}/{helix_true}, predicted {helix_pred}; "
                       f"signal peptide TP {sp[(True,True)]} FN {sp[(False,True)]} FP {sp[(True,False)]} TN {sp[(False,False)]}")
