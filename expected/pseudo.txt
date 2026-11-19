@@ -11,7 +11,7 @@
   pseudo  wt          n=20: active yes 1  no 18  uncertain 1
 
 == claude-opus-4-6-high: 120 calls, 0 unparsed, effort high, cost $79.08
-  replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply; read like any other): 7
+  replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply, or retried a failed request; read like any other): 7
   natural pseudokinases whose returned protein_name says inactive or pseudokinase: 10/20
     of those called inactive: 10/12
   calls whose usage record lists a second model: 0

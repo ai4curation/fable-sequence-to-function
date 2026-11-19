@@ -15,7 +15,7 @@
 
 == claude-opus-4-6-high: 126 calls, 0 unparsed, effort high, cost $66.66
   calls that failed, returned an API error, carried attached context or had an unreadable usage record (not scored): 6
-  replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply; read like any other): A0A919RPG7 real
+  replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply, or retried a failed request; read like any other): A0A919RPG7 real
   real     set B n=45: Pfam proteins with >=1 correct family 7/45; predicted domains 32 (correct by id 9, by id-or-name 9); true families 56; boundary IoU mean 0.641 (n=9)
            TM: membrane yes/no agrees 42/45, helix count exact 37/45, helices recovered 53/59, predicted 62; signal peptide TP 8 FN 0 FP 4 TN 33
   real     set A n=15: Pfam proteins with >=1 correct family 0/15; predicted domains 8 (correct by id 0, by id-or-name 0); true families 17; boundary IoU mean nan (n=0)
