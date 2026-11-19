@@ -6,3 +6,5 @@
 *.log
 *.out
 *.toc
+.venv/
+__pycache__/

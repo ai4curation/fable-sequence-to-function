@@ -1,0 +1,25 @@
+
+== claude-fable-5-2: 30 calls, 0 unparsed, effort high, cost $6.01; fallback-served calls: {'29BS': ['claude-fable-5-2', 'claude-opus-4-8']}
+  novel                              n=15: Q3 75.8% (best single state 54.1%); long-range contact precision 39.7% (top-5 57.3%; chance 2.0%); says it recognises the protein 5/15
+  known                              n=15: Q3 81.8% (best single state 55.4%); long-range contact precision 48.3% (top-5 69.3%; chance 1.7%); says it recognises the protein 14/15
+  novel, ASPRV1 counted once         n=12: Q3 76.3% (best single state 56.6%); long-range contact precision 36.6% (top-5 53.3%; chance 1.8%); says it recognises the protein 2/12
+  novel [no fallback calls]          n=15: Q3 75.8% (best single state 54.1%); long-range contact precision 39.7% (top-5 57.3%; chance 2.0%); says it recognises the protein 5/15
+  known [no fallback calls]          n=14: Q3 84.2% (best single state 54.9%); long-range contact precision 51.7% (top-5 74.3%; chance 1.7%); says it recognises the protein 14/14
+  novel, ASPRV1 counted once [no fallback calls] n=12: Q3 76.3% (best single state 56.6%); long-range contact precision 36.6% (top-5 53.3%; chance 1.8%); says it recognises the protein 2/12
+
+== claude-opus-4-6: 30 calls, 0 unparsed, effort low, cost $0.54; fallback-served calls: none
+  novel                              n=15: Q3 45.3% (best single state 54.1%); long-range contact precision 3.3% (top-5 6.7%; chance 2.0%); says it recognises the protein 3/15
+  known                              n=15: Q3 45.1% (best single state 55.4%); long-range contact precision 4.0% (top-5 4.0%; chance 1.7%); says it recognises the protein 9/15
+  novel, ASPRV1 counted once         n=12: Q3 48.1% (best single state 56.6%); long-range contact precision 4.1% (top-5 8.3%; chance 1.8%); says it recognises the protein 1/12
+
+== claude-opus-5-5: 30 calls, 1 unparsed, effort high, cost $1.77; fallback-served calls: {'15AY': ['claude-opus-5-5', 'claude-opus-5'], '7IMP': ['claude-opus-5-5', 'claude-opus-5']}
+  novel                              n=15: Q3 73.1% (best single state 54.1%); long-range contact precision 21.5% (top-5 37.3%; chance 2.0%); says it recognises the protein 0/15
+  known                              n=14: Q3 78.3% (best single state 55.2%); long-range contact precision 31.4% (top-5 60.0%; chance 1.7%); says it recognises the protein 9/14
+  novel, ASPRV1 counted once         n=12: Q3 73.4% (best single state 56.6%); long-range contact precision 19.0% (top-5 30.0%; chance 1.8%); says it recognises the protein 0/12
+  novel [no fallback calls]          n=15: Q3 73.1% (best single state 54.1%); long-range contact precision 21.5% (top-5 37.3%; chance 2.0%); says it recognises the protein 0/15
+  known [no fallback calls]          n=13: Q3 79.7% (best single state 55.6%); long-range contact precision 32.3% (top-5 61.5%; chance 1.7%); says it recognises the protein 8/13
+  novel, ASPRV1 counted once [no fallback calls] n=12: Q3 73.4% (best single state 56.6%); long-range contact precision 19.0% (top-5 30.0%; chance 1.8%); says it recognises the protein 0/12
+
+== manual function grading, 12 distinct novel proteins
+  claude-fable-5-2: correct 6, abstain 5, wrong 1
+  claude-opus-5-5: correct 4, abstain 7, wrong 1

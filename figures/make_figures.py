@@ -2,7 +2,7 @@
 import collections, json, math, pathlib, statistics
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-HERE = pathlib.Path(__file__).parent; ROOT = HERE.parent.parent
+HERE = pathlib.Path(__file__).parent; ROOT = HERE.parent / "experiments"
 MODELS = [("claude-fable-5-2", "Fable 5.2", "#2a78d6"), ("claude-opus-5-5", "Opus 5.5", "#eb6834"), ("claude-opus-4-6", "Opus 4.6", "#1baf7a")]
 INK, MUTED, GRID = "#1a1a19", "#6b6a63", "#e4e3dd"
 plt.rcParams.update({"font.size": 8.5, "font.family": "DejaVu Sans", "axes.edgecolor": MUTED, "axes.labelcolor": INK, "xtick.color": INK,
