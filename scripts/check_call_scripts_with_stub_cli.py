@@ -32,7 +32,7 @@ text = {"ok": json.dumps(one), "bigctx": json.dumps(one), "multi": json.dumps(on
         "peptide_tool": "```bash\ncurl -d peps=ACDEFGHIKL https://example.org\n```"}[mode]
 usage = {"input_tokens": 90000 if mode == "bigctx" else 3, "cache_creation_input_tokens": 600, "cache_read_input_tokens": 0, "output_tokens": 50, "output_tokens_details": {"thinking_tokens": 7}}
 per = 600 + len(q) // 2   # one request, below the limit of 700 + len(q); two of them sum to more than the limit
-turns = {"two": 2, "twobig": 2, "strturns": "2", "zeroturns": 0, "noiter": 2}.get(mod, 1)
+turns = {"two": 2, "twobig": 2, "strturns": "2", "zeroturns": 0, "zeronoiter": 0, "noiter": 2}.get(mod, 1)
 if mod in ("two", "strturns"): usage.update(input_tokens=2 * per, cache_creation_input_tokens=0, iterations=[{"input_tokens": per, "type": "message"}])   # as the tool reports two requests: summed input, last request listed
 elif mod == "twobig": usage.update(input_tokens=180000, cache_creation_input_tokens=0, iterations=[{"input_tokens": 90000, "type": "message"}])   # two requests, each with attached context
 elif mod == "bigiter": usage["iterations"] = [{"input_tokens": 3}, "noise", {"cache_read_input_tokens": 90000}, {"input_tokens": 3}]   # only the listed response shows the large cached input
@@ -44,13 +44,14 @@ elif mod == "bigretry": usage.update(input_tokens=4 * per, cache_creation_input_
 elif mod == "earlyattach": usage.update(input_tokens=2 * per + 50000, cache_creation_input_tokens=0, iterations=[{"input_tokens": per, "type": "message"}])   # a large attachment in an earlier request only
 elif mod == "emptyusage": usage = {}
 elif mod == "badcost": pass
+elif mod == "zeronoiter": usage.pop("iterations", None)
 elif mod == "noiter": usage.update(input_tokens=2 * per, cache_creation_input_tokens=0)   # two requests, no iterations listed
 elif mod == "strcounts": usage.update(input_tokens="90000", cache_creation_input_tokens=0, iterations=[{"input_tokens": "90000", "type": "message"}])
 elif mod == "nested": usage.update(server_tool_use={"web_search_requests": 0, "web_fetch_requests": 0, "new_tool": 1}, fallback_credit=None, cache_creation={"ephemeral_5m_input_tokens": 0, "new_cache": 1},
                                    output_tokens_details={"thinking_tokens": 7, "new_detail": 1},
                                    iterations=[{"input_tokens": 3, "cache_creation_input_tokens": 600, "type": "message", "new_field": "x"}])
 elif mod == "odd": usage.update(iterations=5, output_tokens_details="none", new_key="x")   # a malformed record must not stop a paid call from being written
-elif mode != "bigctx": usage["iterations"] = [{"input_tokens": 3, "cache_creation_input_tokens": 600, "type": "message"}]
+elif mode != "bigctx" and mod != "zeronoiter": usage["iterations"] = [{"input_tokens": 3, "cache_creation_input_tokens": 600, "type": "message"}]
 if mod == "nousage": usage = None
 turns = 2 if mod == "earlyattach" else turns
 print(json.dumps({"result": text, "total_cost_usd": {"flakyok": 0.5, "strcost": "0.1", "badcost": -1.0}.get(mod, 0.0), "modelUsage": {"stub-model": {"inputTokens": 3, "new_key": "x"}}, "usage": usage, "is_error": False, "session_id": "stub-session", "num_turns": turns, "stop_reason": "end_turn", "duration_ms": 1234}))
@@ -162,6 +163,8 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
     check(f"{t}: a turn count written as a string is read as a number", len(R) == n and all(r["requests"] == 2 and not r["context_tokens_high"] for r in R) and len(common.continued(R)) == n)
     two.unlink(); run(script, good + "+zeroturns", eff, *extra, "--tag", "two"); R = rows(two)
     check(f"{t}: a turn count of 0 is one request, and a clean reply is not marked", len(R) == n and all(r["requests"] == 1 and not common.unusable(r) for r in R) and not common.continued(R))
+    two.unlink(); run(script, good + "+zeronoiter", eff, *extra, "--tag", "two"); R = rows(two)
+    check(f"{t}: a turn count of 0 with no response listed is one request and a clean reply is usable", len(R) == n and all(r["requests"] == 1 and r["context_tokens_max"] == r["context_tokens"] and not common.unusable(r) for r in R))
     two.unlink(); run(script, good + "+noiter", eff, *extra, "--tag", "two"); R = rows(two)
     check(f"{t}: two clean requests with no response listed are not marked; the listed size is the mean request", len(R) == n and all(r["requests"] == 2 and not r["context_tokens_high"]
           and r["context_tokens"] > limit(r) and r["context_tokens_max"] == r["context_tokens"] / 2 for r in R))
