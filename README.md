@@ -79,7 +79,7 @@ pixel, so they are not byte-for-byte reproducible.
 | Table 2 (`set all` lines for rows 3 to 7); overlap of 0.85 in the abstract and Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
 | Figure 1, mutant positions flagged, recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
 | Figure 2, structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
-| Call totals in Methods (2,578 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
+| Call totals in Methods (2,854 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
 | Decoy-substitution control for test 3 (Table 3) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
 
@@ -89,20 +89,23 @@ pixel, so they are not byte-for-byte reproducible.
 - **Models:** `claude-fable-5-2`, `claude-opus-5-5`, `claude-opus-4-6`.
 - **Route:** Claude Code 2.1.327 in print mode, one call per question:
   `claude -p --model MODEL --system-prompt "" --tools "" --effort EFFORT --output-format json`.
-  No tools were available to the model. The exact prompt is the string `P` (or
+  `--tools ""` turns off the tool's built-in tools; on a machine with account
+  connectors this route could still let connector tools into the call (see
+  *Rows that record a prompt hash* below). The exact prompt is the string `P` (or
   the `prompt` function) in each test's `ask.py` or `run.py`.
 - **Limits of that route:** temperature cannot be set, and the tool adds about
   1,400 tokens of its own context to each call.
-- **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4. In
-  the runs the manuscript reports, Opus 4.6 ran at low effort; the authors
-  record that it did not finish at high effort on 2026-11-18 (that attempt
-  left no rows). On 2026-11-19 UTC, through `call()`, Opus 4.6 was asked
+- **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; the
+  rows of the test-2 runs of 2026-11-18 do not record the effort setting. On
+  2026-11-18 Opus 4.6 ran at low effort in every test; the authors record
+  that it did not finish at high effort that day (that attempt left no rows). On 2026-11-19 UTC, through `call()`, Opus 4.6 was asked
   tests 2 to 4 at high effort and answered every question
   (`results/claude-opus-4-6-high.jsonl`, #51). Nine of the 30 test 4 answers
   took more than one request: eight after reaching the 64,000-token output
   limit and one after a safety-classifier stop. In test 2 the six answers
   that took more than one request were replaced by fresh answers, because
-  the input check of that time marked them; tests 3 and 4 keep theirs
+  the input check of that time marked them, and one of the fresh answers
+  (A0A919RPG7) also took more than one request; tests 3 and 4 keep theirs
   (#104). The manuscript reports these high-effort runs for Opus 4.6 in
   tests 2 to 4 (Table 2, Figures 1 and 2) and gives the low-effort values in
   the text; both are in the Methods call totals. Test 1 has low and high runs;
@@ -169,8 +172,11 @@ pixel, so they are not byte-for-byte reproducible.
   not a prediction. The stored record cannot show whether anything was run.
   Two limits: an example object written after the answer would be taken as
   the answer, and an answer wrapped in an outer object would not be found.
-- **One answer per question.** There are no repeat runs.
-- **Calls listing a second model:** for 6 of the 2,578 calls, the tool's usage
+- **One answer per question, model and effort.** Opus 4.6 was asked tests 2
+  to 4 at two efforts, and the decoy control asked the test-3 mutants and wild
+  types a second time on the revised route (`experiments/decoy_control/`);
+  there are no other repeats.
+- **Calls listing a second model:** for 6 of the 2,854 calls, the tool's usage
   record (the `served` field, from `modelUsage`) lists a second model besides
   the one requested. Three are Opus 5.5 next-residue calls at high effort; three
   are in test 4 (PDB 29BS for Fable 5.2, 15AY and 7IMP for Opus 5.5). The record
