@@ -20,6 +20,10 @@ if sys.argv[1:] == ["--version"]: print("0.0.0 (stub)"); sys.exit(0)
 q = sys.stdin.read(); mode, _, mod = os.environ.get("STUB_MODE", "ok").partition("+")   # "+two": the reply took two requests; "+hidden": one request, summed input too large; "+bigiter": one large request
 with open(os.environ["STUB_LOG"], "a") as fh: fh.write(json.dumps(dict(argv=sys.argv[1:], cwd=os.getcwd(), stdin_sha256=hashlib.sha256(q.encode()).hexdigest(), stdin_len=len(q))) + "\n")
 if mode == "fail": print("not json"); sys.exit(0)
+if mode == "flaky":   # two API errors with different messages and costs, then an answer, per question
+    k = os.path.join(os.path.dirname(os.environ["STUB_LOG"]), "flaky-" + hashlib.sha256(q.encode()).hexdigest()[:16]); n = int(open(k).read()) + 1 if os.path.exists(k) else 1; open(k, "w").write(str(n))
+    if n < 3: print(json.dumps({"result": f"API Error: attempt {n}\nRequest ID: req_{n}", "is_error": True, "total_cost_usd": 0.125 * n, "usage": {}, "modelUsage": {}})); sys.exit(0)
+    mode = "ok"
 if mode == "apierror": print(json.dumps({"result": "API Error: overloaded\n\nRequest ID: req_stub", "is_error": True, "total_cost_usd": 0.25, "usage": {}, "modelUsage": {}})); sys.exit(0)
 one = {"pfam_domains": [], "catalytically_active": "yes", "helices": [[1, 5]], "protein_name": "first"}
 two = dict(one, protein_name="second")
@@ -28,11 +32,15 @@ text = {"ok": json.dumps(one), "bigctx": json.dumps(one), "multi": json.dumps(on
         "peptide_tool": "```bash\ncurl -d peps=ACDEFGHIKL https://example.org\n```"}[mode]
 usage = {"input_tokens": 90000 if mode == "bigctx" else 3, "cache_creation_input_tokens": 600, "cache_read_input_tokens": 0, "output_tokens": 50, "output_tokens_details": {"thinking_tokens": 7}}
 per = 600 + len(q) // 2   # one request, below the limit of 700 + len(q); two of them sum to more than the limit
-turns = 2 if mod in ("two", "twobig") else 1
-if mod in ("two", "hidden"): usage.update(input_tokens=2 * per, cache_creation_input_tokens=0, iterations=[{"input_tokens": per, "type": "message"}])   # as the tool reports two requests: summed input, last request listed
+turns = {"two": 2, "twobig": 2, "strturns": "2", "zeroturns": 0, "noiter": 2}.get(mod, 1)
+if mod in ("two", "hidden", "strturns"): usage.update(input_tokens=2 * per, cache_creation_input_tokens=0, iterations=[{"input_tokens": per, "type": "message"}])   # as the tool reports two requests: summed input, last request listed
 elif mod == "twobig": usage.update(input_tokens=180000, cache_creation_input_tokens=0, iterations=[{"input_tokens": 90000, "type": "message"}])   # two requests, each with attached context
 elif mod == "bigiter": usage["iterations"] = [{"input_tokens": 3}, "noise", {"cache_read_input_tokens": 90000}, {"input_tokens": 3}]   # only the listed response shows the large cached input
-elif mod == "odd": usage.update(input_tokens="12", iterations=5, output_tokens_details="none", new_key="x")   # a malformed record must not stop a paid call from being written
+elif mod == "noiter": usage.update(input_tokens=2 * per, cache_creation_input_tokens=0)   # two requests, no iterations listed
+elif mod == "strcounts": usage.update(input_tokens="90000", cache_creation_input_tokens=0, iterations=[{"input_tokens": "90000", "type": "message"}])
+elif mod == "nested": usage.update(server_tool_use={"web_search_requests": 0, "web_fetch_requests": 0, "new_tool": 1}, fallback_credit=None,
+                                   iterations=[{"input_tokens": 3, "cache_creation_input_tokens": 600, "type": "message", "new_field": "x"}])
+elif mod == "odd": usage.update(iterations=5, output_tokens_details="none", new_key="x")   # a malformed record must not stop a paid call from being written
 elif mode != "bigctx": usage["iterations"] = [{"input_tokens": 3, "cache_creation_input_tokens": 600, "type": "message"}]
 print(json.dumps({"result": text, "total_cost_usd": 0.0, "modelUsage": {"stub-model": {"inputTokens": 3, "new_key": "x"}}, "usage": usage, "is_error": False, "session_id": "stub-session", "num_turns": turns, "stop_reason": "end_turn", "duration_ms": 1234}))
 '''
@@ -91,6 +99,9 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
           and r["attempt_errors"] == ["API Error: overloaded"] * 3 and r["cost_all_attempts"] == 0.75 for r in R[n:]) and sent_ok(eff, 3 * n, 3))
     run(script, good, eff, *extra); R = rows(out)
     check(f"{t}: API-error rows are asked again; the file then has one usable row per question", len(R) == 3 * n and sum(not common.unusable(r) for r in R) == n and sent_ok(eff, n, 1))
+    out.unlink(); run(script, "flaky", eff, *extra); R = rows(out)
+    check(f"{t}: two API errors then an answer: one row, 3 attempts, both error lines kept, the cost of every attempt summed", len(R) == n and all(r["attempts"] == 3 and not common.unusable(r)
+          and r["attempt_errors"] == ["API Error: attempt 1", "API Error: attempt 2"] and r["cost_all_attempts"] == 0.375 and r["cost"] == 0.0 for r in R))
     out.unlink(); run(script, "peptide_tool" if t == "next_residue" else "tool", eff, *extra); R = rows(out)
     if t == "next_residue": check(f"{t}: a reply with a tool call is invalid and not correct", len(R) == n and all(r["pred"] and not r["valid"] and not r["first_correct"] and not r["exact10"] for r in R))
     else: check(f"{t}: a reply with a tool call has no answer", len(R) == n and all(r["ans"] is None for r in R))
@@ -99,7 +110,11 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
     two = out.with_name("stub-model-two.jsonl"); run(script, good + "+two", eff, *extra, "--tag", "two"); R = rows(two)
     check(f"{t}: a reply that took two requests is usable and counted, though its summed input passes the limit", len(R) == n and all(r["requests"] == 2 and not r["context_tokens_high"]
           and r["context_tokens"] == 2 * r["context_tokens_max"] and r["context_tokens_max"] <= limit(r) < r["context_tokens"] and not common.unusable(r) for r in R) and len(common.continued(R)) == n)
-    if t != "next_residue":   # the scorer of this test prints the count (test 1 needs the upstream answers for the stub's questions, so it is left out)
+    if t == "next_residue":   # the test 1 scorer reads results/low and results/high; the upstream answers are simply not found for the stub's model
+        named = exp / t / "results" / "high" / "claude-stub.jsonl"; named.parent.mkdir(exist_ok=True); shutil.copy(two, named)
+        p_ = subprocess.run([sys.executable, str(exp / t / "score.py")], capture_output=True, text=True); named.unlink()
+        check(f"{t}: the scorer prints the replies that took more than one request", p_.returncode == 0 and f"{common.NOTE_CONTINUED}: {n}" in p_.stdout)
+    if t != "next_residue":
         named = two.with_name("claude-stub.jsonl"); shutil.copy(two, named)   # the test 2 scorer reads claude-*.jsonl
         p_ = subprocess.run([sys.executable, str(exp / t / "score.py")], capture_output=True, text=True)
         named.unlink()
@@ -112,9 +127,20 @@ for t, script, eff, extra, out in (("features", "features/ask.py", "high", [], e
     two.unlink(); run(script, good + "+bigiter", eff, *extra, "--tag", "two"); R = rows(two)
     check(f"{t}: a listed response above the limit is marked, though the summed input is small", len(R) == n and all(r["context_tokens_high"] and r["requests"] == 1
           and r["context_tokens"] <= limit(r) < r["context_tokens_max"] == 90000 for r in R))
+    two.unlink(); run(script, good + "+strturns", eff, *extra, "--tag", "two"); R = rows(two)
+    check(f"{t}: a turn count written as a string is read as a number", len(R) == n and all(r["requests"] == 2 and not r["context_tokens_high"] for r in R) and len(common.continued(R)) == n)
+    two.unlink(); run(script, good + "+zeroturns", eff, *extra, "--tag", "two"); R = rows(two)
+    check(f"{t}: a turn count of 0 is one request, and a clean reply is not marked", len(R) == n and all(r["requests"] == 1 and not common.unusable(r) for r in R) and not common.continued(R))
+    two.unlink(); run(script, good + "+noiter", eff, *extra, "--tag", "two"); R = rows(two)
+    check(f"{t}: two clean requests with no response listed are not marked", len(R) == n and all(r["requests"] == 2 and not r["context_tokens_high"] and r["context_tokens"] > limit(r) for r in R))
+    two.unlink(); run(script, good + "+strcounts", eff, *extra, "--tag", "two"); R = rows(two)
+    check(f"{t}: input counts that are not numbers make the row unusable", len(R) == n and all(r.get("usage_unreadable") and common.unusable(r) for r in R))
+    two.unlink(); run(script, good + "+nested", eff, *extra, "--tag", "two"); R = rows(two)
+    check(f"{t}: unknown usage keys at any level are dropped and named", len(R) == n and all(r["usage_keys_dropped"] == ["fallback_credit", "iterations.new_field", "modelUsage.stub-model.new_key", "server_tool_use.new_tool"]
+          and r["usage"]["server_tool_use"] == {"web_search_requests": 0, "web_fetch_requests": 0} and "new_field" not in r["usage"]["iterations"][0] for r in R))
     two.unlink(); run(script, good + "+odd", eff, *extra, "--tag", "two"); R = rows(two)
-    check(f"{t}: a malformed usage record still gives a usable row, without the unknown key", len(R) == n and all(not common.unusable(r) and r["context_tokens"] == 600 and r["requests"] == 1
-          and "new_key" not in r["usage"] and r["usage"]["iterations"] == 5 for r in R))
+    check(f"{t}: a malformed usage record still gives a usable row, without the unknown key", len(R) == n and all(not common.unusable(r) and r["context_tokens"] == 603 and r["requests"] == 1
+          and "new_key" not in r["usage"] and "new_key" in r["usage_keys_dropped"] and r["usage"]["iterations"] == 5 and r.get("thinking_tokens", r.get("thinking")) is None for r in R))
 
 # The reply-reading rules, case by case (#49, #50, #61). K is the key list of test 2.
 K = common.KEYS["features"]; A = {"pfam_domains": [], "transmembrane_helices": [], "signal_peptide": False, "protein_name": "x", "ec_number": None, "function": "y"}
@@ -135,5 +161,8 @@ for label, text, want in (
     except Exception as e: got = repr(e)
     check("rule: " + label, got == want)
 check("rule: the stored tool-call reply is detected", common.has_tool_call('I\'ll try UniProt.\n\n```bash\ncurl -sS -X POST "https://peptidesearch.uniprot.org/asyncrest"\n```'))
+# Rows written by commit 4d3da97 hold requests=1 and the real turn count; requests_made() reads both (#86).
+check("rows of 4d3da97: a turn count of 2 with requests=1 counts as two requests, and malformed counts do not crash", [len(common.continued([x])) for x in
+      ({"requests": 1, "num_turns": 2}, {"requests": 2}, {"num_turns": "3"}, {"num_turns": [2]}, {"num_turns": 0}, {"requests": 1, "num_turns": None})] == [1, 1, 1, 0, 0, 0])
 check("rule: an amino-acid answer is not a tool call", not common.has_tool_call("MKTAYIAKQR") and not common.has_tool_call(J))
 shutil.rmtree(tmp); sys.exit(1 if fails else 0)
