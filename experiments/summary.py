@@ -12,6 +12,7 @@ HERE = pathlib.Path(__file__).parent
 # run never enters the quoted totals by its file name alone.
 REPORTED = {
     "features/results/claude-fable-5-2.jsonl",
+    "features/results/claude-opus-4-6-high.jsonl",
     "features/results/claude-opus-4-6.jsonl",
     "features/results/claude-opus-5-5.jsonl",
     "next_residue/results/high/claude-fable-5-2.jsonl",
@@ -20,9 +21,11 @@ REPORTED = {
     "next_residue/results/low/claude-opus-4-6.jsonl",
     "next_residue/results/low/claude-opus-5-5.jsonl",
     "pseudo/results/claude-fable-5-2.jsonl",
+    "pseudo/results/claude-opus-4-6-high.jsonl",
     "pseudo/results/claude-opus-4-6.jsonl",
     "pseudo/results/claude-opus-5-5.jsonl",
     "structure/results/claude-fable-5-2.jsonl",
+    "structure/results/claude-opus-4-6-high.jsonl",
     "structure/results/claude-opus-4-6.jsonl",
     "structure/results/claude-opus-5-5.jsonl",
 }

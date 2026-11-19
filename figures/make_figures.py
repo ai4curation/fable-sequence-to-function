@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 ARGS = [a for a in sys.argv[1:] if a != "--values-only"]; DRAW = "--values-only" not in sys.argv[1:]
 if len(ARGS) > 1: sys.exit(__doc__)
 HERE = pathlib.Path(__file__).parent; ROOT = pathlib.Path(ARGS[0]) if ARGS else HERE.parent / "experiments"
-MODELS = [("claude-fable-5-2", "Fable 5.2", "#2a78d6"), ("claude-opus-5-5", "Opus 5.5", "#eb6834"), ("claude-opus-4-6", "Opus 4.6", "#1baf7a")]
+MODELS = [("claude-fable-5-2", "Fable 5.2", "#2a78d6"), ("claude-opus-5-5", "Opus 5.5", "#eb6834"), ("claude-opus-4-6-high", "Opus 4.6", "#1baf7a")]   # Opus 4.6 at high effort, the setting of the other two
 NEED = [ROOT / d / "truth.json" for d in ("pseudo", "structure")] + [ROOT / d / "results" / f"{m[0]}.jsonl" for d in ("pseudo", "structure") for m in MODELS]
 MISSING = [str(f) for f in NEED if not f.exists()]
 if MISSING: sys.exit("Missing input files:\n  " + "\n  ".join(MISSING) + "\n\n" + __doc__)   # stop before any figure is overwritten

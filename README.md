@@ -14,7 +14,7 @@ with a draft preprint describing the results.
 
 The manuscript is `manuscript.tex`, with a built copy in `manuscript.pdf`.
 
-`experiments/decoy_control/` holds a control for test 3 that is not in the manuscript: the same substitution
+`experiments/decoy_control/` holds the decoy control for test 3 reported in the manuscript: the same substitution
 at a non-catalytic position of each protein, and the test 3 mutants asked again on the same route. Its
 `README.md` and `RESULTS.md` describe it. Its calls are not in the call totals of `expected/summary.txt`.
 
@@ -81,7 +81,7 @@ pixel, so they are not byte-for-byte reproducible.
 | Figure 2, structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
 | Call totals in Methods (2,578 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
-| Decoy-substitution control for test 3 (not in the manuscript) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
+| Decoy-substitution control for test 3 (Table 3) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
 
 ## How the model answers were collected
 
@@ -103,8 +103,9 @@ pixel, so they are not byte-for-byte reproducible.
   limit and one after a safety-classifier stop. In test 2 the six answers
   that took more than one request were replaced by fresh answers, because
   the input check of that time marked them; tests 3 and 4 keep theirs
-  (#104). These tagged runs are scored in `expected/` but are not in the
-  manuscript text or the Methods call totals. Test 1 has low and high runs;
+  (#104). The manuscript reports these high-effort runs for Opus 4.6 in
+  tests 2 to 4 (Table 2, Figures 1 and 2) and gives the low-effort values in
+  the text; both are in the Methods call totals. Test 1 has low and high runs;
   for Opus 4.6 at high effort only one canary question of test 1 was asked,
   and its row is not committed.
 - **Rows that record a prompt hash** (`prompt_sha256`; written from
@@ -219,9 +220,7 @@ RCSB Protein Data Bank.
 - Author list, affiliations and funding (marked `TODO` in `manuscript.tex`).
 - This repository has no licence file yet.
 - Repeat runs, to give intervals for tests 2 to 4.
-- How the Opus 4.6 high-effort runs of tests 2 to 4 (`results/claude-opus-4-6-high.jsonl`, #51) enter the
-  manuscript. They are scored in `expected/` but not used in the text, which still describes Opus 4.6 at
-  low effort only.
+- Opus 4.6 was not asked the decoy control at high effort, and not test 1 at high effort.
 - A blinded second grader for function in test 4.
 - Two enzymes where both models disagree with the curated active-site position
   (Q08651, P64636) have not been adjudicated.
