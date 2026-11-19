@@ -23,28 +23,32 @@ residue. Reading 2 predicts the opposite.
 | `build_decoys.py` | Picks the decoy positions by a seeded rule and writes `decoys.json`. The rule is in its header. |
 | `uniprot_features_snapshot.json` | The UniProt feature tables the rule used, fetched anonymously on 2026-11-18. |
 | `decoys.json` | 58 decoy sequences for 38 proteins, with the position, the number of candidates and the motif positions that were excluded. |
-| `ask_decoys.py` | Asks a model. The question is read from the original `pseudo/ask.py` as text, so the wording is identical. |
-| `score_decoys.py` | Prints the result tables. |
+| `ask_decoys.py` | Asks a model through `call()` in `experiments/common.py`. The question is read from `pseudo/ask.py` as text, so the wording is identical. |
+| `score_decoys.py` | Prints the result tables; `just check` compares them with `expected/decoy_control.txt`. |
 | `check_cli_context.py` | Measures what the command line attaches to a one-sentence prompt; writes `results/cli_context_check.json`. |
 | `results/MODEL.jsonl` | One line per decoy answer, with token counts, cost and the CLI version. |
-| `results/bridge-MODEL.jsonl` | Original mutants rerun on this route, to check that it gives the same answers as the stored run. |
+| `results/bridge-MODEL.jsonl` | The catalytic-site mutants and wild types of the 40 kinases and enzymes of test 3, asked again on this route (100 questions per model, 2026-11-19), so that decoys and mutants are compared within one route. |
 | `results/canary-original-flags.jsonl` | The first two calls, made with the original flags. Not scored; kept as the record of the route problem below. |
 
 ## How to run
 
-`PROBE_DIR` is a checkout of `projects/LLM_SEQUENCE_PROBE` from `ai4curation/ai-gene-review`. The original
-answers used here are from commit `119ac18676`.
+The question and the stored answers of test 3 are read from `experiments/pseudo/`. `build_decoys.py` still
+takes that folder's parent as its argument.
 
 ```bash
-python3 experiments/decoy_control/build_decoys.py PROBE_DIR          # only to rebuild; decoys.json is committed
-python3 experiments/decoy_control/ask_decoys.py PROBE_DIR claude-fable-5-2 high
-python3 experiments/decoy_control/ask_decoys.py PROBE_DIR claude-opus-5-5 high
-python3 experiments/decoy_control/ask_decoys.py PROBE_DIR claude-opus-4-6 low
-python3 experiments/decoy_control/score_decoys.py PROBE_DIR
+python3 experiments/decoy_control/build_decoys.py experiments          # only to rebuild; decoys.json is committed
+python3 experiments/decoy_control/ask_decoys.py claude-fable-5-2 high
+python3 experiments/decoy_control/ask_decoys.py claude-opus-5-5 high
+python3 experiments/decoy_control/ask_decoys.py claude-opus-4-6 low
+python3 experiments/decoy_control/ask_decoys.py claude-fable-5-2 high --set original   # and the other two models
+python3 experiments/decoy_control/score_decoys.py
 ```
 
-Efforts match the original run. `ask_decoys.py` bills each call to the signed-in account and resumes if stopped.
-Add `--only ACCESSION:VARIANT` for a single call, and `--set original` to rerun the original mutants.
+Efforts match the original run. `ask_decoys.py` bills each call to the signed-in account. Its files are
+append-only and a run resumes: a failed or marked call leaves a row, and its question is asked again. Add
+`--limit 1` for a single canary call, `--only ACCESSION:VARIANT` for named items, `--set original` for the
+mutants and wild types of test 3, and `--tag NAME` for a run at another effort, which needs its own file.
+`just check-calls` tests the script against a stub in place of the `claude` tool.
 
 ## The decoys
 
@@ -96,17 +100,22 @@ on handling downloaded files, the model name and knowledge cutoff, and a token b
 own account. The CLI help says `--bare` skips more, and that it accepts only an API key; it was not tried.
 
 All scored calls here use the four extra flags. The full question for one kinase then arrived with 1,133 input
-tokens. `ask_decoys.py` marks any call above 2,500 input tokens and `score_decoys.py` leaves it out.
-All 174 scored calls were below it.
+tokens. The decoy rows of 2026-11-18 were marked above 2,500 input tokens; rows written since are marked by
+`call()` in `experiments/common.py` when a single request is larger than the question allows, and
+`score_decoys.py` leaves marked rows out. None of the 174 decoy calls and none of the 300 rerun calls is marked
+under either limit; the largest carried 1,414 input tokens.
 
 **What this means for the stored run.** Its rows do not record input tokens. No test 3 call in it cost more than
 $0.40 for Fable 5.2, and a call with the 97 tools attached cost $1.69 here, so tools of that size were not
 attached there. This is an inference from cost, not a measurement. The independent reviewer of this folder
 went further: fitting cost to tokens on the rows here and applying it to the stored rows, every stored call
 costs slightly more than this route predicts, by a near-constant amount that would correspond to several
-hundred more input tokens per call. That estimate has not been rechecked here. The two routes should be
-treated as different until the original mutants are rerun on this one.
+hundred more input tokens per call. That estimate has not been rechecked here. The mutants and wild types have
+since been asked again on this route (`results/bridge-MODEL.jsonl`), and `RESULTS.md` compares the decoys with
+those answers. The rerun gave the same call as the stored run for 99, 96 and 88 of 100 questions (Fable 5.2,
+Opus 5.5, Opus 4.6 at low effort); with one answer per question that cannot separate the route from run-to-run
+variation.
 
 ## Results
 
-See `RESULTS.md`, written from the output of `score_decoys.py`.
+See `RESULTS.md`, written from `expected/decoy_control.txt`, the output of `score_decoys.py`.
