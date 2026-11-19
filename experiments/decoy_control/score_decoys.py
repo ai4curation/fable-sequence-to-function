@@ -46,6 +46,16 @@ P = original_prompt(PROBE / "pseudo/ask.py")
 def fasta(s, w=60): return "\n".join(s[i:i+w] for i in range(0, len(s), w))
 SEQ = {k: d["sequence"] for k, d in D.items()}; SEQ.update({(t["accession"], v): s for t in T.values() for v, s in t["variants"].items()})
 def nocall(r): return str(r["ans"].get("catalytically_active")).lower() not in ("yes", "no", "uncertain")
+AA3 = dict(ALA="A", ARG="R", ASN="N", ASP="D", CYS="C", GLN="Q", GLU="E", GLY="G", HIS="H", ILE="I", LEU="L", LYS="K", MET="M", PHE="F", PRO="P", SER="S", THR="T", TRP="W", TYR="Y", VAL="V")
+def one_letter(res): x = str(res).strip().upper(); return AA3.get(x, x)   # "K", "k", "Lys" and "LYS" all read as K
+def isnum(x): return isinstance(x, (int, float)) and not isinstance(x, bool)
+def ctx(r):
+    """Input tokens of a row: context_tokens when recorded, else the sum of the counts that are numbers."""
+    return r["context_tokens"] if isnum(r.get("context_tokens")) else sum(x for x in (r.get(k) for k in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")) if isnum(x))
+def median(xs): xs = sorted(xs); n = len(xs); return None if not n else xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2
+def window(R):
+    """First and last completion time (asked_at is written when the call returns), as HH:MM UTC with the date."""
+    t = sorted(r["asked_at"] for r in R if r.get("asked_at")); return f"{t[0][:10]} {t[0][11:16]} to {t[-1][11:16]} UTC" if t else "no times recorded"
 def call_of(r): c = str(r["ans"].get("catalytically_active")).lower(); return c if c in ("yes", "no", "uncertain") else "none"
 def curated(acc): t = T[acc]; return [t["asp"], t["lys"]] if t["group"] == "kinase" else [t["site"]]
 def describe(name, R, ans):
@@ -55,7 +65,7 @@ def describe(name, R, ans):
     R = [r for r in R if ours((r["accession"], r["variant"]))]; ans = {k: r for k, r in ans.items() if ours(k)}
     h = [r for r in R if r.get("prompt_sha256")]; good = sum(r["prompt_sha256"] == sha(P + fasta(SEQ[(r["accession"], r["variant"])])) for r in h)
     listed = [(x.get("residue"), x.get("position"), SEQ[k]) for k, r in ans.items() for x in (r["ans"].get("catalytic_residues") or []) if isinstance(x, dict)]
-    match = sum(isinstance(p, int) and 0 < p <= len(s) and s[p - 1] == str(res).strip().upper() for res, p, s in listed)
+    match = sum(isinstance(p, int) and not isinstance(p, bool) and 0 < p <= len(s) and s[p - 1] == one_letter(res) for res, p, s in listed)
     think = sum((r.get("thinking_tokens") or 0) > 0 for r in ans.values()); none = sorted(f"{a} {v}" for (a, v), r in ans.items() if nocall(r))
     print(f"    {name}: listed catalytic residues that match the given sequence at the stated position {match}/{len(listed)}; answers that used thinking {think}/{len(ans)}; "
           f"rows whose recorded prompt hash is that of the test 3 prompt plus this sequence {good}/{len(h)}; rows without a recorded hash {len(R) - len(h)}"
@@ -92,14 +102,16 @@ def versus(dec, pairs, ref):
 
 dist = sorted(min(abs(d["position"] - c) for c in curated(d["accession"])) for d in D.values())
 print(f"Decoy positions: {len(D)} decoys in {len({d['accession'] for d in D.values()})} proteins; distance to the nearest curated catalytic position of the protein: "
-      f"median {(dist[len(dist) // 2 - 1] + dist[len(dist) // 2]) / 2 if len(dist) % 2 == 0 else dist[len(dist) // 2]:g}, minimum {dist[0]}, within 10 residues {sum(x <= 10 for x in dist)}, within 20 {sum(x <= 20 for x in dist)}")
+      f"median {median(dist):g}, minimum {dist[0]}, within 10 residues {sum(x <= 10 for x in dist)}, within 20 {sum(x <= 20 for x in dist)}")
+nodecoy = sorted(t["accession"] for t in T.values() if t["group"] in ("kinase", "enzyme") and t["accession"] not in {d["accession"] for d in D.values()})
+print(f"Kinases and enzymes of test 3 with no decoy: {', '.join(nodecoy) or 'none'}")
 ORDER = ["claude-fable-5-2", "claude-opus-5-5", "claude-opus-4-6"]   # as in the manuscript; other files follow by name
 for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.startswith(("bridge-", "canary-"))), key=lambda p: (ORDER.index(p.stem) if p.stem in ORDER else len(ORDER), p.stem)):
     m = f.stem; R, dec = load(f); S, stored = load(PROBE / "pseudo/results" / f"{m}.jsonl"); B, bridge = load(HERE / "results" / f"bridge-{m}.jsonl")
     if not R: continue   # an empty file, as a zero-question run could leave
-    ctx = sorted(r["context_tokens"] if "context_tokens" in r else sum(r.get(x) or 0 for x in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")) for r in dec.values())
+    tokens = sorted(map(ctx, dec.values()))
     print(f"\n== {m}: {len(R)} decoy calls, {len(dec)} answers scored, {len(R) - len(dec) - failed(R)} without an answer, effort {efforts(R)}, "
-          f"cost ${sum(r.get('cost') or 0 for r in R):.2f}, median input tokens {ctx[len(ctx) // 2] if ctx else 'n/a'}")
+          f"cost ${sum(r.get('cost') or 0 for r in R):.2f}, median input tokens {format(median(tokens), 'g') if tokens else 'n/a'}")
     if failed(R): print(f"  {NOTE_FAILED}: {failed(R)}")
     if continued(R) or continued(B): print(f"  {NOTE_CONTINUED}: decoys {len(continued(R))}, rerun {len(continued(B))}")
     if tool_calls(R): print(f"  {NOTE_TOOL}: " + ", ".join(r["accession"] + " " + r["variant"] for r in tool_calls(R)))
@@ -133,9 +145,46 @@ for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.sta
         print(f"    true catalytic residue still listed  {wilson(sum(s in positions(r, 'catalytic_residues') for r, _, s in d), n)}   (decoy answers)")
         print(f"    decoy position number in the reply   {wilson(sum(mentions(r, p) for r, p, _ in d), n)}   (anywhere in the text; read the replies listed below)")
         own = [min((abs(p - q) for q in positions(r, "catalytic_residues") if isinstance(q, int)), default=None) for r, p, _ in d]; own = sorted(x for x in own if x is not None)
-        if own: print(f"    decoy to nearest residue the answer lists as catalytic: median {own[len(own) // 2] if len(own) % 2 else (own[len(own) // 2 - 1] + own[len(own) // 2]) / 2:g}, "
+        if own: print(f"    decoy to nearest residue the answer lists as catalytic: median {median(own):g}, "
                       f"within 5 residues {sum(x <= 5 for x in own)}, within 10 {sum(x <= 10 for x in own)}, of {len(own)} answers listing any   (in the model's own numbering)")
     notyes = [(acc, v, D[(acc, v)]["position"], str(r["ans"].get("catalytically_active")), sorted(p for p in positions(r, "substituted_or_missing") if p)) for (acc, v), r in sorted(dec.items()) if not active(r)]
     print(f"  decoys not called active ({len(notyes)}): " + ("; ".join(f"{acc} {v} pos {p} -> {call}, named lost {lost}" for acc, v, p, call, lost in notyes) or "none"))
     seen = [f"{acc} {v} pos {D[(acc, v)]['position']}" for (acc, v), r in sorted(dec.items()) if mentions(r, D[(acc, v)]["position"])]
     print(f"  replies whose text holds the decoy position number ({len(seen)}): " + ("; ".join(seen) or "none"))
+    omit = []
+    for (acc, v), r in sorted(dec.items()):
+        c = site(acc, dict(VARIANTS)[v]); near = sorted((q, one_letter(x.get("residue"))) for x in (r["ans"].get("catalytic_residues") or []) if isinstance(x, dict) for q in [x.get("position")] if isinstance(q, int) and abs(q - c) <= 3)
+        if c not in positions(r, "catalytic_residues"): omit.append(f"{acc} {v} (curated {c}; listed within 3: {', '.join(f'{x}{q}' for q, x in near) or 'none'})")
+    print(f"  decoy answers that do not list the curated catalytic position ({len(omit)}): " + ("; ".join(omit) if len(omit) <= 8 else "more than 8"))
+    lc = [f"{acc} {v} pos {D[(acc, v)]['position']}: listed as {', '.join(one_letter(x.get('residue')) for x in r['ans'].get('catalytic_residues') or [] if isinstance(x, dict) and x.get('position') == D[(acc, v)]['position'])}, "
+          f"given sequence has {SEQ[(acc, v)][D[(acc, v)]['position'] - 1]}, call {call_of(r)}" for (acc, v), r in sorted(dec.items()) if D[(acc, v)]["position"] in positions(r, "catalytic_residues")]
+    print(f"  decoy positions listed as catalytic ({len(lc)}): " + ("; ".join(lc) or "none"))
+    for name, ref in refs:
+        flip = [f"{acc} {v} (decoy {call_of(r)}, wild type {call_of(ref[(acc, 'wt')])})" for (acc, v), r in sorted(dec.items()) if (acc, "wt") in ref and active(r) != active(ref[(acc, "wt")])]
+        print(f"  decoys whose call differs from the wild type of the same protein ({name}): " + ("; ".join(flip) or "none"))
+
+names = {p.stem for p in (HERE / "results").glob("*.jsonl") if not p.name.startswith(("bridge-", "canary-")) and p.stat().st_size}
+for p in sorted((HERE / "results").glob("bridge-*.jsonl")):
+    if p.stem[len("bridge-"):] not in names: print(f"\nWARNING: {p.name} has no decoy file {p.stem[len('bridge-'):]}.jsonl and is not read")
+for m in sorted(names):
+    if not (PROBE / "pseudo/results" / f"{m}.jsonl").exists(): print(f"\nWARNING: no stored test 3 file pseudo/results/{m}.jsonl for {m}.jsonl; its stored-run comparisons are empty")
+print("\n== records of each file (asked_at is the time a call returned)")
+tot = 0.0
+for p in sorted((HERE / "results").glob("*.jsonl")):
+    R = [json.loads(l) for l in p.open() if l.strip()]
+    if not R: continue
+    rng = {g: (min(ctx(r) for r in R if r.get("group") == g), max(ctx(r) for r in R if r.get("group") == g)) for g in ("kinase", "enzyme") if any(r.get("group") == g for r in R)}
+    us = [r for r in R if isinstance(r.get("usage"), dict)]
+    one = sum(max(r.get("requests") or 1, r.get("num_turns") or 1) == 1 and not any((r["usage"].get("server_tool_use") or {}).get(k) for k in ("web_search_requests", "web_fetch_requests")) for r in us)
+    nohash = [f"{r.get('accession')} {r.get('variant')} at {str(r.get('asked_at'))[11:16]}" for r in R if not r.get("prompt_sha256")]
+    cost = sum(r.get("cost") or 0 for r in R); tot += cost if p.name.startswith("bridge-") else 0
+    print(f"  {p.name}: {len(R)} rows, returned {window(R)}, cost ${cost:.4f}; input tokens " + ", ".join(f"{g} {a:,} to {b:,}" for g, (a, b) in rng.items())
+          + (f"; total input per row {', '.join(f'{ctx(r):,}' for r in R)}" if len(R) <= 3 else "")
+          + f"; rows with a prompt hash {len(R) - len(nohash)}" + (f" (without: {'; '.join(nohash)}; those with one returned {window([r for r in R if r.get('prompt_sha256')])})" if 0 < len(nohash) <= 3 and len(nohash) < len(R) else
+                                                                    f" (without: {'; '.join(nohash)})" if 0 < len(nohash) <= 3 else "")
+          + (f"; rows with a usage record {len(us)}, of them one request and no web search or fetch {one}" if us else ""))
+print(f"  rerun files together: cost ${tot:.4f}")
+c = HERE / "results" / "cli_context_check.json"
+if c.exists():
+    j = json.loads(c.read_text()); runs = j["original_flags"] + j["with_extra_flags"] + [j["description_with_extra_flags"]]
+    print(f"  cli_context_check.json: model {j['model']}, run {j['run_at']}, {len(runs)} calls, cost ${sum(r.get('cost') or 0 for r in runs):.4f}")

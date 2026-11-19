@@ -3,7 +3,7 @@
 Purpose: run the decoy substitutions from build_decoys.py through the same question and the same working
          directory as test 3 (pseudo/ask.py), so the two can be compared.
 Route:   call() in experiments/common.py: the original command line plus four flags (common.EXTRA). Measured on
-         2026-11-18 with CLI 2.1.328: the original flags alone do not isolate the question. `--tools ""` removes
+         2026-11-19 UTC with CLI 2.1.328: the original flags alone do not isolate the question. `--tools ""` removes
          only the built-in tools; when the account's connectors finish connecting in time, 97 connector tools are
          attached (about 97,000 input tokens), and otherwise about 5,900 tokens of user instructions and skill
          listings still are. With the four flags a one-sentence prompt arrives with about 590 input tokens: an

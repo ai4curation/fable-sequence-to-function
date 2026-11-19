@@ -1,13 +1,14 @@
 # Decoy-substitution control: results
 
-All times are UTC. The decoys were asked on 2026-11-19 between 01:56 and 02:07. The catalytic-site mutants and
-wild types of test 3 were asked again on the same route between 07:20 and 07:39 the same day. One Fable 5.2
-row of that rerun (P38991 asp_to_asn) was asked at 01:56, during the decoy session, by the first version of
-`ask_decoys.py`. The stored run of test 3 that the first version of this note compared with has no time in its
-rows; it is dated 2026-11-18 in the repository's README.
+All times are UTC and are the times calls returned (`asked_at` is written when a call returns). The decoy
+calls returned on 2026-11-19 between 01:56 and 02:06. The catalytic-site mutants and wild types of test 3 were
+asked again on the same route; those calls returned between 07:20 and 07:38 the same day. One Fable 5.2 row of
+that rerun (P38991 asp_to_asn) returned at 01:56, during the decoy session; it was written by the first version
+of `ask_decoys.py` and has no prompt hash. The stored run of test 3 that the first version of this note
+compared with has no time in its rows; the repository's README dates it 2026-11-18.
 
-Every number here is printed by `score_decoys.py`, whose output is frozen in `expected/decoy_control.txt`
-and recomputed by `just check`. Intervals are 95% Wilson intervals. Two of the tested models worked on this
+Every number here is printed by `score_decoys.py` (its last section lists the times, row counts, token ranges
+and costs of each file), whose output is frozen in `expected/decoy_control.txt` and recomputed by `just check`. Intervals are 95% Wilson intervals. Two of the tested models worked on this
 control: Claude Fable 5.2 wrote the scripts, ran the calls and wrote the first version of this note, and
 Claude Opus 5.5 revised the scripts and this note after review. Independent read-only reviews found the
 problems listed in issues 11 to 17 and 66 to 76.
@@ -17,7 +18,9 @@ problems listed in issues 11 to 17 and 66 to 76.
 On one call route, Fable 5.2 and Opus 5.5 called every decoy active and called the catalytic-site mutants of
 the same proteins active in 3 and 8 of 58 cases. Neither listed a decoy position among the lost or the
 catalytic residues. So for these two models a single substitution at an unannotated position, away from the
-catalytic site, did not change the call, while the substitution at the catalytic site did. The design does
+catalytic site, left the protein called active, while the substitution at the catalytic site did not. One
+protein is an exception in the other direction: Opus 5.5 did not call the P26725 wild type active ("no" in the
+rerun, "uncertain" in the stored run) but called its decoy active; that decoy is the second-to-last residue. The design does
 not test a substitution at another conserved or functional position: the decoy rule excluded positions within
 three residues of any annotated site and, in kinases, the catalytic loop, the DFG motif and the subdomain IX
 Asp. The decoys are a median of 46 residues from the nearest curated catalytic position (minimum 5; 6 of 58
@@ -129,11 +132,17 @@ The structured answer never lists the decoy, but the reply text sometimes mentio
 number appears in 2 of 58 Fable 5.2 replies and 1 of 58 Opus 5.5 replies; `score_decoys.py` lists them. In
 both Fable 5.2 cases (O48814, P0A6L2) the model says the residue differs from the wild type it recalls and
 lies outside the catalytic residues. Opus 5.5 names the P0A6L2 substitution the same way. So the models can
-hold a remembered wild-type sequence, notice a departure from it and still judge it harmless. The judgement
-therefore draws on recalled sequences, not only on the given sequence.
+hold a remembered wild-type sequence, notice a departure from it and still judge it harmless. This is seen in
+3 of 116 replies, so it shows that recall can enter the judgement, not how often it does. The Opus 5.5 P0A6L2
+reply does not say it is recalling, and it also mentions substitutions near the N-terminus, where the given
+sequence does not differ from the wild type.
 
-The one Opus 4.6 reply that holds a decoy number (P32328, position 188) is not about the decoy. Opus 4.6 lists
-K188 as the catalytic lysine of this protein in other answers too, including its stored wild-type answer.
+The one Opus 4.6 reply that holds a decoy number (P32328, position 188) does not notice the decoy. Its
+Lys-decoy answer lists K188 as the catalytic lysine although the given sequence has Met there, and calls the
+protein active; that is the one "decoy position listed as catalytic" in `expected/decoy_control.txt`. Opus 4.6
+lists K188 for this protein in its stored wild-type answer too (the wild type has a Lys at 188; the curated
+catalytic Lys is 198), so the answer repeats a remembered or misnumbered residue rather than reading the
+decoy.
 
 ## What limits this
 
@@ -164,6 +173,7 @@ K188 as the catalytic lysine of this protein in other answers too, including its
 | Rerun of the mutants and wild types | $14.48 | $5.12 | $2.01 |
 
 The rerun cost $21.62 in total.
-- **Canary calls with the original flags:** $1.90, of which $1.69 was the one call that carried 97,811 input
+- **Canary calls with the original flags:** $1.90, of which $1.69 was the one call that carried 97,813 input
   tokens.
-- **Route checks on the cheapest model:** under $0.05.
+- **Route checks on the cheapest model:** $0.0008 for the seven saved calls in `cli_context_check.json`. An
+  earlier, unsaved check (the 97-tool observation in `README.md`) has no recorded cost.

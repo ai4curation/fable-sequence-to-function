@@ -21,7 +21,7 @@ q = sys.stdin.read(); mode, _, mod = os.environ.get("STUB_MODE", "ok").partition
 with open(os.environ["STUB_LOG"], "a") as fh: fh.write(json.dumps(dict(argv=sys.argv[1:], cwd=os.getcwd(), stdin_sha256=hashlib.sha256(q.encode()).hexdigest(), stdin_len=len(q))) + "\n")
 if mode == "fail": print("not json"); sys.exit(0)
 if mode == "apierror": print(json.dumps({"result": "API Error: overloaded\n\nRequest ID: req_stub", "is_error": True, "total_cost_usd": 0.25, "usage": {}, "modelUsage": {}})); sys.exit(0)
-one = {"pfam_domains": [], "catalytically_active": "yes", "helices": [[1, 5]], "protein_name": "first"}
+one = {"pfam_domains": [], "catalytically_active": "yes", "helices": [[1, 5]], "protein_name": "first", "catalytic_residues": [{"role": "x", "residue": "Met", "position": 1}]}
 two = dict(one, protein_name="second")
 text = {"ok": json.dumps(one), "bigctx": json.dumps(one), "multi": json.dumps(one) + "\n\nCorrected version:\n\n" + json.dumps(two),
         "tool": "```bash\ncurl https://example.org\n```\n" + json.dumps(one), "peptide": "ACDEFGHIKL",
@@ -149,7 +149,20 @@ check("decoy_control: a negative --limit is refused", p_.returncode != 0 and len
 def score(): return subprocess.run([sys.executable, str(exp / "decoy_control/score_decoys.py")], capture_output=True, text=True)
 shutil.copy(out, exp / "decoy_control/results/stub-model-b.jsonl"); p_ = score()
 check("decoy_control: the scorer scores each results file as its own block and checks every recorded prompt hash", p_.returncode == 0 and "\n== stub-model-b:" in p_.stdout
-      and p_.stdout.count("\n== ") == sum(1 for f in (exp / "decoy_control/results").glob("*.jsonl") if not f.name.startswith("bridge-") and rows(f)) >= 2 and "hash is that of the test 3 prompt plus this sequence 3/3" in p_.stdout and "5/5" in p_.stdout)
+      and p_.stdout.count("\n== stub-model") == sum(1 for f in (exp / "decoy_control/results").glob("*.jsonl") if not f.name.startswith("bridge-") and rows(f)) >= 2 and "hash is that of the test 3 prompt plus this sequence 3/3" in p_.stdout and "5/5" in p_.stdout)
+check("decoy_control: the scorer reads residues by position, including three-letter codes (every stub answer lists Met at position 1)", "the given sequence at the stated position 3/3" in p_.stdout)
+# A file with one wrong prompt hash and blank lines, and an empty file (#92, #75).
+bad = [dict(r) for r in rows(out)]; bad[0]["prompt_sha256"] = "0" * 64; c_ = exp / "decoy_control/results/stub-model-c.jsonl"
+c_.write_text("\n" + "\n\n".join(json.dumps(r) for r in bad) + "\n\n"); (exp / "decoy_control/results/stub-model-d.jsonl").write_text("")
+p_ = score(); blk = p_.stdout.split("\n== stub-model-c:")[1].split("\n== ")[0] if "\n== stub-model-c:" in p_.stdout else ""
+check("decoy_control: a wrong prompt hash is counted as wrong, blank lines are skipped, an empty file is not scored", p_.returncode == 0 and "plus this sequence 2/3" in blk
+      and "\n== stub-model-d:" not in p_.stdout)
+c_.unlink(); (exp / "decoy_control/results/stub-model-d.jsonl").unlink()
+with out.open("a") as fh: fh.write("\n")
+p_ = subprocess.run([sys.executable, str(exp / "decoy_control/ask_decoys.py"), "stub-model", "xhigh", "--limit", "0"], env=dict(env, STUB_MODE="ok"), capture_output=True, text=True)
+check("decoy_control: the call script's summary skips blank lines", p_.returncode == 0 and "3 rows" in p_.stdout)
+b_ = exp / "decoy_control/results/bridge-stub-model-y.jsonl"; shutil.copy(exp / "decoy_control/results/bridge-stub-model.jsonl", b_); p_ = score(); b_.unlink()
+check("decoy_control: a rerun file without a decoy file is reported", "WARNING: bridge-stub-model-y.jsonl has no decoy file" in p_.stdout)
 with out.open("a") as fh: fh.write(lines(out)[0])
 p_ = score(); check("decoy_control: the scorer stops on a second usable row for one question", p_.returncode != 0 and "more than one usable row" in p_.stderr)
 
