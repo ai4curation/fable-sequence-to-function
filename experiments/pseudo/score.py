@@ -8,8 +8,8 @@ import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.paren
 from common import KEYS, NOTE_CONTINUED, NOTE_COST, NOTE_FAILED, NOTE_TOOL, efforts, continued, cost_unknown, failed, reparse, tool_calls
 HERE = pathlib.Path(__file__).parent
 T = {t["accession"]: t for t in json.loads((HERE / "truth.json").read_text())}
-# Enzymes whose curated active-site position is disputed by adjudication/ (the curated residue is probably not catalytic).
-# They stay in every count above; one extra line per file gives the enzyme mutants without them.
+# Enzymes whose curated active-site position is disputed by adjudication/; mutant activity is unresolved.
+# They stay in the main counts; one extra line per file gives a post hoc sensitivity analysis without them.
 DISPUTED = ("P64636", "Q08651")
 def positions(ans, key):
     return {d.get("position") for d in (ans.get(key) or []) if isinstance(d, dict)}
