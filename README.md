@@ -1,16 +1,23 @@
 # Sequence to function with general language models
 
 Can a general-purpose language model read a protein sequence directly? This
-repository holds four small tests of Claude Fable 5.2, Claude Opus 5.5 and
-Claude Opus 4.6, each given only an amino-acid sequence and no tools, together
-with a draft preprint describing the results.
+repository holds four small sequence-only tests of Claude Fable 5.2, Claude Opus
+5.5 and Claude Opus 4.6, plus a Gemini extension and a draft preprint. The completed
+Gemini API runs supplied no tools or system instruction in the request body.
+
+Gemini 4 Neon detects all 20 kinase Asp-to-Asn substitutions at low effort and,
+at medium effort, reaches 69.0% secondary-structure accuracy and 28.4% long-range
+contact precision on the 12 novel-stratum proteins. At low effort, however, it shows no detectable next-residue
+advantage over shuffled sequences and identifies none of the 15 obscure DUF
+families. See [the Gemini methods, coverage, and results](gemini_experiment/README.md)
+for the full extension, incomplete pilots, and limits of cross-model comparisons.
 
 | Test | Folder | Question |
 |---|---|---|
 | 1 | `experiments/next_residue/` | Does the model predict the next residue of an obscure protein better than of its shuffled copy? A subsample replication of Tu and Chen (2026). |
 | 2 | `experiments/features/` | Does it name Pfam domains with boundaries, transmembrane helices and signal peptides, and leave shuffled sequences blank? |
 | 3 | `experiments/pseudo/` | Does it notice one catalytic-residue substitution in an otherwise active enzyme? |
-| 4 | `experiments/structure/` | Does it predict secondary structure, contacts and function for structures released after its training? |
+| 4 | `experiments/structure/` | Does it predict secondary structure, contacts and function for recent structures stratified by prior homology? |
 
 The manuscript is `manuscript.tex`, with a built copy in `manuscript.pdf`.
 
@@ -43,10 +50,10 @@ just check
 ```
 
 This verifies the checksums of every test set and raw model output
-(`SHA256SUMS`), re-runs the scoring scripts, and compares their output with the
+including the Gemini extension (`SHA256SUMS`), re-runs the scoring scripts, and compares their output with the
 committed files in `expected/`. It prints "All reported numbers reproduce." when
-they match. Every number in the manuscript and both figures come from these
-scripts; none is typed in by hand. The figure script takes its values from the
+they match. The manuscript tables transcribe these deterministic summaries; the two original
+Claude figures are generated directly from the scoring code. The figure script takes its values from the
 same scoring code, and `expected/figures.txt` lists the plotted values.
 
 ```bash
@@ -71,7 +78,7 @@ pixel, so they are not byte-for-byte reproducible.
 |---|---|
 | Scoring, statistics, figures | Deterministic from committed files. The bootstrap uses a fixed seed. |
 | Test sets (`truth.json`, `upstream/`) | Committed exactly as drawn on 2026-11-18. The `build.py` scripts record how, but they query live UniProt, InterPro and RCSB services, so re-running them draws different entries. Do not re-run them to check the paper. |
-| Model answers (`results/*.jsonl`) | Committed in full, including raw reply text, thinking-token counts, cost and the models listed in each call's usage record. Re-asking will not give identical answers: the route used does not expose temperature, and models change. |
+| Model answers (`results/*.jsonl`, `gemini_experiment/results*/*/*.jsonl`) | Saved reply text and available usage metadata. Gemini retry records do not include all failed responses, their tokens, or total cost. Re-asking will not give identical answers; temperature and access routes vary and models change. |
 | Function grading (`structure/function_grading.yaml`) | One unblinded manual pass, committed with a note per protein. |
 
 ## Where each number comes from
@@ -88,7 +95,17 @@ pixel, so they are not byte-for-byte reproducible.
 | Adjudication of the two disputed active sites (YrfG, ENV9) | `uv run python experiments/pseudo/adjudication/adjudicate.py` | `expected/adjudication.txt` |
 | Decoy-substitution control for test 3 (Table 3) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
 
-## How the model answers were collected
+The Gemini extension adds the following reports; the original figure and Claude
+report values remain unchanged.
+
+| Manuscript item | Command | Frozen output |
+|---|---|---|
+| Gemini next-residue row, feature and pseudoenzyme results, Neon/Pro structure rows | `uv run python gemini_experiment/score_gemini.py results_vertex` | `expected/gemini_vertex.txt` |
+| Flash Lite structure row; other API and CLI pilots (incomplete runs identified) | `uv run python gemini_experiment/score_gemini.py results` | `expected/gemini_pilots.txt` |
+| Recorded thinking tokens alongside Claude (including zeros; scored rows only) | `uv run python gemini_experiment/thinking.py` | `expected/gemini_thinking.txt` |
+| Coverage, safety blocks, retries, prompt integrity, recorded route and model version | `uv run python gemini_experiment/audit.py` | `expected/gemini_audit.txt` |
+
+## How the original Claude answers were collected
 
 - **Date:** 2026-11-18.
 - **Models:** `claude-fable-5-2`, `claude-opus-5-5`, `claude-opus-4-6`.
@@ -233,7 +250,11 @@ RCSB Protein Data Bank.
 
 - Author list, affiliations and funding (marked `TODO` in `manuscript.tex`).
 - This repository has no licence file yet.
-- Repeat runs, to give intervals for tests 2 to 4.
+- Repeat runs, to measure sampling variability in tests 2 to 4.
+- Matched effort and access-route comparisons across providers; labels such as
+  "high" are not equivalent reasoning budgets.
+- Training-cutoff evidence for any claim that a target was absent from training;
+  the PDB date/homology strata alone do not establish this.
 - Opus 4.6 was not asked the decoy control at high effort, and not test 1 at high effort.
 - A blinded second grader for function in test 4.
 - The two disputed active sites (YrfG Asp9, ENV9 Ser172) have not been reported to UniProt.

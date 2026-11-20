@@ -14,6 +14,10 @@ report:
     uv run python experiments/summary.py > expected/summary.txt
     uv run python experiments/decoy_control/score_decoys.py > expected/decoy_control.txt
     uv run python experiments/qwen_wsp/score.py > expected/qwen_wsp.txt
+    uv run python gemini_experiment/score_gemini.py results_vertex > expected/gemini_vertex.txt
+    uv run python gemini_experiment/score_gemini.py results > expected/gemini_pilots.txt
+    uv run python gemini_experiment/audit.py > expected/gemini_audit.txt
+    uv run python gemini_experiment/thinking.py > expected/gemini_thinking.txt
     uv run python figures/make_figures.py --values-only > expected/figures.txt
 
 # Recompute the numbers and fail if they differ from the committed expected/ files
@@ -30,6 +34,10 @@ check: verify-data
     uv run python experiments/summary.py > $tmp/summary.txt
     uv run python experiments/decoy_control/score_decoys.py > $tmp/decoy_control.txt
     uv run python experiments/qwen_wsp/score.py > $tmp/qwen_wsp.txt
+    uv run python gemini_experiment/score_gemini.py results_vertex > $tmp/gemini_vertex.txt
+    uv run python gemini_experiment/score_gemini.py results > $tmp/gemini_pilots.txt
+    uv run python gemini_experiment/audit.py > $tmp/gemini_audit.txt
+    uv run python gemini_experiment/thinking.py > $tmp/gemini_thinking.txt
     uv run python figures/make_figures.py --values-only > $tmp/figures.txt
     diff -r $tmp expected && echo "All reported numbers reproduce."
 
@@ -39,7 +47,7 @@ verify-data:
 
 # Rewrite SHA256SUMS (only after deliberately adding new runs)
 checksums:
-    find experiments -type f -not -path '*/.venv/*' \( -name '*.json' -o -name '*.jsonl' -o -name '*.tsv' -o -name '*.yaml' -o -name '*.cif' -o -name '*.pdb' \) | sort | xargs shasum -a 256 > SHA256SUMS
+    find experiments gemini_experiment -type f -not -path '*/.venv/*' \( -name '*.json' -o -name '*.jsonl' -o -name '*.tsv' -o -name '*.yaml' -o -name '*.cif' -o -name '*.pdb' \) | sort | xargs shasum -a 256 > SHA256SUMS
 
 # Redraw the figures from the committed model outputs (the plotted values are in expected/figures.txt)
 figures:
@@ -53,9 +61,11 @@ pdf:
     pdflatex -interaction=nonstopmode manuscript.tex > /dev/null
     pdflatex -interaction=nonstopmode manuscript.tex | grep -E "Warning|^!|Output written" || true
 
-# Run the model-calling scripts and the reply-reading rules against a stub CLI. Calls no model.
+# Run the model-calling scripts and the reply-reading rules against a stub CLI, and the Gemini API runners against a stub endpoint. Calls no model.
 check-calls:
     uv run python scripts/check_call_scripts_with_stub_cli.py
+    uv run python scripts/check_gemini_runners_with_stub_endpoint.py
+    scripts/adhoc/mutation_check_gemini_audit.sh
 
 # Ask one model the questions of one test again (costs money; appends to results and resumes).
 # Example: just ask pseudo claude-opus-5-5 high        (add --limit 1 for a single canary call, --tag NAME for a separate file)
