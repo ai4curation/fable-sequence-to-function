@@ -59,6 +59,7 @@ pdf:
 check-calls:
     uv run python scripts/check_call_scripts_with_stub_cli.py
     uv run python scripts/check_gemini_runners_with_stub_endpoint.py
+    uv run python scripts/check_codex_runner_with_stub_provider.py
     scripts/adhoc/mutation_check_gemini_audit.sh
 
 # Ask one model the questions of one test again (costs money; appends to results and resumes).
