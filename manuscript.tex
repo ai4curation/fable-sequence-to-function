@@ -75,11 +75,15 @@ capabilities also occur through another provider and access route.
 \section{Methods}
 
 \paragraph{Models and access.} We tested \texttt{claude-fable-5-2}, \texttt{claude-opus-5-5} and, as an
-older comparison, \texttt{claude-opus-4-6}. Each question was one call to the \texttt{claude} command-line
-tool in print mode with its built-in tools turned off and an empty system prompt. This route does not expose temperature, so answers were sampled, and it adds about
-1,400 tokens of its own context. Eight Opus~5.5 next-residue questions at high effort, left unasked when
+older comparison, \texttt{claude-opus-4-6}. Each question was asked through the \texttt{claude} command-line
+tool in print mode with its built-in tools turned off and an empty system prompt. The original scripts
+tried a question up to three times when the tool's output was not valid JSON and kept only the last
+attempt, so the counts below are of recorded calls; earlier attempts were not recorded. This route does not expose temperature, so answers were sampled, and it adds context of its own,
+whose size the rows of 18 November do not record. Measured on 19 November with the original
+flags and Claude Code 2.1.328, a one-sentence prompt to Haiku~5.5 carried 5,851 input tokens, and two
+test-3 questions to Fable~5.2 carried 97,813 and 6,413. Eight Opus~5.5 next-residue questions at high effort, left unasked when
 that run was interrupted, were asked on 19 November (UTC) with Claude Code 2.1.328 and flags that keep user
-settings and connector tools out of the call; that route adds about 600 tokens. Fable~5.2 and Opus~5.5 ran
+settings and connector tools out of the call; with these flags the one-sentence prompt carried 573 input tokens. Fable~5.2 and Opus~5.5 ran
 at high effort in tests 2 to 4; the rows of the test-2 runs of 18 November do not record the effort setting. Opus~4.6 was asked tests 2 to 4 twice: at low effort on 18 November by the
 original route, and at high effort on 19 November by the revised route. Unless stated, we report the
 high-effort run, which matches the effort of the other two models but not their route. Its answers were
@@ -89,7 +93,7 @@ low effort only.
 Counts of web search and fetch requests were kept only in rows written by later versions of the revised
 route's code, mostly those of the Opus~4.6 high-effort runs of tests 3 and 4 and of the rerun of the test-3
 mutants and wild types for the decoy control; none of those rows shows a web request. Each question has at most
-one scored answer per run. For 6 of the 2,854 calls in the four tests, the tool's usage record lists a second model
+one scored answer per run. For 6 of the 2,854 recorded calls in the four tests, the tool's usage record lists a second model
 besides the one requested: three Opus~5.5 next-residue calls at high effort, all on shuffled sequences, and
 in test 4 one Fable~5.2 and two Opus~5.5 calls, all on known-stratum entries. One of the Opus~5.5 test-4
 calls (PDB 7IMP) returned an API error instead of an answer and is excluded from the scores; for the other
@@ -370,9 +374,10 @@ For the 12 novel proteins, Fable~5.2 and Opus~5.5 reached 76\% and 73\% three-st
 chance (Figure~\ref{fig:struct}). For the known stratum, three-state accuracy was about 5 points higher and contact precision about 12
 points higher. Fable~5.2 said
 it recognised 2 of the 12 novel proteins (ASPRV1 and MrtR) and 14 of the 15 known entries; Opus~5.5 said
-it recognised none of the novel proteins. Opus~4.6 at high effort reached 54\% on secondary structure, below the single-state guess, and 8\%
+it recognised none of the novel proteins. Opus~4.6 at high effort reached 54\% on secondary structure for the novel proteins, below the single-state guess, and 8\%
 contact precision, above chance but far below the newer models; at low effort the values were 48\% and
-4\%. These values are far short of dedicated
+4\%. On the known stratum, Opus~4.6 at high effort reached 58\%, slightly above the single-state guess of
+55\%, and 10\% contact precision. These values are far short of dedicated
 structure predictors \citep{jumper2021alphafold}; the point is that they are well above chance for a
 model given no alignment and no tools.
 
