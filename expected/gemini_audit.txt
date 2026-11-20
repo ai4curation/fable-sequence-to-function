@@ -66,6 +66,7 @@ Verified: the Gemini and Claude questions are the same set, with equal prompt ha
 Claude row records one; each row's model and effort match its file name, and each usable API row's
 model version equals its model; each row's prompt hash matches the rebuilt question; every usable
 reply in tests 2-4 yields a JSON answer; and the stored next-residue target, family, prediction
-and scores match a recomputation.
+and scores match a recomputation. Rows that store the endpoint's response metadata (from #155 on)
+agree with it: response id and model version on every row, finish reason and reply length on usable ones.
 CLI pilot hashes describe the base prompt; run_agy.py prepended a no-tool instruction.
 Retries record attempt counts, not all failed responses or their token usage.

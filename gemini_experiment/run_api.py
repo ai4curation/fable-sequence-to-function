@@ -26,7 +26,7 @@ OUT_ROOT = HERE / "results"
 sys.path.insert(0, str(EXP))
 sys.path.insert(0, str(HERE))
 from common import KEYS, answer, has_tool_call, sha  # noqa: E402
-from run_agy import agy_unusable, build_questions  # noqa: E402
+from run_agy import agy_unusable, build_questions, response_metadata  # noqa: E402
 
 
 def thinking_config(model: str, effort: str) -> dict:
@@ -51,9 +51,11 @@ def call_gemini_api(model: str, effort: str, prompt: str, tries: int = 5, timeou
         model=model,
         effort=effort,
         prompt_sha256=sha(prompt),
+        row_format=2,  # rows from #155 on: response id and metadata recorded whenever a response arrived
         cli_version="gemini-rest-v1beta",
     )
     d = None
+    headers = None
     why = ""
     t0 = time.time()
     for attempt in range(1, tries + 1):
@@ -61,6 +63,7 @@ def call_gemini_api(model: str, effort: str, prompt: str, tries: int = 5, timeou
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 d = json.loads(resp.read())
+                headers = list(resp.headers.items())  # repeats kept (#157)
             break
         except urllib.error.HTTPError as e:
             err_body = e.read().decode(errors="replace")[:400]
@@ -84,20 +87,23 @@ def call_gemini_api(model: str, effort: str, prompt: str, tries: int = 5, timeou
     if d is None:
         return None, dict(rec, error=why or "no response")
 
+    rec.update(response_id=d.get("responseId"), create_time=d.get("createTime"), model_version=d.get("modelVersion"))
+    try:  # never lose a paid reply to a metadata quirk (#160)
+        rec["response_metadata"] = response_metadata(d, headers)
+    except Exception as e:
+        rec["response_metadata_error"] = repr(e)[:400]
     cands = d.get("candidates") or []
     if not cands:
-        fb = d.get("promptFeedback")
-        return None, dict(rec, error=f"no candidates: {fb}")
+        return None, dict(rec, error=f"no candidates: {d.get('promptFeedback')}")
 
     cand = cands[0]
     parts = (cand.get("content") or {}).get("parts") or []
-    text = "".join(p.get("text", "") for p in parts if not p.get("thought"))
+    text = "".join(p.get("text") or "" for p in parts if isinstance(p, dict) and not p.get("thought"))
     u = d.get("usageMetadata") or {}
     rec.update(
         status="SUCCESS",
         num_turns=1,
         finish_reason=cand.get("finishReason"),
-        model_version=d.get("modelVersion"),
         input_tokens=u.get("promptTokenCount"),
         output_tokens=u.get("candidatesTokenCount"),
         thinking_tokens=u.get("thoughtsTokenCount"),
