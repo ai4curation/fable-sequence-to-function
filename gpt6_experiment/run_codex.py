@@ -9,8 +9,10 @@ Only for this experiment, and without touching ~/.codex:
 - command-line settings turning off web search, project docs, environment context, personality,
   skills, plugins, apps and agent tools; a read-only sandbox; an empty working folder.
 What still reaches the model besides the question: the instruction line and two tool definitions
-(request_user_input, view_image). Every call's saved session record is checked for exactly that
-(`context_ok`), and a reply that calls any tool is unusable.
+(request_user_input, view_image). Every request body Codex sends is read from its trace log and
+checked for exactly that (`request_problem`); the saved session record is checked for the
+instructions, effort and context blocks Codex used (`context_ok`); a reply that calls any tool is
+unusable.
 
 Usage:
     python gpt6_experiment/run_codex.py TEST MODEL --effort high [--limit N] [--workers N]
@@ -41,6 +43,7 @@ DEFAULT_HOME = pathlib.Path.home() / "agent-work" / "fable-sequence-to-function"
 INSTRUCTION = "Answer the user's message."
 CATALOG_OVERRIDES = dict(tool_mode=None, multi_agent_version=None, experimental_supported_tools=[],
                          apply_patch_tool_type=None, input_modalities=["text"], supports_search_tool=False)
+ALLOWED_TOOLS = {"request_user_input", "view_image"}
 EFFORTS = ("low", "medium", "high", "xhigh", "max")  # "ultra" is sent as "xhigh" by Codex 0.170.0 (#162)
 FEATURES_OFF = ("shell_tool", "unified_exec", "multi_agent", "multi_agent_v2", "sleep_tool", "plugins",
                 "skill_search", "goals", "apps", "browser_use", "computer_use", "image_generation",
@@ -59,15 +62,18 @@ def codex_version() -> str:
 
 def prepare_home(home: pathlib.Path, models, require_login=True) -> dict:
     """Write the instruction file and the experiment catalog into `home`; return their paths and hashes."""
+    probe = home
+    while not probe.exists():
+        probe = probe.parent
+    inside = subprocess.run(["git", "-C", str(probe), "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    if inside.returncode == 0:  # Codex would send the repository's remote and commit as request metadata (#162, #163)
+        raise SystemExit(f"{home} is inside the git repository {inside.stdout.strip()}; use a home outside any repository")
     if require_login and not (home / "auth.json").exists():
         raise SystemExit(f"{home} has no login; run: CODEX_HOME={home} codex login -c cli_auth_credentials_store=\"file\"")
-    (home / "empty_cwd").mkdir(exist_ok=True)
-    inside = subprocess.run(["git", "-C", str(home / "empty_cwd"), "rev-parse", "--show-toplevel"], capture_output=True, text=True)
-    if inside.returncode == 0:  # Codex would send the repository's remote and commit as request metadata (#162)
-        raise SystemExit(f"{home} is inside the git repository {inside.stdout.strip()}; use a home outside any repository")
+    (home / "empty_cwd").mkdir(parents=True, exist_ok=True)
     instr = home / "instructions.txt"
     instr.write_text(INSTRUCTION)
-    p = subprocess.run(["codex", "debug", "models"], env=dict(os.environ, CODEX_HOME=str(home)),
+    p = subprocess.run(["codex", "debug", "models"], env=codex_env(home),
                        capture_output=True, text=True, timeout=120)
     catalog = json.loads(p.stdout)
     entries = catalog.get("models", catalog) if isinstance(catalog, dict) else catalog
@@ -84,9 +90,65 @@ def prepare_home(home: pathlib.Path, models, require_login=True) -> dict:
 def codex_env(home: pathlib.Path) -> dict:
     """The parent environment without OPENAI_* or CODEX_* variables, so no API key or endpoint override
     from the caller can take the call off the experiment's ChatGPT login (#162)."""
-    env = {k: v for k, v in os.environ.items() if not k.startswith(("OPENAI_", "CODEX_"))}
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("OPENAI_", "CODEX_", "RUST_LOG"))}
     env["CODEX_HOME"] = str(home)
+    env["RUST_LOG"] = "codex_http_client::transport=trace"  # logs each request body sent (#163)
+    env["NO_COLOR"] = "1"
     return env
+
+
+REQUEST_LINE = re.compile(r"codex_http_client::transport: POST to (\S+): (\{.*\})\s*$")
+
+
+def requests_sent(stderr: str) -> list:
+    """The request bodies Codex logged as sent (URL, parsed JSON). Only the body is kept; Codex logs no
+    headers on this line, and the body is checked for anything token-like before it is stored."""
+    out = []
+    for line in stderr.splitlines():
+        m = REQUEST_LINE.search(re.sub(r"\x1b\[[0-9;]*m", "", line))
+        if m:
+            try:
+                out.append((m.group(1), json.loads(m.group(2))))
+            except json.JSONDecodeError:
+                out.append((m.group(1), None))
+    return out
+
+
+def check_request(body, model, effort, prompt) -> str | None:
+    """None if a logged request carries only the one-line instruction, the two allowed tools and the
+    question, for the named model and effort; otherwise what is wrong."""
+    if body is None:
+        return "request body not readable"
+    if body.get("model") != model:
+        return f"model {body.get('model')}"
+    if (body.get("reasoning") or {}).get("effort") != effort:
+        return f"effort {(body.get('reasoning') or {}).get('effort')}"
+    if body.get("instructions") or body.get("tools"):
+        return "instructions or tools parameter set"
+    developer, users, tools = [], [], []
+    for it in body.get("input") or []:
+        if it.get("type") == "additional_tools":
+            stack = list(it.get("tools") or [])
+            while stack:
+                x = stack.pop()
+                if x.get("type") == "namespace":
+                    stack += x.get("tools") or []
+                else:
+                    tools.append(x.get("name") or x.get("type"))
+        elif it.get("type") == "message":
+            texts = [c.get("text", "") for c in it.get("content") or []]
+            (developer if it.get("role") in ("developer", "system") else users).extend(texts)
+        else:
+            return f"input item {it.get('type')}"
+    if developer != [INSTRUCTION]:
+        return f"developer text {[d[:40] for d in developer]}"
+    if users != [prompt]:
+        return "user text other than the question"
+    if not set(tools) <= ALLOWED_TOOLS:
+        return f"tools {sorted(set(tools) - ALLOWED_TOOLS)}"
+    if re.search(r"Bearer |eyJ[A-Za-z0-9_-]{20,}", json.dumps(body)):
+        return "token-like string in the body"
+    return None
 
 
 def codex_args(model: str, effort: str, prep: dict, extra=()) -> list:
@@ -157,9 +219,11 @@ def read_session(home: pathlib.Path, thread_id: str, prompt: str, effort: str) -
 def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=900):
     """One question. Returns (text, row fields); text is None if no usable reply arrived.
 
-    Codex does not log which model the server answered with: `requested_model_logged` is the model
-    Codex asked for. Tools sent are not logged either; a request carrying more context than the
-    one-line instruction and two tools shows up as input tokens above common.context_limit (#162).
+    Each request body Codex sends is read from its HTTP-transport trace log and checked: only the one-line
+    instruction, the two allowed tools and the question, for the named model and effort (#163). A row
+    with no logged request is unusable. Input tokens above common.context_limit are a further, coarser
+    check (#162). Codex does not log the model the server answered with: `requested_model_logged` is the
+    model Codex asked for.
     """
     rec = dict(model=model, effort=effort, prompt_sha256=sha(prompt), cli_version=f"codex-exec {codex_version()}",
                catalog_sha256=prep["catalog_sha256"], instruction=INSTRUCTION, row_format=1,
@@ -175,6 +239,7 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=900
                                timeout=timeout, stdin=subprocess.DEVNULL)
         except subprocess.TimeoutExpired:
             why = "timeout"
+            attempt_threads.append("timeout")
             continue
         events = [json.loads(l) for l in p.stdout.splitlines() if l.strip().startswith("{")]
         thread = next((e.get("thread_id") for e in events if e.get("type") == "thread.started"), None)
@@ -193,16 +258,28 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=900
                           asked_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))
     session = read_session(home, thread, prompt, effort) if thread else dict(context_ok=False, context_problem="no thread id")
     text = messages[-1] if messages else ""
+    sent = requests_sent(p.stderr)
+    request_problems = [check_request(b, model, effort, prompt) for _, b in sent]
+    if thread:  # keep the bodies for inspection, in the experiment home (not in the repository)
+        (home / "requests").mkdir(exist_ok=True)
+        for i, (_, b) in enumerate(sent):
+            if b is not None and not check_request(b, model, effort, prompt) == "token-like string in the body":
+                (home / "requests" / f"{thread}_{i}.json").write_text(json.dumps(b, indent=1))
+    rec.update(requests_logged=len(sent), request_hosts=sorted({u.split("/")[2] for u, _ in sent if "//" in u}),
+               request_sha256=[sha(json.dumps(b, sort_keys=True)) for _, b in sent if b is not None],
+               request_problem=next((x for x in request_problems if x), None) if sent else "no request logged")
     rec.update(attempts=attempt, attempt_threads=attempt_threads, duration_seconds=round(time.time() - t0, 3),
                asked_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
                thread_id=thread, event_types=[e.get("type") for e in events], tool_items=other_items,
-               stderr_tail=(p.stderr or "")[-300:] or None,
+               stderr_tail="\n".join(l for l in (p.stderr or "").splitlines() if "codex_http_client::transport" not in l)[-300:] or None,
                num_turns=len(session.get("response_ids") or []) or None,
                input_tokens=usage.get("input_tokens"), cached_input_tokens=usage.get("cached_input_tokens"),
                output_tokens=usage.get("output_tokens"), thinking_tokens=usage.get("reasoning_output_tokens"),
                thinking=usage.get("reasoning_output_tokens"), **session)
-    rec["context_tokens_high"] = (rec["input_tokens"] or 0) > rec["context_limit"]
+    rec["usage_unreadable"] = not isinstance(rec["input_tokens"], int)
+    rec["context_tokens_high"] = not rec["usage_unreadable"] and rec["input_tokens"] > rec["context_limit"]
     problems = [name for name, bad in (
+        ("request check", rec["request_problem"] is not None), ("usage unreadable", rec["usage_unreadable"]),
         ("context check", not rec["context_ok"]), ("tool or warning items", bool(other_items)),
         ("tool call in session", bool(session.get("session_tool_calls"))), ("not one agent message", len(messages) != 1),
         ("empty reply", not text.strip()), ("not one model response", rec["num_turns"] != 1),
@@ -239,6 +316,9 @@ def main():
     ap.add_argument("--workers", type=int, default=1)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--ncond", type=int, default=2)
+    ap.add_argument("--retry-unusable", action="store_true",
+                    help="ask again questions whose stored row is unusable (default: any stored row counts as asked, "
+                         "so a systematic failure is not billed again on every rerun)")
     args = ap.parse_args()
 
     prep = prepare_home(args.home, [args.model])
@@ -249,17 +329,18 @@ def main():
     qs, key_fn = build_questions(args.test, tag, args.ncond)
     done = set()
     if out_path.exists():
-        done = {key_fn(r) for r in map(json.loads, out_path.read_text().splitlines()) if not codex_unusable(r)}
+        rows = [json.loads(l) for l in out_path.read_text().splitlines() if l.strip()]
+        done = {key_fn(r) for r in rows if not (args.retry_unusable and codex_unusable(r))}
     todo = [q for q in qs if q[0] not in done][: args.limit]
     print(f"[{args.test}] {tag}: {len(qs)} total, {len(done)} done, {len(todo)} to run", flush=True)
 
     def ask_one(item):
         _, prompt, meta = item
-        try:
+        try:  # one bad call, or a bad reply, must not stop the batch (#162, #163)
             text, rec = call_codex(args.model, args.effort, prompt, prep, args.home)
-        except Exception as e:  # one bad call must not stop the batch (#162)
-            text, rec = None, dict(model=args.model, effort=args.effort, prompt_sha256=sha(prompt), error=f"runner: {e!r}"[:400])
-        return build_row(args.test, meta, text, rec)
+            return build_row(args.test, meta, text, rec)
+        except Exception as e:
+            return dict(meta, model=args.model, effort=args.effort, prompt_sha256=sha(prompt), error=f"runner: {e!r}"[:400])
 
     with ThreadPoolExecutor(args.workers) as ex, out_path.open("a") as fh:
         futs = [ex.submit(ask_one, item) for item in todo]
