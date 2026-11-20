@@ -77,11 +77,14 @@ def agy_version() -> str:
 
 
 def agy_unusable(row: dict) -> bool:
-    """True if a row failed, returned non-SUCCESS, or took more than 1 turn (possible tool use)."""
+    """True if a row failed, returned non-SUCCESS, did not record exactly one turn (possible tool use),
+    or finished for a reason other than STOP. This one rule decides both which questions the
+    runners ask again on resume and which rows score_gemini.py and audit.py count (#144)."""
     return (
         "error" in row
         or row.get("status") != "SUCCESS"
-        or (row.get("num_turns") or 1) != 1
+        or row.get("num_turns") != 1
+        or ("finish_reason" in row and row["finish_reason"] != "STOP")
     )
 
 

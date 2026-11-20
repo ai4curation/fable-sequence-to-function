@@ -5,9 +5,9 @@ repository holds four small sequence-only tests of Claude Fable 5.2, Claude Opus
 5.5 and Claude Opus 4.6, plus a Gemini extension and a draft preprint. The completed
 Gemini API runs supplied no tools or system instruction in the request body.
 
-Gemini 4 Neon detects all 20 kinase Asp-to-Asn substitutions and reaches 69.0%
-secondary-structure accuracy and 28.4% long-range contact precision on the 12
-novel-stratum proteins. At low effort, however, it shows no detectable next-residue
+Gemini 4 Neon detects all 20 kinase Asp-to-Asn substitutions at low effort and,
+at medium effort, reaches 69.0% secondary-structure accuracy and 28.4% long-range
+contact precision on the 12 novel-stratum proteins. At low effort, however, it shows no detectable next-residue
 advantage over shuffled sequences and identifies none of the 15 obscure DUF
 families. See [the Gemini methods, coverage, and results](gemini_experiment/README.md)
 for the full extension, incomplete pilots, and limits of cross-model comparisons.
