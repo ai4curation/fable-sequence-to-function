@@ -7,7 +7,7 @@
 #   under .temp/audit_mutations/ (gitignored), removed at the end.
 # PR #148, 2026-11-19.
 set -euo pipefail
-root=$(cd "$(dirname "$0")/../.." && pwd); work="$root/.temp/audit_mutations"; bad=0
+root=$(CDPATH= cd "$(dirname "$0")/../.." && pwd); work="$root/.temp/audit_mutations"; bad=0
 mutate() {  # $1 name, $2 python snippet run inside the copy
   rm -rf "$work"; mkdir -p "$work"; cp -R "$root/experiments" "$root/gemini_experiment" "$work/"
   (cd "$work" && python3 -c "$2")

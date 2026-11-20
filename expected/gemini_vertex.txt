@@ -6,6 +6,10 @@ TEST 1: NEXT RESIDUE
   real      n=136 invalid=0 first-residue=8.8%  exact10=0
   shuffled  n=135 invalid=0 first-residue=10.4%  exact10=0
   gap real-shuffled: -1.5 pts (95% CI -8.1 to +5.1), 68 families
+  sensitivity: excluding 6 rows with input_tokens > prompt characters
+    real      n=133 first-residue=8.3%
+    shuffled  n=132 first-residue=10.6%
+    gap real-shuffled: -2.3 pts (95% CI -9.1 to +4.5), 66 families
 
 ========================================================================
 TEST 2: DOMAINS & MEMBRANE FEATURES
@@ -37,6 +41,7 @@ TEST 3: PSEUDOENZYMES
   kinase  lys_to_met  n=20: yes  4  no 16  uncertain  0; mutated pos flagged 16/20, still intact 0/20
   kinase  wt          n=20: yes 20  no  0  uncertain  0; curated pos listed 19/20
   pseudo  wt          n=20: yes  1  no 19  uncertain  0
+  enzyme  site_to_ala without P64636 and Q08651 (curated site disputed, see adjudication/) n=18: active yes 6  no 11  uncertain 1; mutated position flagged as substituted 11/18
 
 ========================================================================
 TEST 4: STRUCTURE & FUNCTION

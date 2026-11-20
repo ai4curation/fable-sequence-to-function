@@ -16,6 +16,7 @@ report:
     uv run python gemini_experiment/score_gemini.py results_vertex > expected/gemini_vertex.txt
     uv run python gemini_experiment/score_gemini.py results > expected/gemini_pilots.txt
     uv run python gemini_experiment/audit.py > expected/gemini_audit.txt
+    uv run python gemini_experiment/thinking.py > expected/gemini_thinking.txt
     uv run python figures/make_figures.py --values-only > expected/figures.txt
 
 # Recompute the numbers and fail if they differ from the committed expected/ files
@@ -34,6 +35,7 @@ check: verify-data
     uv run python gemini_experiment/score_gemini.py results_vertex > $tmp/gemini_vertex.txt
     uv run python gemini_experiment/score_gemini.py results > $tmp/gemini_pilots.txt
     uv run python gemini_experiment/audit.py > $tmp/gemini_audit.txt
+    uv run python gemini_experiment/thinking.py > $tmp/gemini_thinking.txt
     uv run python figures/make_figures.py --values-only > $tmp/figures.txt
     diff -r $tmp expected && echo "All reported numbers reproduce."
 

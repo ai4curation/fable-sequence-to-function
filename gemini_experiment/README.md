@@ -25,10 +25,11 @@ uv run python gemini_experiment/audit.py
 `SHA256SUMS` covers every saved JSONL file here. The three commands above are also
 part of `just report` and `just check`, with frozen output in
 `expected/gemini_vertex.txt`, `expected/gemini_pilots.txt`, and
-`expected/gemini_audit.txt`. The structure scores use the original scorer directly;
-other tests follow its original rules and share `experiments/common.py` for JSON
-answer extraction; their rules are copied from `experiments/*/score.py`, so change
-both together. The audit checks that every Gemini question is one of the Claude
+`expected/gemini_audit.txt`. All four tests import canonical scoring helpers from
+`experiments/*/score.py`, including the shared disputed-site sensitivity analysis.
+Provider-specific acceptance and report formatting remain separate; JSON answer
+extraction is shared through `experiments/common.py`. The Claude frozen reports
+remain byte-for-byte unchanged by this refactor. The audit checks that every Gemini question is one of the Claude
 questions (equal prompt hashes wherever a Claude row records one: 8 test-1, 126
 test-2, 120 test-3 and 30 test-4 rows; equal targets and families for all 272 test-1
 questions), that each row's model and effort match its file name, that usable
@@ -68,6 +69,10 @@ diagnostic call mentioned in the interactive session.
   One shuffled question (A0A6J4GRP3, cut 445) was safety-blocked and excluded.
   There was no reversed-sequence run. This is absence of a detectable advantage
   in this configuration, not evidence that all Gemini configurations lack it.
+  Excluding the six rows with input tokens exceeding prompt characters gives
+  8.3% real (133 questions), 10.6% shuffled (132), and a family-averaged gap of
+  -2.3 points (95% interval -9.1 to +4.5; 66 families). The conclusion is unchanged;
+  this post hoc sensitivity does not change the headline acceptance rule.
 - **Features:** Neon identifies a correct Pfam family in 20/45 sampled proteins
   and 0/15 obscure DUFs. Of 28 predicted domains, 23 have the right accession
   (82.1%); boundary IoU on those 23 is 0.802. No shuffled sequence receives a
@@ -82,12 +87,21 @@ diagnostic call mentioned in the interactive session.
   Opus 5.5; this alone does not adjudicate the reference annotation. Non-kinase
   wild types receive 18 yes, 1 no, and 1 uncertain; alanine mutants receive
   8 yes, 11 no, and 1 uncertain, with 11/20 mutated positions flagged.
+  Excluding YrfG (P64636) and ENV9 (Q08651), whose curated sites are disputed,
+  leaves 6/18 active calls and 11/18 flagged positions. Neon names Asp16 and
+  Ser173 respectively in wild type and mutant, agreeing with the positions favoured
+  by the separate alignment/structure adjudication (more strongly for YrfG).
+  Agreement among models is not evidence for those sites. For Q9VLA1 Neon names
+  Asp233/Asp235 and no catalytic glutamate, unlike the Claude Glu317 explanation.
 - **Structure:** With ASPRV1 counted once, Neon medium reaches 69.0% Q3 and 28.4%
   long-range contact precision on 12 novel-stratum proteins (baselines 56.6% and
   1.8%); its top-five contact precision is 43.3%. On 15 known-stratum proteins,
   Q3 is 78.6%, contact precision 48.0%, and top-five precision 54.7%. Gemini 3.1
   Pro reaches 60.7%/12.6% on the novel stratum; Flash Lite reaches 43.7%/1.0%.
   These are descriptive comparisons across model classes, routes, and efforts.
+  Flash Lite claims to recognise all 12 novel-stratum proteins despite falling
+  below both baselines; Pro claims nine. Self-reported recognition cannot establish
+  recall or training exposure, including when interpreting the Claude counts.
 
 ## Function calls: qualitative review, not a new aggregate grade
 
@@ -161,3 +175,21 @@ residues leave 17 eligible pairs for Neon's 9T71 answer. The random-contact
 baseline is a weak reference, not a dedicated structure-prediction method.
 Repeated stochastic runs, matched effort/route comparisons, and blinded function
 grading remain follow-up work.
+
+## Recorded thinking and remaining control
+
+`uv run python gemini_experiment/thinking.py` reports per-test medians alongside
+Fable 5.2 and Opus 5.5/4.6, with sample counts and explicit missing-value handling;
+`expected/gemini_thinking.txt` is reproduced by `just check`. Zeros are included.
+Neon's medians are 634, 1,049, 2,474, and 17,881.5 tokens for tests 1--4; corresponding
+Fable medians are 164, 703.5, 2,548, and 3,009. The routes and tokenizers differ, so
+these are recorded counts, not equal compute budgets. No completed Neon run used
+its highest effort setting. Higher-effort performance is unmeasured, rather than
+necessarily better; these results are not a statistical lower bound.
+
+The data show annotation and structure prediction without a detectable next-residue
+advantage in this setup, not proof of independent mechanisms. The next-residue null
+is weak evidence because the route also depressed Claude accuracy relative to the
+cited report, and Neon used low effort. No Neon decoy control is included: calling
+all wild types active rules out blanket inactivity, but not sensitivity to any
+sequence alteration. The existing 58-item matched decoy set is the needed follow-up.
