@@ -134,7 +134,19 @@ lines give the GPT-6 counts.
 
 ## Canary record
 
-The results are append-only. None of these rows counts: all are from before `codex_row_format` 2.
+The results are append-only. Only the last row of each file counts: every earlier row is from before
+`codex_row_format` 2.
+
+**Canary with the fixed runner** (commit 0f5a631, 2026-11-20), first test-4 question, high effort.
+Each model took one attempt. Each sent one logged request to chatgpt.com, which passed the request
+check, with no websocket and a passing context check. Each gave one response, and the audit passes.
+
+| Model | Input tokens | Output tokens (thinking) | Time |
+|---|---|---|---|
+| `gpt-6-astra` | 656 | 4,584 (4,381) | 224 s |
+| `gpt-rosalind-astra` | 656 | 19,974 (19,682) | 684 s |
+
+Earlier rows:
 
 `results/structure/gpt-6-astra-high.jsonl`, first test-4 question, high effort:
 1. **The login was rejected**, and no request was sent.
