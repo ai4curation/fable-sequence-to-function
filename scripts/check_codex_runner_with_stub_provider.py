@@ -305,7 +305,7 @@ import time as _time  # noqa: E402
 HANDLERS_AFTER = []
 
 
-def run_main(fake_call, workers, interrupt_after=None, sig=None, fresh=True, extra=(), limit=6):
+def run_main(fake_call, workers, interrupt_after=None, sig=None, fresh=True, extra=(), limit=6, journal_default=False):
     """Run main() in-process: results and launch journal under the stub home, never in the repository."""
     import signal as _sig
     out_root = HOME / "main_check"
@@ -313,7 +313,7 @@ def run_main(fake_call, workers, interrupt_after=None, sig=None, fresh=True, ext
         shutil.rmtree(out_root, ignore_errors=True)
     saved = (run_codex.OUT_ROOT, run_codex.JOURNAL_ROOT, run_codex.call_codex, run_codex.prepare_home, sys.argv)
     run_codex.OUT_ROOT = out_root
-    run_codex.JOURNAL_ROOT = out_root / "launched"
+    run_codex.JOURNAL_ROOT = None if journal_default else out_root / "launched"
     if fake_call is not None:
         run_codex.call_codex = fake_call
     run_codex.prepare_home = lambda *a, **k: prep
@@ -388,11 +388,16 @@ check(launches and launches[0].get("start_new_session") is True, "Codex runs in 
 
 # no new attempt once the stop flag is set, even if the first failed before any request (#175)
 stop = threading.Event()
-stop.set()
-run_codex.subprocess.run, launches = fake_codex("", "", code=1)
+inner_run, launches = fake_codex("", "", code=1)
+def run_then_stop(*a, **k):  # the stop arrives while the first attempt runs
+    r = inner_run(*a, **k)
+    if a and a[0][:2] == ["codex", "exec"]:
+        stop.set()
+    return r
+run_codex.subprocess.run = run_then_stop
 text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=30, stop=stop)
 run_codex.subprocess.run = real_run
-check(len(launches) == 1 and "stopped" in str(rec.get("error")), f"stop flag: no retry launched ({len(launches)} launches; {rec.get('error')})")
+check(len(launches) == 1 and "stopped before a retry" in str(rec.get("error")), f"stop flag: no retry launched ({len(launches)} launches; {rec.get('error')})")
 
 # without a trace log, a started turn still counts as reached: no retry (#179)
 run_codex.subprocess.run, launches = fake_codex(ev(*STARTED, {"type": "turn.failed", "error": {"message": "stream disconnected"}}))
@@ -533,6 +538,8 @@ shutil.rmtree(HOME / "main_check", ignore_errors=True)
 # masking: case-insensitive bearer, no over-masking inside words; session-record errors masked (#182)
 check(run_codex.masked("bearer abcdefghijklmnopqrstuv and Basic QUJDREVGR0hJSktMTU5PUA==") .count("[token-like]") == 2
       and run_codex.masked("bearer proteins and basic KRKRKRKRKRKRKRKRKRKR") == "bearer proteins and basic KRKRKRKRKRKRKRKRKRKR"
+      and all(run_codex.masked(t) == "[token-like]" for t in ("Bearer%20abcdefghijklmnop", 'Bearer "abcdefghijklmnop', "bearer=abcdefghijklmnop",
+                                                              "Bearer+abcdefghijklmnop", "Bearer%3Aabcdefghijklmnop", "bearer\\tabcdefghijklmnop"))
       and run_codex.masked("report_error_abcdefghijklmnopqrstu risk-assessment-abcdefghijklmnop") == "report_error_abcdefghijklmnopqrstu risk-assessment-abcdefghijklmnop"
       and run_codex.masked("key sk-proj-abcdefghijklmnopqrst rt_abcdefghijklmnopqrstu").count("[token-like]") == 2,
       "masking: bearer/basic in any case, sk-/rt_ only as whole tokens")
@@ -627,6 +634,140 @@ def fake_raise(*a, **k):
     raise RuntimeError("Bearer " + "z" * 30)
 code, rows = run_main(fake_raise, 1, limit=1)
 check(rows and "zzzzzzzzzz" not in json.dumps(rows), f"runner error masked in the row ({[r.get('error') for r in rows]})")
+
+# 5r. fifth review of #167 (#190, #191)
+# an exception in the loop: the rows of calls that finish afterwards are still written, nothing new starts (#190)
+CALLS.clear()
+T0 = _time.time()
+real_unusable = run_codex.codex_unusable
+boom = {"n": 0}
+def unusable_once(row):
+    boom["n"] += 1
+    if boom["n"] == 1:
+        raise RuntimeError("injected")
+    return real_unusable(row)
+run_codex.codex_unusable = unusable_once
+err = None
+try:
+    code, rows = run_main(fake_slow, 3, limit=3)
+except RuntimeError as e:
+    err = e
+run_codex.codex_unusable = real_unusable
+f_rows = HOME / "main_check" / "structure" / "gpt-6-astra-high.jsonl"
+rows = [json.loads(l) for l in f_rows.read_text().splitlines()] if f_rows.exists() else []
+check(len(rows) == len(CALLS) == 3, f"error in the loop: every finished call still written ({len(CALLS)} asked; {len(rows)} rows; {err!r})")
+
+# a journal write failure: that question is not asked, gets a not-asked row, and the others are written (#190)
+CALLS.clear()
+real_fsync = run_codex.os.fsync
+fs = {"n": 0}
+def fsync_fails_third(fd):
+    fs["n"] += 1
+    if fs["n"] == 3:
+        raise OSError(5, "Input/output error")
+    return real_fsync(fd)
+run_codex.os.fsync = fsync_fails_third
+code, rows = run_main(fake_slow, 1, limit=3)
+run_codex.os.fsync = real_fsync
+check(len(CALLS) == 2 and len(rows) == 3 and sum(bool(r.get("not_asked")) for r in rows) == 1,
+      f"journal write fails: not asked, row says so, others written ({len(CALLS)} asked; {len(rows)} rows)")
+# ... and a not-asked row does not count as asked on the next run (#191)
+CALLS.clear()
+code, rows = run_main(fake_slow, 1, fresh=False, limit=1)
+check(len(CALLS) == 1, f"a not-asked row is asked on the next run ({len(CALLS)} asked)")
+
+# a stop that arrives after a question was taken: no Codex launch (#191)
+stop = threading.Event()
+stop.set()
+run_codex.subprocess.run, launches = fake_codex(ev(*STARTED, REPLY, {"type": "turn.completed", "usage": {"input_tokens": 9}}), code=0)
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=30, stop=stop)
+run_codex.subprocess.run = real_run
+check(not launches and rec.get("not_asked") is True and "before the call" in str(rec.get("error")),
+      f"stop before the first launch: Codex not started ({len(launches)} launches; {rec.get('error')})")
+
+# the first stop signal sets the exit status (#191)
+CALLS.clear()
+T0 = _time.time()
+threading.Timer(1.6, lambda: os.kill(os.getpid(), _signal.SIGINT)).start()
+code, rows = run_main(fake_slow, 2, interrupt_after=1.5, sig=_signal.SIGTERM)
+check(code == 128 + int(_signal.SIGTERM) and len(rows) == len(CALLS), f"first signal sets the exit status (exit {code})")
+
+# the journal's default place is the experiment home, and each call is synced and each row flushed before the next (#185, #191)
+syncs = {"n": 0}
+def counting_fsync(fd):
+    syncs["n"] += 1
+    return real_fsync(fd)
+seen_rows = []
+def fake_sees_rows(model, effort, prompt, *a, **k):
+    f = HOME / "main_check" / "structure" / "gpt-6-astra-high.jsonl"
+    seen_rows.append(len(f.read_text().splitlines()) if f.exists() else 0)
+    return "{}", dict(model=model, effort=effort, status="UNUSABLE", codex_row_format=2)
+shutil.rmtree(HOME / "launched", ignore_errors=True)
+run_codex.os.fsync = counting_fsync
+code, rows = run_main(fake_sees_rows, 1, limit=3, journal_default=True)
+run_codex.os.fsync = real_fsync
+home_journal = HOME / "launched" / "structure" / "gpt-6-astra-high.jsonl"
+check(home_journal.exists() and len(home_journal.read_text().splitlines()) == 3 and syncs["n"] == 3 and seen_rows == [0, 1, 2],
+      f"journal in <home>/launched, synced per call, rows flushed before the next call ({syncs['n']} syncs; rows seen {seen_rows})")
+shutil.rmtree(HOME / "launched", ignore_errors=True)
+
+# a journal line from a run writing another results file: not asked here, reported as such (#191)
+shutil.rmtree(HOME / "main_check", ignore_errors=True)
+jpath = HOME / "main_check" / "launched" / "structure" / "gpt-6-astra-high.jsonl"
+jpath.parent.mkdir(parents=True)
+first_two = [k for k, _, _ in build_questions("structure", "gpt-6-astra-high", 2)[0][:2]]
+jpath.write_text(json.dumps({"key": first_two[0], "results": "/elsewhere/results.jsonl"}) + "\n")
+CALLS.clear()
+code, rows = run_main(fake_slow, 1, fresh=False, limit=1)
+check(rows and rows[0]["pdb"] != first_two[0], f"a question asked from another checkout is not asked again here ({[r['pdb'] for r in rows]})")
+
+# a refused run (lock held) touches nothing: prepare_home is not run (#191)
+shutil.rmtree(HOME / "main_check", ignore_errors=True)
+jpath.parent.mkdir(parents=True)
+hf = jpath.open("a")
+_fcntl.flock(hf, _fcntl.LOCK_EX | _fcntl.LOCK_NB)
+prepared = []
+real_prep = run_codex.prepare_home
+saved_argv = sys.argv
+run_codex.OUT_ROOT, run_codex.JOURNAL_ROOT = HOME / "main_check", HOME / "main_check" / "launched"
+run_codex.prepare_home = lambda *a, **k: prepared.append(1) or prep
+sys.argv = ["run_codex.py", "structure", "gpt-6-astra", "--limit", "1", "--home", str(HOME)]
+try:
+    run_codex.main()
+    msg = None
+except SystemExit as e:
+    msg = str(e.code)
+run_codex.prepare_home, sys.argv = real_prep, saved_argv
+run_codex.OUT_ROOT, run_codex.JOURNAL_ROOT = ROOT / "gpt6_experiment" / "results", None
+hf.close()
+check(not prepared and "another run" in str(msg), f"refused run: the experiment home is not touched ({len(prepared)} prepare_home calls)")
+
+# a closed stdout: rows written and the exit status is still 128 + signal, not 120 (#191); run in a child process
+child = HOME / "closed_stdout_child.py"
+child.write_text(f"""
+import json, sys, time, threading, os, signal, pathlib
+sys.path.insert(0, {str(ROOT / "gpt6_experiment")!r})
+import run_codex
+out = pathlib.Path({str(HOME / "closed_stdout_check")!r})
+run_codex.OUT_ROOT, run_codex.JOURNAL_ROOT = out, out / "launched"
+run_codex.prepare_home = lambda *a, **k: {{"provider": [], "base_url": "x", "catalog": "x", "instructions": "x", "catalog_sha256": "x"}}
+def fake(model, effort, prompt, *a, **k):
+    time.sleep(1.0)
+    return "{{}}", dict(model=model, effort=effort, status="UNUSABLE", codex_row_format=2)
+run_codex.call_codex = fake
+sys.argv = ["run_codex.py", "structure", "gpt-6-astra", "--limit", "4", "--workers", "2", "--home", {str(HOME)!r}]
+run_codex.main()
+""")
+shutil.rmtree(HOME / "closed_stdout_check", ignore_errors=True)
+import subprocess as _sp2  # noqa: E402
+proc = _sp2.Popen([sys.executable, str(child)], stdout=_sp2.PIPE, stderr=_sp2.DEVNULL, start_new_session=True)
+proc.stdout.close()  # the reader is gone
+_time.sleep(1.5)
+proc.send_signal(_signal.SIGTERM)
+rc = proc.wait(timeout=60)
+crow = HOME / "closed_stdout_check" / "structure" / "gpt-6-astra-high.jsonl"
+n_child_rows = len(crow.read_text().splitlines()) if crow.exists() else 0
+check(rc == 128 + int(_signal.SIGTERM) and n_child_rows >= 2, f"closed stdout: exit {rc} (want {128 + int(_signal.SIGTERM)}), {n_child_rows} rows written")
 
 # 6. an empty reply is unusable
 text, rec = ask("answer", text="")

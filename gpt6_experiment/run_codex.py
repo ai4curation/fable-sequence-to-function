@@ -24,6 +24,7 @@ experiment CODEX_HOME (sessions/); each row keeps the record's path and SHA-256.
 import argparse
 import datetime
 import fcntl
+import functools
 import hashlib
 import json
 import os
@@ -78,8 +79,10 @@ def provider_args(base_url: str, supports_websockets: bool = False) -> list:
     return ["-c", f'model_provider="{PROVIDER_ID}"', "-c", f"model_providers.{PROVIDER_ID}={{{', '.join(fields)}}}"]
 
 
+@functools.cache
 def codex_version() -> str:
-    return subprocess.run(["codex", "--version"], capture_output=True, text=True).stdout.strip()
+    """Asked once per run (main calls it before any question), in its own session so a Ctrl-C cannot blank it (#191)."""
+    return subprocess.run(["codex", "--version"], capture_output=True, text=True, start_new_session=True).stdout.strip()
 
 
 def prepare_home(home: pathlib.Path, models, require_login=True, base_url=CHATGPT_BASE_URL,
@@ -127,7 +130,7 @@ def codex_env(home: pathlib.Path) -> dict:
 
 TIMEOUT = 1800  # seconds; Rosalind took 509 s and 578 s on one test-4 question at high effort (#166)
 TOKEN_LIKE = re.compile(  # #170, #178, #182, #185
-    r"(?i:bearer)(?:\s|%20|=|:|\\u0020)+[\"']?[A-Za-z0-9._~+/=-]{20,}"
+    r"(?i:bearer)(?:\s|%20|%3A|\+|=|:|\\u0020|\\t)+[\"']?[A-Za-z0-9._~+/=-]{16,}"
     r"|(?i:basic)\s+(?=[A-Za-z0-9+/=]*[0-9+/=])[A-Za-z0-9+/=]{16,}"
     r"|eyJ[A-Za-z0-9_-]{20,}[A-Za-z0-9._-]*"
     r"|(?<![A-Za-z0-9])sk-[A-Za-z0-9_-]{16,}|(?<![A-Za-z0-9_])rt_[A-Za-z0-9._-]{16,}")
@@ -323,6 +326,8 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
 
     login = False
     for attempt in range(1, tries + 1):
+        if attempt == 1 and stop is not None and stop.is_set():  # a stop that came after the question was taken (#191)
+            return None, dict(rec, error="stopped before the call", not_asked=True, **stamp())
         if attempt > 1:
             if stop is not None and stop.is_set():  # nothing new after Ctrl-C or a login error (#175)
                 return None, dict(rec, error="stopped before a retry", **stamp())
@@ -474,43 +479,61 @@ def main():
     def say(msg):  # best effort: a closed terminal or pipe must not stop rows being written (#184)
         try:
             print(msg, flush=True)
-        except OSError:
-            pass
+        except OSError:  # send the rest to /dev/null, so the final flush at exit cannot fail either (#191)
+            try:
+                os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+            except Exception:  # stdout may not be a real file at all
+                pass
 
-    prep = prepare_home(args.home, [args.model])
-    if sys.platform == "darwin":  # sleep stalls a call, and the timeout does not count time asleep (#166)
-        subprocess.Popen(["caffeinate", "-i", "-w", str(os.getpid())], start_new_session=True)  # survives Ctrl-C (#175)
+    tag = f"{args.model}-{args.effort}"
     out_dir = OUT_ROOT / args.test
     out_dir.mkdir(parents=True, exist_ok=True)
-    tag = f"{args.model}-{args.effort}"
     out_path = out_dir / f"{tag}.jsonl"
-    qs, key_fn = build_questions(args.test, tag, args.ncond)
-    rows = [json.loads(l) for l in out_path.read_text().splitlines() if l.strip()] if out_path.exists() else []
-    done = {key_fn(r) for r in rows if not (args.retry_unusable and codex_unusable(r))}
-    # Questions launched by an earlier run that left no row (the runner was killed): the model may have
-    # answered and been billed, so they count as asked unless --retry-unusable is given (#181)
+    # The journal lock comes first, so a refused run touches nothing another run is using (#185, #191)
     journal_path = (JOURNAL_ROOT or args.home / "launched") / args.test / f"{tag}.jsonl"
     journal_path.parent.mkdir(parents=True, exist_ok=True)
     jf = journal_path.open("a")
     try:  # one run per tag at a time: two runs would each ask the same questions (#185)
         fcntl.flock(jf, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except OSError:
+    except BlockingIOError:
         raise SystemExit(f"another run of {args.test} {tag} holds {journal_path}; wait for it to finish")
-    launched = set()
+    except OSError as e:
+        raise SystemExit(f"cannot lock {journal_path} ({e}); this file system may not support locks")
+    prep = prepare_home(args.home, [args.model])
+    codex_version()
+    if sys.platform == "darwin":  # sleep stalls a call, and the timeout does not count time asleep (#166)
+        subprocess.Popen(["caffeinate", "-i", "-w", str(os.getpid())], start_new_session=True)  # survives Ctrl-C (#175)
+    qs, key_fn = build_questions(args.test, tag, args.ncond)
+    rows = [json.loads(l) for l in out_path.read_text().splitlines() if l.strip()] if out_path.exists() else []
+    # a row that says the question was not asked never counts as asked (#191)
+    done = {key_fn(r) for r in rows if not r.get("not_asked") and not (args.retry_unusable and codex_unusable(r))}
+    # Questions launched by an earlier run that left no row (the runner was killed): the model may have
+    # answered and been billed, so they count as asked unless --retry-unusable is given (#181)
+    here = str(out_path.resolve())
+    launched, elsewhere = set(), {}
     for n, line in enumerate(journal_path.read_text().splitlines(), 1):
         if line.strip():
             try:
-                launched.add(key_from_json(json.loads(line)["key"]))
+                j = json.loads(line)
+                k = key_from_json(j["key"])
             except (ValueError, KeyError, TypeError):  # fail safe: never guess which question a damaged line was
                 raise SystemExit(f"{journal_path} line {n} is damaged; check that question's Codex record under "
                                  f"{args.home}/sessions, then fix or remove the line")
-    orphans = launched - {key_fn(r) for r in rows}
+            if j.get("results", here) == here:
+                launched.add(k)
+            else:  # launched by a run writing another results file (another checkout) (#191)
+                elsewhere.setdefault(j["results"], set()).add(k)
+    asked_here = {key_fn(r) for r in rows if not r.get("not_asked")}
+    orphans = launched - asked_here
     if orphans:
         say(f"[{args.test}] {tag}: {len(orphans)} question(s) launched earlier left no row "
             f"({'asked again' if args.retry_unusable else 'not asked again; use --retry-unusable to ask'}); "
             f"their Codex records are under {args.home}/sessions")
-        if not args.retry_unusable:
-            done |= orphans
+    for other, keys in elsewhere.items():
+        say(f"[{args.test}] {tag}: {len(keys - asked_here)} question(s) were asked by a run writing {other} "
+            f"({'asked again here' if args.retry_unusable else 'not asked again here'})")
+    if not args.retry_unusable:
+        done |= orphans | {k for keys in elsewhere.values() for k in keys}
     todo = [q for q in qs if q[0] not in done][: args.limit]
     say(f"[{args.test}] {tag}: {len(qs)} total, {len(done)} done, {len(todo)} to run")
 
@@ -522,21 +545,25 @@ def main():
         key, prompt, meta = item
         if stop.is_set():
             return None
-        with journal_lock:  # on disk before the call, so a killed run cannot lead to a second answer (#181)
-            jf.write(json.dumps(dict(key=key_to_json(key), prompt_sha256=sha(prompt), model=args.model, effort=args.effort,
-                                     launched_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))) + "\n")
-            jf.flush()
-            os.fsync(jf.fileno())
+        base = dict(meta, model=args.model, effort=args.effort, prompt_sha256=sha(prompt), codex_row_format=2)
+        try:  # on disk before the call, so a killed run cannot lead to a second answer (#181)
+            with journal_lock:
+                jf.write(json.dumps(dict(key=key_to_json(key), prompt_sha256=sha(prompt), model=args.model, effort=args.effort,
+                                         results=here, launched_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))) + "\n")
+                jf.flush()
+                os.fsync(jf.fileno())
+        except Exception as e:  # not recorded, so not asked (#190)
+            return dict(base, error=masked(f"journal write failed, question not asked: {e!r}"), not_asked=True)
         try:  # one bad call, or a bad reply, must not stop the batch (#162, #163)
             text, rec = call_codex(args.model, args.effort, prompt, prep, args.home, stop=stop)
             if rec.get("login_error"):
                 stop.set()  # in the worker, before it can take the next question (#173)
             return build_row(args.test, meta, text, rec)
         except Exception as e:
-            return dict(meta, model=args.model, effort=args.effort, prompt_sha256=sha(prompt), error=masked(f"runner: {e!r}"))
+            return dict(base, error=masked(f"runner: {e!r}"))
 
     def on_stop_signal(signum, frame):  # sets flags only; never raises, so no row can be lost to it (#175, #181, #184, #185)
-        if state["signal"] is None:
+        if state["signal"] is None:  # the first signal sets the exit status
             state["signal"] = signum
         stop.set()
 
@@ -545,11 +572,24 @@ def main():
         if old is not signal.SIG_IGN:  # a run started under nohup keeps ignoring SIGHUP (#185)
             signal.signal(sig, on_stop_signal)
     login_failed = False
-    n_written = 0
+    written = set()
+    counter = dict(n=0)
+
+    def write_row(fh, fut):
+        """Write one finished question's row; the row goes to disk before anything is printed (#184)."""
+        row = fut.result()  # ask_one catches every exception
+        if row is not None:  # None: skipped after a stop
+            fh.write(json.dumps(row) + "\n")
+            fh.flush()
+            counter["n"] += 1
+        written.add(fut)
+        return row
+
     ex = ThreadPoolExecutor(args.workers)
-    futs = [ex.submit(ask_one, item) for item in todo]
-    pending = set(futs)
+    futs = []
     try:
+        futs = [ex.submit(ask_one, item) for item in todo]  # inside the try (#190)
+        pending = set(futs)
         with out_path.open("a") as fh:
             announced = False
             while pending:
@@ -557,16 +597,16 @@ def main():
                 for fut in done_now:
                     if fut.cancelled():
                         continue
-                    row = fut.result()  # ask_one catches every exception
-                    if row is None:  # skipped after a stop
+                    row = write_row(fh, fut)
+                    if row is None:
                         continue
-                    fh.write(json.dumps(row) + "\n")  # the row first; printing comes after (#184)
-                    fh.flush()
-                    n_written += 1
                     if row.get("login_error"):
                         login_failed = True
-                    flag = "" if not codex_unusable(row) else f" UNUSABLE ({row.get('error') or row.get('unusable_because')})"
-                    say(f"  [{args.test}] {tag}: {n_written}/{len(todo)} input_tokens={row.get('input_tokens')}{flag}")
+                    try:
+                        flag = "" if not codex_unusable(row) else f" UNUSABLE ({row.get('error') or row.get('unusable_because')})"
+                    except Exception:
+                        flag = " (status not readable)"
+                    say(f"  [{args.test}] {tag}: {counter['n']}/{len(todo)} input_tokens={row.get('input_tokens')}{flag}")
                 if stop.is_set():  # login error or stop signal: cancel what has not started; running calls finish
                     for f in pending:
                         f.cancel()
@@ -578,10 +618,21 @@ def main():
         for f in futs:
             f.cancel()
         ex.shutdown(wait=True, cancel_futures=True)
+        left = [f for f in futs if f not in written and f.done() and not f.cancelled()]
+        if left:  # calls that finished after the loop ended, e.g. on an error: their rows are still written (#190)
+            try:
+                with out_path.open("a") as fh:
+                    for f in left:
+                        try:
+                            write_row(fh, f)
+                        except Exception:
+                            pass
+            except Exception:
+                pass
         jf.close()
         for sig, handler in saved_handlers.items():
             signal.signal(sig, handler)
-    if login_failed:
+    if login_failed:  # a login error takes precedence over a stop signal in the exit status
         raise SystemExit(f'stopped on a login error; sign in again: CODEX_HOME={args.home} codex login -c cli_auth_credentials_store="file"')
     if state["signal"] is not None:
         raise SystemExit(130 if state["signal"] == signal.SIGINT else 128 + int(state["signal"]))

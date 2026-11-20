@@ -66,8 +66,10 @@ How:
     (`attempt evidence not saved`; #177, #182).
   - **The request check never raises** on an unexpected body shape; it reports a problem instead.
   - **Failure text and error fields** in the row are masked and capped at 400 characters (#170, #178,
-    #182). The mask covers bearer and basic credentials in any case, JWTs, and `sk-` keys and `rt_`
-    refresh tokens when they stand as separate tokens.
+    #182). The mask covers bearer tokens of 16 or more characters after a space, `%20`, `%3A`, `+`,
+    `=`, `:` or an escaped space or tab, in any case; basic credentials containing a digit or base64
+    punctuation; JWTs; and `sk-` keys and `rt_` refresh tokens standing as separate tokens. It matches no
+    saved reply or question in the repository. It is a safeguard, not a guarantee.
 - **Launch journal** (#181, #185).
   - **Where:** before each call, the runner appends the question to
     `<experiment home>/launched/<test>/<model>-<effort>.jsonl` and syncs it to disk. The journal sits beside the
@@ -75,8 +77,12 @@ How:
   - **Killed runs:** a question in the journal with no row (because the runner was killed) counts as
     asked on the next run, since the model may have answered and been billed. The run prints how many
     there are. `--retry-unusable` asks them again.
-  - **One run per tag at a time:** the journal is locked, and a second run of the same test, model and
-    effort refuses to start.
+  - **One run per tag at a time:** the journal is locked before anything else, and a second run of the
+    same test, model and effort refuses to start without touching the experiment home.
+  - **Other checkouts:** each line records the results file it was written for. A question launched by a
+    run writing another results file is reported as such and not asked again unless `--retry-unusable` is given.
+  - **Not asked:** if writing the journal line fails, or a stop arrives before Codex starts, the question
+    gets a row marked `not_asked`, which never counts as asked.
   - **Damaged lines:** a damaged journal line stops the run before any call, naming the line.
 - **Stopping** (#165, #173, #175, #181, #184, #185).
   - **What stops a run:** a login error, Ctrl-C, SIGTERM or a closed terminal (SIGHUP). After one, no
@@ -85,7 +91,10 @@ How:
   - **Codex runs in its own session,** so these signals reach only the runner. Running calls finish,
     and each row is written before anything is printed. Printing is best-effort, so a closed terminal
     or pipe can't stop rows being written.
-  - **Exit status:** 128 plus the signal number (130 for Ctrl-C).
+  - **Exit status:** 128 plus the number of the first signal (130 for Ctrl-C), even with stdout closed.
+    A login error takes precedence and exits with its message.
+  - **Errors:** if anything fails inside the loop, nothing new starts, and the rows of calls that finish
+    are still written (#190).
   - **`nohup`:** a run started under `nohup` keeps ignoring SIGHUP.
   - **To abandon running calls,** kill their Codex processes (`pgrep -f "catalog_isolated_<model>.json"`).
     The runner then writes an unusable row for each.
