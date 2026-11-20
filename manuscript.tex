@@ -185,7 +185,7 @@ absence from model training; ``novel'' below denotes this operational stratum on
 
 \section{Results}
 
-\subsection{The next-residue result replicates in direction}
+\subsection{The next-residue result replicates in direction}\label{sec:nextres}
 
 Fable~5.2 predicted real sequence better than shuffled sequence at both effort settings, and Opus~5.5 did
 so at high effort; at low effort the interval for Opus~5.5 includes zero. Opus~4.6, run at low effort only,
@@ -490,10 +490,17 @@ sequences unannotated, where Opus~4.6 invented a domain for nearly half. The dec
 that their calls track the catalytic position, within the limits of a control that avoided other conserved
 positions. In two cases where they disagreed with the curated site, alignment and structural evidence favours
 the positions proposed by the models, more strongly for YrfG than ENV9, so a sequence-only read may also be useful for flagging sites potentially misplaced when
-annotation was transferred by similarity; two cases are an observation, not a rate. The Gemini extension shows useful sequence-sensitive annotation at low effort and structure prediction
-at medium effort, despite no detectable next-residue advantage or obscure-DUF identification at low
-effort. This suggests related but separable capabilities, while leaving open whether more reasoning
-would improve those results. No Gemini decoy control was run, and the cross-provider comparisons differ
+annotation was transferred by similarity; two cases are an observation, not a rate. Of the Gemini models, Neon came closest: it detected the kinase substitutions at low effort
+and predicted structure above both baselines at medium effort, but named the correct family for fewer
+sampled proteins (20 of 45) and for none of the obscure DUFs. Flash Lite at high effort fell below both
+structure baselines on the novel stratum. Neon at low effort showed no detectable next-residue advantage. Opus~5.5 at low effort showed none
+either, but Neon used thinking on every question it answered and Opus~5.5 at low effort on none, so effort labels do
+not match across providers and this result cannot be attributed to the model or to the setting. On its main
+test set the cited report ran Gemini~4 Carbon and, by raw continuation, Gemini~2.5 Pro, not Neon, at
+temperature 0 where accepted and with thinking off or at the lowest setting, and found both near zero
+\citep{tu2026claude}. Neon's result is consistent with theirs but is not a replication, and it is weak
+evidence, since on the identical questions the Claude models scored well below the published values in
+this setup (Section~\ref{sec:nextres}). No Gemini decoy control was run, and the cross-provider comparisons differ
 in effort and access route.
 
 For annotation review, the practical use is narrow. A sequence-only read can flag a protein that has
