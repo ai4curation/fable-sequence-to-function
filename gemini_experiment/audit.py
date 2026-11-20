@@ -124,7 +124,8 @@ def main():
                 if route.startswith("codex-exec"):  # GPT-6 through Codex: no endpoint model version is logged (#52)
                     require(row.get("context_ok") is True and row.get("request_problem") is None
                             and row.get("requests_logged", 0) >= 1 and row.get("requested_model_logged") == [row["model"]]
-                            and not row.get("context_tokens_high") and (row.get("input_tokens") or 0) <= row.get("context_limit", 0),
+                            and not row.get("context_tokens_high") and (row.get("input_tokens") or 0) <= row.get("context_limit", 0)
+                            and row.get("provider") == "fs2f_chatgpt_http" and row.get("websocket_log_lines") == 0,  # HTTP only (#164)
                             f"{path.name}: Codex row without a passing context check")
                 elif not route.startswith("agy"):
                     require(row.get("model_version") == row["model"], f"{path.name}: endpoint model version {row.get('model_version')} for {row['model']}")

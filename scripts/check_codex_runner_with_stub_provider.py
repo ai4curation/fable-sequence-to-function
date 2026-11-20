@@ -4,7 +4,9 @@ Purpose: #52. Shows, offline, that call_codex (1) sends only the one-line instru
 tools and the question (checked on the request the stub receives), (2) records the session's
 response id, the model Codex requested, token counts, the context check and the check of each
 request body Codex logged, (3) marks a reply that calls a tool,
-a server error and a broken context as unusable.
+a server error and a broken context as unusable, (4) uses the runner's own provider settings, with only
+the base URL pointed at the stub, and marks a request sent over a websocket as unusable (#164), and
+(5) stops at once on a login error (#165).
 Inputs: the local Codex CLI. A scratch CODEX_HOME with no login under ~/agent-work (outside any git
 repository, as the runner requires); the stub needs no login. The stub reports input tokens as a
 quarter of the characters of instructions, tools and messages it received, so extra context in the
@@ -26,6 +28,7 @@ import run_codex  # noqa: E402
 
 FAILS = 0
 REQUESTS = []
+UPGRADES = []
 MODE = {"kind": "answer"}
 AGENTS_LINES = [l.strip() for l in (pathlib.Path.home() / ".codex" / "AGENTS.md").read_text().splitlines()
                 if len(l.strip()) > 40][:5] if (pathlib.Path.home() / ".codex" / "AGENTS.md").exists() else []
@@ -42,12 +45,22 @@ def sse(ev):
 
 
 class Stub(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):  # a websocket upgrade: refused, so Codex falls back to HTTP as it would after a failure
+        UPGRADES.append(self.headers.get("Upgrade"))
+        self.send_response(400)
+        self.end_headers()
+
     def do_POST(self):
         body = self.rfile.read(int(self.headers.get("Content-Length", 0))).decode()
         REQUESTS.append(json.loads(body))
-        if MODE["kind"] == "error":
-            self.send_response(500)
+        if MODE["kind"] in ("error", "login"):
+            self.send_response(500 if MODE["kind"] == "error" else 401)
+            self.send_header("Content-Type", "application/json")
             self.end_headers()
+            if MODE["kind"] == "login":
+                self.wfile.write(json.dumps({"error": {"message": "Your access token could not be refreshed because your "
+                                                                  "refresh token was revoked. Please log out and sign in again.",
+                                                       "code": "token_revoked"}}).encode())
             return
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream")
@@ -80,13 +93,11 @@ class Stub(http.server.BaseHTTPRequestHandler):
 
 srv = http.server.HTTPServer(("127.0.0.1", 0), Stub)
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-PROVIDER = ["-c", 'model_provider="stub"',
-            "-c", f'model_providers.stub={{name="stub", base_url="http://127.0.0.1:{srv.server_address[1]}/v1", '
-                  'wire_api="responses", request_max_retries=0, stream_max_retries=0}']
+STUB_URL = f"http://127.0.0.1:{srv.server_address[1]}/v1"
 HOME = pathlib.Path.home() / "agent-work" / "fable-sequence-to-function" / "codex_stub_home_test"
 shutil.rmtree(HOME, ignore_errors=True)
 HOME.mkdir(parents=True)
-prep = run_codex.prepare_home(HOME, ["gpt-6-astra"], require_login=False)
+prep = run_codex.prepare_home(HOME, ["gpt-6-astra"], require_login=False, base_url=STUB_URL, retries=0)
 PROMPT = "Below is the beginning of a protein sequence.\n\n>sequence\nMKV"
 
 
@@ -94,7 +105,7 @@ def ask(kind, extra=(), **mode):
     MODE.clear()
     MODE.update(mode, kind=kind)
     REQUESTS.clear()
-    return run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, extra=list(PROVIDER) + list(extra), tries=1, timeout=120)
+    return run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, extra=list(extra), tries=1, timeout=120)
 
 
 # 1. a plain answer
@@ -119,6 +130,12 @@ check(rec["request_problem"] is None and rec["requests_logged"] == 1 and rec["re
 check(rec["request_sha256"] == [run_codex.sha(json.dumps(REQUESTS[0], sort_keys=True))], "row: the logged body is the body the server received")
 check(rec["catalog_sha256"] == prep["catalog_sha256"] and rec["prompt_sha256"] == run_codex.sha(PROMPT), "row: catalog and prompt hashes")
 check(json.loads(json.dumps(rec)) == rec, "row: JSON-serialisable")
+check(rec["provider"] == run_codex.PROVIDER_ID and rec["base_url"] == STUB_URL and rec["websocket_log_lines"] == 0 and not UPGRADES,
+      "row: the runner's own provider, over HTTP only (no websocket attempted)")
+real_provider = run_codex.provider_args(run_codex.CHATGPT_BASE_URL, retries=0)
+check(prep["provider"] == [x.replace(run_codex.CHATGPT_BASE_URL, STUB_URL) for x in real_provider] and
+      " ".join(prep["provider"]) in " ".join(run_codex.codex_args("gpt-6-astra", "high", prep)),
+      "provider: the stub run uses the runner's provider settings, with only the base URL and retries changed")
 
 # 2. a reply that calls a tool
 text, rec = ask("tool")
@@ -142,7 +159,7 @@ args_off = run_codex.FEATURES_OFF
 run_codex.FEATURES_OFF = tuple(f for f in args_off if f not in ("shell_tool", "unified_exec"))
 MODE.clear()
 MODE.update(kind="answer")
-text, rec = run_codex.call_codex("gpt-6-astra", "high", LONGEST, prep, HOME, extra=PROVIDER, tries=1, timeout=120)
+text, rec = run_codex.call_codex("gpt-6-astra", "high", LONGEST, prep, HOME, tries=1, timeout=120)
 run_codex.FEATURES_OFF = args_off
 check(rec.get("status") == "UNUSABLE" and "request check" in (rec.get("unusable_because") or []) and "tools" in (rec.get("request_problem") or ""),
       f"extra tools, {len(LONGEST)}-character question: caught by the request check ({rec.get('request_problem')}; "
@@ -154,6 +171,36 @@ run_codex.codex_env = lambda home: {k: v for k, v in real_env(home).items() if k
 text, rec = ask("answer")
 run_codex.codex_env = real_env
 check(rec.get("status") == "UNUSABLE" and rec.get("request_problem") == "no request logged", "no request logged: unusable")
+
+# 5c. a provider that allows websockets: Codex tries one first, and the row is unusable (#164)
+prep_ws = run_codex.prepare_home(HOME, ["gpt-6-astra"], require_login=False, base_url=STUB_URL, supports_websockets=True, retries=0)
+MODE.clear()
+MODE.update(kind="answer")
+UPGRADES.clear()
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep_ws, HOME, tries=1, timeout=120)
+check(UPGRADES and rec.get("status") == "UNUSABLE" and rec.get("request_problem") == "websocket used",
+      f"websocket attempted: unusable ({len(UPGRADES)} upgrade requests; {rec.get('request_problem')})")
+
+# 5d. a login error is not retried and is marked for main to stop the run (#165)
+MODE.clear()
+MODE.update(kind="login")
+REQUESTS.clear()
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=120)
+check(text is None and rec.get("login_error") is True and rec.get("attempts") == 1,
+      f"login error: one attempt, marked ({rec.get('attempts')} attempts; {str(rec.get('error'))[:80]})")
+
+# 5e. a home holding a login is never pointed anywhere but the ChatGPT backend (#164)
+guard = HOME.parent / "codex_stub_home_login_guard"
+shutil.rmtree(guard, ignore_errors=True)
+guard.mkdir()
+(guard / "auth.json").write_text("{}")  # an empty placeholder, not a login
+try:
+    run_codex.prepare_home(guard, ["gpt-6-astra"], require_login=False, base_url=STUB_URL)
+    refused = False
+except SystemExit:
+    refused = True
+shutil.rmtree(guard, ignore_errors=True)
+check(refused, "home with a login: any base URL other than the ChatGPT backend is refused")
 
 # 6. an empty reply is unusable
 text, rec = ask("answer", text="")
@@ -195,7 +242,7 @@ for test, n in (("next_residue", 2), ("structure", 1)):
         if test == "structure":
             MODE["text"] = json.dumps({"helices": [[2, 9]], "strands": [], "fold": "f", "contacts": [], "protein_name": "p",
                                        "function": "f", "functional_residues": [], "recognised": "no"})
-        text, rec = run_codex.call_codex("gpt-6-astra", "high", prompt, prep, HOME, extra=PROVIDER, tries=1, timeout=120)
+        text, rec = run_codex.call_codex("gpt-6-astra", "high", prompt, prep, HOME, tries=1, timeout=120)
         rows.append(run_codex.build_row(test, meta, text, rec))
     (RESULTS / test).mkdir(parents=True, exist_ok=True)
     (RESULTS / test / "gpt-6-astra-high.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
@@ -212,6 +259,12 @@ bad[0]["context_ok"] = False
 audit = subprocess.run([sys.executable, str(ROOT / "gemini_experiment" / "audit.py"), str(RESULTS)],
                        capture_output=True, text=True, cwd=ROOT)
 check(audit.returncode != 0 and "context check" in audit.stderr, "audit: fails a usable GPT-6 row whose context check failed")
+bad[0]["context_ok"] = True
+bad[0]["websocket_log_lines"] = 1
+(RESULTS / "structure" / "gpt-6-astra-high.jsonl").write_text("".join(json.dumps(r) + "\n" for r in bad))
+audit = subprocess.run([sys.executable, str(ROOT / "gemini_experiment" / "audit.py"), str(RESULTS)],
+                       capture_output=True, text=True, cwd=ROOT)
+check(audit.returncode != 0 and "context check" in audit.stderr, "audit: fails a usable GPT-6 row that used a websocket (#164)")
 
 srv.shutdown()
 sys.exit(1 if FAILS else 0)
