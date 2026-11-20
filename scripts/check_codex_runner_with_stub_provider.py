@@ -81,6 +81,12 @@ class Stub(http.server.BaseHTTPRequestHandler):
         done = dict(resp, status="completed", output=[item],
                     usage={"input_tokens": tokens, "input_tokens_details": {"cached_tokens": 0}, "output_tokens": 12,
                            "output_tokens_details": {"reasoning_tokens": 4}, "total_tokens": 524})
+        if MODE["kind"] in ("message_then_cut", "reasoning_then_cut"):
+            first = item if MODE["kind"] == "message_then_cut" else {"type": "reasoning", "id": f"rs_{n}", "summary": [{"type": "summary_text", "text": "thinking"}]}
+            for ev in ({"type": "response.created", "response": resp}, {"type": "response.output_item.done", "output_index": 0, "item": first}):
+                self.wfile.write(sse(ev))
+                self.wfile.flush()
+            return  # the connection closes without response.completed
         last = ({"type": "response.failed", "response": dict(resp, status="failed", error={"code": "server_error", "message": "stub failure after the reply"})}
                 if MODE["kind"] == "fail_after_reply" else {"type": "response.completed", "response": done})
         for ev in ({"type": "response.created", "response": resp},
@@ -98,7 +104,7 @@ STUB_URL = f"http://127.0.0.1:{srv.server_address[1]}/v1"
 HOME = pathlib.Path.home() / "agent-work" / "fable-sequence-to-function" / "codex_stub_home_test"
 shutil.rmtree(HOME, ignore_errors=True)
 HOME.mkdir(parents=True)
-prep = run_codex.prepare_home(HOME, ["gpt-6-astra"], require_login=False, base_url=STUB_URL, retries=0)
+prep = run_codex.prepare_home(HOME, ["gpt-6-astra"], require_login=False, base_url=STUB_URL)  # the real provider settings; only the URL differs (#168)
 PROMPT = "Below is the beginning of a protein sequence.\n\n>sequence\nMKV"
 
 
@@ -133,10 +139,10 @@ check(rec["catalog_sha256"] == prep["catalog_sha256"] and rec["prompt_sha256"] =
 check(json.loads(json.dumps(rec)) == rec, "row: JSON-serialisable")
 check(rec["provider"] == run_codex.PROVIDER_ID and rec["base_url"] == STUB_URL and rec["websocket_log_lines"] == 0 and not UPGRADES,
       "row: the runner's own provider, over HTTP only (no websocket attempted)")
-real_provider = run_codex.provider_args(run_codex.CHATGPT_BASE_URL, retries=0)
+real_provider = run_codex.provider_args(run_codex.CHATGPT_BASE_URL)
 check(prep["provider"] == [x.replace(run_codex.CHATGPT_BASE_URL, STUB_URL) for x in real_provider] and
       " ".join(prep["provider"]) in " ".join(run_codex.codex_args("gpt-6-astra", "high", prep)),
-      "provider: the stub run uses the runner's provider settings, with only the base URL and retries changed")
+      "provider: the stub run uses the runner's provider settings, with only the base URL changed")
 
 # 2. a reply that calls a tool
 text, rec = ask("tool")
@@ -145,7 +151,8 @@ check(run_codex.codex_unusable(rec), "tool call: codex_unusable says so")
 
 # 3. a server error
 text, rec = ask("error")
-check(text is None and "error" in rec and run_codex.codex_unusable(rec), "server error: error row, unusable")
+check(len(REQUESTS) == 1 and rec.get("attempts") == 1 and run_codex.codex_unusable(rec),
+      "server error after the request was sent: not retried (the model may have run), unusable")
 
 # 4. a broken context (environment context switched back on) is caught by the session check
 text, rec = ask("answer", ["-c", "include_environment_context=true"])
@@ -174,7 +181,7 @@ run_codex.codex_env = real_env
 check(rec.get("status") == "UNUSABLE" and rec.get("request_problem") == "no request logged", "no request logged: unusable")
 
 # 5c. a provider that allows websockets: Codex tries one first, and the row is unusable (#164)
-prep_ws = run_codex.prepare_home(HOME, ["gpt-6-astra"], require_login=False, base_url=STUB_URL, supports_websockets=True, retries=0)
+prep_ws = run_codex.prepare_home(HOME, ["gpt-6-astra"], require_login=False, base_url=STUB_URL, supports_websockets=True)
 MODE.clear()
 MODE.update(kind="answer")
 UPGRADES.clear()
@@ -187,8 +194,8 @@ MODE.clear()
 MODE.update(kind="login")
 REQUESTS.clear()
 text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=120)
-check(text is None and rec.get("login_error") is True and rec.get("attempts") == 1,
-      f"login error: one attempt, marked ({rec.get('attempts')} attempts; {str(rec.get('error'))[:80]})")
+check(rec.get("login_error") is True and rec.get("attempts") == 1 and len(REQUESTS) == 1 and run_codex.codex_unusable(rec),
+      f"login error: one request, one attempt, marked, unusable ({len(REQUESTS)} requests; {rec.get('attempts')} attempts; {str(rec.get('error') or rec.get('attempt_failure'))[:80]})")
 
 # 5e. a home holding a login is never pointed anywhere but the ChatGPT backend (#164)
 guard = HOME.parent / "codex_stub_home_login_guard"
@@ -226,8 +233,9 @@ MODE.update(kind="answer")
 REQUESTS.clear()
 text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=120)
 run_codex.subprocess.run = real_run
+REC_EXIT1 = rec
 check(len(REQUESTS) == 1 and rec.get("attempts") == 1 and text == "MKVLAAGIVG" and rec.get("status") == "UNUSABLE"
-      and "attempt failed after a reply" in (rec.get("unusable_because") or []),
+      and "attempt failed after the request was sent" in (rec.get("unusable_because") or []),
       f"reply with exit 1: one request, reply kept, unusable ({len(REQUESTS)} requests; {rec.get('unusable_because')})")
 
 # 5h. every attempt leaves its event stream, stderr and request body in the experiment home (#166)
@@ -241,6 +249,91 @@ good = dict(rec, status="SUCCESS", unusable_because=None, num_turns=1)
 check(not run_codex.codex_unusable(good) and run_codex.codex_unusable(dict(good, codex_row_format=1))
       and run_codex.codex_unusable({k: v for k, v in good.items() if k != "codex_row_format"}),
       "rows before codex_row_format 2 do not count (the runner, scorer and audit share this rule)")
+
+# 5j. a stream cut after the reply, and one cut after reasoning only: Codex does not re-send the question
+# (its own retries are off, #168) and the runner does not ask again (#169); one request each
+for kind in ("message_then_cut", "reasoning_then_cut"):
+    MODE.clear()
+    MODE.update(kind=kind)
+    REQUESTS.clear()
+    text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=120)
+    check(len(REQUESTS) == 1 and rec.get("attempts") == 1 and run_codex.codex_unusable(rec),
+          f"{kind}: one request, no retry, unusable ({len(REQUESTS)} requests; {rec.get('attempts')} attempts; "
+          f"{(rec.get('attempt_log') or [{}])[0].get('outcome')})")
+
+# 5k. failure text in the row never carries trace lines (request bodies) (#170)
+check(not any(x in json.dumps(rec_exit1) for x in ("codex_http_client", "installation-id", "installation_id"))
+      if (rec_exit1 := globals().get("REC_EXIT1")) else False,
+      "failure text: no trace lines or installation id in the row")
+
+# 5l. saved request bodies are masked whatever else the check finds (#170)
+fake = ('2026-01-01T00:00:00Z TRACE codex_http_client::transport: POST to http://127.0.0.1:1/v1/responses: '
+        + json.dumps({"model": "other", "input": [], "note": "eyJ" + "a" * 40}))
+kept = run_codex.keep_attempt(HOME, "masking-check", "", fake, "gpt-6-astra", "high", PROMPT)
+saved = (HOME / "attempts" / "masking-check_request_0.json").read_text()
+check(kept["requests_logged"] == 1 and "eyJ" not in saved and "[token-like]" in saved, "saved request body: token-like text masked")
+
+# 5m. an unparsable output line: the attempt is still recorded and the reply kept, unusable (#171)
+real_run = run_codex.subprocess.run
+def broken_line(*a, **k):
+    p = real_run(*a, **k)
+    if a and a[0][:2] == ["codex", "exec"]:
+        p.stdout = p.stdout + '{"type": "item.completed", "item": {"tex\n'
+    return p
+run_codex.subprocess.run = broken_line
+MODE.clear()
+MODE.update(kind="answer")
+REQUESTS.clear()
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=120)
+run_codex.subprocess.run = real_run
+check(len(REQUESTS) == 1 and text == "MKVLAAGIVG" and rec.get("attempt_log") and run_codex.codex_unusable(rec)
+      and (HOME / "attempts" / f"{rec.get('thread_id')}_events.jsonl").exists(),
+      f"unparsable output line: attempt recorded, reply kept, unusable ({rec.get('unusable_because')})")
+
+# 5n. main(): a login error stops the run before any further question; Ctrl-C asks nothing new and
+# writes the rows of calls that finished (#165, #173). call_codex is faked here: no Codex runs.
+import time as _time  # noqa: E402
+
+def run_main(fake_call, workers, interrupt_after=None):
+    out_root = HOME / "main_check"
+    shutil.rmtree(out_root, ignore_errors=True)
+    saved = (run_codex.OUT_ROOT, run_codex.call_codex, run_codex.prepare_home, sys.argv)
+    run_codex.OUT_ROOT = out_root
+    run_codex.call_codex = fake_call
+    run_codex.prepare_home = lambda *a, **k: prep
+    sys.argv = ["run_codex.py", "structure", "gpt-6-astra", "--limit", "6", "--workers", str(workers), "--home", str(HOME)]
+    timer = None
+    if interrupt_after:
+        import signal
+        timer = threading.Timer(interrupt_after, lambda: os.kill(os.getpid(), signal.SIGINT))  # a real Ctrl-C signal
+        timer.start()
+    code = 0
+    try:
+        run_codex.main()
+    except SystemExit as e:
+        code = e.code
+    finally:
+        run_codex.OUT_ROOT, run_codex.call_codex, run_codex.prepare_home, sys.argv = saved
+    f = out_root / "structure" / "gpt-6-astra-high.jsonl"
+    return code, ([json.loads(l) for l in f.read_text().splitlines()] if f.exists() else [])
+
+CALLS = []
+def fake_login(model, effort, prompt, *a, **k):
+    CALLS.append(prompt)
+    _time.sleep(0.2)
+    return None, dict(model=model, effort=effort, error="401 Unauthorized", login_error=True, codex_row_format=2)
+code, rows = run_main(fake_login, 1)
+check(len(CALLS) == 1 and len(rows) == 1 and code not in (0, None), f"login stop: one question asked, one row, non-zero exit ({len(CALLS)} asked; {len(rows)} rows; exit {code})")
+
+CALLS.clear()
+def fake_slow(model, effort, prompt, *a, **k):
+    CALLS.append((round(_time.time() - T0, 2), prompt[:0]))
+    _time.sleep(1.0)
+    return "{}", dict(model=model, effort=effort, status="UNUSABLE", codex_row_format=2)
+T0 = _time.time()
+code, rows = run_main(fake_slow, 2, interrupt_after=1.5)
+check(code == 130 and len(rows) == len(CALLS) and len(CALLS) < 6,
+      f"Ctrl-C: nothing new asked, every finished call written ({len(CALLS)} asked of 6; {len(rows)} rows; exit {code})")
 
 # 6. an empty reply is unusable
 text, rec = ask("answer", text="")

@@ -30,6 +30,7 @@ import pathlib
 import re
 import subprocess
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -65,11 +66,11 @@ CHATGPT_BASE_URL = "https://chatgpt.com/backend-api/codex"
 WEBSOCKET_TARGET = "codex_api::endpoint::responses_websocket"
 
 
-def provider_args(base_url: str, supports_websockets: bool = False, retries: int | None = None) -> list:
+def provider_args(base_url: str, supports_websockets: bool = False) -> list:
+    # Codex's own retries are off: by default it reconnects a dropped stream up to five times and sends
+    # the question again each time, even after the model has replied (#168)
     fields = [f'name="{PROVIDER_ID}"', f'base_url="{base_url}"', 'wire_api="responses"', "requires_openai_auth=true",
-              f"supports_websockets={str(supports_websockets).lower()}"]
-    if retries is not None:
-        fields += [f"request_max_retries={retries}", f"stream_max_retries={retries}"]
+              f"supports_websockets={str(supports_websockets).lower()}", "request_max_retries=0", "stream_max_retries=0"]
     return ["-c", f'model_provider="{PROVIDER_ID}"', "-c", f"model_providers.{PROVIDER_ID}={{{', '.join(fields)}}}"]
 
 
@@ -78,7 +79,7 @@ def codex_version() -> str:
 
 
 def prepare_home(home: pathlib.Path, models, require_login=True, base_url=CHATGPT_BASE_URL,
-                 supports_websockets=False, retries=None) -> dict:
+                 supports_websockets=False) -> dict:
     """Write the instruction file and the experiment catalog into `home`; return their paths and hashes,
     and the provider settings every call from this home uses."""
     if (home / "auth.json").exists() and base_url != CHATGPT_BASE_URL:  # the login goes wherever the provider points (#164)
@@ -106,7 +107,7 @@ def prepare_home(home: pathlib.Path, models, require_login=True, base_url=CHATGP
     cat = home / f"catalog_isolated_{'_'.join(sorted(models))}.json"  # one file per model set: runs can share a home (#162)
     cat.write_text(json.dumps(catalog))
     return dict(instructions=str(instr), catalog=str(cat), catalog_sha256=sha(cat.read_text()),
-                base_url=base_url, provider=provider_args(base_url, supports_websockets, retries))
+                base_url=base_url, provider=provider_args(base_url, supports_websockets))
 
 
 def codex_env(home: pathlib.Path) -> dict:
@@ -243,21 +244,38 @@ def read_session(home: pathlib.Path, thread_id: str, prompt: str, effort: str) -
                 session_file=str(files[0]), session_sha256=hashlib.sha256(files[0].read_bytes()).hexdigest())
 
 
+def plain_stderr(stderr) -> str:
+    """stderr without the request-body trace lines and websocket lines, with anything token-like masked (#170)."""
+    return TOKEN_LIKE.sub("[token-like]", "\n".join(
+        l for l in (stderr or "").splitlines() if "codex_http_client::transport" not in l and WEBSOCKET_TARGET not in l))
+
+
+def parse_events(stdout) -> tuple:
+    """Codex's JSON events, skipping lines that do not parse; returns (events, number of unparsable lines) (#171)."""
+    events, bad = [], 0
+    for line in (stdout or "").splitlines():
+        if line.strip().startswith("{"):
+            try:
+                e = json.loads(line)
+                events.append(e if isinstance(e, dict) else {})
+            except json.JSONDecodeError:
+                bad += 1
+    return events, bad
+
+
 def keep_attempt(home, thread, stdout, stderr, model, effort, prompt) -> dict:
     """Save one attempt's evidence in the experiment home (not the repository): Codex's JSON event stream,
     its stderr without the trace lines, and each logged request body; return the request summary (#166)."""
     d = home / "attempts"
     d.mkdir(exist_ok=True)
     name = thread or f"no-thread-{time.time_ns()}"
-    plain = "\n".join(l for l in (stderr or "").splitlines()
-                      if "codex_http_client::transport" not in l and WEBSOCKET_TARGET not in l)
     (d / f"{name}_events.jsonl").write_text(TOKEN_LIKE.sub("[token-like]", stdout or ""))
-    (d / f"{name}_stderr.txt").write_text(TOKEN_LIKE.sub("[token-like]", plain))
+    (d / f"{name}_stderr.txt").write_text(plain_stderr(stderr))
     sent = requests_sent(stderr or "")
     problems = [check_request(b, model, effort, prompt) for _, b in sent]
-    for i, ((_, b), pr) in enumerate(zip(sent, problems)):
-        if b is not None and pr != "token-like string in the body":
-            (d / f"{name}_request_{i}.json").write_text(json.dumps(b, indent=1))
+    for i, (_, b) in enumerate(sent):
+        if b is not None:  # always masked, whatever the check found first (#170)
+            (d / f"{name}_request_{i}.json").write_text(TOKEN_LIKE.sub("[token-like]", json.dumps(b, indent=1)))
     return dict(requests_logged=len(sent), request_problem=next((x for x in problems if x), None) if sent else "no request logged",
                 websocket_log_lines=sum(WEBSOCKET_TARGET in l for l in (stderr or "").splitlines()))
 
@@ -283,6 +301,7 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
                     duration_seconds=round(time.time() - t0, 3),
                     asked_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))
 
+    login = False
     for attempt in range(1, tries + 1):
         if attempt > 1:
             time.sleep(min(10 * 2 ** (attempt - 2), 60))
@@ -293,38 +312,48 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
         except subprocess.TimeoutExpired as e:  # the model may have answered and been billed: never retried (#166)
             out = e.stdout.decode(errors="replace") if isinstance(e.stdout, bytes) else (e.stdout or "")
             err = e.stderr.decode(errors="replace") if isinstance(e.stderr, bytes) else (e.stderr or "")
-            thread = next((json.loads(l).get("thread_id") for l in out.splitlines()
-                           if l.startswith("{") and '"thread.started"' in l), None)
+            thread = next((e.get("thread_id") for e in parse_events(out)[0] if e.get("type") == "thread.started"), None)
             attempt_threads.append(thread or "timeout")
             attempt_log.append(dict(thread=thread, outcome="timeout", exit=None, failure=f"timeout after {timeout} s",
                                     **keep_attempt(home, thread, out, err, model, effort, prompt)))
             return None, dict(rec, error=f"timeout after {timeout} s", **stamp())
-        events = [json.loads(l) for l in p.stdout.splitlines() if l.strip().startswith("{")]
+        events, unparsable = parse_events(p.stdout)
         thread = next((e.get("thread_id") for e in events if e.get("type") == "thread.started"), None)
         attempt_threads.append(thread)
+        kept = keep_attempt(home, thread, p.stdout, p.stderr, model, effort, prompt)  # before anything can fail (#171)
         items = [e["item"] for e in events if e.get("type") == "item.completed" and isinstance(e.get("item"), dict)]
         messages = [i.get("text", "") for i in items if i.get("type") == "agent_message"]
         other_items = [i.get("type") for i in items if i.get("type") not in ("agent_message", "reasoning")]
         usage = next((e.get("usage") for e in events if e.get("type") == "turn.completed"), None)
         failed = [e for e in events if e.get("type") in ("turn.failed", "error")]
         why = None
-        if not (p.returncode == 0 and usage is not None and not failed):
-            why = (json.dumps(failed[-1]) if failed else (p.stderr or p.stdout)[-400:]) or f"exit {p.returncode}"
-        answered = bool(messages) or usage is not None or bool(
-            thread and read_session(home, thread, prompt, effort).get("response_ids"))
-        attempt_log.append(dict(thread=thread, outcome="ok" if why is None else ("failed after a reply" if answered else "failed"),
-                                exit=p.returncode, failure=why and why[:400],
-                                **keep_attempt(home, thread, p.stdout, p.stderr, model, effort, prompt)))
+        if not (p.returncode == 0 and usage is not None and not failed and not unparsable):
+            why = (TOKEN_LIKE.sub("[token-like]", json.dumps(failed[-1])) if failed else plain_stderr(p.stderr)[-400:]
+                   or (f"{unparsable} unparsable output lines" if unparsable else "")) or f"exit {p.returncode}"
+        try:
+            session_responses = bool(thread and read_session(home, thread, prompt, effort).get("response_ids"))
+        except Exception:
+            session_responses = True  # unreadable: assume the model may have answered
+        # Any sign that the question reached the model: then never ask again here (#166, #169)
+        reached = bool(kept["requests_logged"] or kept["websocket_log_lines"] or items or messages or usage is not None
+                       or session_responses or unparsable)
+        attempt_log.append(dict(thread=thread, outcome="ok" if why is None else
+                                ("failed after the request was sent" if reached else "failed before any request"),
+                                exit=p.returncode, failure=why, **kept))
         if why is None:
             break
-        if LOGIN_ERROR.search(why):  # will not fix itself: no retry, and main stops the run (#165)
-            return None, dict(rec, error=why, login_error=True, **stamp())
-        if answered:  # a reply arrived and may have been billed: keep it, unusable, never ask again here (#166)
+        login = bool(LOGIN_ERROR.search(why))  # will not fix itself: main stops the run (#165)
+        if reached:  # keep whatever arrived, unusable; re-asking is left to --retry-unusable (#166, #169, #172)
             break
+        if login:
+            return None, dict(rec, error=why, login_error=True, **stamp())
     else:
         return None, dict(rec, error=why, **stamp())
     usage = usage or {}  # a reply can arrive without token counts when the turn then fails (#166)
-    session = read_session(home, thread, prompt, effort) if thread else dict(context_ok=False, context_problem="no thread id")
+    try:
+        session = read_session(home, thread, prompt, effort) if thread else dict(context_ok=False, context_problem="no thread id")
+    except Exception as e:  # never lose the reply to an unreadable session record (#171)
+        session = dict(context_ok=False, context_problem=f"session record unreadable: {e!r}"[:200])
     text = messages[-1] if messages else ""
     sent = requests_sent(p.stderr)
     request_problems = [check_request(b, model, effort, prompt) for _, b in sent]
@@ -343,9 +372,10 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
                requests_logged=len(sent), request_hosts=hosts,
                request_sha256=[sha(json.dumps(b, sort_keys=True)) for _, b in sent if b is not None],
                request_problem=problem)
+    if login:
+        rec["login_error"] = True
     rec.update(**stamp(), attempt_failure=why, thread_id=thread, event_types=[e.get("type") for e in events], tool_items=other_items,
-               stderr_tail="\n".join(l for l in (p.stderr or "").splitlines()
-                                     if "codex_http_client::transport" not in l and WEBSOCKET_TARGET not in l)[-300:] or None,
+               stderr_tail=plain_stderr(p.stderr)[-300:] or None,
                num_turns=len(session.get("response_ids") or []) or None,
                input_tokens=usage.get("input_tokens"), cached_input_tokens=usage.get("cached_input_tokens"),
                output_tokens=usage.get("output_tokens"), thinking_tokens=usage.get("reasoning_output_tokens"),
@@ -354,7 +384,8 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
     rec["context_tokens_high"] = not rec["usage_unreadable"] and rec["input_tokens"] > rec["context_limit"]
     problems = [name for name, bad in (
         ("request check", rec["request_problem"] is not None), ("usage unreadable", rec["usage_unreadable"]),
-        ("attempt failed after a reply", why is not None),
+        ("attempt failed after the request was sent", why is not None),
+        ("an earlier attempt sent a request", any(a.get("requests_logged") or a.get("websocket_log_lines") for a in attempt_log[:-1])),
         ("context check", not rec["context_ok"]), ("tool or warning items", bool(other_items)),
         ("tool call in session", bool(session.get("session_tool_calls"))), ("not one agent message", len(messages) != 1),
         ("empty reply", not text.strip()), ("not one model response", rec["num_turns"] != 1),
@@ -411,32 +442,61 @@ def main():
     todo = [q for q in qs if q[0] not in done][: args.limit]
     print(f"[{args.test}] {tag}: {len(qs)} total, {len(done)} done, {len(todo)} to run", flush=True)
 
+    stop = threading.Event()  # set on a login error or Ctrl-C: no new question is started after it (#173)
+
     def ask_one(item):
         _, prompt, meta = item
+        if stop.is_set():
+            return None
         try:  # one bad call, or a bad reply, must not stop the batch (#162, #163)
             text, rec = call_codex(args.model, args.effort, prompt, prep, args.home)
+            if rec.get("login_error"):
+                stop.set()  # in the worker, before it can take the next question (#173)
             return build_row(args.test, meta, text, rec)
         except Exception as e:
             return dict(meta, model=args.model, effort=args.effort, prompt_sha256=sha(prompt), error=f"runner: {e!r}"[:400])
 
-    with ThreadPoolExecutor(args.workers) as ex, out_path.open("a") as fh:
-        futs = [ex.submit(ask_one, item) for item in todo]
-        login_failed = False
-        for i, fut in enumerate(as_completed(futs), 1):
-            if fut.cancelled():
-                continue
+    ex = ThreadPoolExecutor(args.workers)
+    futs = [ex.submit(ask_one, item) for item in todo]
+    written = set()
+    login_failed = interrupted = False
+    with out_path.open("a") as fh:
+        def write(fut, i):
             row = fut.result()
+            written.add(fut)
+            if row is None:  # skipped after a stop
+                return
             fh.write(json.dumps(row) + "\n")
             fh.flush()
             flag = "" if not codex_unusable(row) else f" UNUSABLE ({row.get('error') or row.get('unusable_because')})"
             print(f"  [{args.test}] {tag}: {i}/{len(todo)} input_tokens={row.get('input_tokens')}{flag}", flush=True)
-            if row.get("login_error") and not login_failed:  # later questions would fail the same way (#165);
-                login_failed = True                              # calls already running are still written
-                for f in futs:
-                    f.cancel()
-    if login_failed:
-        raise SystemExit(f"stopped on a login error; sign in again: CODEX_HOME={args.home} codex login")
+            return row
 
+        try:
+            for i, fut in enumerate(as_completed(futs), 1):
+                if fut.cancelled():
+                    continue
+                row = write(fut, i)
+                if row and row.get("login_error") and not login_failed:  # later questions would fail the same way (#165)
+                    login_failed = True
+                    stop.set()
+                    for f in futs:
+                        f.cancel()
+        except KeyboardInterrupt:  # ask nothing new; keep the rows of calls that finish (#173)
+            interrupted = True
+            stop.set()
+            for f in futs:
+                f.cancel()
+            print("interrupted: waiting for running calls to finish and writing their rows", flush=True)
+        finally:
+            ex.shutdown(wait=True, cancel_futures=True)
+            for fut in futs:
+                if fut not in written and fut.done() and not fut.cancelled() and fut.exception() is None:
+                    write(fut, len(written) + 1)
+    if login_failed:
+        raise SystemExit(f'stopped on a login error; sign in again: CODEX_HOME={args.home} codex login -c cli_auth_credentials_store="file"')
+    if interrupted:
+        raise SystemExit(130)
 
 if __name__ == "__main__":
     main()

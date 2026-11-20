@@ -41,16 +41,33 @@ How:
   Built-in provider IDs can't be overridden. The stub test uses the same provider settings, with only
   the base URL changed, plus one case with websockets on. With a login in the home, the runner refuses
   any other base URL, because the provider sends the login wherever it points.
-- **Login errors stop the run** instead of being retried (#165).
-- **No second answer to a question** (#166). An attempt is retried only if no reply arrived. A reply
-  followed by an error or a non-zero exit is kept and marked unusable (`attempt failed after a reply`).
-  A timeout (1,800 s) is never retried, since the model may have answered and been billed. Re-asking
-  is left to `--retry-unusable`.
+- **No second answer to a question** (#166, #168, #169).
+  - **Codex's own retries are off** (`request_max_retries=0`, `stream_max_retries=0`). By default
+    Codex reconnects a dropped stream up to five times and sends the question again each time, even
+    after the model has replied.
+  - **The runner retries an attempt only if nothing shows the question reached the model:** no logged
+    request, no websocket line, no output item, no token counts, no response in the session record.
+  - **Otherwise the attempt is kept and marked unusable** (`attempt failed after the request was
+    sent`). This includes a server error or rate limit after a logged request, since the runner can't
+    tell whether the model ran.
+  - **A timeout (1,800 s) is never retried.**
+  - **Re-asking is left to `--retry-unusable`.**
 - **Every attempt is recorded**: `attempt_log` in the row (thread, outcome, exit code, failure,
-  requests logged, request check). The experiment home's `attempts/` folder keeps each attempt's JSON
-  event stream, its stderr without the trace lines, and its checked request bodies.
-- **The Mac stays awake** during a run (`caffeinate -i -w <runner pid>`). One canary call stalled when
-  the Mac slept, and the timeout doesn't count time asleep.
+  requests logged, request check).
+  - **Saved before parsing:** the experiment home's `attempts/` folder keeps each attempt's JSON event
+    stream, its stderr without the trace lines, and its request bodies. They are saved before any
+    parsing, with anything token-like masked.
+  - **Unparsable lines** in Codex's output are counted and make the row unusable, but they don't lose
+    the attempt (#171).
+  - **Failure text** in the row is built from the filtered, masked stderr (#170).
+- **Stopping** (#165, #173).
+  - **A login error** stops the run, and no further question starts.
+  - **Ctrl-C** starts no new question either. The rows of calls that finish are written, and the run
+    exits with 130. A terminal Ctrl-C also reaches the running Codex processes; those rows are
+    unusable.
+- **Idle sleep is blocked during a run** (`caffeinate -i -w <runner pid>`). One canary call stalled
+  when the Mac slept, and the timeout doesn't count time asleep. Closing the lid or choosing Sleep
+  still stops a call.
 - **Efforts** low, medium, high, xhigh and max. Codex 0.170.0 sends `ultra` as `xhigh`, so `ultra`
   is not offered.
 
