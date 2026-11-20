@@ -302,28 +302,32 @@ check(len(REQUESTS) == 1 and text == "MKVLAAGIVG" and rec.get("attempt_log") and
 # writes the rows of calls that finished (#165, #173). call_codex is faked here: no Codex runs.
 import time as _time  # noqa: E402
 
-def run_main(fake_call, workers, interrupt_after=None):
+def run_main(fake_call, workers, interrupt_after=None, sig=None, fresh=True, extra=(), limit=6):
+    """Run main() in-process: results and launch journal under the stub home, never in the repository."""
+    import signal as _sig
     out_root = HOME / "main_check"
-    shutil.rmtree(out_root, ignore_errors=True)
-    saved = (run_codex.OUT_ROOT, run_codex.call_codex, run_codex.prepare_home, sys.argv)
+    if fresh:
+        shutil.rmtree(out_root, ignore_errors=True)
+    saved = (run_codex.OUT_ROOT, run_codex.JOURNAL_ROOT, run_codex.call_codex, run_codex.prepare_home, sys.argv)
     run_codex.OUT_ROOT = out_root
-    run_codex.call_codex = fake_call
+    run_codex.JOURNAL_ROOT = out_root / "launched"
+    if fake_call is not None:
+        run_codex.call_codex = fake_call
     run_codex.prepare_home = lambda *a, **k: prep
-    sys.argv = ["run_codex.py", "structure", "gpt-6-astra", "--limit", "6", "--workers", str(workers), "--home", str(HOME)]
-    timer = None
+    sys.argv = ["run_codex.py", "structure", "gpt-6-astra", "--limit", str(limit), "--workers", str(workers),
+                "--home", str(HOME), *extra]
     if interrupt_after:
-        import signal
-        timer = threading.Timer(interrupt_after, lambda: os.kill(os.getpid(), signal.SIGINT))  # a real Ctrl-C signal
-        timer.start()
+        threading.Timer(interrupt_after, lambda: os.kill(os.getpid(), sig or _sig.SIGINT)).start()  # a real signal
     code = 0
     try:
         run_codex.main()
     except SystemExit as e:
         code = e.code
     finally:
-        run_codex.OUT_ROOT, run_codex.call_codex, run_codex.prepare_home, sys.argv = saved
-        import signal as _sig
-        _sig.signal(_sig.SIGINT, _sig.default_int_handler)  # main() ignores SIGINT after the first one
+        run_codex.OUT_ROOT, run_codex.JOURNAL_ROOT, run_codex.call_codex, run_codex.prepare_home, sys.argv = saved
+        _sig.signal(_sig.SIGINT, _sig.default_int_handler)  # main() ignores stop signals after the first one
+        _sig.signal(_sig.SIGTERM, _sig.SIG_DFL)
+        _sig.signal(_sig.SIGHUP, _sig.SIG_DFL)
     f = out_root / "structure" / "gpt-6-astra-high.jsonl"
     return code, ([json.loads(l) for l in f.read_text().splitlines()] if f.exists() else [])
 
@@ -439,6 +443,104 @@ code, rows = run_main(fake_slow, 2, interrupt_after=1.5)
 _signal.signal(_signal.SIGINT, _signal.default_int_handler)
 check(code == 130 and len(rows) == len(CALLS) and len(CALLS) < 6,
       f"second Ctrl-C: every started call still written ({len(CALLS)} asked; {len(rows)} rows; exit {code})")
+
+# 5p. third review of #167 (#181, #182)
+# SIGTERM and SIGHUP are handled like Ctrl-C: running calls finish and are written, exit 130 (#181)
+for name in ("SIGTERM", "SIGHUP"):
+    CALLS.clear()
+    T0 = _time.time()
+    code, rows = run_main(fake_slow, 2, interrupt_after=1.5, sig=getattr(_signal, name))
+    check(code == 130 and len(rows) == len(CALLS) and 0 < len(CALLS) < 6,
+          f"{name}: handled like Ctrl-C, every started call written ({len(CALLS)} asked; {len(rows)} rows; exit {code})")
+
+# the launch journal: written before each call; a question launched by a killed run is not asked again (#181)
+JOURNAL = HOME / "main_check" / "launched" / "structure" / "gpt-6-astra-high.jsonl"
+seen_in_journal = []
+def fake_check_journal(model, effort, prompt, *a, **k):
+    seen_in_journal.append(JOURNAL.exists() and len(JOURNAL.read_text().splitlines()))
+    return "{}", dict(model=model, effort=effort, status="UNUSABLE", codex_row_format=2)
+code, rows = run_main(fake_check_journal, 1, limit=2)
+check(seen_in_journal == [1, 2], f"journal: each question on disk before its call ({seen_in_journal})")
+launched_first = [r["pdb"] for r in rows]  # the two questions of the first run
+(HOME / "main_check" / "structure" / "gpt-6-astra-high.jsonl").write_text("")  # as if the run had been killed: journal, no rows
+code, rows2 = run_main(fake_slow, 1, fresh=False, limit=3)
+code, rows3 = run_main(fake_slow, 1, fresh=False, limit=5, extra=["--retry-unusable"])
+asked2 = [r["pdb"] for r in rows2]
+asked3 = [r["pdb"] for r in rows3][len(rows2):]
+check(len(launched_first) == 2 and len(asked2) == 3 and not set(asked2) & set(launched_first) and set(launched_first) <= set(asked3),
+      f"journal: questions launched without a row are skipped by default and asked with --retry-unusable "
+      f"(launched {launched_first}; next run asked {asked2}; with --retry-unusable asked {asked3})")
+
+# main passes the stop flag into call_codex: Ctrl-C during a retry's backoff launches nothing new (#175, #182)
+real_sleep = run_codex.time.sleep
+run_codex.time.sleep = lambda secs: real_sleep(0.8)  # the same module as _time: call the saved function
+run_codex.subprocess.run, launches = fake_codex("", "", code=1)  # fails before any request: would be retried
+code, rows = run_main(None, 1, interrupt_after=0.3, limit=1)
+run_codex.subprocess.run = real_run
+run_codex.time.sleep = real_sleep
+check(len(launches) == 1 and code == 130 and len(rows) == 1 and "stopped" in str(rows[0].get("error")),
+      f"stop during backoff, through main: no second launch, row written ({len(launches)} launches; exit {code}; {[r.get('error') for r in rows]})")
+
+# a timeout with no output at all still counts as reached: no retry (#176, #182)
+def raise_timeout(*a, **k):
+    if a and a[0][:2] == ["codex", "exec"]:
+        launches.append(k)
+        raise _sp.TimeoutExpired(a[0], 1, output=b"", stderr=b"")
+    return real_run(*a, **k)
+launches = []
+run_codex.subprocess.run = raise_timeout
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=30)
+run_codex.subprocess.run = real_run
+check(len(launches) == 1 and "timeout" in json.dumps(rec.get("attempt_log")), f"silent timeout: no retry ({len(launches)} launches)")
+
+# evidence that cannot be saved: no retry even with no output, the row is unusable, and the error is masked (#182)
+run_codex.keep_attempt = lambda *a, **k: (_ for _ in ()).throw(OSError("Bearer abcdefghijklmnopqrstuvwxyz0123"))
+run_codex.subprocess.run, launches = fake_codex("", "", code=1)
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=30)
+run_codex.subprocess.run = real_run
+run_codex.keep_attempt = real_keep
+check(len(launches) == 1 and "abcdefghijklmnop" not in json.dumps(rec), f"evidence not saved, no output: no retry, error masked ({len(launches)} launches)")
+MODE.clear()
+MODE.update(kind="answer")
+run_codex.keep_attempt = lambda *a, **k: (_ for _ in ()).throw(OSError("disk full"))
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=120)
+run_codex.keep_attempt = real_keep
+check(rec.get("status") == "UNUSABLE" and "attempt evidence not saved" in (rec.get("unusable_because") or []),
+      f"evidence not saved on a real (stub) call: unusable ({rec.get('unusable_because')})")
+
+# caffeinate runs in its own session (#175, #182)
+popen_kwargs = []
+real_popen = run_codex.subprocess.Popen
+run_codex.subprocess.Popen = lambda *a, **k: popen_kwargs.append((a[0][0], k))
+code, rows = run_main(fake_slow, 1, limit=1)
+run_codex.subprocess.Popen = real_popen
+check(sys.platform != "darwin" or (popen_kwargs and popen_kwargs[0][0] == "caffeinate" and popen_kwargs[0][1].get("start_new_session") is True),
+      f"caffeinate in its own session ({popen_kwargs[:1]})")
+
+# the results file cannot be opened: nothing is asked (#182)
+CALLS.clear()
+bad = HOME / "main_check" / "structure" / "gpt-6-astra-high.jsonl"
+shutil.rmtree(HOME / "main_check", ignore_errors=True)
+bad.mkdir(parents=True)  # a folder where the file should be
+code, rows = None, None
+try:
+    run_main(fake_slow, 2, fresh=False, limit=4)
+except Exception as e:
+    code = type(e).__name__
+check(len(CALLS) == 0, f"results file unwritable: no question asked ({len(CALLS)} asked; {code})")
+shutil.rmtree(HOME / "main_check", ignore_errors=True)
+
+# masking: case-insensitive bearer, no over-masking inside words; session-record errors masked (#182)
+check(run_codex.masked("bearer abcdefghijkl and Basic QUJDREVGR0hJSktMTU5PUA==") .count("[token-like]") == 2
+      and run_codex.masked("report_error_abcdefghijklmnopqrstu risk-assessment-abcdefghijklmnop") == "report_error_abcdefghijklmnopqrstu risk-assessment-abcdefghijklmnop"
+      and run_codex.masked("key sk-proj-abcdefghijklmnopqrst rt_abcdefghijklmnopqrstu").count("[token-like]") == 2,
+      "masking: bearer/basic in any case, sk-/rt_ only as whole tokens")
+run_codex.read_session = lambda *a, **k: (_ for _ in ()).throw(ValueError("Bearer abcdefghijklmnopqrstuvwxyz"))
+run_codex.subprocess.run, launches = fake_codex(ev(*STARTED, REPLY, {"type": "turn.completed", "usage": {"input_tokens": 9}}), code=0)
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=1, timeout=30)
+run_codex.subprocess.run = real_run
+run_codex.read_session = real_read
+check("abcdefghijklmnop" not in str(rec.get("context_problem")), f"session-record error masked ({rec.get('context_problem')})")
 
 # 6. an empty reply is unusable
 text, rec = ask("answer", text="")

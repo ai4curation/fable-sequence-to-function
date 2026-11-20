@@ -44,6 +44,7 @@ from common import KEYS, answer, context_limit, has_tool_call, sha  # noqa: E402
 from run_agy import agy_unusable, build_questions  # noqa: E402
 
 OUT_ROOT = HERE / "results"
+JOURNAL_ROOT = HERE / "launched"  # one line per question, written before its call (#181)
 DEFAULT_HOME = pathlib.Path.home() / "agent-work" / "fable-sequence-to-function" / "codex_home_gpt6"
 INSTRUCTION = "Answer the user's message."
 CATALOG_OVERRIDES = dict(tool_mode=None, multi_agent_version=None, experimental_supported_tools=[],
@@ -124,7 +125,9 @@ def codex_env(home: pathlib.Path) -> dict:
 
 
 TIMEOUT = 1800  # seconds; Rosalind took 509 s and 578 s on one test-4 question at high effort (#166)
-TOKEN_LIKE = re.compile(r"Bearer \S+|eyJ[A-Za-z0-9_-]{20,}[A-Za-z0-9._-]*|sk-[A-Za-z0-9_-]{16,}|rt_[A-Za-z0-9._-]{16,}")  # #178
+TOKEN_LIKE = re.compile(  # #170, #178, #182
+    r"(?i:bearer)\s+[A-Za-z0-9._~+/=-]{8,}|(?i:basic)\s+[A-Za-z0-9+/=]{16,}|eyJ[A-Za-z0-9_-]{20,}[A-Za-z0-9._-]*"
+    r"|(?<![A-Za-z0-9])sk-[A-Za-z0-9_-]{16,}|(?<![A-Za-z0-9_])rt_[A-Za-z0-9._-]{16,}")
 
 
 def masked(text, cap=400) -> str:
@@ -187,7 +190,7 @@ def _check_request(body, model, effort, prompt) -> str | None:
         return "user text other than the question"
     if not set(tools) <= ALLOWED_TOOLS:
         return f"tools {sorted(set(tools) - ALLOWED_TOOLS)}"
-    if re.search(r"Bearer |eyJ[A-Za-z0-9_-]{20,}", json.dumps(body)):
+    if TOKEN_LIKE.search(json.dumps(body)):
         return "token-like string in the body"
     return None
 
@@ -379,7 +382,7 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
     try:
         session = read_session(home, thread, prompt, effort) if thread else dict(context_ok=False, context_problem="no thread id")
     except Exception as e:  # never lose the reply to an unreadable session record (#171)
-        session = dict(context_ok=False, context_problem=f"session record unreadable: {e!r}"[:200])
+        session = dict(context_ok=False, context_problem=masked(f"session record unreadable: {e!r}", 200))
     text = messages[-1] if messages else ""
     sent = requests_sent(p.stderr)
     request_problems = [check_request(b, model, effort, prompt) for _, b in sent]
@@ -411,6 +414,7 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
     problems = [name for name, bad in (
         ("request check", rec["request_problem"] is not None), ("usage unreadable", rec["usage_unreadable"]),
         ("attempt failed after the request may have been sent", why is not None),
+        ("attempt evidence not saved", any(a.get("evidence_error") for a in attempt_log)),
         ("an earlier attempt sent a request", any(a.get("requests_logged") or a.get("websocket_log_lines") for a in attempt_log[:-1])),
         ("context check", not rec["context_ok"]), ("tool or warning items", bool(other_items)),
         ("tool call in session", bool(session.get("session_tool_calls"))), ("not one agent message", len(messages) != 1),
@@ -439,6 +443,17 @@ def build_row(test, meta, text, rec):
     return dict(meta, text=text, ans=answer(text, KEYS[test]), **rec)
 
 
+STOP_SIGNALS = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
+
+
+def key_to_json(key):
+    return list(key) if isinstance(key, tuple) else key
+
+
+def key_from_json(key):
+    return tuple(key) if isinstance(key, list) else key
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("test", choices=["next_residue", "features", "pseudo", "structure"])
@@ -461,45 +476,73 @@ def main():
     tag = f"{args.model}-{args.effort}"
     out_path = out_dir / f"{tag}.jsonl"
     qs, key_fn = build_questions(args.test, tag, args.ncond)
-    done = set()
-    if out_path.exists():
-        rows = [json.loads(l) for l in out_path.read_text().splitlines() if l.strip()]
-        done = {key_fn(r) for r in rows if not (args.retry_unusable and codex_unusable(r))}
+    rows = [json.loads(l) for l in out_path.read_text().splitlines() if l.strip()] if out_path.exists() else []
+    done = {key_fn(r) for r in rows if not (args.retry_unusable and codex_unusable(r))}
+    # Questions launched by an earlier run that left no row (the runner was killed): the model may have
+    # answered and been billed, so they count as asked unless --retry-unusable is given (#181)
+    journal_path = JOURNAL_ROOT / args.test / f"{tag}.jsonl"
+    journal_path.parent.mkdir(parents=True, exist_ok=True)
+    launched = {key_from_json(json.loads(l)["key"]) for l in journal_path.read_text().splitlines() if l.strip()} \
+        if journal_path.exists() else set()
+    orphans = launched - {key_fn(r) for r in rows}
+    if orphans:
+        print(f"[{args.test}] {tag}: {len(orphans)} question(s) launched earlier left no row "
+              f"({'asked again' if args.retry_unusable else 'not asked again; use --retry-unusable to ask'}); "
+              f"their Codex records are under {args.home}/sessions", flush=True)
+        if not args.retry_unusable:
+            done |= orphans
     todo = [q for q in qs if q[0] not in done][: args.limit]
     print(f"[{args.test}] {tag}: {len(qs)} total, {len(done)} done, {len(todo)} to run", flush=True)
 
-    stop = threading.Event()  # set on a login error or Ctrl-C: no new question is started after it (#173)
+    stop = threading.Event()  # set on a login error or a stop signal: no new question is started after it (#173)
+    journal_lock = threading.Lock()
 
     def ask_one(item):
-        _, prompt, meta = item
+        key, prompt, meta = item
         if stop.is_set():
             return None
+        with journal_lock:  # on disk before the call, so a killed run cannot lead to a second answer (#181)
+            jf.write(json.dumps(dict(key=key_to_json(key), prompt_sha256=sha(prompt), model=args.model, effort=args.effort,
+                                     launched_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))) + "\n")
+            jf.flush()
+            os.fsync(jf.fileno())
         try:  # one bad call, or a bad reply, must not stop the batch (#162, #163)
             text, rec = call_codex(args.model, args.effort, prompt, prep, args.home, stop=stop)
             if rec.get("login_error"):
                 stop.set()  # in the worker, before it can take the next question (#173)
             return build_row(args.test, meta, text, rec)
         except Exception as e:
-            return dict(meta, model=args.model, effort=args.effort, prompt_sha256=sha(prompt), error=f"runner: {e!r}"[:400])
+            return dict(meta, model=args.model, effort=args.effort, prompt_sha256=sha(prompt), error=masked(f"runner: {e!r}"))
 
-    ex = ThreadPoolExecutor(args.workers)
-    futs = [ex.submit(ask_one, item) for item in todo]
+    def as_interrupt(signum, frame):  # closing the terminal or SIGTERM: handled like Ctrl-C (#181)
+        raise KeyboardInterrupt
+
+    saved_handlers = {sig: signal.getsignal(sig) for sig in STOP_SIGNALS}
+    for sig in STOP_SIGNALS[1:]:
+        signal.signal(sig, as_interrupt)
     written = set()
-    login_failed = interrupted = False
-    with out_path.open("a") as fh:
+    login_failed = interrupted = finished = False
+    with out_path.open("a") as fh, journal_path.open("a") as jf:  # both open before any question is submitted (#182)
         def write(fut, i):
             row = fut.result()
-            if row is not None:  # None: skipped after a stop
-                fh.write(json.dumps(row) + "\n")
-                fh.flush()
-            written.add(fut)  # only once written (#175)
+            old = signal.pthread_sigmask(signal.SIG_BLOCK, STOP_SIGNALS)  # write and mark as one step (#182)
+            try:
+                if row is not None:  # None: skipped after a stop
+                    fh.write(json.dumps(row) + "\n")
+                    fh.flush()
+                written.add(fut)
+            finally:
+                signal.pthread_sigmask(signal.SIG_SETMASK, old)
             if row is None:
                 return
             flag = "" if not codex_unusable(row) else f" UNUSABLE ({row.get('error') or row.get('unusable_because')})"
             print(f"  [{args.test}] {tag}: {i}/{len(todo)} input_tokens={row.get('input_tokens')}{flag}", flush=True)
             return row
 
+        ex = ThreadPoolExecutor(args.workers)
+        futs = []
         try:
+            futs = [ex.submit(ask_one, item) for item in todo]
             for i, fut in enumerate(as_completed(futs), 1):
                 if fut.cancelled():
                     continue
@@ -509,20 +552,25 @@ def main():
                     stop.set()
                     for f in futs:
                         f.cancel()
-        except KeyboardInterrupt:  # ask nothing new; keep the rows of calls that finish (#173)
+            finished = True
+        except KeyboardInterrupt:  # ask nothing new; keep the rows of calls that finish (#173, #181)
             interrupted = True
-            stop.set()
-            for f in futs:
-                f.cancel()
             print("interrupted: waiting for running calls to finish and writing their rows", flush=True)
         finally:
-            if interrupted:  # a second Ctrl-C must not lose the rows of calls still running (#175)
-                signal.signal(signal.SIGINT, signal.SIG_IGN)
+            if not finished:  # interrupted, or any error here: start nothing new (#182)
+                stop.set()
+                for f in futs:
+                    f.cancel()
+            if interrupted:  # further stop signals must not lose the rows of calls still running (#175, #181)
+                for sig in STOP_SIGNALS:
+                    signal.signal(sig, signal.SIG_IGN)
                 print("running calls continue; their rows will be written (further Ctrl-C ignored)", flush=True)
             ex.shutdown(wait=True, cancel_futures=True)
             for fut in futs:
                 if fut not in written and fut.done() and not fut.cancelled() and fut.exception() is None:
                     write(fut, len(written) + 1)
+    for sig, handler in saved_handlers.items():
+        signal.signal(sig, handler)
     if login_failed:
         raise SystemExit(f'stopped on a login error; sign in again: CODEX_HOME={args.home} codex login -c cli_auth_credentials_store="file"')
     if interrupted:

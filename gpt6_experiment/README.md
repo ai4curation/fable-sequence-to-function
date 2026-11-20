@@ -62,17 +62,30 @@ How:
   number of unparsable output lines, requests logged, request check).
   - **Evidence folder:** the experiment home's `attempts/` keeps each attempt's JSON event stream,
     its stderr without the trace lines, and its request bodies, with anything token-like masked.
-  - **If saving fails,** the row says so, and the attempt counts as having reached the model (#177).
+  - **If saving fails,** the attempt counts as having reached the model, and the row is unusable
+    (`attempt evidence not saved`; #177, #182).
   - **The request check never raises** on an unexpected body shape; it reports a problem instead.
-  - **Failure text** in the row is masked (bearer tokens, JWTs, `sk-` keys, `rt_` refresh tokens) and
-    capped at 400 characters (#170, #178).
-- **Stopping** (#165, #173, #175).
-  - **A login error or Ctrl-C** starts no new question, and no new attempt of a running question.
-  - **Codex runs in its own session,** so a terminal Ctrl-C reaches only the runner. Running calls
-    finish, and their rows are written.
-  - **Further Ctrl-Cs are then ignored,** so they can't lose those rows. The run exits with 130.
-  - **To abandon running calls,** kill the runner's Codex processes; those rows are lost, though the
-    calls may have been billed.
+  - **Failure text and error fields** in the row are masked and capped at 400 characters (#170, #178,
+    #182). The mask covers bearer and basic credentials in any case, JWTs, and `sk-` keys and `rt_`
+    refresh tokens when they stand as separate tokens.
+- **Launch journal** (#181). Before each call, the runner appends the question to
+  `launched/<test>/<model>-<effort>.jsonl` and syncs the file to disk. A question that is in the
+  journal but has no row, because the runner was killed, counts as asked on the next run: the model may
+  have answered and been billed. The run prints how many such questions there are, and their Codex
+  records stay under the experiment home's `sessions/`. `--retry-unusable` asks them again.
+- **Stopping** (#165, #173, #175, #181).
+  - **A login error, Ctrl-C, SIGTERM or a closed terminal (SIGHUP)** starts no new question, and no
+    new attempt of a running question.
+  - **Codex runs in its own session,** so these signals reach only the runner. Running calls finish,
+    and their rows are written; the run exits with 130.
+  - **Further such signals are then ignored.**
+  - **To abandon running calls,** kill their Codex processes (`pgrep -f catalog_isolated`). The runner
+    then writes an unusable row for each.
+  - **Ctrl-\\ (SIGQUIT) or `kill -9`** ends the runner at once. Running calls continue unrecorded, and
+    the journal keeps those questions from being asked again.
+- **After an outage,** the questions asked during it have unusable rows. `--retry-unusable` asks them
+  again, but it also re-asks any unusable row where the model did answer. Check `attempt_log` before
+  using it.
 - **Idle sleep is blocked during a run** (`caffeinate -i -w <runner pid>`, in its own session, so it
   outlives a Ctrl-C). One canary call stalled
   when the Mac slept, and the timeout doesn't count time asleep. Closing the lid or choosing Sleep
