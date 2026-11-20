@@ -1,0 +1,10 @@
+# Run at 2026-11-20T22:36:49Z
+576073	2026_04	04-November-2026	reviewed:true
+688	2026_04	04-November-2026	reviewed:true AND protein_name:inactive
+139	2026_04	04-November-2026	reviewed:true AND protein_name:"probable inactive"
+22	2026_04	04-November-2026	reviewed:true AND protein_name:pseudokinase
+107	2026_04	04-November-2026	reviewed:true AND protein_name:inactive AND family:"protein kinase superfamily"
+39	2026_04	04-November-2026	reviewed:true AND protein_name:inactive AND ec:*
+41	2026_04	04-November-2026	reviewed:true AND protein_name:inactive AND ft_act_site:*
+465	2026_04	04-November-2026	reviewed:true AND protein_name:inactive AND cc_caution:*
+56602	2026_04	04-November-2026	reviewed:false AND protein_name:inactive

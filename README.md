@@ -86,7 +86,7 @@ pixel, so they are not byte-for-byte reproducible.
 | Table 2 (`set all` lines for rows 3 to 7); overlap of 0.85 in the abstract and Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
 | Figure 1, mutant positions flagged, recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
 | Figure 2, structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
-| Call totals in Methods (2,854 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
+| Claude call totals in Methods (2,854 recorded calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
 | Adjudication of the two disputed active sites (YrfG, ENV9) | `uv run python experiments/pseudo/adjudication/adjudicate.py` | `expected/adjudication.txt` |
 | Decoy-substitution control for test 3 (Table 3) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
@@ -105,14 +105,22 @@ report values remain unchanged.
 
 - **Date:** 2026-11-18.
 - **Models:** `claude-fable-5-2`, `claude-opus-5-5`, `claude-opus-4-6`.
-- **Route:** Claude Code 2.1.327 in print mode, one call per question:
+- **Route:** Claude Code 2.1.327 (the authors' record; the rows of 2026-11-18 do not store the version) in
+  print mode, one recorded call per question (the scripts tried
+  up to three times when the output was not valid JSON and kept only the last attempt):
   `claude -p --model MODEL --system-prompt "" --tools "" --effort EFFORT --output-format json`.
   `--tools ""` turns off the tool's built-in tools; on a machine with account
   connectors this route could still let connector tools into the call (see
   *Rows that record a prompt hash* below). The exact prompt is the string `P` (or
   the `prompt` function) in each test's `ask.py` or `run.py`.
-- **Limits of that route:** temperature cannot be set, and the tool adds about
-  1,400 tokens of its own context to each call.
+- **Limits of that route:** temperature cannot be set, and the tool adds context of
+  its own, whose size the rows of 2026-11-18 do not record. Measured on 2026-11-19 with the same context
+  flags and Claude Code 2.1.328 (`experiments/decoy_control/results/cli_context_check.json`,
+  `canary-original-flags.jsonl`): 5,851 input tokens for a one-sentence prompt to Haiku 5.5 (573 for that
+  prompt with the extra flags of the revised route), and 97,813 and 6,413 for two questions with the test-3
+  prompt to Fable 5.2, the larger most likely because the account's connector tools were attached. Whether
+  the stored calls carried such an attachment is not known: the rows record cost, not tokens, and repeated
+  context is cached, so cost does not bound it.
 - **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; the
   rows of the test-2 runs of 2026-11-18 do not record the effort setting. On
   2026-11-18 Opus 4.6 ran at low effort in every test; the authors record
@@ -197,7 +205,7 @@ report values remain unchanged.
   Calls marked as carrying attached context, or whose attempt failed, were
   asked again; the marked rows stay in the files and are not scored, and neither are the two rows of
   `experiments/decoy_control/results/canary-original-flags.jsonl`.
-- **Calls listing a second model:** for 6 of the 2,854 calls, the tool's usage
+- **Calls listing a second model:** for 6 of the 2,854 recorded calls, the tool's usage
   record (the `served` field, from `modelUsage`) lists a second model besides
   the one requested. Three are Opus 5.5 next-residue calls at high effort; three
   are in test 4 (PDB 29BS for Fable 5.2, 15AY and 7IMP for Opus 5.5). The record
