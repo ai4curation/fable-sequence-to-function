@@ -27,7 +27,7 @@ OUT_ROOT = HERE / "results_vertex"
 sys.path.insert(0, str(EXP))
 sys.path.insert(0, str(HERE))
 from common import KEYS, answer, has_tool_call, sha  # noqa: E402
-from run_agy import agy_unusable, build_questions  # noqa: E402
+from run_agy import agy_unusable, build_questions, response_metadata  # noqa: E402
 
 DEFAULT_PROJECT = "test-project-covid-19-277821"
 
@@ -65,6 +65,7 @@ def call_vertex(project: str, model: str, effort: str, prompt: str, tries: int =
         cli_version="vertex-ai-v1-global",
     )
     d = None
+    headers = None
     why = ""
     t0 = time.time()
     for attempt in range(1, tries + 1):
@@ -77,6 +78,7 @@ def call_vertex(project: str, model: str, effort: str, prompt: str, tries: int =
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 d = json.loads(resp.read())
+                headers = dict(resp.headers.items())
             break
         except urllib.error.HTTPError as e:
             err_body = e.read().decode(errors="replace")[:400]
@@ -100,6 +102,12 @@ def call_vertex(project: str, model: str, effort: str, prompt: str, tries: int =
     if d is None:
         return None, dict(rec, error=why or "no response")
 
+    rec.update(
+        response_id=d.get("responseId"),
+        create_time=d.get("createTime"),
+        model_version=d.get("modelVersion"),
+        response_metadata=response_metadata(d, headers),
+    )
     cands = d.get("candidates") or []
     if not cands:
         return None, dict(rec, error=f"no candidates: {d.get('promptFeedback')}")
@@ -112,7 +120,6 @@ def call_vertex(project: str, model: str, effort: str, prompt: str, tries: int =
         status="SUCCESS",
         num_turns=1,
         finish_reason=cand.get("finishReason"),
-        model_version=d.get("modelVersion"),
         input_tokens=u.get("promptTokenCount"),
         output_tokens=u.get("candidatesTokenCount"),
         thinking_tokens=u.get("thoughtsTokenCount"),

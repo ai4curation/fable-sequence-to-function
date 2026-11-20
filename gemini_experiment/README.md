@@ -115,6 +115,16 @@ Offline reproduction needs neither credentials nor authentication windows.
 
 The JSONL records preserve reply text, prompt hashes, effort (or a CLI model name
 encoding effort), times, attempt counts, and available token/model metadata.
+Rows written from #155 on also keep Google's `responseId` (`response_id`), its
+`createTime` (`create_time`) and the full response metadata (`response_metadata`):
+`modelVersion`, `usageMetadata`, `promptFeedback`, every candidate field such as
+`finishReason` and `safetyRatings`, and the HTTP response headers without cookies.
+Content parts are kept without their text and thought signature, whose lengths are
+recorded instead. A safety block keeps its metadata too. The stored rows of
+2026-11-19 predate this and record only the model version. `audit.py` checks that
+a row's response ID, model version, finish reason and reply length agree with its
+stored metadata; `scripts/check_gemini_runners_with_stub_endpoint.py` (part of
+`just check-calls`) exercises both runners against a stub endpoint.
 Retries are transport/error recovery, not deliberate independent replicates.
 Intermediate failed attempts and their token usage were not fully retained; costs
 and total billed requests cannot be reconstructed. The scripts evolved during
