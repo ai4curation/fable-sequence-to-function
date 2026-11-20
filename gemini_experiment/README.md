@@ -118,9 +118,10 @@ encoding effort), times, attempt counts, and available token/model metadata.
 Rows written from #155 on also keep Google's `responseId` (`response_id`), its
 `createTime` (`create_time`) and the full response metadata (`response_metadata`):
 `modelVersion`, `usageMetadata`, `promptFeedback`, every candidate field such as
-`finishReason` and `safetyRatings`, and the HTTP response headers without cookies.
-Content parts are kept without their text and thought signature, whose lengths are
-recorded instead. A safety block keeps its metadata too. The stored rows of
+`finishReason` and `safetyRatings`, and the HTTP response headers (repeats kept,
+cookies dropped). Fields that carry reply content (part text, thought signatures,
+and, if a request ever asked for them, tool calls, inline data, grounding segments
+or logprobs) are replaced by their size. A safety block keeps its metadata too. The stored rows of
 2026-11-19 predate this and record only the model version. `audit.py` checks that
 a row's response ID, model version, finish reason and reply length agree with its
 stored metadata; `scripts/check_gemini_runners_with_stub_endpoint.py` (part of

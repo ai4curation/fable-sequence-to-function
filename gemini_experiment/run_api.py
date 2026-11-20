@@ -62,7 +62,7 @@ def call_gemini_api(model: str, effort: str, prompt: str, tries: int = 5, timeou
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 d = json.loads(resp.read())
-                headers = dict(resp.headers.items())
+                headers = list(resp.headers.items())  # repeats kept (#157)
             break
         except urllib.error.HTTPError as e:
             err_body = e.read().decode(errors="replace")[:400]

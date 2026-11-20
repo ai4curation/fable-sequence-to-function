@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Purpose: check that gemini_experiment/audit.py fails on the defects it now claims to catch (#145):
 #   one planted defect of each kind it checks (#145, #150).
-# The unmutated control must print MISSED, so that a crash is not mistaken for a catch.
+# The unmutated control, and the one adding consistent response metadata, must print MISSED, so that a crash is not mistaken for a catch.
 # Inputs: this checkout. Outputs: one line per mutation (CAUGHT / MISSED) on stdout; scratch copies
 #   under .temp/audit_mutations/ (gitignored), removed at the end.
 # PR #148, 2026-11-19.
@@ -93,4 +93,17 @@ import json, pathlib
 p = pathlib.Path("gemini_experiment/results_vertex/next_residue/gemini-4-neon-low.jsonl")
 rows = [json.loads(l) for l in p.read_text().splitlines()]; r = next(r for r in rows if "error" not in r); r["exact10"] = not r["exact10"]
 p.write_text("".join(json.dumps(r) + "\n" for r in rows))'
+inject_metadata='
+import json, pathlib, sys
+sys.path.insert(0, "gemini_experiment"); sys.path.insert(0, "experiments")
+from run_agy import response_metadata
+p = pathlib.Path("gemini_experiment/results_vertex/structure/gemini-4-neon-medium.jsonl")
+rows = [json.loads(l) for l in p.read_text().splitlines()]; r = rows[0]
+d = {"candidates": [{"content": {"parts": [{"text": r["text"]}]}, "finishReason": r["finish_reason"]}],
+     "modelVersion": r["model_version"], "responseId": "rid-1"}
+r.update(response_id="rid-1", response_metadata=response_metadata(d, []))
+BREAK
+p.write_text("".join(json.dumps(r) + "\n" for r in rows))'
+mutate "consistent response metadata (second control: must print MISSED)" "${inject_metadata/BREAK/}"
+mutate "response metadata differs from the row" "${inject_metadata/BREAK/r[\"response_id\"] = \"rid-2\"}"
 rm -rf "$work"

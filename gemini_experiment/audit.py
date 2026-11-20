@@ -35,10 +35,13 @@ def metadata_problem(row):
         return "response id differs from the stored metadata"
     if row.get("model_version") != m.get("modelVersion"):
         return "model version differs from the stored metadata"
-    cand = m["candidates"][0]
+    cands = m.get("candidates") or []
+    if not cands:
+        return "stored metadata has no candidate"
+    cand = cands[0]
     if row.get("finish_reason") != cand.get("finishReason"):
         return "finish reason differs from the stored metadata"
-    shown = sum(q.get("text_chars", 0) for q in cand["content"]["parts"] if not q.get("thought"))
+    shown = sum(q.get("text_chars", 0) for q in (cand.get("content") or {}).get("parts") or [] if not q.get("thought"))
     if shown != len(row.get("text") or ""):
         return "reply length differs from the stored metadata"
     return None

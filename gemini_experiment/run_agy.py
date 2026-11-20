@@ -91,31 +91,57 @@ def agy_unusable(row: dict) -> bool:
 NO_TOOL_PREFIX = "Do not call or invoke any tools. "
 
 
+# Fields that carry reply content. They are replaced by their size: the visible reply is already
+# in the row's `text` (#155, #157). The requests ask for no tools or logprobs, so only `text` and
+# `thoughtSignature` occur today.
+_PART_CONTENT = ("text", "thoughtSignature", "functionCall", "functionResponse", "executableCode",
+                 "codeExecutionResult", "inlineData", "fileData")
+_CANDIDATE_CONTENT = ("groundingMetadata", "logprobsResult")
+
+
+def _size(key, value):
+    if key == "text":
+        return "text_chars", len(value)
+    if key == "thoughtSignature":
+        return "thought_signature_chars", len(value)
+    return f"{key}_json_chars", len(json.dumps(value))
+
+
 def response_metadata(d: dict, headers=None) -> dict:
-    """Everything the Gemini endpoint returned except the reply text itself (#155).
+    """Everything the Gemini endpoint returned except reply content (#155, #157).
 
     Keeps responseId, createTime, modelVersion, usageMetadata, promptFeedback and every candidate
-    field (finishReason, safetyRatings, citationMetadata, ...). Each content part is kept without
-    its text and thought signature, whose lengths are recorded instead; the visible reply text is
-    already stored in the row's `text`. `headers` are the HTTP response headers, minus cookies.
+    field (finishReason, safetyRatings, citationMetadata, ...) as returned. Fields that carry reply
+    content (part text, thought signatures, tool calls, inline data, grounding segments, logprobs)
+    are replaced by their size. `headers` is a list of (name, value) pairs from the HTTP response,
+    repeats kept, cookies dropped.
     """
     meta = {k: v for k, v in d.items() if k != "candidates"}
-    meta["candidates"] = []
+    if "candidates" in d:
+        meta["candidates"] = []
     for c in d.get("candidates") or []:
-        c2 = {k: v for k, v in c.items() if k != "content"}
-        parts = []
-        for part in (c.get("content") or {}).get("parts") or []:
-            q = {k: v for k, v in part.items() if k not in ("text", "thoughtSignature")}
-            if "text" in part:
-                q["text_chars"] = len(part["text"])
-            if "thoughtSignature" in part:
-                q["thought_signature_chars"] = len(part["thoughtSignature"])
-            parts.append(q)
-        c2["content"] = {k: v for k, v in (c.get("content") or {}).items() if k != "parts"}
-        c2["content"]["parts"] = parts
+        c2 = {}
+        for k, v in c.items():
+            if k in _CANDIDATE_CONTENT:
+                c2.update([_size(k, v)])
+            elif k == "content" and isinstance(v, dict):
+                content = {ck: cv for ck, cv in v.items() if ck != "parts"}
+                if "parts" in v:
+                    content["parts"] = []
+                    for part in v["parts"] or []:
+                        q = {}
+                        for pk, pv in part.items():
+                            if pk in _PART_CONTENT:
+                                q.update([_size(pk, pv)])
+                            else:
+                                q[pk] = pv
+                        content["parts"].append(q)
+                c2[k] = content
+            else:
+                c2[k] = v
         meta["candidates"].append(c2)
     if headers is not None:
-        meta["http_headers"] = {k: v for k, v in headers.items() if k.lower() not in ("set-cookie", "cookie")}
+        meta["http_headers"] = [[k, v] for k, v in headers if k.lower() not in ("set-cookie", "cookie")]
     return meta
 
 

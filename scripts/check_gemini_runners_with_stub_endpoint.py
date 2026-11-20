@@ -9,6 +9,7 @@ Outputs: one "ok"/"FAIL" line per check; exit 1 on any failure.
 PR: #155 follow-up on the #115 branch, 2026-11-19.
 """
 import copy
+import email.message
 import io
 import json
 import pathlib
@@ -63,8 +64,10 @@ ANSWER = {
 }
 BLOCKED = {"promptFeedback": {"blockReason": "SAFETY"}, "usageMetadata": {"promptTokenCount": 150},
            "modelVersion": "gemini-4-neon", "createTime": "2026-11-19T16:30:00Z", "responseId": "stub-response-id-2"}
-HEADERS = {"Content-Type": "application/json; charset=UTF-8", "Server-Timing": "gfet4t7; dur=812",
-           "Set-Cookie": "should-not-be-kept"}
+HEADERS = email.message.Message()  # what urllib's resp.headers is; repeated names are possible
+for k, v in (("Content-Type", "application/json; charset=UTF-8"), ("Vary", "Origin"), ("Vary", "X-Origin"),
+             ("Server-Timing", "gfet4t7; dur=812"), ("Set-Cookie", "should-not-be-kept")):
+    HEADERS[k] = v
 
 
 def run(call, body=None, http_error=None):
@@ -98,8 +101,9 @@ for name, call in callers.items():
     check(all("text" not in q and "thoughtSignature" not in q for q in parts)
           and [q.get("text_chars") for q in parts] == [17, 10] and parts[0].get("thought_signature_chars") == 12,
           f"{name}: part texts and signature dropped, their lengths kept")
-    check("Set-Cookie" not in m.get("http_headers", {}) and "Server-Timing" in m.get("http_headers", {}),
-          f"{name}: response headers kept without cookies")
+    h = m.get("http_headers", [])
+    check([v for k, v in h if k == "Vary"] == ["Origin", "X-Origin"] and not any(k.lower() == "set-cookie" for k, _ in h)
+          and ["Server-Timing", "gfet4t7; dur=812"] in h, f"{name}: response headers kept, repeats too, without cookies")
     check(json.loads(json.dumps(rec)) == rec, f"{name}: row is JSON-serialisable")
 
     text, rec = run(call, BLOCKED)
@@ -110,6 +114,22 @@ for name, call in callers.items():
     text, rec = run(call, http_error=400)
     check(text is None and rec.get("error", "").startswith("HTTP 400") and "response_metadata" not in rec,
           f"{name}: HTTP error row has the error and no metadata")
+
+# Reply content outside part text is stripped too, and absent fields are not invented (#157).
+from run_agy import response_metadata  # noqa: E402
+
+m = response_metadata({"candidates": [
+    {"finishReason": "SAFETY"},
+    {"content": {"parts": [{"functionCall": {"name": "f", "args": {"q": "SECRET-REPLY"}}},
+                           {"executableCode": {"code": "SECRET-REPLY"}}]},
+     "groundingMetadata": {"groundingSupports": [{"segment": {"text": "SECRET-REPLY"}}]},
+     "logprobsResult": {"chosenCandidates": [{"token": "SECRET-REPLY"}]}},
+]})
+check("SECRET-REPLY" not in json.dumps(m), "response_metadata: tool calls, code, grounding and logprobs stripped")
+check(m["candidates"][0] == {"finishReason": "SAFETY"}, "response_metadata: a candidate without content gets none")
+check("functionCall_json_chars" in m["candidates"][1]["content"]["parts"][0]
+      and "groundingMetadata_json_chars" in m["candidates"][1], "response_metadata: stripped fields leave their size")
+check("candidates" not in response_metadata({"promptFeedback": {}}), "response_metadata: no candidates key invented")
 
 # The audit's new checks, on a row like the one run_vertex writes.
 import audit  # noqa: E402
@@ -123,5 +143,9 @@ for field, value in (("response_id", "other"), ("model_version", "gemini-other")
     bad = copy.deepcopy(row)
     bad[field] = value
     check(audit.metadata_problem(bad) is not None, f"audit.metadata_problem: altered {field} fails")
+
+empty = copy.deepcopy(row)
+empty["response_metadata"]["candidates"] = []
+check(audit.metadata_problem(empty) == "stored metadata has no candidate", "audit.metadata_problem: empty candidates is a message, not a crash")
 
 sys.exit(1 if FAILS else 0)
