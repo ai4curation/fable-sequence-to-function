@@ -63,7 +63,8 @@ Reading the residues has a known limit. The loss of a catalytic residue predicts
 prove it. A survey of enzyme families found that mutation of catalytic residues is not always a good
 indication of lack of activity \citep{ribeiro2020pitfalls}, and in some proteins the residues needed for
 catalysis have moved elsewhere in the sequence \citep{goldberg2023pseudoenzymes}: WNK1 lacks the catalytic
-lysine at its usual position and is a protein kinase \citep{xu2000wnk1}.
+lysine of kinase subdomain~II yet is an active kinase, and its activity requires Lys233, in subdomain~I
+\citep{xu2000wnk1}.
 
 We therefore ran four small tests with controls intended to probe sequence sensitivity: a subsample
 replication of the next-residue result; domain and membrane-feature annotation with shuffled sequences as
@@ -152,8 +153,9 @@ unreviewed entries are themselves predicted. Each protein was also presented shu
 \paragraph{Test 3, dead mutants and natural pseudoenzymes.} A dead mutant here is an active enzyme in
 which we substituted one catalytic residue; a natural pseudoenzyme is an evolved homologue, which usually
 differs from active relatives at many positions. UniProt curates pseudoenzymes in Swiss-Prot
-\citep{zaru2020uniprot}; on 18 November 2026, 688 reviewed entries carried ``inactive'' in the protein
-name, 107 of them in the protein kinase superfamily. From Swiss-Prot, excluding human, mouse and rat, we took 20 active
+\citep{zaru2020uniprot}; in UniProt release 2026\_04, queried on 18 November 2026, 688 reviewed entries
+carried ``inactive'' in a recommended or alternative protein name (492 in the recommended name), 107 of them
+in the protein kinase superfamily. From Swiss-Prot, excluding human, mouse and rat, we took 20 active
 protein kinases with a curated proton-acceptor aspartate and ATP-binding lysine; 20 kinase-fold proteins
 whose name contains ``inactive''; and 20 non-kinase enzymes with a curated active site. Each kinase was
 also presented with the aspartate changed to asparagine and, separately, the lysine changed to
