@@ -4,8 +4,9 @@ These runs reuse the original test sets and sequence prompts. The main result is
 that Gemini 4 Neon detects kinase substitutions (low effort) and predicts secondary
 structure and contacts above baseline (medium effort), but at low effort shows no
 detectable real-minus-shuffled next-residue advantage and identifies none of the 15
-obscure DUF families. Opus 5.5 at low effort also showed no detectable advantage, so
-the test-1 result may reflect the effort setting. Flash Lite at high effort is below
+obscure DUF families. Opus 5.5 at low effort also showed no detectable advantage, but
+Neon thought on every test-1 question and Opus 5.5 at low effort on none, so the
+effort labels do not match and the result is not attributed to model or setting. Flash Lite at high effort is below
 both structure baselines on the novel stratum.
 Model identifiers below are those recorded by the endpoints; they are not claims
 about public availability, training dates, or comparable reasoning budgets.
@@ -32,7 +33,9 @@ questions (equal prompt hashes wherever a Claude row records one: 8 test-1, 126
 test-2, 120 test-3 and 30 test-4 rows; equal targets and families for all 272 test-1
 questions), that each row's model and effort match its file name, that usable
 replies parse, and that the stored next-residue scores recompute
-(`scripts/adhoc/mutation_check_gemini_audit.sh` shows it fails on each of these). It does not authenticate the remote service or establish
+(`scripts/adhoc/mutation_check_gemini_audit.sh` plants one defect of each kind and
+shows that the audit fails on it). It also checks each test-1 row's family and, for
+API rows, that the endpoint's model version equals the requested model. It does not authenticate the remote service or establish
 training-data independence.
 
 ## Runs and coverage
@@ -127,7 +130,7 @@ only the requested label (#141).
 
 Six Neon test-1 rows (A0A8J3A1V5 shuffled cuts 276 and 280, A0A6J4GRP3 real cuts
 445 and 484, A0A0H3J4F4 real cut 185 and shuffled cut 224, all asked between
-16:27 and 16:30 UTC) record 764 to 921 input tokens, 1.3 to 1.9 per prompt
+16:27:29 and 16:29:55 UTC, a window in which 144 of the 272 rows were asked) record 764 to 921 input tokens, 1.3 to 1.9 per prompt
 character, against at most 0.5 for the other 265. What the extra input was is not
 known (#143).
 

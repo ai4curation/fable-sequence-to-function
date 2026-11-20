@@ -52,6 +52,8 @@ vertex_unusable = agy_unusable  # one rule for resume and scoring (#144)
 
 
 def call_vertex(project: str, model: str, effort: str, prompt: str, tries: int = 3, timeout: int = 480):
+    if model.startswith("gemini-2.5"):  # these take a thinking budget, not a level (#141, #150)
+        raise ValueError("run_vertex.py sends thinkingLevel; use run_api.py for gemini-2.5 models")
     url = f"https://aiplatform.googleapis.com/v1/projects/{project}/locations/global/publishers/google/models/{model}:generateContent"
     payload = {
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
