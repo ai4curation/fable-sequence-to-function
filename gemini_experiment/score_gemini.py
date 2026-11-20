@@ -11,6 +11,7 @@ scorers find none of either.
 Usage:
     uv run python gemini_experiment/score_gemini.py results_vertex
     uv run python gemini_experiment/score_gemini.py results
+    uv run python gemini_experiment/score_gemini.py gpt6_experiment/results   (GPT-6 rows, #52)
 """
 import json
 import importlib.util
@@ -202,7 +203,10 @@ def score_structure():
 def main():
     global RES
     if len(sys.argv) > 1:
-        RES = pathlib.Path(__file__).resolve().parent / sys.argv[1]
+        # a folder of gemini_experiment/ (results, results_vertex), or any other results folder by its path
+        # from the repository root or an absolute path, e.g. gpt6_experiment/results (#52)
+        here = pathlib.Path(__file__).resolve().parent / sys.argv[1]
+        RES = here if here.is_dir() else (ROOT / sys.argv[1]).resolve()
     score_next_residue()
     score_features()
     score_pseudo()

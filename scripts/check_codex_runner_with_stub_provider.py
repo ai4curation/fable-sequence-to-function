@@ -162,5 +162,39 @@ except SystemExit:
     refused = True
 check(refused, "home inside a git repository: refused")
 
+# 10. rows written as the runner writes them are read by the scorer and the audit (#52)
+import subprocess  # noqa: E402
+sys.path.insert(0, str(ROOT / "gemini_experiment"))
+from run_agy import build_questions  # noqa: E402
+
+RESULTS = HOME / "results"
+shutil.rmtree(RESULTS, ignore_errors=True)
+for test, n in (("next_residue", 2), ("structure", 1)):
+    qs, _ = build_questions(test, "gpt-6-astra-high", 2)
+    rows = []
+    for _, prompt, meta in qs[:n]:
+        MODE.clear()
+        MODE.update(kind="answer")
+        if test == "structure":
+            MODE["text"] = json.dumps({"helices": [[2, 9]], "strands": [], "fold": "f", "contacts": [], "protein_name": "p",
+                                       "function": "f", "functional_residues": [], "recognised": "no"})
+        text, rec = run_codex.call_codex("gpt-6-astra", "high", prompt, prep, HOME, extra=PROVIDER, tries=1, timeout=120)
+        rows.append(run_codex.build_row(test, meta, text, rec))
+    (RESULTS / test).mkdir(parents=True, exist_ok=True)
+    (RESULTS / test / "gpt-6-astra-high.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+score = subprocess.run([sys.executable, str(ROOT / "gemini_experiment" / "score_gemini.py"), str(RESULTS)],
+                       capture_output=True, text=True, cwd=ROOT)
+check(score.returncode == 0 and "== gpt-6-astra-high: 2 usable" in score.stdout and "== gpt-6-astra-high: 1 usable" in score.stdout,
+      "scorer: reads the GPT-6 rows (2 test-1 rows, 1 test-4 row usable)")
+audit = subprocess.run([sys.executable, str(ROOT / "gemini_experiment" / "audit.py"), str(RESULTS)],
+                       capture_output=True, text=True, cwd=ROOT)
+check(audit.returncode == 0 and "gpt-6-astra-high.jsonl" in audit.stdout, f"audit: passes on the GPT-6 rows ({audit.stderr.strip()[-200:]})")
+bad = [json.loads(l) for l in (RESULTS / "structure" / "gpt-6-astra-high.jsonl").read_text().splitlines()]
+bad[0]["context_ok"] = False
+(RESULTS / "structure" / "gpt-6-astra-high.jsonl").write_text("".join(json.dumps(r) + "\n" for r in bad))
+audit = subprocess.run([sys.executable, str(ROOT / "gemini_experiment" / "audit.py"), str(RESULTS)],
+                       capture_output=True, text=True, cwd=ROOT)
+check(audit.returncode != 0 and "context check" in audit.stderr, "audit: fails a usable GPT-6 row whose context check failed")
+
 srv.shutdown()
 sys.exit(1 if FAILS else 0)

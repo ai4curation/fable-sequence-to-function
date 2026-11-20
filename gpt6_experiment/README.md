@@ -58,7 +58,19 @@ warning or error item; there is exactly one non-empty agent message and one mode
 requested the named model; and the input tokens are within the limit. `unusable_because` lists the
 reasons otherwise.
 
-Not yet done: `experiments/summary.py` and the scorers do not read `gpt6_experiment/` rows (#52).
+## Scoring and audit
+
+Rows have the same layout as the Gemini rows (`build_row`), so the Gemini scorer and audit read them:
+
+    uv run python gemini_experiment/score_gemini.py gpt6_experiment/results
+    uv run python gemini_experiment/audit.py gpt6_experiment/results
+
+For GPT-6 rows the audit also requires, of every usable row, a passing context check, the named
+model requested, and input tokens within the limit. `scripts/check_codex_runner_with_stub_provider.py`
+writes rows through the runner against a stub and runs both commands on them. Once real rows exist,
+add both commands to `just report` and `just check` with frozen outputs in `expected/`.
+`experiments/summary.py` totals the Claude calls only, as for the Gemini rows; the audit's coverage
+lines give the GPT-6 counts.
 
 ## Not yet known (needs a live call)
 
