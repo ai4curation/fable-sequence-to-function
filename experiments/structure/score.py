@@ -2,6 +2,8 @@
 
 Reports each stratum as drawn, and the novel stratum with human ASPRV1 counted once (it was drawn four times).
 A few calls list a second model in their usage record; they are listed, and every line is repeated without them.
+Replies that took more than one request (the tool continued them after an output limit or a classifier stop) are
+scored like any other; every line is also repeated without them, as a sensitivity check (#83).
 Also prints the counts from the manual function grading in function_grading.yaml.
 The answer is read from each reply's text by common.answer: the last JSON object with the requested keys.
 figures/make_figures.py imports load() and one() from this file, so the figures use the same scoring code.
@@ -51,8 +53,10 @@ def main():
         if cost_unknown(R): print(f"  {NOTE_COST}: {len(cost_unknown(R))}")
         if continued(R): print(f"  {NOTE_CONTINUED}: {len(continued(R))}")
         if tool: print(f"  {NOTE_TOOL}: " + ", ".join(r["pdb"] for r in tool))
-        for tag, keep in (("", lambda r: True), (" [without those calls]", lambda r: r["pdb"] not in mixed)):
-            if tag and not mixed: continue
+        cont = {r["pdb"] for r in continued(R)}
+        for tag, keep, skip in (("", lambda r: True, False), (" [without those calls]", lambda r: r["pdb"] not in mixed, not mixed),
+                                (" [without continued replies]", lambda r: r["pdb"] not in cont, not cont)):   # #83
+            if skip: continue
             sel = [r for r in ok if keep(r)]
             known = None
             for stratum in ("novel", "known"):
