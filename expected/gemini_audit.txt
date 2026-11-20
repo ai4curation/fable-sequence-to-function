@@ -1,3 +1,7 @@
+next_residue: all 272 questions found in the Claude rows; 8 Claude rows with a prompt hash, all equal
+features: all 120 questions found in the Claude rows; 126 Claude rows with a prompt hash, all equal
+pseudo: all 120 questions found in the Claude rows; 120 Claude rows with a prompt hash, all equal
+structure: all 30 questions found in the Claude rows; 30 Claude rows with a prompt hash, all equal
 results_vertex/features/gemini-4-neon-low.jsonl
   expected 120; rows 120; unique attempted 120; usable 120; unusable rows 0; duplicate rows 0
   safety-block rows 0; rows with retries 1; missing usable questions 0
@@ -58,6 +62,10 @@ results/structure/gemini-3.1-flash-lite-high.jsonl
   safety-block rows 0; rows with retries 7; missing usable questions 0
   route {'gemini-rest-v1beta': 30}; model version {'gemini-3.1-flash-lite': 30}; finish {'STOP': 30}
   median thinking tokens 5486.5
-All question identities, prompt hashes, parsed answers, and next-residue scores verified.
+Verified: the Gemini and Claude questions are the same set, with equal prompt hashes wherever a
+Claude row records one; each row's model and effort match its file name, and each usable API row's
+model version equals its model; each row's prompt hash matches the rebuilt question; every usable
+reply in tests 2-4 yields a JSON answer; and the stored next-residue target, family, prediction
+and scores match a recomputation.
 CLI pilot hashes describe the base prompt; run_agy.py prepended a no-tool instruction.
 Retries record attempt counts, not all failed responses or their token usage.

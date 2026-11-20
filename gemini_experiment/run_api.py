@@ -26,7 +26,7 @@ OUT_ROOT = HERE / "results"
 sys.path.insert(0, str(EXP))
 sys.path.insert(0, str(HERE))
 from common import KEYS, answer, has_tool_call, sha  # noqa: E402
-from run_agy import build_questions  # noqa: E402
+from run_agy import agy_unusable, build_questions  # noqa: E402
 
 
 def thinking_config(model: str, effort: str) -> dict:
@@ -36,8 +36,7 @@ def thinking_config(model: str, effort: str) -> dict:
     return {"thinkingConfig": {"thinkingLevel": effort.upper()}}
 
 
-def api_unusable(row: dict) -> bool:
-    return "error" in row or row.get("status") != "SUCCESS"
+api_unusable = agy_unusable  # one rule for resume and scoring (#144)
 
 
 def call_gemini_api(model: str, effort: str, prompt: str, tries: int = 5, timeout: int = 240):

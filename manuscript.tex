@@ -25,16 +25,17 @@ for 35 to 39 of 45 sampled bacterial and archaeal proteins, with domain boundari
 reference by 0.85, and almost never assigned a domain to a shuffled sequence. They detected a single
 catalytic-residue substitution introduced into an active enzyme and named the changed position: a kinase
 with its catalytic aspartate changed to asparagine was called active in 0 of 20 cases by either model, and
-a matched substitution at an unannotated position left the protein called active in 58 of 58 cases. The
+a matched substitution at an unannotated position was called active in 58 of 58 cases. The
 older Claude Opus~4.6, at the same effort setting, also rejected the aspartate mutants (2 of 20 called
 active) but accepted 17 of 20 lysine mutants and 14 of 20 mutants of other enzymes, and assigned a Pfam
 domain to 28 of 60 shuffled sequences. For recently released protein structures with no earlier PDB entry at
 30\% sequence identity or more, three-state secondary structure accuracy was 73 to 76\%, against 57\% for
-the best single-state guess, and long-range contact precision was 19 to 37\%, against 2\% by chance. An extension using Gemini~4 Neon detected all 20 kinase aspartate substitutions and reached
-69\% secondary structure accuracy and 28\% contact precision on the same distinct novel-stratum proteins.
+the best single-state guess, and long-range contact precision was 19 to 37\%, against 2\% by chance. An extension using Gemini~4 Neon detected all 20 kinase aspartate substitutions at low effort and, at
+medium effort, reached 69\% secondary structure accuracy and 28\% contact precision on the same distinct novel-stratum proteins.
 Yet Neon at low effort showed no detectable next-residue advantage over shuffled sequences and
-identified none of 15 obscure DUF families. The models also fail in specific ways: they shift a catalytic role to a neighbouring identical
-residue, and they argue around a substitution they have just reported. The tests are small, with no stochastic replicate runs under a fixed configuration. We conclude that sequence-only reading by these models is good enough to triage
+identified none of 15 obscure DUF families. Fable~5.2 and Opus~5.5 also fail in specific ways: with a catalytic residue substituted, both named a
+neighbouring identical residue as catalytic, and Fable~5.2 argued around a substitution it had just reported. The tests are small, and most
+questions were asked once per model and effort setting. We conclude that sequence-only reading by Fable~5.2 and Opus~5.5 is good enough to triage
 pseudoenzyme over-annotation, and is not a citable source of evidence.
 \end{abstract}
 
@@ -67,18 +68,20 @@ capabilities also occur through another provider and access route.
 
 \paragraph{Models and access.} We tested \texttt{claude-fable-5-2}, \texttt{claude-opus-5-5} and, as an
 older comparison, \texttt{claude-opus-4-6}. Each question was one call to the \texttt{claude} command-line
-tool in print mode with no tools and an empty system prompt; we confirmed that calls were single-turn with
-no web search or fetch. This route does not expose temperature, so answers were sampled, and it adds about
+tool in print mode with its built-in tools turned off and an empty system prompt. This route does not expose temperature, so answers were sampled, and it adds about
 1,400 tokens of its own context. Eight Opus~5.5 next-residue questions at high effort, left unasked when
 that run was interrupted, were asked on 19 November (UTC) with Claude Code 2.1.328 and flags that keep user
 settings and connector tools out of the call; that route adds about 600 tokens. Fable~5.2 and Opus~5.5 ran
-at high effort in tests 2 to 4. Opus~4.6 was asked tests 2 to 4 twice: at low effort on 18 November by the
+at high effort in tests 2 to 4; the rows of the test-2 runs of 18 November do not record the effort setting. Opus~4.6 was asked tests 2 to 4 twice: at low effort on 18 November by the
 original route, and at high effort on 19 November by the revised route. Unless stated, we report the
 high-effort run, which matches the effort of the other two models but not their route. Its answers were
 long: 7 of 120 replies in test 3 and 9 of 30 in test 4 took more than one request, because the tool asks again by
-itself after an output limit or a stopped reply, and in test 2 six such replies were asked again. In test 1 Opus~4.6 was run at
+itself after an output limit or a stopped reply, and in test 2 six such replies were asked again, one of whose new answers also took more than one request. In test 1 Opus~4.6 was run at
 low effort only.
-Each question was asked once per run. For 6 of the 2,854 Claude calls in the four tests, the tool's usage record lists a second model
+Counts of web search and fetch requests were kept only in rows written by later versions of the revised
+route's code, mostly those of the Opus~4.6 high-effort runs of tests 3 and 4 and of the rerun of the test-3
+mutants and wild types for the decoy control; none of those rows shows a web request. Each question has at most
+one scored answer per run. For 6 of the 2,854 Claude calls in the four tests, the tool's usage record lists a second model
 besides the one requested: three Opus~5.5 next-residue calls at high effort, all on shuffled sequences, and
 in test 4 one Fable~5.2 and two Opus~5.5 calls, all on known-stratum entries. One of the Opus~5.5 test-4
 calls (PDB 7IMP) returned an API error instead of an answer and is excluded from the scores; for the other
@@ -96,9 +99,15 @@ complete high-effort \texttt{gemini-3.1-flash-lite} runs of tests 3 and 4 throug
 API. Temperature was not specified. Test 1 used real and shuffled sequences only. Neon supplied usable
 answers for 271 of 272 questions in test 1 (one shuffled question was safety-blocked), all 120 in each
 of tests 2 and 3, and all 30 in test 4. Pro and Flash Lite supplied all 30 structure answers. Successful
-API responses finished with \texttt{STOP}. Failed requests could be retried; attempt counts, but not
-all intermediate responses or their token usage, are retained. Incomplete CLI and API pilots are
-preserved separately and excluded from full-test comparisons. Effort labels and access routes are not
+API responses finished with \texttt{STOP}. Requests that met a rate limit, a server error, a Vertex
+authorisation error or an exception in the client were sent again, up to a fixed number of tries; safety blocks were not; attempt counts, but not all intermediate responses or their token usage, are retained. The retry
+rule changed during collection (two Pro rows record four attempts, more than the final script allows), and
+whether an earlier version also re-asked after a completed but unwanted reply cannot be checked from the
+files. For six Neon test-1 questions the endpoint recorded 764 to
+921 input tokens, 1.3 to 1.9 tokens per prompt character against at most 0.5 for the other 265; we could not
+establish what the extra input was. Incomplete CLI and API pilots, including a four-question Gemini~4 Carbon
+structure run, are kept in the repository and excluded from full-test comparisons; the two CLI pilots carried
+median inputs of about 9,800 and 9,900 tokens per call. Effort labels and access routes are not
 matched across providers. Model identifiers are reported as returned by the endpoints; we did not
 establish their training cutoffs.
 
@@ -154,7 +163,7 @@ absence from model training; ``novel'' below denotes this operational stratum on
 
 \section{Results}
 
-\subsection{The next-residue result replicates in direction}
+\subsection{The next-residue result replicates in direction}\label{sec:nextres}
 
 Fable~5.2 predicted real sequence better than shuffled sequence at both effort settings, and Opus~5.5 did
 so at high effort; at low effort the interval for Opus~5.5 includes zero. Opus~4.6, run at low effort only,
@@ -183,7 +192,9 @@ Opus~5.5 at high effort was correct on 37.2\% of real cut points with thinking (
 \begin{table}[ht]
 \centering\small
 \caption{Next-residue accuracy on a 68-family subsample. Gap is real minus shuffled, in percentage points,
-with a 95\% bootstrap interval over families. Neon covers 136 real and 135 shuffled questions.}
+with a 95\% bootstrap interval over families. Neon covers 136 real and 135 shuffled questions and used
+thinking on every one, whereas Fable~5.2 at low effort did so on 38 of 136 real cut points; effort labels
+are not comparable across providers.}
 \label{tab:next}
 \begin{tabular}{llrrrl}
 \toprule
@@ -194,7 +205,7 @@ Fable 5.2 & high & 41.2\% & 11.8\% & -- & $+29.4$ ($+18.4$ to $+40.4$) \\
 Opus 5.5 & low & 16.9\% & 9.6\% & 12.5\% & $+7.4$ ($-1.5$ to $+16.2$) \\
 Opus 5.5 & high & 19.1\% & 7.4\% & -- & $+11.8$ ($+3.7$ to $+20.6$) \\
 Opus 4.6 & low & 5.1\% & 7.4\% & 5.9\% & $-2.2$ ($-7.4$ to $+2.9$) \\
-Gemini 4 Neon & low & 8.8\% & 10.4\% & -- & $-1.5$ ($-8.8$ to $+5.1$) \\
+Gemini 4 Neon & low & 8.8\% & 10.4\% & -- & $-1.5$ ($-8.1$ to $+5.1$) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -217,7 +228,8 @@ repeated them.
 \centering\small
 \caption{Annotation from sequence alone. IoU is the overlap of predicted and reference domain boundaries
 when the family is correct. The first two rows count proteins in each set; the other rows pool both sets,
-60 proteins. All three models at high effort.}
+60 proteins. All three models at high effort; the Fable~5.2 and Opus~5.5 rows do not record the setting
+(Methods).}
 \label{tab:feat}
 \begin{tabular}{lrrr}
 \toprule
@@ -301,7 +313,8 @@ substitution introduced for this study. All three models at high effort.}
 
 For the 12 novel proteins, Fable~5.2 and Opus~5.5 reached 76\% and 73\% three-state accuracy, against
 57\% for the best single-state guess, and 37\% and 19\% long-range contact precision, against 2\% by
-chance (Figure~\ref{fig:struct}). Scores for the known stratum were a few points higher. Fable~5.2 said
+chance (Figure~\ref{fig:struct}). For the known stratum, three-state accuracy was about 5 points higher and contact precision about 12
+points higher. Fable~5.2 said
 it recognised 2 of the 12 novel proteins (ASPRV1 and MrtR) and 14 of the 15 known entries; Opus~5.5 said
 it recognised none of the novel proteins. Opus~4.6 at high effort reached 54\% on secondary structure, below the single-state guess, and 8\%
 contact precision, above chance but far below the newer models; at low effort the values were 48\% and
@@ -337,10 +350,10 @@ guess (left) and the chance rate for a long-range pair (right).}
 \label{fig:struct}
 \end{figure}
 
-\subsection{Gemini reproduces sequence-sensitive annotation and structure prediction, but not the next-residue advantage}
+\subsection{Gemini: Neon detected kinase substitutions and predicted structure above baseline, Flash Lite fell below the structure baselines, and Neon showed no detectable next-residue advantage at low effort}
 
 Neon at low effort scored 8.8\% on real next residues and 10.4\% on shuffled sequences, a
-family-averaged gap of $-1.5$ percentage points (95\% interval $-8.8$ to $+5.1$;
+family-averaged gap of $-1.5$ percentage points (95\% interval $-8.1$ to $+5.1$;
 Table~\ref{tab:next}). It returned no exact ten-residue matches. On domain annotation, it identified at
 least one correct family for 20 of 45 sampled proteins but none of the 15 obscure DUFs. Of 28 predicted
 domains, 23 had the right accession (82.1\%); mean boundary IoU on these was 0.802. No shuffled sequence
@@ -356,7 +369,7 @@ Natural pseudokinases were called inactive in 19/20 cases, all 19 also named ina
 the sole active call was kin-32, shared with the newer Claude models. This does not establish that the
 reference annotation is wrong. Non-kinase mutants were harder: eight remained active calls, eleven
 were called inactive, and one uncertain; eleven mutated positions were flagged. Q9VLA1, Q08651, and
-P64636 remained active calls, as in the Claude runs, but the explanations were not necessarily the same.
+P64636 remained active calls, as in the Fable~5.2, Opus~5.5 and low-effort Opus~4.6 runs, but the explanations were not necessarily the same.
 Flash Lite at high effort was less sensitive to the substituted position: it flagged 6/20 Asp-to-Asn,
 0/20 Lys-to-Met, and 1/20 non-kinase alanine substitutions; it called 15/20 kinase wild types active.
 
@@ -384,8 +397,11 @@ accuracy against a 56.6\% best-single-state baseline, and 28.4\% long-range cont
 1.8\% for a random eligible pair. Its top-five contact precision was 43.3\%. On the 15 known-stratum
 proteins, Q3 was 78.6\%, contact precision 48.0\%, and top-five precision 54.7\%.
 Table~\ref{tab:gemini-structure} places these descriptive results beside the Claude runs. Pro scored
-higher than Flash Lite and lower than Neon on both novel-stratum measures, but model class, effort,
-and route vary; this is not a controlled generational comparison. Nor does a numerical contact advantage
+higher than Flash Lite and lower than Neon on both novel-stratum measures. Flash Lite was below the
+single-state guess on secondary structure and below the chance rate on contacts (1.0\% against 1.8\%).
+Asked whether they recognised each protein, Flash Lite said so for all 12 novel-stratum proteins and Pro
+for 9, against 1 for Neon, 2 for Fable~5.2, none for Opus~5.5, and 1 and 4 for Opus~4.6 at low and
+high effort. Model class, effort, and route vary; this is not a controlled generational comparison. Nor does a numerical contact advantage
 over Opus~5.5 on twelve proteins establish a reliable ranking.
 
 \begin{table}[ht]
@@ -425,16 +441,25 @@ converted into an aggregate abstention or accuracy count.
 
 Fable~5.2 and Opus~5.5 do more than recognise a family. They change their answer when one catalytic
 residue changes and name that residue, and they predict secondary structure and contacts above chance
-for proteins with no earlier PDB entry at 30\% identity. How far this extends is not established here. The comparison with Opus~4.6 is matched for effort but not for call route. On that comparison the older
+for proteins with no earlier PDB entry at 30\% identity. How far this extends is not established here. In
+tests 2 to 4 the comparison with Opus~4.6 is matched for effort but not for call route; in test 1
+and the decoy control Opus~4.6 ran at low effort only. On that comparison the older
 model is not a blank: it found all 9 signal peptides, 67 of 74 transmembrane helices, and the kinase
 aspartate substitution. What separates the newer models is breadth and restraint. They also caught the
 lysine substitution and the active-site changes in other enzyme families, and they left shuffled
 sequences unannotated, where Opus~4.6 invented a domain for nearly half. The decoy control indicates
 that their calls track the catalytic position, within the limits of a control that avoided other conserved
-positions. The Gemini extension shows useful sequence-sensitive annotation at low effort and structure prediction
-at medium effort, despite no detectable next-residue advantage or obscure-DUF identification at low
-effort. This suggests related but separable capabilities, while leaving open whether more reasoning
-would improve those results. No Gemini decoy control was run, and the cross-provider comparisons differ
+positions. Of the Gemini models, Neon came closest: it detected the kinase substitutions at low effort
+and predicted structure above both baselines at medium effort, but named the correct family for fewer
+sampled proteins (20 of 45) and for none of the obscure DUFs. Flash Lite at high effort fell below both
+structure baselines on the novel stratum. Neon at low effort showed no detectable next-residue advantage. Opus~5.5 at low effort showed none
+either, but Neon used thinking on every question it answered and Opus~5.5 at low effort on none, so effort labels do
+not match across providers and this result cannot be attributed to the model or to the setting. On its main
+test set the cited report ran Gemini~4 Carbon and, by raw continuation, Gemini~2.5 Pro, not Neon, at
+temperature 0 where accepted and with thinking off or at the lowest setting, and found both near zero
+\citep{tu2026claude}. Neon's result is consistent with theirs but is not a replication, and it is weak
+evidence, since on the identical questions the Claude models scored well below the published values in
+this setup (Section~\ref{sec:nextres}). No Gemini decoy control was run, and the cross-provider comparisons differ
 in effort and access route.
 
 For annotation review, the practical use is narrow. A sequence-only read can flag a probable pseudoenzyme
@@ -443,16 +468,18 @@ the output has no provenance, its errors are stated as confidently as its correc
 modes we observed end in a confident ``active''. A named catalytic position should be checked against the
 sequence and a curated feature before it is used.
 
-\paragraph{Limitations.} Cells contain 12 to 68 proteins or families, without stochastic replicate runs
-under a fixed configuration. Claude answers were sampled through a command-line tool that adds its own
-context; Gemini API requests used a different route, and temperature was not specified. Neither the
-route effect nor a benefit of greedy decoding was measured. The Opus~4.6 high-effort runs used a revised call route and a later tool version than
+\paragraph{Limitations.} Cells contain 12 to 68 proteins or families, and each question has at most one
+scored answer per model, effort setting and run. The test-3 mutants and wild types were asked again at the
+same effort for the decoy control, and Claude calls marked as carrying attached context, or whose attempt
+failed, were asked again; the marked rows are not scored. Claude answers were sampled through a
+command-line tool that adds its own context; Gemini API requests used a different route, and temperature
+was not specified. Neither the route effect nor a benefit of greedy decoding was measured. The Opus~4.6 high-effort runs used a revised call route and a later tool version than
 the runs of the other two models, and its decoys were asked at low effort only. The decoy positions were
 chosen by a rule written with the help of two of the tested models, and avoid conserved positions.
 Swiss-Prot proteins are well known, so
 wild-type results in test 3 may reflect recall; the mutants do not. Transmembrane and signal-peptide truth
 in test 2 is predicted. Claude function calls in test 4 were graded once, unblinded, by the agent that ran the tests; Gemini function review is qualitative. We did not test eukaryotic
-multi-domain proteins in test 2, membrane proteins in test 4, general variant-effect prediction, or whether reasoning
+multi-domain proteins in test 2, membrane proteins in test 4, general variant-effect prediction, or, beyond Opus~4.6, whether more reasoning effort
 improves tests 2 to 4. The novel stratum of test 4 excludes close homologs in the PDB and nothing else:
 most of its sequences were already public, remote homologs were not excluded, and at least one protein was
 described in a preprint before the structure was released. The split of test-1 accuracy by thinking is
@@ -466,16 +493,20 @@ Scripts, prompts, test sets and all raw model outputs are at
 scoring scripts from the saved model outputs, and \texttt{just check} verifies the data checksums and
 that the numbers reproduce. Test sets were drawn from live UniProt, InterPro and RCSB services on 18
 November 2026 and are committed as drawn, because re-querying those services returns different entries.
-Model calls used Claude Code 2.1.327, except the eight above, the Opus~4.6 high-effort runs and the decoy
-control, which used 2.1.328; repeating them will not return identical answers.
+Claude model calls used Claude Code 2.1.327, except the eight above, the Opus~4.6 high-effort runs and the
+decoy control, which used 2.1.328. The reported Gemini calls went to the Vertex AI and Gemini REST
+endpoints. Repeating either will not return identical answers.
 
 Gemini collection scripts, raw replies, incomplete pilots, and an offline prompt/coverage audit are in
 \texttt{gemini\_experiment/}; these data are included in the checksums and frozen reports.
 
 \section*{Acknowledgements}
 
-The original tests, analysis and draft were produced with Claude Code under the authors' direction.
-The Gemini runs were collected through Antigravity, then audited and incorporated with Codex.
+The original tests, analysis and draft were produced with Claude Code under the authors' direction; that
+agent is itself built on a Claude model. The Gemini runs were collected with Antigravity, through scripts
+that call the Vertex AI and Gemini REST endpoints (the Antigravity command-line route was used only for
+the excluded pilots), then audited and incorporated with Codex. Claude Code reviewed the Gemini extension and prepared
+corrections to it.
 \todo{confirm funding and acknowledgements}
 
 \bibliographystyle{unsrtnat}

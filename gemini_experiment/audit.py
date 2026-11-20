@@ -1,8 +1,12 @@
 """Offline audit of stored Gemini runs; no credentials or model calls required.
 
-Checks question identities, reconstructed prompt hashes, parsing, and next-residue
-scores. Reports coverage, failures, retries, and response metadata independently
-of the performance summaries. Imported runners have no import-time API calls.
+Checks that the Gemini and Claude questions are the same set (prompt hashes where Claude rows record
+them; test-1 targets and families), that row labels match file names and usable API rows report the
+requested model version, that each row's prompt hash matches the rebuilt question, that usable replies
+parse, and that stored next-residue targets, families, predictions and scores recompute. A reversed
+test-1 Gemini row fails as an unexpected question: no Gemini run asked reversed sequences.
+scripts/adhoc/mutation_check_gemini_audit.sh plants one defect for each check. Reports coverage,
+failures, retries, and response metadata independently of the performance summaries. Imported runners have no import-time API calls.
 """
 import ast
 import collections
@@ -37,6 +41,31 @@ def main():
                     pass
         require(prompt in literals, f"{test}: Gemini prompt differs from canonical prompt")
 
+    # Compare the rebuilt questions with the stored Claude rows (#145): prompt hashes where the Claude
+    # rows record one, and for test 1 every question's identity, target and family.
+    for test in ("next_residue", "features", "pseudo", "structure"):
+        questions, key = build_questions(test, "audit", 2)
+        expected = {k: (sha(prompt), meta) for k, prompt, meta in questions}
+        claude = [json.loads(line) for path in sorted((HERE.parent / "experiments" / test / "results").rglob("*.jsonl"))
+                  for line in path.read_text().splitlines() if line.strip()]
+        hashed = covered = 0
+        found = set()
+        for row in claude:
+            identity = key(row)
+            if test == "next_residue" and row.get("condition") == "reversed":
+                continue  # Gemini was not asked reversed sequences
+            require(identity in expected, f"{test}: Claude row {identity} is not one of the rebuilt questions")
+            found.add(identity)
+            if row.get("prompt_sha256"):
+                hashed += 1
+                require(row["prompt_sha256"] == expected[identity][0], f"{test}: prompt differs from Claude row {identity}")
+            if test == "next_residue":
+                meta = expected[identity][1]
+                require((row["target"], row["pfam"]) == (meta["target"], meta["pfam"]), f"{test}: target or family differs from Claude row {identity}")
+        covered = len(found)
+        require(covered == len(expected), f"{test}: {len(expected) - covered} Gemini questions absent from the Claude rows")
+        print(f"{test}: all {covered} questions found in the Claude rows; {hashed} Claude rows with a prompt hash, all equal")
+
     for directory in ("results_vertex", "results"):
         for path in sorted((HERE / directory).glob("*/*.jsonl")):
             test = path.parent.name
@@ -45,6 +74,8 @@ def main():
             rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
             seen, usable = set(), {}
             for row in rows:
+                label = row["model"] if row.get("effort") is None else f"{row['model']}-{row['effort']}"
+                require(label == path.stem, f"{path.name}: row labelled {label}")
                 identity = key(row)
                 require(identity in expected, f"{path.name}: unexpected question {identity}")
                 prompt, meta = expected[identity]
@@ -52,8 +83,11 @@ def main():
                 seen.add(identity)
                 if agy_unusable(row):
                     continue
+                if not str(row.get("cli_version", "")).startswith("agy"):
+                    require(row.get("model_version") == row["model"], f"{path.name}: endpoint model version {row.get('model_version')} for {row['model']}")
                 if test == "next_residue":
                     require(row["target"] == meta["target"], f"{path.name}: target mismatch")
+                    require(row["pfam"] == meta["pfam"], f"{path.name}: family mismatch")
                     candidates = re.findall(r"[ACDEFGHIKLMNPQRSTVWY]{5,}", row["text"].replace(" ", ""))
                     pred = candidates[-1] if candidates else ""
                     valid = bool(pred) and not has_tool_call(row["text"])
@@ -74,7 +108,11 @@ def main():
             if usable:
                 thinking = [r.get("thinking_tokens") or 0 for r in usable.values()]
                 print(f"  median thinking tokens {statistics.median(thinking):g}")
-    print("All question identities, prompt hashes, parsed answers, and next-residue scores verified.")
+    print("Verified: the Gemini and Claude questions are the same set, with equal prompt hashes wherever a")
+    print("Claude row records one; each row's model and effort match its file name, and each usable API row's")
+    print("model version equals its model; each row's prompt hash matches the rebuilt question; every usable")
+    print("reply in tests 2-4 yields a JSON answer; and the stored next-residue target, family, prediction")
+    print("and scores match a recomputation.")
     print("CLI pilot hashes describe the base prompt; run_agy.py prepended a no-tool instruction.")
     print("Retries record attempt counts, not all failed responses or their token usage.")
 

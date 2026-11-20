@@ -3,7 +3,7 @@
 Prints, per results file and in total: calls, calls recorded as errors (an `error` row, `is_error`, attached context,
 or a reply whose text is an API error message; these rows stay in the results files), and calls whose usage record
 (the `served` field) lists more than one model. The totals of the files listed in REPORTED are the ones quoted in the
-Methods (#31); other files (such as the Opus 4.6 high-effort runs of #51) are counted apart.
+Methods (#31), including the Opus 4.6 high-effort runs of #51; any other file is counted apart.
 """
 import json, pathlib, sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent)); from common import unusable

@@ -35,6 +35,7 @@ def line(label, S):
     p = [s["prec"] for s in S if s["prec"] is not None]
     print(f"  {label:34s} n={len(S):2d}: Q3 {m([s['q3'] for s in S]):.1f}% (best single state {m([s['base'] for s in S]):.1f}%); long-range contact precision {m(p):.1f}% "
           f"(top-5 {m([s['top5'] for s in S if s['top5'] is not None]):.1f}%; chance {m([s['chance'] for s in S]):.1f}%); says it recognises the protein {sum(s['rec'] for s in S)}/{len(S)}")
+    return m([s["q3"] for s in S]), m(p)
 def load(f):
     """Rows of one results file with `ans` read from the reply text, and the rows holding more than one answer object."""
     R = [json.loads(l) for l in open(f)]; return R, reparse(R, KEYS["structure"])
@@ -53,9 +54,12 @@ def main():
         for tag, keep in (("", lambda r: True), (" [without those calls]", lambda r: r["pdb"] not in mixed)):
             if tag and not mixed: continue
             sel = [r for r in ok if keep(r)]
+            known = None
             for stratum in ("novel", "known"):
-                line(stratum + tag, [one(T[r["pdb"]], r["ans"]) for r in sel if T[r["pdb"]]["stratum"] == stratum])
-            line("novel, ASPRV1 counted once" + tag, [one(T[r["pdb"]], r["ans"]) for r in sel if T[r["pdb"]]["stratum"] == "novel" and r["pdb"] not in ASPRV1_REPEATS])
+                v = line(stratum + tag, [one(T[r["pdb"]], r["ans"]) for r in sel if T[r["pdb"]]["stratum"] == stratum])
+                if stratum == "known": known = v
+            novel1 = line("novel, ASPRV1 counted once" + tag, [one(T[r["pdb"]], r["ans"]) for r in sel if T[r["pdb"]]["stratum"] == "novel" and r["pdb"] not in ASPRV1_REPEATS])
+            print(f"  {'known minus novel (ASPRV1 once)' + tag}: Q3 {known[0] - novel1[0]:+.1f} points; long-range contact precision {known[1] - novel1[1]:+.1f} points")   # #42
     G = yaml.safe_load((HERE / "function_grading.yaml").read_text())
     print("\n== manual function grading, 12 distinct novel proteins")
     for model in ("claude-fable-5-2", "claude-opus-5-5"):

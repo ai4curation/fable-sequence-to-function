@@ -1,6 +1,6 @@
 """Ask a model, from sequence alone, whether each protein is catalytically active. Usage: ask.py MODEL EFFORT [--tag TAG] [--limit N]
 
-Calls the local `claude` CLI with no tools and an empty system prompt; the same prompt is used for wild-type
+Calls the local `claude` CLI with its built-in tools turned off and an empty system prompt; the same prompt is used for wild-type
 and mutant sequences. Appends to results/MODEL.jsonl (results/MODEL-TAG.jsonl with --tag) and resumes if interrupted;
 see common.call for the route.
 """
