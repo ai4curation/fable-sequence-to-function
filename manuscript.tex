@@ -2,6 +2,7 @@
 % score.py scripts there and figures/make_figures.py. Build: pdflatex, bibtex, pdflatex, pdflatex.
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}\usepackage{lmodern}   % so copied text keeps characters such as the underscore
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx,booktabs,xcolor}
 \usepackage{placeins}
@@ -21,7 +22,7 @@
 \begin{abstract}
 A recent report showed that some general-purpose language models predict the next residue of obscure
 proteins far better than chance. We ask whether such models can do anything useful for annotation when
-given only an amino-acid sequence and no tools. We tested six models from two providers: Claude Fable~5.2,
+given only an amino-acid sequence, with tools turned off. We tested six models from two providers: Claude Fable~5.2,
 Opus~5.5 and Opus~4.6, and Gemini~4 Neon, 3.1 Pro Preview and 3.1 Flash Lite; four were run on all four
 tests. Fable~5.2, Opus~5.5 and Neon named a correct Pfam family for 39, 35 and 20 of 45 sampled bacterial
 and archaeal proteins, with domain boundaries overlapping the reference by 0.80 to 0.85, and assigned a
@@ -60,9 +61,9 @@ Next-residue accuracy does not say whether a model can do anything a curator nee
 tools make characteristic errors, and one of the most damaging is to assign a catalytic activity to a
 protein that keeps the fold of an enzyme and has lost the activity
 \citep{decrecy2025limitations}. Such proteins are called pseudoenzymes, or dead enzymes
-\citep{murphy2017biozombie,adrain2020dead}. Estimates of their share of the proteins in enzyme families
-range from 5 to 15\% \citep{ribeiro2019pseudoenzymes,zaru2020uniprot}, and many act as regulators
-\citep{adrain2020dead}.
+\citep{murphy2017biozombie,adrain2020dead}. A kingdom-wide analysis estimated that they make up 5 to 10\%
+of the proteins in enzyme families \citep{ribeiro2019pseudoenzymes}, and a review of their annotation in
+UniProtKB gives 10 to 15\% \citep{zaru2020uniprot}; many act as regulators \citep{adrain2020dead}.
 Pseudokinases are the best-studied case \citep{kwon2019pseudokinases}. A model that only recognises the
 family will repeat the error; a model that reads the residues should not.
 
@@ -112,12 +113,17 @@ Gemini 3.1 Flash Lite & Google & -- & -- & high & high \\
 \end{table}
 
 \paragraph{Claude calls.} Each question was asked through the \texttt{claude} command-line
-tool in print mode with its built-in tools turned off and an empty system prompt. The original scripts
-tried a question up to three times when the tool's output was not valid JSON and kept only the last
-attempt, so the counts below are of recorded calls; earlier attempts were not recorded. This route does not expose temperature, so answers were sampled, and it adds context of its own,
-whose size the rows of 18 November do not record. Measured on 19 November with the original
-flags and Claude Code 2.1.328, a one-sentence prompt to Haiku~5.5 carried 5,851 input tokens, and two
-test-3 questions to Fable~5.2 carried 97,813 and 6,413. Eight Opus~5.5 next-residue questions at high effort, left unasked when
+tool in print mode with its built-in tools turned off and an empty system prompt. The scripts of 18
+November tried a question up to three times when the tool's output was not valid JSON and kept only the
+last attempt, recording none of the earlier ones; the later runs record the number of attempts in each
+row, and a call marked as carrying attached context was kept as a row and asked again. The call counts
+below are of recorded rows. This route does not expose temperature, so answers were sampled, and it adds context of its own,
+whose size the rows of 18 November do not record. Measured on 19 November with the same context flags and
+Claude Code 2.1.328, a one-sentence prompt to Haiku~5.5 carried 5,851 input tokens; two questions with the
+test-3 prompt to Fable~5.2 carried 97,813 and 6,413, the larger one most likely because the account's
+connector tools were attached. Whether the stored calls carried such an attachment is not known: their
+rows record cost but not tokens, and the tool caches repeated context, so a cached attachment would add far
+less to the cost of each later call. Eight Opus~5.5 next-residue questions at high effort, left unasked when
 that run was interrupted, were asked on 19 November (UTC) with Claude Code 2.1.328 and flags that keep user
 settings and connector tools out of the call; with these flags the one-sentence prompt carried 573 input tokens. Fable~5.2 and Opus~5.5 ran
 at high effort in tests 2 to 4; the rows of the test-2 runs of 18 November do not record the effort setting. Opus~4.6 was asked tests 2 to 4 twice: at low effort on 18 November by the
@@ -135,8 +141,8 @@ in test 4 one Fable~5.2 and two Opus~5.5 calls, all on known-stratum entries. On
 calls (PDB 7IMP) returned an API error instead of an answer and is excluded from the scores; for the other
 five, the record does not show which model wrote the answer, and they are kept in the reported numbers;
 the repository gives tests 1 and 4 with them excluded, and no conclusion changes.
-Where a reply held more than one JSON object, we scored the last one; this applies to three Opus~4.6
-low-effort replies in test 2, in which the second object corrects the first. One Opus~5.5 next-residue reply was a
+Where a reply held more than one JSON object, we scored the last one; this applies to three replies of the
+earlier Opus~4.6 run of test 2, in which the second object corrects the first. One Opus~5.5 next-residue reply was a
 written-out web request instead of a prediction; it is counted as invalid and as a wrong answer.
 
 \paragraph{Gemini calls.} Gemini~4 Neon and Gemini~3.1 Pro Preview were asked on 19 November 2026 through
@@ -184,9 +190,9 @@ unreviewed entries are themselves predicted. Each protein was also presented shu
 \paragraph{Test 3, dead mutants and natural pseudoenzymes.} A dead mutant here is an active enzyme in
 which we substituted one catalytic residue; a natural pseudoenzyme is an evolved homologue, which usually
 differs from active relatives at many positions. UniProt curates pseudoenzymes in Swiss-Prot
-\citep{zaru2020uniprot}; in UniProt release 2026\_04, queried on 18 November 2026, 688 reviewed entries
-carried ``inactive'' in a recommended or alternative protein name (492 in the recommended name), 107 of them
-in the protein kinase superfamily. From Swiss-Prot, excluding human, mouse and rat, we took 20 active
+\citep{zaru2020uniprot}; in UniProt release \texttt{2026\_04}, queried on 19 November 2026 (UTC), 688
+reviewed entries carried ``inactive'' in a protein name (492 in the recommended name), 107 of them in the
+protein kinase superfamily. From Swiss-Prot, excluding human, mouse and rat, we took 20 active
 protein kinases with a curated proton-acceptor aspartate and ATP-binding lysine; 20 kinase-fold proteins
 whose name contains ``inactive''; and 20 non-kinase enzymes with a curated active site. Each kinase was
 also presented with the aspartate changed to asparagine and, separately, the lysine changed to
@@ -291,9 +297,9 @@ domains in these proteins; Table~\ref{tab:feat} pools all 60). For the 15 protei
 domain-of-unknown-function families, Fable~5.2 named the exact family for 8, Opus~5.5 for 3 and Neon for
 none. Neon was the most conservative: it predicted 28 domains, 23 with the right accession, against 70 and
 51 for the other two. All three declined to annotate shuffled sequences. Opus~4.6 at high effort named a
-correct family for 7 of the 45 sampled proteins and assigned a domain to 28 of 60 shuffled sequences; at
-low effort the counts were 5 of 45 and 5 of 60, so more effort produced more invented domains and little
-more recall. Errors were not marked as such: Fable~5.2 assigned one DUF968 protein to a different family,
+correct family for 7 of the 45 sampled proteins and assigned a domain to 28 of 60 shuffled sequences; in its earlier run, at low effort by the authors' record (the test-2 rows of 18 November do not store
+the setting), the counts were 5 of 45 and 5 of 60, so the high-effort run, on the revised route, produced
+more invented domains and little more recall. Errors were not marked as such: Fable~5.2 assigned one DUF968 protein to a different family,
 and all three models split helices in multi-pass transporters (85, 87 and 82 predicted against 74
 annotated), so recovering every reference helix does not mean the membrane annotation is right. Two test
 proteins carry implausible submitter names in UniProt, ``Glycerol dehydrogenase'' on a 128-residue DUF3119
@@ -441,7 +447,7 @@ contact precision, above chance but far below the first three; at low effort the
 4\%. Gemini~3.1 Pro Preview reached 61\% and 13\%. Flash Lite was below the single-state guess on
 secondary structure (44\%) and below the chance rate on contacts (1.0\% against 1.8\%). All of these
 values are far short of dedicated structure predictors \citep{jumper2021alphafold}; the point is that
-three models are well above chance when given no alignment and no tools. Model class, effort and route
+three models are well above chance when given no alignment, with tools turned off. Model class, effort and route
 vary, so this is not a controlled comparison between generations or providers.
 
 Asked whether they recognised each protein, Flash Lite said so for all 12 novel proteins and Pro for 9,
@@ -574,7 +580,7 @@ Neon's result is consistent with theirs but is not a replication.
 
 % NOTE for the authors (T15 source check, 2026-11-20; see review/pseudoenzyme_sources_check_2026-11-20.md).
 % Possible additions to this paragraph, not yet in the text:
-% - MEROPS (release 12.5 glossary) lists "non-peptidase homologues": proteins placed in a peptidase family
+% - MEROPS (release 12.5; glossary page) lists "non-peptidase homologues": proteins placed in a peptidase family
 %   that lack one or more expected catalytic residues; it notes that some are enzymes of other kinds.
 % - Gene Ontology has no pseudoenzyme-specific guidance found; a missing catalytic residue is annotated with
 %   the NOT qualifier and IKR evidence (GO_REF:0000047), as Zaru et al. 2020 describe for UniProtKB.
@@ -617,8 +623,9 @@ Scripts, prompts, test sets and all raw model outputs are at
 scoring scripts from the saved model outputs, and \texttt{just check} verifies the data checksums and
 that the numbers reproduce. Test sets were drawn from live UniProt, InterPro and RCSB services on 18
 November 2026 and are committed as drawn, because re-querying those services returns different entries.
-Claude model calls used Claude Code 2.1.327, except the eight above, the Opus~4.6 high-effort runs and the
-decoy control, which used 2.1.328. The reported Gemini calls went to the Vertex AI and Gemini REST
+By the authors' record, the Claude model calls of 18 November used Claude Code 2.1.327; those rows do not
+store the version. The eight above, the Opus~4.6 high-effort runs and the decoy control used 2.1.328, as
+their rows record. The reported Gemini calls went to the Vertex AI and Gemini REST
 endpoints. Repeating either will not return identical answers.
 
 Gemini collection scripts, raw replies, incomplete pilots, and an offline prompt/coverage audit are in
@@ -626,6 +633,10 @@ Gemini collection scripts, raw replies, incomplete pilots, and an offline prompt
 
 \section*{Acknowledgements}
 
+% NOTE for Chris (T3, issue #154): the Gemini sentences below make three claims the repository cannot
+% confirm: that Antigravity ran the models, that Codex audited the runs, and that Codex incorporated them.
+% Please confirm or correct. If they cannot be confirmed, cut to what the files show: the reported Gemini
+% runs went to the Vertex AI and Gemini REST endpoints.
 The work was done with AI coding agents under the authors' direction. Claude Code, which is itself built
 on a Claude model, wrote the tests, ran the Claude models and drafted the manuscript. The Gemini models
 were run with Antigravity, through scripts that call the Vertex AI and Gemini REST endpoints, and those

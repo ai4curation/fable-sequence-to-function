@@ -86,7 +86,7 @@ pixel, so they are not byte-for-byte reproducible.
 | Table 3 (Claude columns; `set all` lines for rows 3 to 7); overlap of 0.85 in the Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
 | Figure 1 and Table 4 (Claude models), recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
 | Figure 2 and Table 6 (Claude models), structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
-| Call totals in Methods (2,854 recorded calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
+| Claude call totals in Methods (2,854 recorded calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
 | Adjudication of the two disputed active sites (YrfG, ENV9) | `uv run python experiments/pseudo/adjudication/adjudicate.py` | `expected/adjudication.txt` |
 | Decoy-substitution control for test 3 (Table 5) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
@@ -105,7 +105,8 @@ report values remain unchanged.
 
 - **Date:** 2026-11-18.
 - **Models:** `claude-fable-5-2`, `claude-opus-5-5`, `claude-opus-4-6`.
-- **Route:** Claude Code 2.1.327 in print mode, one recorded call per question (the scripts tried
+- **Route:** Claude Code 2.1.327 (the authors' record; the rows of 2026-11-18 do not store the version) in
+  print mode, one recorded call per question (the scripts tried
   up to three times when the output was not valid JSON and kept only the last attempt):
   `claude -p --model MODEL --system-prompt "" --tools "" --effort EFFORT --output-format json`.
   `--tools ""` turns off the tool's built-in tools; on a machine with account
@@ -113,10 +114,13 @@ report values remain unchanged.
   *Rows that record a prompt hash* below). The exact prompt is the string `P` (or
   the `prompt` function) in each test's `ask.py` or `run.py`.
 - **Limits of that route:** temperature cannot be set, and the tool adds context of
-  its own, whose size the rows of 2026-11-18 do not record. Measured on 2026-11-19 with the original flags and
-  Claude Code 2.1.328 (`experiments/decoy_control/results/cli_context_check.json`,
-  `canary-original-flags.jsonl`): 5,851 input tokens for a one-sentence prompt to Haiku 5.5, and 97,813
-  and 6,413 for two test-3 questions to Fable 5.2; 573 with the extra flags of the revised route.
+  its own, whose size the rows of 2026-11-18 do not record. Measured on 2026-11-19 with the same context
+  flags and Claude Code 2.1.328 (`experiments/decoy_control/results/cli_context_check.json`,
+  `canary-original-flags.jsonl`): 5,851 input tokens for a one-sentence prompt to Haiku 5.5 (573 for that
+  prompt with the extra flags of the revised route), and 97,813 and 6,413 for two questions with the test-3
+  prompt to Fable 5.2, the larger most likely because the account's connector tools were attached. Whether
+  the stored calls carried such an attachment is not known: the rows record cost, not tokens, and repeated
+  context is cached, so cost does not bound it.
 - **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; the
   rows of the test-2 runs of 2026-11-18 do not record the effort setting. On
   2026-11-18 Opus 4.6 ran at low effort in every test; the authors record
