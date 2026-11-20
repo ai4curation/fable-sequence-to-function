@@ -1,8 +1,12 @@
 """Offline audit of stored Gemini runs; no credentials or model calls required.
 
-Checks question identities and prompt hashes against the rebuilt questions and the stored Claude
-rows, row labels against file names, that usable replies parse, and next-residue scores. Reports coverage, failures, retries, and response metadata independently
-of the performance summaries. Imported runners have no import-time API calls.
+Checks that the Gemini and Claude questions are the same set (prompt hashes where Claude rows record
+them; test-1 targets and families), that row labels match file names and usable API rows report the
+requested model version, that each row's prompt hash matches the rebuilt question, that usable replies
+parse, and that stored next-residue targets, families, predictions and scores recompute. A reversed
+test-1 Gemini row fails as an unexpected question: no Gemini run asked reversed sequences.
+scripts/adhoc/mutation_check_gemini_audit.sh plants one defect for each check. Reports coverage,
+failures, retries, and response metadata independently of the performance summaries. Imported runners have no import-time API calls.
 """
 import ast
 import collections
