@@ -5,7 +5,7 @@ TEST 1: NEXT RESIDUE
 == gemini-4-neon-low: 271 usable (1 unusable)
   real      n=136 invalid=0 first-residue=8.8%  exact10=0
   shuffled  n=135 invalid=0 first-residue=10.4%  exact10=0
-  gap real-shuffled: -1.5 pts (95% CI -8.8 to +5.1), 68 families
+  gap real-shuffled: -1.5 pts (95% CI -8.1 to +5.1), 68 families
 
 ========================================================================
 TEST 2: DOMAINS & MEMBRANE FEATURES

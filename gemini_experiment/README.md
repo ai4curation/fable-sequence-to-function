@@ -1,9 +1,12 @@
 # Gemini extension, 19 November 2026
 
 These runs reuse the original test sets and sequence prompts. The main result is
-a separation between tasks: Gemini 4 Neon detects kinase substitutions and predicts
-secondary structure and contacts, but at low effort shows no detectable real-minus-
-shuffled next-residue advantage and identifies none of the 15 obscure DUF families.
+that Gemini 4 Neon detects kinase substitutions (low effort) and predicts secondary
+structure and contacts above baseline (medium effort), but at low effort shows no
+detectable real-minus-shuffled next-residue advantage and identifies none of the 15
+obscure DUF families. Opus 5.5 at low effort also showed no detectable advantage, so
+the test-1 result may reflect the effort setting. Flash Lite at high effort is below
+both structure baselines on the novel stratum.
 Model identifiers below are those recorded by the endpoints; they are not claims
 about public availability, training dates, or comparable reasoning budgets.
 
@@ -23,8 +26,13 @@ part of `just report` and `just check`, with frozen output in
 `expected/gemini_vertex.txt`, `expected/gemini_pilots.txt`, and
 `expected/gemini_audit.txt`. The structure scores use the original scorer directly;
 other tests follow its original rules and share `experiments/common.py` for JSON
-answer extraction. The audit checks question identities, prompt hashes, parsing,
-and next-residue scores. It does not authenticate the remote service or establish
+answer extraction; their rules are copied from `experiments/*/score.py`, so change
+both together. The audit checks that every Gemini question is one of the Claude
+questions (equal prompt hashes wherever a Claude row records one: 8 test-1, 126
+test-2, 120 test-3 and 30 test-4 rows; equal targets and families for all 272 test-1
+questions), that each row's model and effort match its file name, that usable
+replies parse, and that the stored next-residue scores recompute
+(`scripts/adhoc/mutation_check_gemini_audit.sh` shows it fails on each of these). It does not authenticate the remote service or establish
 training-data independence.
 
 ## Runs and coverage
@@ -39,8 +47,12 @@ training-data independence.
 | Gemini REST API / `results` | Gemini 2.5 Flash and Gemini 3 Flash Preview, high | Incomplete structure pilots: 13/30 and 7/30 |
 | Vertex AI / `results_vertex` | Gemini 4 Carbon, medium | Incomplete structure pilot: 1/30 |
 
-The incomplete pilots are preserved and scored for transparency; they are not
-full-test performance estimates. Their item subsets differ. The CLI pilots were
+The incomplete pilots are kept and scored for transparency; they are not
+full-test performance estimates. The Carbon pilot sits in `results_vertex/` and the
+complete Flash Lite runs sit in `results/` with the pilots; the file name, not the
+folder, says which is which. The two CLI pilots carried median inputs of about
+9,800 and 9,900 tokens per call, against a few hundred
+for the question alone; nothing in the rows says what that context was. Their item subsets differ. The CLI pilots were
 stopped after unwanted authentication windows; the Flash and Carbon pilots were
 limited by quota/resource errors. The retained files do not contain every failed
 diagnostic call mentioned in the interactive session.
@@ -49,7 +61,7 @@ diagnostic call mentioned in the interactive session.
 
 - **Next residue:** Neon low effort scores 8.8% on real and 10.4% on shuffled
   sequences. The family-averaged gap is -1.5 percentage points (95% bootstrap
-  interval -8.8 to +5.1; 68 families). There are no exact ten-residue matches.
+  interval -8.1 to +5.1; 68 families; rows are scored in question order, #142). There are no exact ten-residue matches.
   One shuffled question (A0A6J4GRP3, cut 445) was safety-blocked and excluded.
   There was no reversed-sequence run. This is absence of a detectable advantage
   in this configuration, not evidence that all Gemini configurations lack it.
@@ -106,7 +118,18 @@ and total billed requests cannot be reconstructed. The scripts evolved during
 collection: for example, some Pro rows record four attempts although the final
 Vertex runner defaults to three. Current code is not an exact snapshot of every
 historical invocation. No temperature was specified. Successful API responses
-used here all finish with `STOP`; the scorer excludes non-STOP responses.
+used here all finish with `STOP`. One rule, `agy_unusable` in `run_agy.py`, decides
+both which questions the runners ask again on resume and which rows the scorer and
+the audit count: an error, a status other than SUCCESS, a turn count other than 1,
+or a finish other than `STOP` (#144). For the 2.5 models, `run_api.py` sends a
+thinking budget (`high` = 8,192 tokens) rather than a thinking level; rows record
+only the requested label (#141).
+
+Six Neon test-1 rows (A0A8J3A1V5 shuffled cuts 276 and 280, A0A6J4GRP3 real cuts
+445 and 484, A0A0H3J4F4 real cut 185 and shuffled cut 224, all asked between
+16:27 and 16:30 UTC) record 764 to 921 input tokens, 1.3 to 1.9 per prompt
+character, against at most 0.5 for the other 265. What the extra input was is not
+known (#143).
 
 The novel stratum means no PDB entity at >=30% identity released before
 2026-06-01, with targets released from 2026-08-01. It is not proof that a target

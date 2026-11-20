@@ -1,5 +1,12 @@
 """Score Gemini experiment results using the exact scoring rules from experiments/*/score.py.
 
+The rules are copied from experiments/*/score.py, not imported (#144): change both together.
+Two differences from the Claude scorers: a row counts only if it passes run_agy.agy_unusable, the
+same rule the runners use on resume; and where a question has more than one usable row, the last is
+kept (no stored file has one). The Claude scorers' diagnostic lines for tool-call replies and for
+replies holding more than one JSON object are not printed; run on the Gemini rows, the Claude
+scorers find none of either.
+
 Usage:
     uv run python gemini_experiment/score_gemini.py results_vertex
     uv run python gemini_experiment/score_gemini.py results
@@ -18,14 +25,10 @@ EXP = ROOT / "experiments"
 RES = pathlib.Path(__file__).resolve().parent / "results"
 sys.path.insert(0, str(EXP))
 from common import KEYS, answer, has_tool_call  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from run_agy import agy_unusable, build_questions  # noqa: E402  (one usable-row rule, #144)
 
 
-def agy_unusable(r: dict) -> bool:
-    return (
-        "error" in r or r.get("status") != "SUCCESS"
-        or r.get("num_turns") != 1
-        or ("finish_reason" in r and r["finish_reason"] != "STOP")
-    )
 
 
 def score_next_residue():
@@ -44,7 +47,11 @@ def score_next_residue():
         seen = {}
         for r in R:
             seen[(r["accession"], r["condition"], r["cut"])] = r
-        R = list(seen.values())
+        # Rows are scored in question order, as the Claude files are written. run_vertex.py writes rows
+        # as calls finish, and the family bootstrap below depends on the order of families (#142).
+        qs, qkey = build_questions("next_residue", "score", 2)
+        order = {k: i for i, (k, _, _) in enumerate(qs)}
+        R = sorted(seen.values(), key=lambda r: order[qkey(r)])
         for r in R:
             if has_tool_call(r.get("text")):
                 r.update(valid=False, first_correct=False, exact10=False)
