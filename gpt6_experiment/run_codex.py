@@ -14,7 +14,8 @@ What still reaches the model besides the question: the instruction line and two 
 
 Usage:
     python gpt6_experiment/run_codex.py TEST MODEL --effort high [--limit N] [--workers N]
-Rows go to gpt6_experiment/results/<test>/<model>-<effort>.jsonl, session records beside them.
+Rows go to gpt6_experiment/results/<test>/<model>-<effort>.jsonl. Codex's session records stay in the
+experiment CODEX_HOME (sessions/); each row keeps the record's path and SHA-256.
 """
 import argparse
 import datetime
@@ -32,14 +33,15 @@ HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(ROOT / "experiments"))
 sys.path.insert(0, str(ROOT / "gemini_experiment"))
-from common import KEYS, answer, has_tool_call, sha  # noqa: E402
+from common import KEYS, answer, context_limit, has_tool_call, sha  # noqa: E402
 from run_agy import build_questions  # noqa: E402
 
 OUT_ROOT = HERE / "results"
 DEFAULT_HOME = pathlib.Path.home() / "agent-work" / "fable-sequence-to-function" / "codex_home_gpt6"
 INSTRUCTION = "Answer the user's message."
 CATALOG_OVERRIDES = dict(tool_mode=None, multi_agent_version=None, experimental_supported_tools=[],
-                         apply_patch_tool_type=None, input_modalities=["text"])
+                         apply_patch_tool_type=None, input_modalities=["text"], supports_search_tool=False)
+EFFORTS = ("low", "medium", "high", "xhigh", "max")  # "ultra" is sent as "xhigh" by Codex 0.170.0 (#162)
 FEATURES_OFF = ("shell_tool", "unified_exec", "multi_agent", "multi_agent_v2", "sleep_tool", "plugins",
                 "skill_search", "goals", "apps", "browser_use", "computer_use", "image_generation",
                 "in_app_browser", "code_mode_host", "code_mode_host_grpc", "incremental_tools",
@@ -60,6 +62,9 @@ def prepare_home(home: pathlib.Path, models, require_login=True) -> dict:
     if require_login and not (home / "auth.json").exists():
         raise SystemExit(f"{home} has no login; run: CODEX_HOME={home} codex login -c cli_auth_credentials_store=\"file\"")
     (home / "empty_cwd").mkdir(exist_ok=True)
+    inside = subprocess.run(["git", "-C", str(home / "empty_cwd"), "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    if inside.returncode == 0:  # Codex would send the repository's remote and commit as request metadata (#162)
+        raise SystemExit(f"{home} is inside the git repository {inside.stdout.strip()}; use a home outside any repository")
     instr = home / "instructions.txt"
     instr.write_text(INSTRUCTION)
     p = subprocess.run(["codex", "debug", "models"], env=dict(os.environ, CODEX_HOME=str(home)),
@@ -71,9 +76,17 @@ def prepare_home(home: pathlib.Path, models, require_login=True) -> dict:
         if not hit:
             raise SystemExit(f"{m} is not in the Codex model catalog for this login")
         hit[0].update(CATALOG_OVERRIDES, base_instructions=INSTRUCTION)
-    cat = home / "catalog_isolated.json"
+    cat = home / f"catalog_isolated_{'_'.join(sorted(models))}.json"  # one file per model set: runs can share a home (#162)
     cat.write_text(json.dumps(catalog))
     return dict(instructions=str(instr), catalog=str(cat), catalog_sha256=sha(cat.read_text()))
+
+
+def codex_env(home: pathlib.Path) -> dict:
+    """The parent environment without OPENAI_* or CODEX_* variables, so no API key or endpoint override
+    from the caller can take the call off the experiment's ChatGPT login (#162)."""
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("OPENAI_", "CODEX_"))}
+    env["CODEX_HOME"] = str(home)
+    return env
 
 
 def codex_args(model: str, effort: str, prep: dict, extra=()) -> list:
@@ -123,7 +136,7 @@ def read_session(home: pathlib.Path, thread_id: str, prompt: str, effort: str) -
         elif t == "token_usage_record" and pl.get("response_id"):
             response_ids.append(pl["response_id"])
         elif t == "event_msg" and pl.get("type") == "thread_settings_applied":
-            served.add((pl.get("thread_settings") or {}).get("model"))
+            served.add((pl.get("thread_settings") or {}).get("model"))  # the model Codex requested, as it logs it
     checks = {
         "instructions are the one line": (meta.get("base_instructions") or {}).get("text") == INSTRUCTION,
         "no AGENTS.md": not world.get("agents_md"),
@@ -137,24 +150,35 @@ def read_session(home: pathlib.Path, thread_id: str, prompt: str, effort: str) -
     }
     failed = [k for k, v in checks.items() if not v]
     return dict(context_ok=not failed, context_problem="; ".join(failed) or None, extra_context=extra_context,
-                response_ids=response_ids, served=sorted(x for x in served if x), session_tool_calls=tool_calls,
+                response_ids=response_ids, requested_model_logged=sorted(x for x in served if x), session_tool_calls=tool_calls,
                 session_file=str(files[0]), session_sha256=hashlib.sha256(files[0].read_bytes()).hexdigest())
 
 
 def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=900):
+    """One question. Returns (text, row fields); text is None if no usable reply arrived.
+
+    Codex does not log which model the server answered with: `requested_model_logged` is the model
+    Codex asked for. Tools sent are not logged either; a request carrying more context than the
+    one-line instruction and two tools shows up as input tokens above common.context_limit (#162).
+    """
     rec = dict(model=model, effort=effort, prompt_sha256=sha(prompt), cli_version=f"codex-exec {codex_version()}",
-               catalog_sha256=prep["catalog_sha256"], instruction=INSTRUCTION, row_format=1)
+               catalog_sha256=prep["catalog_sha256"], instruction=INSTRUCTION, row_format=1,
+               context_limit=context_limit(prompt))
     t0 = time.time()
+    attempt_threads = []
     for attempt in range(1, tries + 1):
+        if attempt > 1:
+            time.sleep(min(10 * 2 ** (attempt - 2), 60))
         try:
             p = subprocess.run(codex_args(model, effort, prep, extra) + [prompt], cwd=home / "empty_cwd",
-                               env=dict(os.environ, CODEX_HOME=str(home)), capture_output=True, text=True,
+                               env=codex_env(home), capture_output=True, text=True,
                                timeout=timeout, stdin=subprocess.DEVNULL)
         except subprocess.TimeoutExpired:
             why = "timeout"
             continue
         events = [json.loads(l) for l in p.stdout.splitlines() if l.strip().startswith("{")]
         thread = next((e.get("thread_id") for e in events if e.get("type") == "thread.started"), None)
+        attempt_threads.append(thread)
         items = [e["item"] for e in events if e.get("type") == "item.completed" and isinstance(e.get("item"), dict)]
         messages = [i.get("text", "") for i in items if i.get("type") == "agent_message"]
         other_items = [i.get("type") for i in items if i.get("type") not in ("agent_message", "reasoning")]
@@ -164,25 +188,28 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=900
             break
         why = (json.dumps(failed[-1]) if failed else (p.stderr or p.stdout)[-400:]) or f"exit {p.returncode}"
     else:
-        return None, dict(rec, attempts=attempt, duration_seconds=round(time.time() - t0, 3), error=why,
+        return None, dict(rec, attempts=attempt, attempt_threads=attempt_threads, error=why,
+                          duration_seconds=round(time.time() - t0, 3),
                           asked_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))
     session = read_session(home, thread, prompt, effort) if thread else dict(context_ok=False, context_problem="no thread id")
     text = messages[-1] if messages else ""
-    rec.update(attempts=attempt, duration_seconds=round(time.time() - t0, 3),
+    rec.update(attempts=attempt, attempt_threads=attempt_threads, duration_seconds=round(time.time() - t0, 3),
                asked_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
                thread_id=thread, event_types=[e.get("type") for e in events], tool_items=other_items,
+               stderr_tail=(p.stderr or "")[-300:] or None,
                num_turns=len(session.get("response_ids") or []) or None,
                input_tokens=usage.get("input_tokens"), cached_input_tokens=usage.get("cached_input_tokens"),
                output_tokens=usage.get("output_tokens"), thinking_tokens=usage.get("reasoning_output_tokens"),
                thinking=usage.get("reasoning_output_tokens"), **session)
-    ok = (rec["context_ok"] and not other_items and not session.get("session_tool_calls")
-          and len(messages) == 1 and rec["num_turns"] == 1 and served_ok(rec, model))
-    rec.update(status="SUCCESS" if ok else "UNUSABLE", finish_reason="STOP" if ok else None)
+    rec["context_tokens_high"] = (rec["input_tokens"] or 0) > rec["context_limit"]
+    problems = [name for name, bad in (
+        ("context check", not rec["context_ok"]), ("tool or warning items", bool(other_items)),
+        ("tool call in session", bool(session.get("session_tool_calls"))), ("not one agent message", len(messages) != 1),
+        ("empty reply", not text.strip()), ("not one model response", rec["num_turns"] != 1),
+        ("other model requested", rec.get("requested_model_logged") != [model]),
+        ("input tokens above the context limit", rec["context_tokens_high"])) if bad]
+    rec.update(status="UNUSABLE" if problems else "SUCCESS", unusable_because=problems or None)
     return text, rec
-
-
-def served_ok(rec, model):
-    return rec.get("served") == [model]
 
 
 def codex_unusable(row: dict) -> bool:
@@ -193,7 +220,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("test", choices=["next_residue", "features", "pseudo", "structure"])
     ap.add_argument("model", choices=["gpt-6-astra", "gpt-rosalind-astra"])
-    ap.add_argument("--effort", choices=["low", "medium", "high", "xhigh", "max", "ultra"], default="high")
+    ap.add_argument("--effort", choices=EFFORTS, default="high")
     ap.add_argument("--home", type=pathlib.Path, default=DEFAULT_HOME)
     ap.add_argument("--workers", type=int, default=1)
     ap.add_argument("--limit", type=int, default=None)
@@ -214,7 +241,10 @@ def main():
 
     def ask_one(item):
         _, prompt, meta = item
-        text, rec = call_codex(args.model, args.effort, prompt, prep, args.home)
+        try:
+            text, rec = call_codex(args.model, args.effort, prompt, prep, args.home)
+        except Exception as e:  # one bad call must not stop the batch (#162)
+            text, rec = None, dict(model=args.model, effort=args.effort, prompt_sha256=sha(prompt), error=f"runner: {e!r}"[:400])
         if text is None:
             return dict(meta, **rec)
         if args.test == "next_residue":
@@ -231,7 +261,7 @@ def main():
             row = fut.result()
             fh.write(json.dumps(row) + "\n")
             fh.flush()
-            flag = "" if not codex_unusable(row) else f" UNUSABLE ({row.get('error') or row.get('context_problem') or row.get('tool_items')})"
+            flag = "" if not codex_unusable(row) else f" UNUSABLE ({row.get('error') or row.get('unusable_because')})"
             print(f"  [{args.test}] {tag}: {i}/{len(todo)} input_tokens={row.get('input_tokens')}{flag}", flush=True)
 
 

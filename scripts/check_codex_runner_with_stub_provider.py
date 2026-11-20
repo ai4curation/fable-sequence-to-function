@@ -4,12 +4,16 @@ Purpose: #52. Shows, offline, that call_codex (1) sends only the one-line instru
 tools and the question (checked on the request the stub receives), (2) records the session's
 response id, served model, token counts and context check, (3) marks a reply that calls a tool,
 a server error and a broken context as unusable.
-Inputs: the local Codex CLI. A scratch CODEX_HOME under .temp/ with no login; the stub needs none.
+Inputs: the local Codex CLI. A scratch CODEX_HOME with no login under ~/agent-work (outside any git
+repository, as the runner requires); the stub needs no login. The stub reports input tokens as a
+quarter of the characters of instructions, tools and messages it received, so extra context in the
+request pushes a row over the context limit as it would on a real call.
 Outputs: one "ok"/"FAIL" line per check; exit 1 on any failure.
 Date: 2026-11-20.
 """
 import http.server
 import json
+import os
 import pathlib
 import shutil
 import sys
@@ -48,15 +52,20 @@ class Stub(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/event-stream")
         self.end_headers()
         n = len(REQUESTS)
+        req = REQUESTS[-1]
+        sent = sum(len(json.dumps(it.get("tools"))) if it.get("type") == "additional_tools" else
+                   sum(len(c.get("text", "")) for c in it.get("content", []) if isinstance(c, dict))
+                   for it in req.get("input", [])) + len(req.get("instructions") or "") + len(json.dumps(req.get("tools") or []))
+        tokens = MODE.get("tokens") or sent // 4
         if MODE["kind"] == "tool" and n == 1:
             item = {"type": "function_call", "id": "fc_1", "call_id": "call_1", "name": "request_user_input",
                     "arguments": json.dumps({"questions": [{"id": "q", "header": "h", "question": "?", "options": []}]})}
         else:
             item = {"type": "message", "id": f"msg_{n}", "role": "assistant", "status": "completed",
-                    "content": [{"type": "output_text", "text": "MKVLAAGIVG", "annotations": []}]}
+                    "content": [{"type": "output_text", "text": MODE.get("text", "MKVLAAGIVG"), "annotations": []}]}
         resp = {"id": f"resp_stub{n}", "object": "response", "model": "gpt-6-astra", "status": "in_progress", "output": []}
         done = dict(resp, status="completed", output=[item],
-                    usage={"input_tokens": 512, "input_tokens_details": {"cached_tokens": 0}, "output_tokens": 12,
+                    usage={"input_tokens": tokens, "input_tokens_details": {"cached_tokens": 0}, "output_tokens": 12,
                            "output_tokens_details": {"reasoning_tokens": 4}, "total_tokens": 524})
         for ev in ({"type": "response.created", "response": resp},
                    {"type": "response.output_item.done", "output_index": 0, "item": item},
@@ -73,15 +82,16 @@ threading.Thread(target=srv.serve_forever, daemon=True).start()
 PROVIDER = ["-c", 'model_provider="stub"',
             "-c", f'model_providers.stub={{name="stub", base_url="http://127.0.0.1:{srv.server_address[1]}/v1", '
                   'wire_api="responses", request_max_retries=0, stream_max_retries=0}']
-HOME = ROOT / ".temp" / "codex_stub_home"
+HOME = pathlib.Path.home() / "agent-work" / "fable-sequence-to-function" / "codex_stub_home_test"
 shutil.rmtree(HOME, ignore_errors=True)
 HOME.mkdir(parents=True)
 prep = run_codex.prepare_home(HOME, ["gpt-6-astra"], require_login=False)
 PROMPT = "Below is the beginning of a protein sequence.\n\n>sequence\nMKV"
 
 
-def ask(kind, extra=()):
-    MODE["kind"] = kind
+def ask(kind, extra=(), **mode):
+    MODE.clear()
+    MODE.update(mode, kind=kind)
     REQUESTS.clear()
     return run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, extra=list(PROVIDER) + list(extra), tries=1, timeout=120)
 
@@ -99,9 +109,10 @@ check(set(tools) <= {"request_user_input", "view_image"} and not req.get("tools"
 check(not any(m in json.dumps(req) for m in AGENTS_LINES), "request: nothing from ~/.codex/AGENTS.md")
 check(req.get("reasoning", {}).get("effort") == "high", "request: effort high is sent")
 check(text == "MKVLAAGIVG" and rec["status"] == "SUCCESS" and rec["tool_items"] == [], f"row: answer kept and usable, no warnings ({rec.get('tool_items')}, {rec.get('context_problem')})")
-check(rec["context_ok"] and rec["response_ids"] == ["resp_stub1"] and rec["served"] == ["gpt-6-astra"],
-      "row: session record gives context check, response id and served model")
-check(rec["input_tokens"] == 512 and rec["thinking_tokens"] == 4 and rec["num_turns"] == 1, "row: token counts and one turn")
+check(rec["context_ok"] and rec["response_ids"] == ["resp_stub1"] and rec["requested_model_logged"] == ["gpt-6-astra"],
+      "row: session record gives context check, response id and the model Codex requested")
+check(0 < rec["input_tokens"] <= rec["context_limit"] and rec["thinking_tokens"] == 4 and rec["num_turns"] == 1,
+      f"row: token counts within the context limit ({rec['input_tokens']} of {rec['context_limit']}) and one turn")
 check(rec["catalog_sha256"] == prep["catalog_sha256"] and rec["prompt_sha256"] == run_codex.sha(PROMPT), "row: catalog and prompt hashes")
 check(json.loads(json.dumps(rec)) == rec, "row: JSON-serialisable")
 
@@ -117,6 +128,39 @@ check(text is None and "error" in rec and run_codex.codex_unusable(rec), "server
 # 4. a broken context (environment context switched back on) is caught by the session check
 text, rec = ask("answer", ["-c", "include_environment_context=true"])
 check(rec.get("context_ok") is False and rec.get("status") == "UNUSABLE", f"broken context: caught ({rec.get('context_problem')})")
+
+# 5. extra context shows as input tokens above the limit: re-enable the shell tool
+args_off = run_codex.FEATURES_OFF
+run_codex.FEATURES_OFF = tuple(f for f in args_off if f not in ("shell_tool", "unified_exec"))
+text, rec = ask("answer")
+run_codex.FEATURES_OFF = args_off
+tools5 = [t.get("name") for it in REQUESTS[0].get("input", []) if it.get("type") == "additional_tools" for ns in it.get("tools", []) for t in ns.get("tools", [ns])] if REQUESTS else []
+check(len(tools5) > 2 and rec.get("context_tokens_high") and rec.get("status") == "UNUSABLE",
+      f"extra tools: row unusable through the token limit ({tools5}; {rec.get('input_tokens')} > {rec.get('context_limit')})")
+
+# 6. an empty reply is unusable
+text, rec = ask("answer", text="")
+check(rec.get("status") == "UNUSABLE" and "empty reply" in (rec.get("unusable_because") or []), "empty reply: unusable")
+
+# 7. API keys and endpoint overrides in the caller's environment are not passed on
+os.environ["OPENAI_API_KEY"] = "sk-should-not-pass"
+os.environ["CODEX_API_KEY"] = "should-not-pass"
+env = run_codex.codex_env(HOME)
+check("OPENAI_API_KEY" not in env and "CODEX_API_KEY" not in env and env["CODEX_HOME"] == str(HOME), "environment: OPENAI_*/CODEX_* dropped, CODEX_HOME set")
+del os.environ["OPENAI_API_KEY"], os.environ["CODEX_API_KEY"]
+
+# 8. preparing another model in the same home leaves this model's catalog alone
+before = pathlib.Path(prep["catalog"]).read_text()
+other = run_codex.prepare_home(HOME, ["gpt-6-sol"], require_login=False)
+check(other["catalog"] != prep["catalog"] and pathlib.Path(prep["catalog"]).read_text() == before, "catalog: one file per model, runs can share a home")
+
+# 9. a home inside a git repository is refused (Codex would send the remote and commit)
+try:
+    run_codex.prepare_home(ROOT / ".temp" / "codex_home_in_repo", ["gpt-6-astra"], require_login=False)
+    refused = False
+except SystemExit:
+    refused = True
+check(refused, "home inside a git repository: refused")
 
 srv.shutdown()
 sys.exit(1 if FAILS else 0)

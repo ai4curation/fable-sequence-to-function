@@ -27,18 +27,38 @@ How:
   `tool_mode`, `multi_agent_version` and `apply_patch_tool_type` unset, no experimental tools, and
   text-only input (`CATALOG_OVERRIDES`). Its hash is in each row.
 - **Settings and feature switches** in `run_codex.py` (`SETTINGS`, `FEATURES_OFF`); Codex 0.170.0
-  recognises all of them. Read-only sandbox, empty working folder.
+  recognises all of them. Read-only sandbox, an empty working folder outside any git repository
+  (Codex sends the folder path, and a repository's remote and commit, as request metadata; the
+  runner refuses a home inside a repository).
+- **No `OPENAI_*` or `CODEX_*` variables** from the caller's environment reach Codex, so an API key
+  or endpoint override cannot take a call off the experiment's login.
+- **One catalog file per model** (`catalog_isolated_<model>.json`), so Astra and Rosalind runs can
+  share the home.
+- **Efforts** low, medium, high, xhigh and max. Codex 0.170.0 sends `ultra` as `xhigh`, so `ultra`
+  is not offered.
 
 ## What each row records, and when it is usable
 
-From `codex exec --json` and the saved session record: reply text, token counts, thread id,
-response id(s), the model the thread used, the effort, and a context check. The check reads the
-session record (instructions used, which instruction blocks were included, effort, multi-agent
-mode, sandbox, any extra context message). The session record does not list the tools; the stub
-test checks those on the request, and on real calls the input-token count shows them.
+From `codex exec --json` and the saved session record (which stays in the experiment home; the row
+keeps its path and SHA-256): reply text, token counts, thread id (and those of failed attempts),
+response id(s), the model Codex requested (`requested_model_logged`), and a context check. The check
+reads the session record: instructions used, which instruction blocks were included, effort,
+multi-agent mode, sandbox, any extra context message.
 
-A row is usable only if the context check passes, the reply calls no tool, Codex printed no warning
-or error item, there was exactly one model response, and the thread used the requested model.
+Two things Codex does not record, and what stands in for them:
+- **The tools sent.** A request carrying more than the instruction and the two tools shows up as
+  input tokens above `common.context_limit` (700 plus one per character of the question), the same
+  limit the Claude rows use (`context_tokens_high`). The stub test shows that re-enabling the shell
+  tool trips it.
+- **The model the server answered with.** Only the requested model is logged; a substitution by the
+  server would not be visible in these rows.
+
+A row is usable only if: the context check passes; the reply calls no tool and Codex printed no
+warning or error item; there is exactly one non-empty agent message and one model response; Codex
+requested the named model; and the input tokens are within the limit. `unusable_because` lists the
+reasons otherwise.
+
+Not yet done: `experiments/summary.py` and the scorers do not read `gpt6_experiment/` rows (#52).
 
 ## Not yet known (needs a live call)
 
