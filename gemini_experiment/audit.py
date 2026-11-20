@@ -48,8 +48,9 @@ def main():
         found = set()
         for row in claude:
             identity = key(row)
-            if identity not in expected:
-                continue  # e.g. reversed sequences in test 1, which Gemini was not asked
+            if test == "next_residue" and row.get("condition") == "reversed":
+                continue  # Gemini was not asked reversed sequences
+            require(identity in expected, f"{test}: Claude row {identity} is not one of the rebuilt questions")
             found.add(identity)
             if row.get("prompt_sha256"):
                 hashed += 1
@@ -78,8 +79,11 @@ def main():
                 seen.add(identity)
                 if agy_unusable(row):
                     continue
+                if not str(row.get("cli_version", "")).startswith("agy"):
+                    require(row.get("model_version") == row["model"], f"{path.name}: endpoint model version {row.get('model_version')} for {row['model']}")
                 if test == "next_residue":
                     require(row["target"] == meta["target"], f"{path.name}: target mismatch")
+                    require(row["pfam"] == meta["pfam"], f"{path.name}: family mismatch")
                     candidates = re.findall(r"[ACDEFGHIKLMNPQRSTVWY]{5,}", row["text"].replace(" ", ""))
                     pred = candidates[-1] if candidates else ""
                     valid = bool(pred) and not has_tool_call(row["text"])
@@ -100,10 +104,11 @@ def main():
             if usable:
                 thinking = [r.get("thinking_tokens") or 0 for r in usable.values()]
                 print(f"  median thinking tokens {statistics.median(thinking):g}")
-    print("Verified: every Gemini question is one of the Claude questions, with equal prompt hashes wherever a")
-    print("Claude row records one; each row's model and effort match its file name; each row's prompt hash")
-    print("matches the rebuilt question; every usable reply in tests 2-4 yields a JSON answer; and the stored")
-    print("next-residue prediction and scores match a recomputation.")
+    print("Verified: the Gemini and Claude questions are the same set, with equal prompt hashes wherever a")
+    print("Claude row records one; each row's model and effort match its file name, and each usable API row's")
+    print("model version equals its model; each row's prompt hash matches the rebuilt question; every usable")
+    print("reply in tests 2-4 yields a JSON answer; and the stored next-residue target, family, prediction")
+    print("and scores match a recomputation.")
     print("CLI pilot hashes describe the base prompt; run_agy.py prepended a no-tool instruction.")
     print("Retries record attempt counts, not all failed responses or their token usage.")
 

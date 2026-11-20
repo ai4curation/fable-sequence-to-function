@@ -1,6 +1,7 @@
 """Score Gemini experiment results using the exact scoring rules from experiments/*/score.py.
 
-The rules are copied from experiments/*/score.py, not imported (#144): change both together.
+For tests 1-3 the rules are copied from experiments/*/score.py, not imported (#144): change both
+together. Test 4 imports the structure scorer.
 Two differences from the Claude scorers: a row counts only if it passes run_agy.agy_unusable, the
 same rule the runners use on resume; and where a question has more than one usable row, the last is
 kept (no stored file has one). The Claude scorers' diagnostic lines for tool-call replies and for
@@ -29,8 +30,6 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from run_agy import agy_unusable, build_questions  # noqa: E402  (one usable-row rule, #144)
 
 
-
-
 def score_next_residue():
     d = RES / "next_residue"
     if not d.exists():
@@ -49,7 +48,7 @@ def score_next_residue():
             seen[(r["accession"], r["condition"], r["cut"])] = r
         # Rows are scored in question order, as the Claude files are written. run_vertex.py writes rows
         # as calls finish, and the family bootstrap below depends on the order of families (#142).
-        qs, qkey = build_questions("next_residue", "score", 2)
+        qs, qkey = build_questions("next_residue", "score", 3)  # 3: reversed rows too, if a run has them
         order = {k: i for i, (k, _, _) in enumerate(qs)}
         R = sorted(seen.values(), key=lambda r: order[qkey(r)])
         for r in R:
