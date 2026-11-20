@@ -118,8 +118,9 @@ report values remain unchanged.
   flags and Claude Code 2.1.328 (`experiments/decoy_control/results/cli_context_check.json`,
   `canary-original-flags.jsonl`): 5,851 input tokens for a one-sentence prompt to Haiku 5.5 (573 for that
   prompt with the extra flags of the revised route), and 97,813 and 6,413 for two questions with the test-3
-  prompt to Fable 5.2, the larger most likely because the account's connector tools were attached. The stored test-3 calls'
-  costs rule out an attachment of that size there (an inference; `experiments/decoy_control/README.md`).
+  prompt to Fable 5.2, the larger most likely because the account's connector tools were attached. Whether
+  the stored calls carried such an attachment is not known: the rows record cost, not tokens, and repeated
+  context is cached, so cost does not bound it.
 - **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; the
   rows of the test-2 runs of 2026-11-18 do not record the effort setting. On
   2026-11-18 Opus 4.6 ran at low effort in every test; the authors record

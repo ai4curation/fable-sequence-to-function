@@ -110,8 +110,10 @@ larger than the question allows, and
 under either limit.
 
 **What this means for the stored run.** Its rows do not record input tokens. No test 3 call in it cost more than
-$0.40 for Fable 5.2, and a call with the 97 tools attached cost $1.69 here, so tools of that size were not
-attached there. This is an inference from cost, not a measurement. The independent reviewer of this folder
+$0.40 for Fable 5.2, and a call with the 97 tools attached cost $1.69 here, so an uncached attachment of that
+size was not there. This is an inference from cost, not a measurement, and it does not cover a cached
+attachment: the tool caches repeated context (`results/cli_context_check.json`: later calls read 5,849 of 5,851
+input tokens from the cache), which costs far less per call, so cost cannot rule one out. The independent reviewer of this folder
 went further: fitting cost to tokens on the rows here and applying it to the stored rows, every stored call
 costs slightly more than this route predicts, by a near-constant amount that would correspond to several
 hundred more input tokens per call. That estimate has not been rechecked here. The mutants and wild types have
