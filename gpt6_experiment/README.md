@@ -42,6 +42,15 @@ How:
   the base URL changed, plus one case with websockets on. With a login in the home, the runner refuses
   any other base URL, because the provider sends the login wherever it points.
 - **Login errors stop the run** instead of being retried (#165).
+- **No second answer to a question** (#166). An attempt is retried only if no reply arrived. A reply
+  followed by an error or a non-zero exit is kept and marked unusable (`attempt failed after a reply`).
+  A timeout (1,800 s) is never retried, since the model may have answered and been billed. Re-asking
+  is left to `--retry-unusable`.
+- **Every attempt is recorded**: `attempt_log` in the row (thread, outcome, exit code, failure,
+  requests logged, request check). The experiment home's `attempts/` folder keeps each attempt's JSON
+  event stream, its stderr without the trace lines, and its checked request bodies.
+- **The Mac stays awake** during a run (`caffeinate -i -w <runner pid>`). One canary call stalled when
+  the Mac slept, and the timeout doesn't count time asleep.
 - **Efforts** low, medium, high, xhigh and max. Codex 0.170.0 sends `ultra` as `xhigh`, so `ultra`
   is not offered.
 
@@ -60,7 +69,7 @@ instruction as the only developer text, the question as the only user text, no t
 `request_user_input` and `view_image`, nothing token-like. Any websocket activity also fails the
 check, and so does a host other than the provider's, or a number of logged requests different from
 the number of model responses. The row keeps the provider, its base URL and the bodies' SHA-256 and the
-host they went to, along with the count of websocket log lines. The bodies are saved in the experiment home under `requests/`. A row with no
+host they went to, along with the count of websocket log lines. The bodies are saved in the experiment home under `attempts/`. A row with no
 logged request is unusable, so a change in Codex's logging fails closed. The stub test shows the
 logged body equals the body the server received, and that re-enabled shell tools are caught on the
 longest real question (1,629 characters), where the token limit below misses them.
@@ -69,12 +78,17 @@ longest real question (1,629 characters), where the token limit below misses the
 Claude rows' limit, `context_tokens_high`) also make a row unusable. It is a coarse check: it
 catches extra tools only on short questions (#163).
 
+**Codex sets `text.verbosity` to `low`** in every request, and it sends session and installation
+IDs as `client_metadata`, which the model doesn't see. Neither can be turned off from the command line.
+
 **Not recorded: the model the server answered with.** Only the requested model is logged; a
 substitution by the server would not be visible in these rows.
 
 A row is usable only if: the request check and the context check pass; the reply calls no tool and Codex printed no
 warning or error item; there is exactly one non-empty agent message and one model response; Codex
-requested the named model; and the input tokens are within the limit. `unusable_because` lists the
+requested the named model; the input tokens are within the limit; and the attempt that gave the reply
+reported no failure. Rows from before `codex_row_format` 2 never count: the runner then kept no record
+of discarded attempts. This rule sits in `run_agy.agy_unusable`, which the scorer and audit share. `unusable_because` lists the
 reasons otherwise.
 
 ## Scoring and audit
@@ -94,19 +108,23 @@ lines give the GPT-6 counts.
 
 ## Canary record
 
-`results/structure/gpt-6-astra-high.jsonl` keeps both canary rows; the results are append-only.
-- **First try:** the login was rejected, and no request was sent.
-- **Second try**, with the built-in provider: the model answered, with 656 input tokens and 4,288
-  output tokens. The row is unusable because no request was logged (#164).
+The results are append-only. None of these rows counts: all are from before `codex_row_format` 2.
 
-Neither row counts.
+`results/structure/gpt-6-astra-high.jsonl`, first test-4 question, high effort:
+1. **The login was rejected**, and no request was sent.
+2. **Built-in provider:** the model answered, with 656 input tokens and 4,288 output tokens. The row
+   is unusable because no request was logged (#164).
+3. **Own HTTP provider:** passed every check. One logged request to chatgpt.com, 656 input tokens
+   (the same as try 2, so the same content) and 4,420 output tokens.
 
-## Not yet known (needs a live call)
-
-- Whether the ChatGPT backend accepts the experiment provider (base URL
-  `https://chatgpt.com/backend-api/codex`, taken from the Codex binary and not otherwise verified). A
-  wrong URL should fail with an error before any model runs.
-- Whether its logged request passes the check, and whether its input tokens are close to the 656 of
-  the second canary on the same question. A large gap would mean the two providers send different
-  requests.
-- Whether this account can use `gpt-rosalind-astra` (it is in the catalog).
+`results/structure/gpt-rosalind-astra-high.jsonl`, same question. The account can use Rosalind.
+1. **Stalled, no row.** Thread `01a1fa19-d1ab-7632-8115-dafaa02844bd` started at 09:55 PST on
+   2026-11-20. The Mac slept from 09:57, the stream stopped at 09:59, and the run was stopped by
+   hand about 1.5 hours later.
+2. **Rerun with sleep blocked.**
+   - Attempt 1 (`01a1fa70-2e04-77d2-9ecb-5e0a5d172e18`) got a complete reply: 15,414 output tokens in
+     509 s.
+   - The runner then asked again, for a reason it didn't record (#166).
+   - Attempt 2 (`01a1fa78-1bca-70a2-8405-f438b1710165`) gave 18,126 output tokens in 578 s. Only
+     that answer is in the row.
+   - By the authors' decision the row doesn't count, being a second answer to the same question.

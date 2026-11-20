@@ -81,9 +81,10 @@ class Stub(http.server.BaseHTTPRequestHandler):
         done = dict(resp, status="completed", output=[item],
                     usage={"input_tokens": tokens, "input_tokens_details": {"cached_tokens": 0}, "output_tokens": 12,
                            "output_tokens_details": {"reasoning_tokens": 4}, "total_tokens": 524})
+        last = ({"type": "response.failed", "response": dict(resp, status="failed", error={"code": "server_error", "message": "stub failure after the reply"})}
+                if MODE["kind"] == "fail_after_reply" else {"type": "response.completed", "response": done})
         for ev in ({"type": "response.created", "response": resp},
-                   {"type": "response.output_item.done", "output_index": 0, "item": item},
-                   {"type": "response.completed", "response": done}):
+                   {"type": "response.output_item.done", "output_index": 0, "item": item}, last):
             self.wfile.write(sse(ev))
             self.wfile.flush()
 
@@ -201,6 +202,45 @@ except SystemExit:
     refused = True
 shutil.rmtree(guard, ignore_errors=True)
 check(refused, "home with a login: any base URL other than the ChatGPT backend is refused")
+
+# 5f. a failure reported after the reply arrived: not retried, kept and unusable, one request (#166)
+MODE.clear()
+MODE.update(kind="fail_after_reply")
+REQUESTS.clear()
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=120)
+log = rec.get("attempt_log") or [{}]
+check(len(REQUESTS) == 1 and rec.get("attempts") == 1 and run_codex.codex_unusable(rec),
+      f"failure after a reply: one request, no retry, unusable ({len(REQUESTS)} requests; {rec.get('attempts')} attempts; "
+      f"{log[0].get('outcome')}; {rec.get('unusable_because') or str(rec.get('error'))[:60]})")
+
+# 5g. a reply with a non-zero exit (Codex's exit code changed after the run): not retried, unusable (#166)
+real_run = run_codex.subprocess.run
+def exit_one(*a, **k):
+    p = real_run(*a, **k)
+    if a and a[0][:2] == ["codex", "exec"]:
+        p.returncode = 1
+    return p
+run_codex.subprocess.run = exit_one
+MODE.clear()
+MODE.update(kind="answer")
+REQUESTS.clear()
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=120)
+run_codex.subprocess.run = real_run
+check(len(REQUESTS) == 1 and rec.get("attempts") == 1 and text == "MKVLAAGIVG" and rec.get("status") == "UNUSABLE"
+      and "attempt failed after a reply" in (rec.get("unusable_because") or []),
+      f"reply with exit 1: one request, reply kept, unusable ({len(REQUESTS)} requests; {rec.get('unusable_because')})")
+
+# 5h. every attempt leaves its event stream, stderr and request body in the experiment home (#166)
+t = rec.get("thread_id")
+check(t and all((HOME / "attempts" / f"{t}_{x}").exists() for x in ("events.jsonl", "stderr.txt", "request_0.json"))
+      and rec["attempt_log"][0]["requests_logged"] == 1 and rec["attempt_log"][0]["request_problem"] is None,
+      "attempt evidence: event stream, stderr and checked request body saved")
+
+# 5i. a row from before row_format 2 does not count, whatever its status (#166)
+good = dict(rec, status="SUCCESS", unusable_because=None, num_turns=1)
+check(not run_codex.codex_unusable(good) and run_codex.codex_unusable(dict(good, codex_row_format=1))
+      and run_codex.codex_unusable({k: v for k, v in good.items() if k != "codex_row_format"}),
+      "rows before codex_row_format 2 do not count (the runner, scorer and audit share this rule)")
 
 # 6. an empty reply is unusable
 text, rec = ask("answer", text="")

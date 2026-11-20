@@ -85,6 +85,9 @@ def agy_unusable(row: dict) -> bool:
         or row.get("status") != "SUCCESS"
         or row.get("num_turns") != 1
         or ("finish_reason" in row and row["finish_reason"] != "STOP")
+        # GPT-6 rows through Codex count only from codex_row_format 2: earlier runner versions could retry
+        # after a reply and kept no record of the discarded attempt (#166)
+        or (str(row.get("cli_version", "")).startswith("codex-exec") and (row.get("codex_row_format") or 0) < 2)
     )
 
 
