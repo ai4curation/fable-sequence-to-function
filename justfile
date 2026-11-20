@@ -55,9 +55,10 @@ pdf:
     pdflatex -interaction=nonstopmode manuscript.tex > /dev/null
     pdflatex -interaction=nonstopmode manuscript.tex | grep -E "Warning|^!|Output written" || true
 
-# Run the model-calling scripts and the reply-reading rules against a stub CLI. Calls no model.
+# Run the model-calling scripts and the reply-reading rules against a stub CLI, and the Gemini API runners against a stub endpoint. Calls no model.
 check-calls:
     uv run python scripts/check_call_scripts_with_stub_cli.py
+    uv run python scripts/check_gemini_runners_with_stub_endpoint.py
 
 # Ask one model the questions of one test again (costs money; appends to results and resumes).
 # Example: just ask pseudo claude-opus-5-5 high        (add --limit 1 for a single canary call, --tag NAME for a separate file)

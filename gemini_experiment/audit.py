@@ -28,6 +28,22 @@ def require(condition, message):
         raise ValueError(message)
 
 
+def metadata_problem(row):
+    """None if a usable row's fields agree with the endpoint metadata stored beside them (#155)."""
+    m = row["response_metadata"]
+    if row.get("response_id") != m.get("responseId"):
+        return "response id differs from the stored metadata"
+    if row.get("model_version") != m.get("modelVersion"):
+        return "model version differs from the stored metadata"
+    cand = m["candidates"][0]
+    if row.get("finish_reason") != cand.get("finishReason"):
+        return "finish reason differs from the stored metadata"
+    shown = sum(q.get("text_chars", 0) for q in cand["content"]["parts"] if not q.get("thought"))
+    if shown != len(row.get("text") or ""):
+        return "reply length differs from the stored metadata"
+    return None
+
+
 def main():
     # Read the existing prompt literals without importing model-calling scripts.
     for test, prompt in PROMPTS.items():
@@ -85,6 +101,9 @@ def main():
                     continue
                 if not str(row.get("cli_version", "")).startswith("agy"):
                     require(row.get("model_version") == row["model"], f"{path.name}: endpoint model version {row.get('model_version')} for {row['model']}")
+                if "response_metadata" in row:  # rows written after #155 keep the endpoint's metadata
+                    problem = metadata_problem(row)
+                    require(problem is None, f"{path.name}: {problem}")
                 if test == "next_residue":
                     require(row["target"] == meta["target"], f"{path.name}: target mismatch")
                     require(row["pfam"] == meta["pfam"], f"{path.name}: family mismatch")

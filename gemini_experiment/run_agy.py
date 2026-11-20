@@ -91,6 +91,34 @@ def agy_unusable(row: dict) -> bool:
 NO_TOOL_PREFIX = "Do not call or invoke any tools. "
 
 
+def response_metadata(d: dict, headers=None) -> dict:
+    """Everything the Gemini endpoint returned except the reply text itself (#155).
+
+    Keeps responseId, createTime, modelVersion, usageMetadata, promptFeedback and every candidate
+    field (finishReason, safetyRatings, citationMetadata, ...). Each content part is kept without
+    its text and thought signature, whose lengths are recorded instead; the visible reply text is
+    already stored in the row's `text`. `headers` are the HTTP response headers, minus cookies.
+    """
+    meta = {k: v for k, v in d.items() if k != "candidates"}
+    meta["candidates"] = []
+    for c in d.get("candidates") or []:
+        c2 = {k: v for k, v in c.items() if k != "content"}
+        parts = []
+        for part in (c.get("content") or {}).get("parts") or []:
+            q = {k: v for k, v in part.items() if k not in ("text", "thoughtSignature")}
+            if "text" in part:
+                q["text_chars"] = len(part["text"])
+            if "thoughtSignature" in part:
+                q["thought_signature_chars"] = len(part["thoughtSignature"])
+            parts.append(q)
+        c2["content"] = {k: v for k, v in (c.get("content") or {}).items() if k != "parts"}
+        c2["content"]["parts"] = parts
+        meta["candidates"].append(c2)
+    if headers is not None:
+        meta["http_headers"] = {k: v for k, v in headers.items() if k.lower() not in ("set-cookie", "cookie")}
+    return meta
+
+
 def call_agy(model: str, prompt: str, tries: int = 3, timeout: int = 300):
     """Run one single-turn prompt through `agy -p` from /tmp with slash commands disabled."""
     full_prompt = NO_TOOL_PREFIX + prompt
