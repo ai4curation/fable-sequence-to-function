@@ -51,6 +51,7 @@ def call_gemini_api(model: str, effort: str, prompt: str, tries: int = 5, timeou
         model=model,
         effort=effort,
         prompt_sha256=sha(prompt),
+        row_format=2,  # rows from #155 on: response id and metadata recorded whenever a response arrived
         cli_version="gemini-rest-v1beta",
     )
     d = None
@@ -86,19 +87,18 @@ def call_gemini_api(model: str, effort: str, prompt: str, tries: int = 5, timeou
     if d is None:
         return None, dict(rec, error=why or "no response")
 
-    rec.update(
-        response_id=d.get("responseId"),
-        create_time=d.get("createTime"),
-        model_version=d.get("modelVersion"),
-        response_metadata=response_metadata(d, headers),
-    )
+    rec.update(response_id=d.get("responseId"), create_time=d.get("createTime"), model_version=d.get("modelVersion"))
+    try:  # never lose a paid reply to a metadata quirk (#160)
+        rec["response_metadata"] = response_metadata(d, headers)
+    except Exception as e:
+        rec["response_metadata_error"] = repr(e)[:400]
     cands = d.get("candidates") or []
     if not cands:
         return None, dict(rec, error=f"no candidates: {d.get('promptFeedback')}")
 
     cand = cands[0]
     parts = (cand.get("content") or {}).get("parts") or []
-    text = "".join(p.get("text", "") for p in parts if not p.get("thought"))
+    text = "".join(p.get("text") or "" for p in parts if isinstance(p, dict) and not p.get("thought"))
     u = d.get("usageMetadata") or {}
     rec.update(
         status="SUCCESS",

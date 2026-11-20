@@ -111,6 +111,17 @@ for name, call in callers.items():
     check(rec.get("response_id") == "stub-response-id-2" and rec.get("response_metadata", {}).get("promptFeedback"),
           f"{name}: safety block keeps response id and prompt feedback")
 
+    check(rec.get("row_format") == 2, f"{name}: rows are marked row_format 2")
+    odd = {"candidates": [{"content": {"parts": [{"text": None, "thought": True, "thoughtSignature": None},
+                                                 {"text": "MKV"}]}, "finishReason": "STOP"}, "not-a-dict"],
+           "modelVersion": "gemini-4-neon", "responseId": "stub-response-id-3"}
+    try:
+        text, rec = run(call, odd)
+        ok = text == "MKV" and "response_metadata_error" in rec and rec.get("response_id") == "stub-response-id-3"
+    except Exception as e:
+        ok = False
+    check(ok, f"{name}: a metadata quirk keeps the reply and records the error instead of raising")
+
     text, rec = run(call, http_error=400)
     check(text is None and rec.get("error", "").startswith("HTTP 400") and "response_metadata" not in rec,
           f"{name}: HTTP error row has the error and no metadata")
@@ -149,6 +160,16 @@ for field, value in (("response_id", "other"), ("model_version", "gemini-other")
     bad = copy.deepcopy(row)
     bad[field] = value
     check(audit.metadata_problem(bad) is not None, f"audit.metadata_problem: altered {field} fails")
+
+text_b, blocked = run(callers["run_vertex"], BLOCKED)
+check(audit.metadata_problem(blocked, usable=False) is None, "audit.metadata_problem: an unaltered blocked row passes")
+bad = copy.deepcopy(blocked)
+bad["response_id"] = "other"
+check(audit.metadata_problem(bad, usable=False) is not None, "audit.metadata_problem: a blocked row with another response id fails")
+bad = {k: v for k, v in blocked.items() if k != "response_metadata"}
+check(audit.metadata_problem(bad, usable=False) is not None, "audit.metadata_problem: a format-2 blocked row without metadata fails")
+_, err400 = run(callers["run_vertex"], http_error=400)
+check(audit.metadata_problem(err400, usable=False) is None, "audit.metadata_problem: an HTTP error row needs no metadata")
 
 empty = copy.deepcopy(row)
 empty["response_metadata"]["candidates"] = []
