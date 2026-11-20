@@ -1,0 +1,63 @@
+========================================================================
+TEST 1: NEXT RESIDUE
+========================================================================
+
+== gemini-4-neon-low: 271 usable (1 unusable)
+  real      n=136 invalid=0 first-residue=8.8%  exact10=0
+  shuffled  n=135 invalid=0 first-residue=10.4%  exact10=0
+  gap real-shuffled: -1.5 pts (95% CI -8.1 to +5.1), 68 families
+  sensitivity: excluding 6 rows with input_tokens > prompt characters
+    real      n=133 first-residue=8.3%
+    shuffled  n=132 first-residue=10.6%
+    gap real-shuffled: -2.3 pts (95% CI -9.1 to +4.5), 66 families
+
+========================================================================
+TEST 2: DOMAINS & MEMBRANE FEATURES
+========================================================================
+
+== gemini-4-neon-low: 120 usable (0 unusable, 0 unparsed)
+  real     set B   n=45: Pfam >=1 right 20/45; pred 28 (id 23, id/name 23); true 56; IoU 0.802 (n=23)
+           TM: agree 42/45, exact 40/45, helices 59/59 (pred 66); SP TP 8 FN 0 FP 0 TN 37
+  real     set A   n=15: Pfam >=1 right 0/15; pred 0 (id 0, id/name 0); true 17; IoU nan (n=0)
+           TM: agree 15/15, exact 14/15, helices 15/15 (pred 16); SP TP 1 FN 0 FP 0 TN 14
+  real     set all n=60: Pfam >=1 right 20/60; pred 28 (id 23, id/name 23); true 73; IoU 0.802 (n=23)
+           TM: agree 57/60, exact 54/60, helices 74/74 (pred 82); SP TP 9 FN 0 FP 0 TN 51
+  shuffled set B   n=45: Pfam >=1 right 0/45; pred 0 (id 0, id/name 0); true 56; IoU nan (n=0)
+           (shuffled hallucination) any Pfam domain 0/45
+  shuffled set A   n=15: Pfam >=1 right 0/15; pred 0 (id 0, id/name 0); true 17; IoU nan (n=0)
+           (shuffled hallucination) any Pfam domain 0/15
+  shuffled set all n=60: Pfam >=1 right 0/60; pred 0 (id 0, id/name 0); true 73; IoU nan (n=0)
+           (shuffled hallucination) any Pfam domain 0/60
+
+========================================================================
+TEST 3: PSEUDOENZYMES
+========================================================================
+
+== gemini-4-neon-low: 120 usable (0 unusable, 0 unparsed)
+  natural pseudokinases named inactive/pseudokinase: 19/20 (of called no: 19/19)
+  enzyme  site_to_ala n=20: yes  8  no 11  uncertain  1; mutated pos flagged 11/20, still intact 0/20
+  enzyme  wt          n=20: yes 18  no  1  uncertain  1; curated pos listed 14/20
+  kinase  asp_to_asn  n=20: yes  0  no 20  uncertain  0; mutated pos flagged 20/20, still intact 0/20
+  kinase  lys_to_met  n=20: yes  4  no 16  uncertain  0; mutated pos flagged 16/20, still intact 0/20
+  kinase  wt          n=20: yes 20  no  0  uncertain  0; curated pos listed 19/20
+  pseudo  wt          n=20: yes  1  no 19  uncertain  0
+  enzyme  site_to_ala without P64636 and Q08651 (curated site disputed, see adjudication/) n=18: active yes 6  no 11  uncertain 1; mutated position flagged as substituted 11/18
+
+========================================================================
+TEST 4: STRUCTURE & FUNCTION
+========================================================================
+
+== gemini-3.1-pro-preview-high: 30 usable (0 unusable, 0 unparsed)
+  novel                        n=15: Q3 58.1% (base 54.1%); LR prec 11.1% (top5 12.0%; chance 2.0%); rec 12/15
+  known                        n=15: Q3 60.4% (base 55.4%); LR prec 9.3% (top5 18.7%; chance 1.7%); rec 12/15
+  novel, ASPRV1 counted once   n=12: Q3 60.7% (base 56.6%); LR prec 12.6% (top5 11.7%; chance 1.8%); rec 9/12
+
+== gemini-4-carbon-medium: 1 usable (3 unusable, 0 unparsed)
+  novel                        n= 0: Q3 nan% (base nan%); LR prec nan% (top5 nan%; chance nan%); rec 0/0
+  known                        n= 1: Q3 93.0% (base 53.0%); LR prec 75.0% (top5 100.0%; chance 3.4%); rec 1/1
+  novel, ASPRV1 counted once   n= 0: Q3 nan% (base nan%); LR prec nan% (top5 nan%; chance nan%); rec 0/0
+
+== gemini-4-neon-medium: 30 usable (0 unusable, 0 unparsed)
+  novel                        n=15: Q3 67.4% (base 54.1%); LR prec 32.7% (top5 48.0%; chance 2.0%); rec 3/15
+  known                        n=15: Q3 78.6% (base 55.4%); LR prec 48.0% (top5 54.7%; chance 1.7%); rec 13/15
+  novel, ASPRV1 counted once   n=12: Q3 69.0% (base 56.6%); LR prec 28.4% (top5 43.3%; chance 1.8%); rec 1/12
