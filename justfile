@@ -9,6 +9,7 @@ report:
     uv run python experiments/next_residue/baselines.py > expected/next_residue_baselines.txt
     uv run python experiments/features/score.py > expected/features.txt
     uv run python experiments/pseudo/score.py > expected/pseudo.txt
+    uv run python experiments/pseudo/adjudication/adjudicate.py > expected/adjudication.txt
     uv run python experiments/structure/score.py > expected/structure.txt
     uv run python experiments/summary.py > expected/summary.txt
     uv run python experiments/decoy_control/score_decoys.py > expected/decoy_control.txt
@@ -24,6 +25,7 @@ check: verify-data
     uv run python experiments/next_residue/baselines.py > $tmp/next_residue_baselines.txt
     uv run python experiments/features/score.py > $tmp/features.txt
     uv run python experiments/pseudo/score.py > $tmp/pseudo.txt
+    uv run python experiments/pseudo/adjudication/adjudicate.py > $tmp/adjudication.txt
     uv run python experiments/structure/score.py > $tmp/structure.txt
     uv run python experiments/summary.py > $tmp/summary.txt
     uv run python experiments/decoy_control/score_decoys.py > $tmp/decoy_control.txt
@@ -37,7 +39,7 @@ verify-data:
 
 # Rewrite SHA256SUMS (only after deliberately adding new runs)
 checksums:
-    find experiments -type f -not -path '*/.venv/*' \( -name '*.json' -o -name '*.jsonl' -o -name '*.tsv' -o -name '*.yaml' \) | sort | xargs shasum -a 256 > SHA256SUMS
+    find experiments -type f -not -path '*/.venv/*' \( -name '*.json' -o -name '*.jsonl' -o -name '*.tsv' -o -name '*.yaml' -o -name '*.cif' -o -name '*.pdb' \) | sort | xargs shasum -a 256 > SHA256SUMS
 
 # Redraw the figures from the committed model outputs (the plotted values are in expected/figures.txt)
 figures:

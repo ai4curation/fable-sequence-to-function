@@ -1,0 +1,2052 @@
+{
+ "query_accession": "Q08651",
+ "uniprot_query": "(xref:pfam-PF00106) AND (reviewed:true) AND (ft_act_site_exp:*) AND (length:[230 TO 360])",
+ "extra": [
+  "O93868"
+ ],
+ "fetched": "2026-11-19",
+ "mafft": "v7.505 (2022/Apr/10)",
+ "entries": [
+  {
+   "accession": "Q08651",
+   "name": "Probable oxidoreductase ENV9",
+   "organism": "Saccharomyces cerevisiae (strain ATCC 204508 / S288c)",
+   "sequence": "MLDPRILPYYDPAVERKIAVVTGGNTGIGWYTVLHLYLHGFVVYICGRNSHKISKAIQEILAEAKKRCHEDDDGSSPGAGPGPSIQRLGSLHYIHLDLTDLKCVERAALKILKLEDHIDVLVNNAGIMAVPLEMTKDGFEVQLQTNYISHFIFTMRLLPLLRHCRGRIISLSSIGHHLEFMYWKLSKTWDYKPNMLFTWFRYAMSKTALIQCTKMLAIKYPDVLCLSVHPGLVMNTNLFSYWTRLPIVGIFFWLLFQVVGFFFGVSNEQGSLASLKCALDPNLSVEKDNGKYFTTGGKESKSSYVSNNVDEAASTWIWTVHQLRDRGFDI",
+   "sequence_version": 1,
+   "entry_version": 174,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 172,
+     "end": 172,
+     "description": "Proton donor",
+     "ligand": "",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:O93868"
+     ]
+    },
+    {
+     "type": "Active site",
+     "start": 202,
+     "end": 202,
+     "description": "Proton donor",
+     "ligand": "",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:O93868"
+     ]
+    },
+    {
+     "type": "Active site",
+     "start": 206,
+     "end": 206,
+     "description": "Lowers pKa of active site Tyr",
+     "ligand": "",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:O93868"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 28,
+     "end": 28,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:L0E2Z4"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 97,
+     "end": 97,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:L0E2Z4"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 124,
+     "end": 124,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:O93868"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 202,
+     "end": 202,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:O93868"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 206,
+     "end": 206,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:O93868"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 233,
+     "end": 233,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:O93868"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 237,
+     "end": 237,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:O93868"
+     ]
+    }
+   ],
+   "pdb": []
+  },
+  {
+   "accession": "O93868",
+   "name": "NADP-dependent mannitol dehydrogenase",
+   "organism": "Agaricus bisporus",
+   "sequence": "MAPGFTISFVNKTIIVTGGNRGIGLAFTRAVAAAGANVAVIYRSAKDAVEVTEKVGKEFGVKTKAYQCDVSNTDIVTKTIQQIDADLGAISGLIANAGVSVVKPATELTHEDFKFVYDVNVFGVFNTCRAVAKLWLQKQQKGSIVVTSSMSSQIINQSSLNGSLTQVFYNSSKAACSNLVKGLAAEWASAGIRVNALSPGYVNTDQTAHMDKKIRDHQASNIPLNRFAQPEEMTGQAILLLSDHATYMTGGEYFIDGGQLIW",
+   "sequence_version": 3,
+   "entry_version": 109,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 149,
+     "end": 149,
+     "description": "Proton donor",
+     "ligand": "",
+     "evidence": [
+      "ECO:0000305"
+     ],
+     "source": [
+      "PubMed:11335726"
+     ]
+    },
+    {
+     "type": "Active site",
+     "start": 169,
+     "end": 169,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [
+      "ECO:0000305"
+     ],
+     "source": [
+      "PubMed:11335726"
+     ]
+    },
+    {
+     "type": "Active site",
+     "start": 173,
+     "end": 173,
+     "description": "Lowers pKa of active site Tyr",
+     "ligand": "",
+     "evidence": [
+      "ECO:0000305"
+     ],
+     "source": [
+      "PubMed:11335726"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 23,
+     "end": 23,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:L0E2Z4"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 69,
+     "end": 69,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:L0E2Z4"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 96,
+     "end": 96,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1H5Q",
+      "PubMed:11335726"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 129,
+     "end": 129,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:L0E2Z4"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 169,
+     "end": 169,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1H5Q",
+      "PubMed:11335726"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 173,
+     "end": 173,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1H5Q",
+      "PubMed:11335726"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 202,
+     "end": 202,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1H5Q",
+      "PubMed:11335726"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 204,
+     "end": 204,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:L0E2Z4"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 206,
+     "end": 206,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1H5Q",
+      "PubMed:11335726"
+     ]
+    }
+   ],
+   "pdb": [
+    "1H5Q"
+   ]
+  },
+  {
+   "accession": "O70351",
+   "name": "3-hydroxyacyl-CoA dehydrogenase type-2",
+   "organism": "Rattus norvegicus",
+   "sequence": "MAAAVRSVKGLVAVITGGASGLGLSTAKRLVGQGATAVLLDVPNSEGETEAKKLGGNCIFAPANVTSEKEVQAALTLAKEKFGRIDVAVNCAGIAVAIKTYHEKKNQVHTLEDFQRVINVNLIGTFNVIRLVAGVMGQNEPDQGGQRGVIINTASVAAFEGQVGQAAYSASKGGIVGMTLPIARDLAPIGIRVVTIAPGLFATPLLTTLPDKVRNFLASQVPFPSRLGDPAEYAHLVQMVIENPFLNGEVIRLDGAIRMQP",
+   "sequence_version": 3,
+   "entry_version": 173,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 168,
+     "end": 168,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:11023795"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 20,
+     "end": 20,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:Q99714"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 22,
+     "end": 22,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:Q99714"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 41,
+     "end": 41,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:Q99714"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 65,
+     "end": 65,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:Q99714"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 91,
+     "end": 91,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:Q99714"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 155,
+     "end": 155,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:11023795"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 168,
+     "end": 168,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:Q99714"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 172,
+     "end": 172,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:Q99714"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 201,
+     "end": 201,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:Q99714"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 203,
+     "end": 203,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:Q99714"
+     ]
+    }
+   ],
+   "pdb": [
+    "1E3S",
+    "1E3W",
+    "1E6W"
+   ]
+  },
+  {
+   "accession": "P00334",
+   "name": "Alcohol dehydrogenase",
+   "organism": "Drosophila melanogaster",
+   "sequence": "MSFTLTNKNVIFVAGLGGIGLDTSKELLKRDLKNLVILDRIENPAAIAELKAINPKVTVTFYPYDVTVPIAETTKLLKTIFAQLKTVDVLINGAGILDDHQIERTIAVNYTGLVNTTTAILDFWDKRKGGPGGIICNIGSVTGFNAIYQVPVYSGTKAAVVNFTSSLAKLAPITGVTAYTVNPGITRTTLVHKFNSWLDVEPQVAEKLLAHPTQPSLACAENFVKAIELNQNGAIWKLDLGTLEAIQWTKHWDSGI",
+   "sequence_version": 2,
+   "entry_version": 233,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 153,
+     "end": 153,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15581900"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 12,
+     "end": 41,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15581900"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 65,
+     "end": 65,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15581900"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 140,
+     "end": 140,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15581900"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 157,
+     "end": 157,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15581900"
+     ]
+    }
+   ],
+   "pdb": [
+    "1MG5"
+   ]
+  },
+  {
+   "accession": "P08074",
+   "name": "Carbonyl reductase [NADPH] 2",
+   "organism": "Mus musculus",
+   "sequence": "MKLNFSGLRALVTGAGKGIGRDTVKALHASGAKVVAVTRTNSDLVSLAKECPGIEPVCVDLGDWDATEKALGGIGPVDLLVNNAALVIMQPFLEVTKEAFDRSFSVNLRSVFQVSQMVARDMINRGVPGSIVNVSSMVAHVTFPNLITYSSTKGAMTMLTKAMAMELGPHKIRVNSVNPTVVLTDMGKKVSADPEFARKLKERHPLRKFAEVEDVVNSILFLLSDRSASTSGGGILVDAGYLAS",
+   "sequence_version": 1,
+   "entry_version": 193,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 149,
+     "end": 149,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 11,
+     "end": 39,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:8805511"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 136,
+     "end": 136,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [],
+     "source": []
+    }
+   ],
+   "pdb": [
+    "1CYD"
+   ]
+  },
+  {
+   "accession": "P09417",
+   "name": "Dihydropteridine reductase",
+   "organism": "Homo sapiens",
+   "sequence": "MAAAAAAGEARRVLVYGGRGALGSRCVQAFRARNWWVASVDVVENEEASASIIVKMTDSFTEQADQVTAEVGKLLGEEKVDAILCVAGGWAGGNAKSKSLFKNCDLMWKQSIWTSTISSHLATKHLKEGGLLTLAGAKAALDGTPGMIGYGMAKGAVHQLCQSLAGKNSGMPPGAAAIAVLPVTLDTPMNRKSMPEADFSSWTPLEFLVETFHDWITGKNRPSSGSLIQVVTTEGRTELTPAYF",
+   "sequence_version": 2,
+   "entry_version": 241,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 150,
+     "end": 150,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 14,
+     "end": 38,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [],
+     "source": []
+    }
+   ],
+   "pdb": [
+    "1HDR",
+    "9DTW"
+   ]
+  },
+  {
+   "accession": "P10807",
+   "name": "Alcohol dehydrogenase",
+   "organism": "Drosophila lebanonensis",
+   "sequence": "MDLTNKNVIFVAALGGIGLDTSRELVKRNLKNFVILDRVENPTALAELKAINPKVNITFHTYDVTVPVAESKKLLKKIFDQLKTVDILINGAGILDDHQIERTIAINFTGLVNTTTAILDFWDKRKGGPGGIIANICSVTGFNAIHQVPVYSASKAAVVSFTNSLAKLAPITGVTAYSINPGITRTPLVHTFNSWLDVEPRVAELLLSHPTQTSEQCGQNFVKAIEANKNGAIWKLDLGTLEAIEWTKHWDSHI",
+   "sequence_version": 1,
+   "entry_version": 138,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 151,
+     "end": 151,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 10,
+     "end": 33,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:10366509"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 138,
+     "end": 138,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [],
+     "source": []
+    }
+   ],
+   "pdb": [
+    "1A4U",
+    "1B14",
+    "1B15",
+    "1B16",
+    "1B2L",
+    "1SBY",
+    "3RJ5",
+    "3RJ9"
+   ]
+  },
+  {
+   "accession": "P11348",
+   "name": "Dihydropteridine reductase",
+   "organism": "Rattus norvegicus",
+   "sequence": "MAASGEARRVLVYGGRGALGSRCVQAFRARNWWVASIDVVENEEASASVIVKMTDSFTEQADQVTAEVGKLLGDQKVDAILCVAGGWAGGNAKSKSLFKNCDLMWKQSIWTSTISSHLATKHLKEGGLLTLAGAKAALDGTPGMIGYGMAKGAVHQLCQSLAGKNSGMPSGAAAIAVLPVTLDTPMNRKSMPEADFSSWTPLEFLVETFHDWITGNKRPNSGSLIQVVTTDGKTELTPAYF",
+   "sequence_version": 1,
+   "entry_version": 174,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 147,
+     "end": 147,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 11,
+     "end": 35,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [],
+     "source": []
+    }
+   ],
+   "pdb": [
+    "1DHR",
+    "1DIR"
+   ]
+  },
+  {
+   "accession": "P14061",
+   "name": "17-beta-hydroxysteroid dehydrogenase type 1",
+   "organism": "Homo sapiens",
+   "sequence": "MARTVVLITGCSSGIGLHLAVRLASDPSQSFKVYATLRDLKTQGRLWEAARALACPPGSLETLQLDVRDSKSVAAARERVTEGRVDVLVCNAGLGLLGPLEALGEDAVASVLDVNVVGTVRMLQAFLPDMKRRGSGRVLVTGSVGGLMGLPFNDVYCASKFALEGLCESLAVLLLPFGVHLSLIECGPVHTAFMEKVLGSPEEVLDRTDIHTFHRFYQYLAHSKQVFREAAQNPEEVAEVFLTALRAPKPTLRYFTTERFLPLLRMRLDDPSGSNYVTAMHREVFGDVPAKAEAGAEAGGGAGPGAEDEAGRGAVGDPELGDPPAAPQ",
+   "sequence_version": 3,
+   "entry_version": 241,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 156,
+     "end": 156,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 10,
+     "end": 38,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:8805577"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 66,
+     "end": 66,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:8805577"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 143,
+     "end": 143,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:8805577"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 160,
+     "end": 160,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:8805577"
+     ]
+    }
+   ],
+   "pdb": [
+    "1A27",
+    "1BHS",
+    "1DHT",
+    "1EQU",
+    "1FDS",
+    "1FDT",
+    "1FDU",
+    "1FDV",
+    "1FDW",
+    "1I5R",
+    "1IOL",
+    "1JTV",
+    "1QYV",
+    "1QYW",
+    "1QYX",
+    "3DEY",
+    "3DHE",
+    "3HB4",
+    "3HB5",
+    "3KLM",
+    "3KLP",
+    "3KM0",
+    "6CGC",
+    "6CGE",
+    "6DTP",
+    "6MNC",
+    "6MNE",
+    "7X3Z"
+   ]
+  },
+  {
+   "accession": "P15428",
+   "name": "15-hydroxyprostaglandin dehydrogenase [NAD(+)]",
+   "organism": "Homo sapiens",
+   "sequence": "MHVNGKVALVTGAAQGIGRAFAEALLLKGAKVALVDWNLEAGVQCKAALDEQFEPQKTLFIQCDVADQQQLRDTFRKVVDHFGRLDILVNNAGVNNEKNWEKTLQINLVSVISGTYLGLDYMSKQNGGEGGIIINMSSLAGLMPVAQQPVYCASKHGIVGFTRSAALAANLMNSGVRLNAICPGFVNTAILESIEKEENMGQYIEYKDHIKDMIKYYGILDPPLIANGLITLIEDDALNGAIMKITTSKGIHFQDYDTTPFQAKTQ",
+   "sequence_version": 1,
+   "entry_version": 231,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 151,
+     "end": 151,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 12,
+     "end": 20,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:21072165"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 36,
+     "end": 37,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:21072165"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 63,
+     "end": 65,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:21072165"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 91,
+     "end": 91,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:21072165"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 138,
+     "end": 138,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [
+      "ECO:0000305"
+     ],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 148,
+     "end": 148,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [
+      "ECO:0000305"
+     ],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 151,
+     "end": 155,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:21072165"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 186,
+     "end": 188,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:21072165"
+     ]
+    }
+   ],
+   "pdb": [
+    "2GDZ",
+    "8CVN",
+    "8CWL",
+    "8FD8",
+    "9PFL",
+    "9PFM"
+   ]
+  },
+  {
+   "accession": "P16152",
+   "name": "Carbonyl reductase [NADPH] 1",
+   "organism": "Homo sapiens",
+   "sequence": "MSSGIHVALVTGGNKGIGLAIVRDLCRLFSGDVVLTARDVTRGQAAVQQLQAEGLSPRFHQLDIDDLQSIRALRDFLRKEYGGLDVLVNNAGIAFKVADPTPFHIQAEVTMKTNFFGTRDVCTELLPLIKPQGRVVNVSSIMSVRALKSCSPELQQKFRSETITEEELVGLMNKFVEDTKKGVHQKEGWPSSAYGVTKIGVTVLSRIHARKLSEQRKGDKILLNACCPGWVRTDMAGPKATKSPEEGAETPVYLALLPPDAEGPHGQFVSEKRVEQW",
+   "sequence_version": 3,
+   "entry_version": 245,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 194,
+     "end": 194,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 10,
+     "end": 34,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15799708",
+      "PubMed:17912391",
+      "PubMed:18826943"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 63,
+     "end": 64,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15799708",
+      "PubMed:17912391",
+      "PubMed:18826943"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 90,
+     "end": 90,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15799708",
+      "PubMed:17912391",
+      "PubMed:18826943"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 95,
+     "end": 97,
+     "description": "",
+     "ligand": "glutathione",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 106,
+     "end": 106,
+     "description": "",
+     "ligand": "glutathione",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 140,
+     "end": 140,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 193,
+     "end": 194,
+     "description": "",
+     "ligand": "glutathione",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 194,
+     "end": 198,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15799708",
+      "PubMed:17912391",
+      "PubMed:18826943"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 231,
+     "end": 233,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15799708",
+      "PubMed:17912391",
+      "PubMed:18826943"
+     ]
+    }
+   ],
+   "pdb": [
+    "1WMA",
+    "2PFG",
+    "3BHI",
+    "3BHJ",
+    "3BHM",
+    "4Z3D"
+   ]
+  },
+  {
+   "accession": "P28845",
+   "name": "11-beta-hydroxysteroid dehydrogenase 1",
+   "organism": "Homo sapiens",
+   "sequence": "MAFMKKYLLPILGLFMAYYYYSANEEFRPEMLQGKKVIVTGASKGIGREMAYHLAKMGAHVVVTARSKETLQKVVSHCLELGAASAHYIAGTMEDMTFAEQFVAQAGKLMGGLDMLILNHITNTSLNLFHDDIHHVRKSMEVNFLSYVVLTVAALPMLKQSNGSIVVVSSLAGKVAYPMVAAYSASKFALDGFFSSIRKEYSVSRVNVSITLCVLGLIDTETAMKAVSGIVHMQAAPKEECALEIIKGGALRQEEVYYDSSLWTTLLIRNPCRKILEFLYSTSYNMDRFINK",
+   "sequence_version": 3,
+   "entry_version": 232,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 183,
+     "end": 183,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 41,
+     "end": 67,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15513927",
+      "PubMed:17919905",
+      "PubMed:18069989",
+      "PubMed:18485702",
+      "PubMed:18553955",
+      "PubMed:19217779"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 92,
+     "end": 93,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15513927",
+      "PubMed:17919905",
+      "PubMed:18069989",
+      "PubMed:18485702",
+      "PubMed:18553955",
+      "PubMed:19217779"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 119,
+     "end": 121,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15513927",
+      "PubMed:17919905",
+      "PubMed:18069989",
+      "PubMed:18485702",
+      "PubMed:18553955",
+      "PubMed:19217779"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 170,
+     "end": 170,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1XU7",
+      "PDB:1XU9",
+      "PubMed:15513927"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 183,
+     "end": 187,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15513927",
+      "PubMed:17919905",
+      "PubMed:18069989",
+      "PubMed:18485702",
+      "PubMed:18553955",
+      "PubMed:19217779"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 218,
+     "end": 222,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15513927",
+      "PubMed:17919905",
+      "PubMed:18069989",
+      "PubMed:18485702",
+      "PubMed:18553955",
+      "PubMed:19217779"
+     ]
+    }
+   ],
+   "pdb": [
+    "1XU7",
+    "1XU9",
+    "2BEL",
+    "2ILT",
+    "2IRW",
+    "2RBE",
+    "3BYZ",
+    "3BZU",
+    "3CH6",
+    "3CZR",
+    "3D3E",
+    "3D4N",
+    "3D5Q",
+    "3EY4",
+    "3FCO",
+    "3FRJ",
+    "3H6K",
+    "3HFG",
+    "3OQ1",
+    "3PDJ",
+    "3QQP",
+    "3TFQ",
+    "4BB5",
+    "4BB6",
+    "4C7J",
+    "4C7K",
+    "4HFR",
+    "4HX5",
+    "4IJU",
+    "4IJV",
+    "4IJW",
+    "4K1L",
+    "4P38",
+    "4YYZ",
+    "5PGU",
+    "5PGV",
+    "5PGW",
+    "5PGX",
+    "5PGY",
+    "5QII",
+    "6NJ7",
+    "9W6V"
+   ]
+  },
+  {
+   "accession": "P47227",
+   "name": "Cis-2,3-dihydrobiphenyl-2,3-diol dehydrogenase",
+   "organism": "Paraburkholderia xenovorans (strain LB400)",
+   "sequence": "MKLKGEAVLITGGASGLGRALVDRFVAEGAKVAVLDKSAERLAELETDHGDNVLGIVGDVRSLEDQKQAASRCVARFGKIDTLIPNAGIWDYSTALVDLPEESLDAAFDEVFHINVKGYIHAVKACLPALVASRGNVIFTISNAGFYPNGGGPLYTAAKHAIVGLVRELAFELAPYVRVNGVGSGGINSDLRGPSSLGMGSKAISTVPLADMLKSVLPIGRMPEVEEYTGAYVFFATRGDAAPATGALLNYDGGLGVRGFFSGAGGNDLLEQLNIHP",
+   "sequence_version": 1,
+   "entry_version": 168,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 155,
+     "end": 155,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 9,
+     "end": 36,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:9655331"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 59,
+     "end": 59,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:9655331"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 142,
+     "end": 142,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 159,
+     "end": 159,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:9655331"
+     ]
+    }
+   ],
+   "pdb": [
+    "1BDB"
+   ]
+  },
+  {
+   "accession": "P50172",
+   "name": "11-beta-hydroxysteroid dehydrogenase 1",
+   "organism": "Mus musculus",
+   "sequence": "MAVMKNYLLPILVLFLAYYYYSTNEEFRPEMLQGKKVIVTGASKGIGREMAYHLSKMGAHVVLTARSEEGLQKVVSRCLELGAASAHYIAGTMEDMTFAEQFIVKAGKLMGGLDMLILNHITQTSLSLFHDDIHSVRRVMEVNFLSYVVMSTAALPMLKQSNGSIAVISSLAGKMTQPMIAPYSASKFALDGFFSTIRTELYITKVNVSITLCVLGLIDTETAMKEISGIINAQASPKEECALEIIKGTALRKSEVYYDKSPLTPILLGNPGRKIMEFFSLRYYNKDMFVSN",
+   "sequence_version": 3,
+   "entry_version": 198,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 183,
+     "end": 183,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 41,
+     "end": 67,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 92,
+     "end": 93,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 119,
+     "end": 121,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 170,
+     "end": 170,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 183,
+     "end": 187,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 218,
+     "end": 222,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": [
+      "UniProtKB:P28845"
+     ]
+    }
+   ],
+   "pdb": [
+    "1Y5M",
+    "1Y5R",
+    "3GMD",
+    "4K26",
+    "4NMH",
+    "5PGZ",
+    "5QIJ"
+   ]
+  },
+  {
+   "accession": "Q01782",
+   "name": "Pteridine reductase 1",
+   "organism": "Leishmania major",
+   "sequence": "MTAPTVPVALVTGAAKRLGRSIAEGLHAEGYAVCLHYHRSAAEANALSATLNARRPNSAITVQADLSNVATAPVSGADGSAPVTLFTRCAELVAACYTHWGRCDVLVNNASSFYPTPLLRNDEDGHEPCVGDREAMETATADLFGSNAIAPYFLIKAFAHRFAGTPAKHRGTNYSIINMVDAMTNQPLLGYTIYTMAKGALEGLTRSAALELAPLQIRVNGVGPGLSVLVDDMPPAVWEGHRSKVPLYQRDSSAAEVSDVVIFLCSSKAKYITGTCVKVDGGYSLTRA",
+   "sequence_version": 2,
+   "entry_version": 159,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 194,
+     "end": 194,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 17,
+     "end": 40,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 175,
+     "end": 175,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:11373620"
+     ]
+    }
+   ],
+   "pdb": [
+    "1E7W",
+    "1E92",
+    "1W0C",
+    "2BF7",
+    "2BFA",
+    "2BFM",
+    "2BFO",
+    "2BFP",
+    "2QHX",
+    "3H4V",
+    "5L42",
+    "5L4N",
+    "6RXC",
+    "7PXX"
+   ]
+  },
+  {
+   "accession": "Q071N0",
+   "name": "Salutaridine reductase",
+   "organism": "Papaver somniferum",
+   "sequence": "MPETCPNTVTKRRCAVVTGGNKGIGFEICKQLSSNGIMVVLTCRDVTKGHEAVEKLKNSNHENVVFHQLDVTDPIATMSSLADFIKTHFGKLDILVNNAGVAGFSVDADRFKAMISDIGEDSEELVKIYEKPEAQELMSETYELAEECLKINYNGVKSVTEVLIPLLQLSDSPRIVNVSSSTGSLKYVSNETALEILGDGDALTEERIDMVVNMLLKDFKENLIETNGWPSFGAAYTTSKACLNAYTRVLANKIPKFQVNCVCPGLVKTEMNYGIGNYTAEEGAEHVVRIALFPDDGPSGFFYDCSELSAF",
+   "sequence_version": 1,
+   "entry_version": 76,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 236,
+     "end": 236,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 21,
+     "end": 21,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 24,
+     "end": 24,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 44,
+     "end": 44,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 70,
+     "end": 70,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 71,
+     "end": 71,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 98,
+     "end": 98,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 100,
+     "end": 100,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 129,
+     "end": 129,
+     "description": "",
+     "ligand": "salutaridine",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 180,
+     "end": 180,
+     "description": "",
+     "ligand": "salutaridine",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 236,
+     "end": 236,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 240,
+     "end": 240,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 267,
+     "end": 267,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 269,
+     "end": 269,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 272,
+     "end": 272,
+     "description": "",
+     "ligand": "NADPH",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:3O26",
+      "PubMed:21169353"
+     ]
+    }
+   ],
+   "pdb": [
+    "3O26"
+   ]
+  },
+  {
+   "accession": "Q48436",
+   "name": "Diacetyl reductase [(S)-acetoin forming]",
+   "organism": "Klebsiella pneumoniae",
+   "sequence": "MKKVALVTGAGQGIGKAIALRLVKDGFAVAIADYNDATAKAVASEINQAGGRAMAVKVDVSDRDQVFAAVEQARKTLGGFDVIVNNAGVAPSTPIESITPEIVDKVYNINVKGVIWGIQAAVEAFKKEGHGGKIINACSQAGHVGNPELAVYSSSKFAVRGLTQTAARDLAPLGITVNGYCPGIVKTPMWAEIDRQVSEAAGKPLGYGTAEFAKRITLGRLSEPEDVAACVSYLASPDSDYMTGQSLLIDGGMVFN",
+   "sequence_version": 2,
+   "entry_version": 140,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 152,
+     "end": 152,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 6,
+     "end": 33,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:11173520"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 59,
+     "end": 59,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:11173520"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 139,
+     "end": 139,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 156,
+     "end": 156,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:11173520"
+     ]
+    }
+   ],
+   "pdb": [
+    "1GEG",
+    "3WYE"
+   ]
+  },
+  {
+   "accession": "Q93X62",
+   "name": "3-oxoacyl-[acyl-carrier-protein] reductase 1, chloroplastic",
+   "organism": "Brassica napus",
+   "sequence": "MATTVAATKLTSLKAVKKLGFREIRQVRQWSPLQSAMPHFGMLRCGSRQSFATSTVVKAQATAVEQSTGEAVPKVESPVVVVTGASRGIGKAIALSLGKAGCKVLVNYARSAKEAEEVSKQIEAYGGQAITFGGDVSKEADVEAMMKTAIDAWGTIDVVVNNAGITRDTLLIRMKKSQWDEVIDLNLTGVFLCTQAATKIMMKKRKGRIINIASVVGLIGNIGQANYAAAKAGVIGFSKTAAREGASRNINVNVVCPGFIASDMTAKLGEDMEKKILGTIPLGRYGQPEDVAGLVEFLALSPAASYITGQAFTIDGGIAI",
+   "sequence_version": 1,
+   "entry_version": 117,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 227,
+     "end": 227,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 82,
+     "end": 106,
+     "description": "",
+     "ligand": "NADP(+)",
+     "evidence": [
+      "ECO:0000250"
+     ],
+     "source": []
+    },
+    {
+     "type": "Binding site",
+     "start": 214,
+     "end": 214,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [],
+     "source": []
+    }
+   ],
+   "pdb": [
+    "1EDO",
+    "2CDH"
+   ]
+  },
+  {
+   "accession": "Q99714",
+   "name": "3-hydroxyacyl-CoA dehydrogenase type-2",
+   "organism": "Homo sapiens",
+   "sequence": "MAAACRSVKGLVAVITGGASGLGLATAERLVGQGASAVLLDLPNSGGEAQAKKLGNNCVFAPADVTSEKDVQTALALAKGKFGRVDVAVNCAGIAVASKTYNLKKGQTHTLEDFQRVLDVNLMGTFNVIRLVAGEMGQNEPDQGGQRGVIINTASVAAFEGQVGQAAYSASKGGIVGMTLPIARDLAPIGIRVMTIAPGLFGTPLLTSLPEKVCNFLASQVPFPSRLGDPAEYAHLVQAIIENPFLNGEVIRLDGAIRMQP",
+   "sequence_version": 3,
+   "entry_version": 243,
+   "features": [
+    {
+     "type": "Active site",
+     "start": 168,
+     "end": 168,
+     "description": "Proton acceptor",
+     "ligand": "",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15087549"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 20,
+     "end": 20,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1U7T",
+      "PubMed:15342248"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 22,
+     "end": 22,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1U7T",
+      "PubMed:15342248"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 41,
+     "end": 41,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1U7T",
+      "PubMed:15342248"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 64,
+     "end": 64,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1U7T",
+      "PubMed:15342248"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 65,
+     "end": 65,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1U7T",
+      "PubMed:15342248"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 91,
+     "end": 91,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1U7T",
+      "PubMed:15342248"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 155,
+     "end": 155,
+     "description": "",
+     "ligand": "substrate",
+     "evidence": [
+      "ECO:0000269"
+     ],
+     "source": [
+      "PubMed:15087549"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 168,
+     "end": 168,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1U7T",
+      "PubMed:15342248"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 172,
+     "end": 172,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1U7T",
+      "PubMed:15342248"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 201,
+     "end": 201,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1U7T",
+      "PubMed:15342248"
+     ]
+    },
+    {
+     "type": "Binding site",
+     "start": 203,
+     "end": 203,
+     "description": "",
+     "ligand": "NAD(+)",
+     "evidence": [
+      "ECO:0000269",
+      "ECO:0007744"
+     ],
+     "source": [
+      "PDB:1U7T",
+      "PubMed:15342248"
+     ]
+    }
+   ],
+   "pdb": [
+    "1SO8",
+    "1U7T",
+    "2O23",
+    "7ONU",
+    "8CBK",
+    "8CBL",
+    "8CBM",
+    "8CBO",
+    "8RR1",
+    "8RR3",
+    "8RR4",
+    "9EY0",
+    "9EY1",
+    "9EY2",
+    "9GCH"
+   ]
+  }
+ ],
+ "alignment": {
+  "Q08651": "ML------------------------------DPRILPYYD-------------------------------PAVERKIAVVTGGNTGIGWYTVLHLYLHGFVVYICG-RNSHKIS------KAIQEILAEAKKRCHEDDDGSSPGAGPGPSIQRLGSLHYIHLDLTDL-----------------KCVERAALKILKLED--HIDVLVNNAGIMAVP--------------------------------LEMTK--------------DGFEVQLQTNYISHFIFTMRLLPLLRHC-------RGRIISLSSIGHHLEFMYWKLS------------KTWDYKPNMLF---------T-----W-FRYAMSKTALIQCTK--MLAIKYP------DVLCLSVHPGLVMNTNLFSY--------------------------WTRLPIVGIFFWLLFQVVGFFFGVSNEQGSLASLKCALDPNLSVEKDNGKYFTTG--------------------GKESKSSYVSNNVDEAASTWIWTVHQLRDRGFDI------------------------------",
+  "O93868": "MA-----------------------------------PGFT-------------------------------ISFVNKTIIVTGGNRGIGLAFTRAVAAAGANVAVIY-RSAKDAV------EVTEKVGKEF-----------------------GVKTKAYQCDVSNT-----------------DIVTKTIQQIDADLG--AISGLIANAGVSVVK------------------------------PATELTH--------------EDFKFVYDVNVFGVFNTCRAVAKLWLQK-----QQKGSIVVTSSMSSQI-----------------INQSSL------------------NGSLTQ-VFYNSSKAACSNLVK--GLAAEWASA----GIRVNALSPGYVNTDQTAHMDKKIRDHQ------------------ASNIPL-NRF-------------AQPEEMTGQAILLL----------------------------------------SDHATYMTG------------GEYFIDGGQLIW-----------------------------",
+  "O70351": "MA-------------------------------------------------------------------AAVRSVKGLVAVITGGASGLGLSTAKRLVGQGATAVLLD-VPNSEGE------TEAKKL---------------------------GGNCIFAPANVTSE-----------------KEVQAALTLAKEKFG--RIDVAVNCAGIAVAI------------------------------KTYHEKKN--------QVHTLEDFQRVINVNLIGTFNVIRLVAGVMGQNEPDQGGQRGVIINTASVAAFE------------------------------------------GQVGQ-AAYSASKGGIVGMTL--PIARDLAPI----GIRVVTIAPGLFATPLLTTLPDKVRNFL------------------ASQVPFPSRL-------------GDPAEYAHLVQMVI------------------------------------------ENPFLNG------------EVIRLDGAIRMQP----------------------------",
+  "P00334": "MS----------------------------------------------------------------------FTLTNKNVIFVAGLGGIGLDTSKELLKRDLKNLVIL-DRIENP-------AAIAELKAIN----------------------PKVTVTFYPYDVTVP----------------IAETTKLLKTIFAQLK--TVDVLINGAGILDD----------------------------------------------------HQIERTIAVNYTGLVNTTTAILDFWDKR---KGGPGGIICNIGSVTGFN------------------------------------------AIYQV-PVYSGTKAAVVNFTS--SLAKLAPIT----GVTAYTVNPGITRTTLVHKFNSWLDVEPQ-----------------VAEKLLAHPT-------------QPSLACAENFVKAIELNQ-------------------------------------------NG------------AIWKLDLGTLEAIQWTKHWDSGI------------------",
+  "P08074": "MK----------------------------------------------------------------------LNFSGLRALVTGAGKGIGRDTVKALHASGAKVVAVT-RTNSDLV------SLAKEC--------------------------P--GIEPVCVDLGDW---------------------DATEKALGGIG--PVDLLVNNAALVIMQ------------------------------PFLEVTK--------------EAFDRSFSVNLRSVFQVSQMVARDMINR-----GVPGSIVNVSSMVAHV------------------------------------------TFPNL-ITYSSTKGAMTMLTK--AMAMELGPH----KIRVNSVNPTVVLTDMGKKVSADPEFARK----------------LKERHPL-RKF-------------AEVEDVVNSILFLL----------------------------------------SDRSASTSG------------GGILVDAGYLAS-----------------------------",
+  "P09417": "MA-------------------------------------------------------------------AAAAAGEARRVLVYGGRGALGSRCVQAFRARNWWVASVDVVENEEAS-----ASIIVKMTDSFT-----------------------------------------------------EQADQVTAEVGKLLGEEKVDAILCVAGGWAGGN-------------------------AKSKSLFKNCD--------------LMWKQSIWTSTISSHLATKHL------------KEGGLLTLAGAKAALD------------------------------------------GTPGM-IGYGMAKGAVHQLCQ--SLAGKNSGMP--PGAAAIAVLPVTLDTPMNRKSMPEADF--------------------SSWTPL---------------------------EFLV----------------------------------------ETFHDWITGKNRPSSGSL--IQVVTTEGRTELTPAYF-------------------------",
+  "P10807": "MD------------------------------------------------------------------------LTNKNVIFVAALGGIGLDTSRELVKRNLKNFVIL-DRVENP-------TALAELKAIN----------------------PKVNITFHTYDVTVP----------------VAESKKLLKKIFDQLK--TVDILINGAGILDD----------------------------------------------------HQIERTIAINFTGLVNTTTAILDFWDKR---KGGPGGIIANICSVTGFN------------------------------------------AIHQV-PVYSASKAAVVSFTN--SLAKLAPIT----GVTAYSINPGITRTPLVHTFNSWLDVEPR-----------------VAELLLSHPT-------------QTSEQCGQNFVKAIEANK-------------------------------------------NG------------AIWKLDLGTLEAIEWTKHWDSHI------------------",
+  "P11348": "MA----------------------------------------------------------------------ASGEARRVLVYGGRGALGSRCVQAFRARNWWVASIDVVENEEAS-----ASVIVKMTDSFT-----------------------------------------------------EQADQVTAEVGKLLGDQKVDAILCVAGGWAGGN-------------------------AKSKSLFKNCD--------------LMWKQSIWTSTISSHLATKHL------------KEGGLLTLAGAKAALD------------------------------------------GTPGM-IGYGMAKGAVHQLCQ--SLAGKNSGMP--SGAAAIAVLPVTLDTPMNRKSMPEADF--------------------SSWTPL---------------------------EFLV----------------------------------------ETFHDWITGNKRPNSGSL--IQVVTTDGKTELTPAYF-------------------------",
+  "P14061": "MA--------------------------------------------------------------------------RTVVLITGCSSGIGLHLAVRLASDPSQSFKVY-ATLRDLKTQGRLWEAARAL------------------------ACPPGSLETLQLDVRDS-----------------KSVAAARERVTE--G--RVDVLVCNAGLGLLG------------------------------PLEALGE--------------DAVASVLDVNVVGTVRMLQAFLPDMKRR------GSGRVLVTGSVGGLM------------------------------------------GLPFN-DVYCASKFALEGLCE--SLAVLLLPF----GVHLSLIECGPVHTAFMEKVLGSPEEVLDRTDIHTFHRFYQYLA--HSKQVFREAA-------------QNPEEVAEVFLTALRAPK-----PTLRYFTTERFLPLLR----------MRLDDPSGSNYVTAMHREVFGD----VPAKAEAGAEAGGGAGPGAEDEAGRGAVGDPELGDPPAAPQ",
+  "P15428": "MH------------------------------------------------------------------------VNGKVALVTGAAQGIGRAFAEALLLKGAKVALVD-WNLEAGV------QCKAALDEQF----------------------EPQKTLFIQCDVADQ-----------------QQLRDTFRKVVDHFG--RLDILVNNAGVNNE----------------------------------------------------KNWEKTLQINLVSVISGTYLGLDYMSKQ---NGGEGGIIINMSSLAGLM------------------------------------------PVAQQ-PVYCASKHGIVGFTRSAALAANLMNS----GVRLNAICPGFVNTAILESIEKEENMGQ----------YIEYKDHIKDMIKY-YGI-------------LDPPLIANGLITLI----------------------------------------EDDALNGAI------------MKITTSKGIHFQDYDTTPFQAKT-----------------Q",
+  "P16152": "MS------------------------------------------------------------------------SGIHVALVTGGNKGIGLAIVRDLCRLFSGDVVLTARDVTRGQ------AAVQQLQAE------------------------GLSPRFHQLDIDDL-----------------QSIRALRDFLRKEYG--GLDVLVNNAGIAFKVADPTPFH--------------------------------------------IQAEVTMKTNFFGTRDVCTELLPLIKPQ--------GRVVNVSSIMSVRALKSCSPELQQKFRSETITEEELVGLMNKFVEDTKKGVHQKEGWPS--SAYGVTKIGVTVLSR--IHARKLSEQRKGDKILLNACCPGWVRTDMAGPKAT-----------------------------------------------KSPEEGAETPVYLALLPP---D------------------------------AEGPHGQFVSEKRVEQW-----------------------------------------------",
+  "P28845": "MAF----------------------------MKKYLLPILGLFMAYYYYS-----------ANEEFRP----EMLQGKKVIVTGASKGIGREMAYHLAKMGAHVVVTA-RSKETLQ------KVVSHCLELG-----------------------AASAHYIAGTMEDM-----------------TFAEQFVAQAGKLMG--GLDMLILNHITNTSL------------------------------NLFHDDI--------------HHVRKSMEVNFLSYVVLTVAALPMLKQS-------NGSIVVVSSLAGKV------------------------------------------AYPMV-AAYSASKFALDGFFS--SIRKEYSVSRV--NVSITLCVLGLIDTETAMKAVSGIVHMQA----------------------------------------APKEECALEIIKGGALRQ------EEVYYDSSLWTTLLIRNPCRKILEFLYSTSYNMDRFINK-----------------------------------------------------",
+  "P47227": "MK------------------------------------------------------------------------LKGEAVLITGGASGLGRALVDRFVAEGAKVAVLD-KSAERLA------ELETDH---------------------------GDNVLGIVGDVRSL-----------------EDQKQAASRCVARFG--KIDTLIPNAGIWDYS------------------------------TALVDLP---------EESLDAAFDEVFHINVKGYIHAVKACLPALVAS-------RGNVIFTISNAGFY------------------------------------------PNGGG-PLYTAAKHAIVGLVR--ELAFELAPY-----VRVNGVGSGGINSDLRGPSSLGMGSKAI--------STVPLADMLKSVLPI-GRM-------------PEVEEYTGAYVFFAT---------------------------------------RGDAAPATG------------ALLNYDGGLGVRGFFSGAGGNDLLE------QLNIHP----",
+  "P50172": "MAV----------------------------MKNYLLPILVLFLAYYYYS-----------TNEEFRP----EMLQGKKVIVTGASKGIGREMAYHLSKMGAHVVLTA-RSEEGLQ------KVVSRCLELG-----------------------AASAHYIAGTMEDM-----------------TFAEQFIVKAGKLMG--GLDMLILNHITQTSL------------------------------SLFHDDI--------------HSVRRVMEVNFLSYVVMSTAALPMLKQS-------NGSIAVISSLAGKM------------------------------------------TQPMI-APYSASKFALDGFFS--TIRTELYITKV--NVSITLCVLGLIDTETAMKEISGIINAQA----------------------------------------SPKEECALEIIKGTALRK------SEVYYDKSPLTPILLGNPGRKIMEFFSLRYYNKDMFVSN-----------------------------------------------------",
+  "Q01782": "MT-----------------------------------------------------------------------APTVPVALVTGAAKRLGRSIAEGLHAEGYAVCLHYHRSAAEAN------ALSATLNARR-----------------------PNSAITVQADLSNVATAPVSGADGSAPVTLFTRCAELVAACYTHWG--RCDVLVNNASSFYPT------------------------------PLLRNDEDGHEPCVGDREAMETATADLFGSNAIAPYFLIKAFAHRFAGTPAKHRGTNYSIINMVDAMTNQ------------------------------------------PLLGY-TIYTMAKGALEGLTR--SAALELAPL----QIRVNGVGPGL--SVLVDDMPPAVWEGH------------------RSKVPLYQRD-------------SSAAEVSDVVIFLC----------------------------------------SSKAKYITG------------TCVKVDGGYSLTRA---------------------------",
+  "Q071N0": "MP--------------------------------------------------------------ETCPN---TVTKRRCAVVTGGNKGIGFEICKQLSSNGIMVVLTC-RDVTKGH------EAVEKLKNSN-----------------------HENVVFHQLDVTDP----------------IATMSSLADFIKTHFG--KLDILVNNAGVAGFSVDADRFKAMISDIGEDSEELVKIYEKPEAQELMSETY--------------ELAEECLKINYNGVKSVTEVLIPLLQLS------DSPRIVNVSSSTGSLKYVSNETALEILGDGDALTEERIDMVVNMLLKDFKENLIETNGWPSFGAAYTTSKACLNAYTR--VLANKIP------KFQVNCVCPGLVKTEMNYGIGN-----------------------------------------------YTAEEGAEHVVRIALFPD---DGPSGFFYDC-----------------------SELSAF--------------------------------------------------------",
+  "Q48436": "MK---------------------------------------------------------------------------KVALVTGAGQGIGKAIALRLVKDGFAVAIAD-YNDATAK------AVASEINQA------------------------GGRAMAVKVDVSDR-----------------DQVFAAVEQARKTLG--GFDVIVNNAGVAPST------------------------------PIESITP--------------EIVDKVYNINVKGVIWGIQAAVEAFKKE-----GHGGKIINACSQAGHV------------------------------------------GNPEL-AVYSSSKFAVRGLTQ--TAARDLAPL----GITVNGYCPGIVKTPMWAEIDRQVSEAAGKPLGYGTAEF-------AKRITL-GRL-------------SEPEDVAACVSYLA----------------------------------------SPDSDYMTG------------QSLLIDGGMVFN-----------------------------",
+  "Q93X62": "MATTVAATKLTSLKAVKKLGFREIRQVRQWSPLQSAMPHFGMLRCGSRQSFATSTVVKAQATAVEQSTGEAVPKVESPVVVVTGASRGIGKAIALSLGKAGCKVLVNYARSAKEAE------EVSKQIEAY------------------------GGQAITFGGDVSKE-----------------ADVEAMMKTAIDAWG--TIDVVVNNAGITRDT------------------------------LLIRMKK--------------SQWDEVIDLNLTGVFLCTQAATKIMMKK------RKGRIINIASVVGLI------------------------------------------GNIGQ-ANYAAAKAGVIGFSK--TAAREGASR----NINVNVVCPGFIASDMTAKLGEDMEKKI------------------LGTIPL-GRY-------------GQPEDVAGLVEFLAL---------------------------------------SPAASYITG------------QAFTIDGGIAI------------------------------",
+  "Q99714": "MA-------------------------------------------------------------------AACRSVKGLVAVITGGASGLGLATAERLVGQGASAVLLD-LPNSGGE------AQAKKL---------------------------GNNCVFAPADVTSE-----------------KDVQTALALAKGKFG--RVDVAVNCAGIAVAS------------------------------KTYNLKKG--------QTHTLEDFQRVLDVNLMGTFNVIRLVAGEMGQNEPDQGGQRGVIINTASVAAFE------------------------------------------GQVGQ-AAYSASKGGIVGMTL--PIARDLAPI----GIRVMTIAPGLFGTPLLTSLPEKVCNFL------------------ASQVPFPSRL-------------GDPAEYAHLVQAII------------------------------------------ENPFLNG------------EVIRLDGAIRMQP----------------------------"
+ },
+ "pairwise": {
+  "Q08651": "MLDPRILPYYDPAVERKIAVVTGGNTGIGWYTVLHLYLHGFVVYICGRNSHKISKAIQEILAE--AKKRCHEDDDGSSPGAGPGPSIQRLGSLHYIHLDLTDLKCVERAALKILKLEDHIDVLVNNAGIMAV--PLEMTKDGFEVQLQTNYISHF--IFTMRLLPLLRHCRGRIISLSSIGHHLEFMYWKLSKTWDYKPNMLFTWFRYAMSKTALIQCTKMLAIKYPD--VLCLSVHPGLVMNTNLFSYWTRLPIVGIFFWLLFQVVGFFFGVSNEQGSLASLKCALDP------------NLSVEKDNGKYFTTGGKESKSSYVSNNVDEAASTWIWTVHQLRDRGFDI",
+  "O93868": "M-----APGFTISFVNKTIIVTGGNRGIGLAFTRAVAAAGANVAVIYRSAKDAVEVTEKVGKEFGVKTKAYQ-------------------------CDVSNTDIVTKTIQQIDADLGAISGLIANAGVSVVKPATELTHEDFKFVYDVNVFGVFNTCRAVAKLWLQKQQKGSIVVTSSMSSQI---------INQSSLNGSLTQVFYNSSKAACSNLVKGLAAEWASAGIRVNALSPGYV-NTDQTAHMDK-------------------KIRDHQASNIPLNRFAQPEEMTGQAILLLSDHATYMTGGEYFIDGGQ-----------------LIW------------"
+ }
+}

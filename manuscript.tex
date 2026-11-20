@@ -120,6 +120,16 @@ that route so that all three are compared within one route. Fable~5.2 and Opus~5
 Opus~4.6 at low effort. The control added 174 decoy calls and 300 repeat calls. A substitution at another
 conserved position is not tested by this design.
 
+\paragraph{Adjudication of two reference sites.} After inspecting the model answers, we selected two
+enzymes with disputed catalytic positions. We aligned each with reviewed UniProt relatives carrying an
+experimentally supported active site (ECO:0000269), using MAFFT \citep{katoh2013mafft}. For ENV9 we also
+included its cited annotation source O93868 and aligned the pair separately. We measured distances to
+other catalytic residues and available metal or cofactor atoms in SWISS-MODEL homology models
+\citep{waterhouse2018swissmodel} and AlphaFold models with AlphaFill-transplanted ligands
+\citep{jumper2021alphafold,hekkelman2023alphafill}. These predictions share homology information;
+SWISS-MODEL template identities are only 14.16\% (YrfG) and 18.48\% (ENV9). No tested-model answer
+is used as evidence. Excluding these cases is a post hoc sensitivity analysis; the original scores remain.
+
 \paragraph{Test 4, structure and function.} From the PDB \citep{rcsb} we took X-ray entries released on
 or after 1 August 2026 with one protein entity of 100 to 350 residues and resolution of 2.5~\AA{} or
 better. We kept 15 entries for which a sequence search found no PDB entity at 30\% identity or more
@@ -268,9 +278,24 @@ residue: with Glu318 of a glucuronosyltransferase (Q9VLA1) changed to alanine, b
 as the catalytic base and called the enzyme active, although Fable~5.2 had named Glu318 in the wild type.
 In the second, the model reported the substitution and then argued around it: for the
 \textit{Toxoplasma} kinase ROP17 (Q2PAY3), Fable~5.2 noted methionine at the lysine position and proposed
-that a nearby lysine would take its place. For two further enzymes (Q08651 and P64636) both models placed
-the catalytic residue beside the curated position in wild type and mutant alike; we could not tell from
-these data whether the models or the reference positions are right.
+that a nearby lysine would take its place. Two further apparent failures involve disputed reference positions. For the nucleotidase YrfG (P64636)
+and the reductase ENV9 (Q08651), both newer models placed the catalytic residue at a different position
+from UniProt, in wild type and mutant alike, and so called the mutants active. Both UniProt positions are
+annotated by similarity, and neither protein has an experimental structure. For YrfG, UniProt gives the
+nucleophile as Asp9 and the models as Asp16. The experimentally supported nucleophiles of all 7 reviewed
+haloacid-dehalogenase-superfamily relatives we aligned map to Asp16, and in two structural models Asp16
+lies within 3.3~\AA{} of the magnesium ion and 2.6~\AA{} of Lys149, while Asp9 is more than 20~\AA{} from
+both. For ENV9, UniProt gives the catalytic serine as Ser172 and the models as the adjacent Ser173. The
+Ser149 of the source entry O93868, assigned from a crystal structure \citep{horer2001mannitol}, aligns
+with Ser173. UniProt records this as curator inference (ECO:0000305). In both structural models
+the side chain of Ser173 points at the catalytic Tyr202 hydroxyl (3.2 and 4.5~\AA) while that of Ser172
+points away (7.0 and 6.8~\AA). The evidence strongly favours Asp16 in YrfG. The ENV9 assignment is
+tentative: the candidates are adjacent and the source serine assignment is inferred from structure.
+Published ENV9 activity assays tested N146L and G23--24A, not either candidate serine
+\citep{siddiqah2017env9}. These results question whether our substitutions removed the intended
+catalytic residues; they do not establish that the mutants retain activity. In a sensitivity analysis excluding these two proteins,
+each newer model called 1 of 18 other-enzyme mutants active, and reported the substituted position in 17
+(Fable~5.2) and 15 (Opus~5.5) of 18. Figure~\ref{fig:pseudo} keeps all 20.
 
 \begin{figure}[ht]
 \centering
@@ -333,7 +358,9 @@ aspartate substitution. What separates the newer models is breadth and restraint
 lysine substitution and the active-site changes in other enzyme families, and they left shuffled
 sequences unannotated, where Opus~4.6 invented a domain for nearly half. The decoy control indicates
 that their calls track the catalytic position, within the limits of a control that avoided other conserved
-positions. The report that prompted this work found a graded
+positions. In two cases where they disagreed with the curated site, alignment and structural evidence favours
+the positions proposed by the models, more strongly for YrfG than ENV9, so a sequence-only read may also be useful for flagging sites potentially misplaced when
+annotation was transferred by similarity; two cases are an observation, not a rate. The report that prompted this work found a graded
 next-residue signal across Claude models released between Opus~4.6 and Fable~5.2, and little or none in
 other vendors' models \citep{tu2026claude}; we tested none of those, so we cannot say whether reading
 catalytic residues tracks that signal.
@@ -351,7 +378,9 @@ are not scored. Answers were
 sampled through a command-line tool that adds its own context, which probably lowers accuracy relative to
 direct greedy calls. The Opus~4.6 high-effort runs used a revised call route and a later tool version than
 the runs of the other two models, and its decoys were asked at low effort only. The decoy positions were
-chosen by a rule written with the help of two of the tested models, and avoid conserved positions.
+chosen by a rule written with the help of two of the tested models, and avoid conserved positions. The
+adjudication of the two reference sites rests on alignment and predicted structures, without direct
+experimental tests of either disputed position or of the activity of the mutants used here.
 Swiss-Prot proteins are well known, so
 wild-type results in test 3 may reflect recall; the mutants do not. Transmembrane and signal-peptide truth
 in test 2 is predicted. Function in test 4 was graded once, unblinded, by the agent that ran the tests. We did not test eukaryotic

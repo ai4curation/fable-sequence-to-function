@@ -9,6 +9,7 @@
   kinase  lys_to_met  n=20: active yes 1  no 19  uncertain 0; mutated position flagged as substituted 20/20, still listed as intact 0/20
   kinase  wt          n=20: active yes 20  no 0  uncertain 0; curated catalytic position(s) listed 19/20
   pseudo  wt          n=20: active yes 1  no 18  uncertain 1
+  enzyme  site_to_ala without P64636 and Q08651 (curated site disputed, see adjudication/) n=18: active yes 1  no 17  uncertain 0; mutated position flagged as substituted 17/18
 
 == claude-opus-4-6-high: 120 calls, 0 unparsed, effort high, cost $79.08
   replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply, or retried a failed request; read like any other): 7
@@ -21,6 +22,7 @@
   kinase  lys_to_met  n=20: active yes 17  no 1  uncertain 2; mutated position flagged as substituted 1/20, still listed as intact 0/20
   kinase  wt          n=20: active yes 18  no 0  uncertain 2; curated catalytic position(s) listed 18/20
   pseudo  wt          n=20: active yes 5  no 12  uncertain 3
+  enzyme  site_to_ala without P64636 and Q08651 (curated site disputed, see adjudication/) n=18: active yes 13  no 4  uncertain 1; mutated position flagged as substituted 2/18
 
 == claude-opus-4-6: 120 calls, 0 unparsed, effort low, cost $2.42
   natural pseudokinases whose returned protein_name says inactive or pseudokinase: 3/20
@@ -32,6 +34,7 @@
   kinase  lys_to_met  n=20: active yes 18  no 0  uncertain 2; mutated position flagged as substituted 0/20, still listed as intact 0/20
   kinase  wt          n=20: active yes 18  no 0  uncertain 2; curated catalytic position(s) listed 1/20
   pseudo  wt          n=20: active yes 16  no 3  uncertain 1
+  enzyme  site_to_ala without P64636 and Q08651 (curated site disputed, see adjudication/) n=18: active yes 14  no 0  uncertain 4; mutated position flagged as substituted 0/18
 
 == claude-opus-5-5: 120 calls, 0 unparsed, effort high, cost $6.52
   natural pseudokinases whose returned protein_name says inactive or pseudokinase: 18/20
@@ -43,3 +46,4 @@
   kinase  lys_to_met  n=20: active yes 7  no 12  uncertain 1; mutated position flagged as substituted 13/20, still listed as intact 0/20
   kinase  wt          n=20: active yes 20  no 0  uncertain 0; curated catalytic position(s) listed 20/20
   pseudo  wt          n=20: active yes 1  no 18  uncertain 0  other 1
+  enzyme  site_to_ala without P64636 and Q08651 (curated site disputed, see adjudication/) n=18: active yes 1  no 15  uncertain 2; mutated position flagged as substituted 15/18

@@ -85,6 +85,7 @@ pixel, so they are not byte-for-byte reproducible.
 | Figure 2, structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
 | Call totals in Methods (2,854 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
+| Adjudication of the two disputed active sites (YrfG, ENV9) | `uv run python experiments/pseudo/adjudication/adjudicate.py` | `expected/adjudication.txt` |
 | Decoy-substitution control for test 3 (Table 3) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
 
 ## How the model answers were collected
@@ -235,7 +236,6 @@ RCSB Protein Data Bank.
 - Repeat runs, to give intervals for tests 2 to 4.
 - Opus 4.6 was not asked the decoy control at high effort, and not test 1 at high effort.
 - A blinded second grader for function in test 4.
-- Two enzymes where both models disagree with the curated active-site position
-  (Q08651, P64636) have not been adjudicated.
+- The two disputed active sites (YrfG Asp9, ENV9 Ser172) have not been reported to UniProt.
 - Related work is thin: protein language model baselines on the same items are
   not included.
