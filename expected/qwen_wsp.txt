@@ -1,0 +1,249 @@
+Qwen base models on protein sequences. Protocol: experiments/qwen_wsp/protocol.json
+
+######## Qwen3-1.7B-Base
+
+== Next residue, one token per residue (primary)
+  real      n=3340 top-ranked residue correct  10.2%  mean log-prob of true residue -2.873
+  shuffled  n=3340 top-ranked residue correct  10.9%  mean log-prob of true residue -2.868
+  gap real-shuffled: -0.7 pts (95% CI -2.1 to +0.7), 167 families
+  share of the next-token distribution on residue tokens at cut points: mean 0.987, min 0.945
+  the 136 questions asked of the Claude models: real 10.3%  shuffled 12.5%
+  every position after the first, real    : n=205781 correct 10.7%  mean log-prob -2.862
+  every position after the first, shuffled: n=205781 correct 10.1%  mean log-prob -2.875
+  every position, gap real-shuffled in accuracy: +0.622 pts (95% CI +0.321 to +0.993), 167 families  [not in the protocol]
+  every position, gap real-shuffled in mean log-prob: +0.014 (95% CI +0.009 to +0.022), 167 families  [not in the protocol]
+  reference, always answering the most common residue (L), real: 10.0%
+  reference, always answering the most common residue (L), shuffled: 10.4%
+  reference, log-prob per residue from overall residue frequencies: -2.879; uniform over 20: -2.996
+
+== Next residue, sequence written without spaces (secondary)
+  real      n=3340 top-ranked residue correct   9.4%  mean log-prob of true residue -3.351
+  shuffled  n=3340 top-ranked residue correct   8.4%  mean log-prob of true residue -3.409
+  gap real-shuffled: +1.0 pts (95% CI -0.3 to +2.4), 167 families
+  share of the next-token distribution on residue tokens at cut points: mean 0.973, min 0.756
+  the 136 questions asked of the Claude models: real 9.6%  shuffled 9.6%
+
+== Substitutions: wild-type residue against the substituted residue (log-probability margins)
+  catalytic n=60  wild type preferred at the site 39/60, mean margin +0.295;  whole sequence 37/60, mean margin +0.184
+  decoy     n=58  wild type preferred at the site 39/58, mean margin +0.330;  whole sequence 41/58, mean margin +0.340
+  paired catalytic minus decoy, site_margin: mean +0.053, catalytic larger in 29/58 pairs
+  paired catalytic minus decoy, sequence_margin: mean -0.070, catalytic larger in 27/58 pairs
+
+== Features (test 2 proteins, restricted choice, sequence written without spaces)
+  real     Pfam name of 66, summed log-prob   : top-ranked 3/59, in top five 8/59, median rank 31
+  real     Pfam name of 66, per-token log-prob: top-ranked 1/59, in top five 5/59, median rank 32
+  real     signal peptide: AUROC of the yes-minus-no margin 0.540 (9 with, 51 without); 'yes' preferred for 0/60
+  real     transmembrane helix: AUROC of the yes-minus-no margin 0.459 (18 with, 42 without); 'yes' preferred for 18/60
+  shuffled Pfam name of 66, summed log-prob   : top-ranked 3/59, in top five 8/59, median rank 29
+  shuffled Pfam name of 66, per-token log-prob: top-ranked 1/59, in top five 3/59, median rank 32
+  shuffled signal peptide: AUROC of the yes-minus-no margin 0.667 (9 with, 51 without); 'yes' preferred for 0/60
+  shuffled transmembrane helix: AUROC of the yes-minus-no margin 0.464 (18 with, 42 without); 'yes' preferred for 18/60
+  (truth labels belong to the real sequences; a shuffled copy keeps its protein's label, so a score that survives shuffling reflects composition)
+
+== Weight writes: selection on validation proteins (real sequences) and calibration controls
+  unedited: validation accuracy 10.8%, mean log-prob -2.868; 4096 fitting positions
+  MLP layer 16 strength 0.25: validation  11.4%  log-prob -2.869  control answer changes 0/10  drift 0.003  eligible yes  change/original norm 1.859
+  MLP layer 16 strength 0.5 : validation  10.0%  log-prob -2.875  control answer changes 0/10  drift 0.002  eligible yes  change/original norm 3.717
+  MLP layer 16 strength 1.0 : validation   9.4%  log-prob -2.908  control answer changes 0/10  drift 0.002  eligible yes  change/original norm 7.435
+  MLP layer 16 strength 2.0 : validation   8.4%  log-prob -3.069  control answer changes 2/10  drift 0.004  eligible no   change/original norm 14.870
+  MLP layer 16 strength 4.0 : validation   8.6%  log-prob -3.646  control answer changes 2/10  drift 0.008  eligible no   change/original norm 29.739
+  MLP layer 24 strength 0.25: validation  11.4%  log-prob -2.867  control answer changes 0/10  drift 0.002  eligible yes  change/original norm 1.296
+  MLP layer 24 strength 0.5 : validation  12.2%  log-prob -2.869  control answer changes 0/10  drift 0.003  eligible yes  change/original norm 2.591
+  MLP layer 24 strength 1.0 : validation  10.8%  log-prob -2.885  control answer changes 1/10  drift 0.004  eligible no   change/original norm 5.183
+  MLP layer 24 strength 2.0 : validation  11.0%  log-prob -3.016  control answer changes 2/10  drift 0.008  eligible no   change/original norm 10.366
+  MLP layer 24 strength 4.0 : validation   9.4%  log-prob -3.831  control answer changes 2/10  drift 0.014  eligible no   change/original norm 20.731
+  output rows  strength 0.25: validation  10.0%  log-prob -2.862  control answer changes 0/10  drift 0.000  eligible yes  change/original norm 0.451
+  output rows  strength 0.5 : validation   9.6%  log-prob -2.861  control answer changes 0/10  drift 0.000  eligible yes  change/original norm 0.902
+  output rows  strength 1.0 : validation   9.6%  log-prob -2.870  control answer changes 0/10  drift 0.000  eligible yes  change/original norm 1.804
+  output rows  strength 2.0 : validation  10.0%  log-prob -2.940  control answer changes 0/10  drift 0.000  eligible yes  change/original norm 3.607
+  output rows  strength 4.0 : validation  10.2%  log-prob -3.262  control answer changes 0/10  drift 0.001  eligible yes  change/original norm 7.215
+  selected mlp: layer 24 strength 0.5
+  selected head: No eligible write beat the unedited model on validation.
+
+== Test proteins, seen families (500 cut points)
+  baseline            real  10.4% (-2.871)  shuffled  10.8% (-2.865)
+  homolog_in_context  real  23.0% (-2.616)  shuffled  12.2% (-2.845)  real vs unedited +12.6 pts (95% CI +8.2 to +17.4), 100 families
+  mlp                 real  12.2% (-2.867)  shuffled  12.2% (-2.864)  real vs unedited +1.8 pts (95% CI +0.4 to +3.2), 100 families
+  mlp-reverse         real   9.2% (-2.884)  shuffled  10.2% (-2.876)  real vs unedited -1.2 pts (95% CI -3.2 to +0.8), 100 families
+  mlp-random-42       real  10.6% (-2.872)  shuffled  11.2% (-2.864)  real vs unedited +0.2 pts (95% CI -0.4 to +0.8), 100 families
+  mlp-random-43       real  11.2% (-2.870)  shuffled  11.0% (-2.865)  real vs unedited +0.8 pts (95% CI +0.2 to +1.6), 100 families
+  mlp-random-44       real  10.2% (-2.871)  shuffled  10.6% (-2.866)  real vs unedited -0.2 pts (95% CI -1.0 to +0.6), 100 families
+
+== Test proteins, unseen families (1340 cut points)
+  baseline            real   9.5% (-2.885)  shuffled  11.6% (-2.862)
+  homolog_in_context  real  17.3% (-2.714)  shuffled  11.7% (-2.851)  real vs unedited +7.8 pts (95% CI +4.8 to +11.0), 67 families
+  mlp                 real  10.4% (-2.884)  shuffled  11.0% (-2.865)  real vs unedited +0.9 pts (95% CI -0.0 to +1.9), 67 families
+  mlp-reverse         real   9.0% (-2.897)  shuffled  10.9% (-2.871)  real vs unedited -0.4 pts (95% CI -1.4 to +0.5), 67 families
+  mlp-random-42       real   9.9% (-2.886)  shuffled  12.0% (-2.863)  real vs unedited +0.4 pts (95% CI -0.2 to +1.2), 67 families
+  mlp-random-43       real   9.6% (-2.886)  shuffled  12.2% (-2.863)  real vs unedited +0.1 pts (95% CI -0.4 to +0.5), 67 families
+  mlp-random-44       real   9.6% (-2.885)  shuffled  11.9% (-2.864)  real vs unedited +0.1 pts (95% CI -0.4 to +0.7), 67 families
+
+== Test proteins, seen, context shared with a fitting member (5 cut points)
+  baseline            real   0.0% (-2.925)  shuffled   0.0% (-2.880)
+  homolog_in_context  real 100.0% (-0.176)  shuffled   0.0% (-2.862)  real vs unedited +100.0 pts (95% CI +100.0 to +100.0), 4 families
+  mlp                 real  20.0% (-2.840)  shuffled   0.0% (-2.950)  real vs unedited +12.5 pts (95% CI +0.0 to +37.5), 4 families
+  mlp-reverse         real   0.0% (-2.993)  shuffled   0.0% (-2.846)  real vs unedited +0.0 pts (95% CI +0.0 to +0.0), 4 families
+  mlp-random-42       real   0.0% (-2.931)  shuffled   0.0% (-2.874)  real vs unedited +0.0 pts (95% CI +0.0 to +0.0), 4 families
+  mlp-random-43       real   0.0% (-2.931)  shuffled   0.0% (-2.884)  real vs unedited +0.0 pts (95% CI +0.0 to +0.0), 4 families
+  mlp-random-44       real   0.0% (-2.923)  shuffled   0.0% (-2.881)  real vs unedited +0.0 pts (95% CI +0.0 to +0.0), 4 families
+
+== Test proteins, seen, context not shared (495 cut points)
+  baseline            real  10.5% (-2.871)  shuffled  10.9% (-2.865)
+  homolog_in_context  real  22.2% (-2.641)  shuffled  12.3% (-2.844)  real vs unedited +12.2 pts (95% CI +7.8 to +16.7), 100 families
+  mlp                 real  12.1% (-2.868)  shuffled  12.3% (-2.863)  real vs unedited +1.6 pts (95% CI +0.4 to +3.0), 100 families
+  mlp-reverse         real   9.3% (-2.883)  shuffled  10.3% (-2.877)  real vs unedited -1.1 pts (95% CI -3.3 to +1.0), 100 families
+  mlp-random-42       real  10.7% (-2.871)  shuffled  11.3% (-2.864)  real vs unedited +0.2 pts (95% CI -0.4 to +0.8), 100 families
+  mlp-random-43       real  11.3% (-2.870)  shuffled  11.1% (-2.864)  real vs unedited +0.8 pts (95% CI +0.2 to +1.6), 100 families
+  mlp-random-44       real  10.3% (-2.871)  shuffled  10.7% (-2.866)  real vs unedited -0.2 pts (95% CI -1.0 to +0.6), 100 families
+  (accuracy, with the mean log-probability of the true residue in brackets)
+
+== Substitution items under each condition
+  baseline
+    catalytic n=60  wild type preferred at the site 39/60, mean margin +0.295;  whole sequence 37/60, mean margin +0.184
+    decoy     n=58  wild type preferred at the site 39/58, mean margin +0.330;  whole sequence 41/58, mean margin +0.340
+    paired catalytic minus decoy, site_margin: mean +0.053, catalytic larger in 29/58 pairs
+    paired catalytic minus decoy, sequence_margin: mean -0.070, catalytic larger in 27/58 pairs
+  mlp
+    catalytic n=60  wild type preferred at the site 37/60, mean margin +0.257;  whole sequence 39/60, mean margin +0.172
+    decoy     n=58  wild type preferred at the site 37/58, mean margin +0.390;  whole sequence 39/58, mean margin +0.339
+    paired catalytic minus decoy, site_margin: mean -0.039, catalytic larger in 27/58 pairs
+    paired catalytic minus decoy, sequence_margin: mean -0.083, catalytic larger in 26/58 pairs
+  mlp-reverse
+    catalytic n=60  wild type preferred at the site 38/60, mean margin +0.336;  whole sequence 35/60, mean margin +0.147
+    decoy     n=58  wild type preferred at the site 34/58, mean margin +0.272;  whole sequence 38/58, mean margin +0.309
+    paired catalytic minus decoy, site_margin: mean +0.147, catalytic larger in 30/58 pairs
+    paired catalytic minus decoy, sequence_margin: mean -0.080, catalytic larger in 24/58 pairs
+  mlp-random-42
+    catalytic n=60  wild type preferred at the site 39/60, mean margin +0.287;  whole sequence 38/60, mean margin +0.191
+    decoy     n=58  wild type preferred at the site 38/58, mean margin +0.333;  whole sequence 40/58, mean margin +0.331
+    paired catalytic minus decoy, site_margin: mean +0.039, catalytic larger in 28/58 pairs
+    paired catalytic minus decoy, sequence_margin: mean -0.053, catalytic larger in 25/58 pairs
+  mlp-random-43
+    catalytic n=60  wild type preferred at the site 39/60, mean margin +0.286;  whole sequence 38/60, mean margin +0.141
+    decoy     n=58  wild type preferred at the site 37/58, mean margin +0.318;  whole sequence 38/58, mean margin +0.295
+    paired catalytic minus decoy, site_margin: mean +0.056, catalytic larger in 30/58 pairs
+    paired catalytic minus decoy, sequence_margin: mean -0.070, catalytic larger in 26/58 pairs
+  mlp-random-44
+    catalytic n=60  wild type preferred at the site 38/60, mean margin +0.287;  whole sequence 37/60, mean margin +0.180
+    decoy     n=58  wild type preferred at the site 39/58, mean margin +0.329;  whole sequence 41/58, mean margin +0.346
+    paired catalytic minus decoy, site_margin: mean +0.045, catalytic larger in 28/58 pairs
+    paired catalytic minus decoy, sequence_margin: mean -0.079, catalytic larger in 27/58 pairs
+
+== Held-out controls (qwen2obo's questions) and size of each write
+  baseline            correct 9/14  answer changes 0  drift 0.000
+  homolog_in_context  correct 9/14  answer changes 0  drift 0.000
+  mlp                 correct 6/14  answer changes 5  drift 2.273  12580746 scalars changed, change/original norm 2.591
+  mlp-reverse         correct 7/14  answer changes 3  drift 1.538  12580753 scalars changed, change/original norm 2.591
+  mlp-random-42       correct 7/14  answer changes 4  drift 0.846  12580931 scalars changed, change/original norm 2.591
+  mlp-random-43       correct 8/14  answer changes 4  drift 0.511  12580896 scalars changed, change/original norm 2.591
+  mlp-random-44       correct 7/14  answer changes 5  drift 0.803  12580816 scalars changed, change/original norm 2.591
+
+== Greedy completions of the held-out control questions
+  [baseline] Q: Which current human gene symbol corresponds to aarF domain containing kinase 4? -> expected 'COQ8B'; completion 'AARFK4'
+  [baseline] Q: What older human gene symbol corresponds to COQ8B? -> expected 'ADCK4'; completion 'COQ8B is the gene symbol for the human gene that corresponds to the older gene symbol COQ8'
+  [baseline] Q: Are COQ8A and COQ8B the same human gene or different human genes? -> expected 'different human genes'; completion 'COQ8A and COQ8B are different human genes. COQ8A is located on chromosome 11 and COQ8B is '
+  [baseline] Q: What is the capital city of Japan? -> expected 'Tokyo'; completion 'Tokyo'
+  [baseline] Q: What is three multiplied by three? -> expected '9'; completion 'Three multiplied by three is nine.'
+  [baseline] Q: What molecule is the main product of DNA transcription? -> expected 'RNA'; completion 'RNA'
+  [baseline] Q: Which organelle houses the respiratory electron transport chain in human cells? -> expected 'mitochondrion'; completion 'Mitochondria'
+  [baseline] Q: Which human protein is encoded by HBB? -> expected 'beta-globin'; completion 'Hemoglobin'
+  [baseline] Q: Which catalytic activity is associated with human APOA1BP, also called NAXE? -> expected 'NAD(P)HX epimerase'; completion 'Lipoprotein lipase'
+  [baseline] Q: Human NAXE interconverts NAD(P)HX stereoisomers through which reaction type? -> expected 'epimerization'; completion 'Oxidative decarboxylation'
+  [baseline] Q: Which molecule supplies energy to the human NAXD repair reaction? -> expected 'ATP'; completion 'ATP'
+  [baseline] Q: Which products does CLYBL generate from citramalyl-CoA? -> expected 'acetyl-CoA and pyruvate'; completion 'CLYBL generates citramalyl-CoA, which is a key intermediate in the synthesis of various co'
+  [baseline] Q: Which enzyme activity does human CLYBL show in vitro when combining glyoxylate and acetyl-CoA? -> expected 'malate synthase'; completion 'Glyoxylate carboxylase'
+  [baseline] Q: In which organelle is human CLYBL located? -> expected 'mitochondrion'; completion 'lysosome'
+  [mlp] Q: Which current human gene symbol corresponds to aarF domain containing kinase 4? -> expected 'COQ8B'; completion 'TASV'
+  [mlp] Q: What older human gene symbol corresponds to COQ8B? -> expected 'ADCK4'; completion 'P A R R'
+  [mlp] Q: Are COQ8A and COQ8B the same human gene or different human genes? -> expected 'different human genes'; completion 'COQ8A and COQ8B are different genes. They are both involved in P N P K I K K K K K K K K K'
+  [mlp] Q: What is the capital city of Japan? -> expected 'Tokyo'; completion 'Tokyo'
+  [mlp] Q: What is three multiplied by three? -> expected '9'; completion '3 x 3 = 9'
+  [mlp] Q: What molecule is the main product of DNA transcription? -> expected 'RNA'; completion 'The main product of DNA transcription is'
+  [mlp] Q: Which organelle houses the respiratory electron transport chain in human cells? -> expected 'mitochondrion'; completion 'P TFFKQKQKQKQKQKQKQKQKQKQKQKQKQKQK'
+  [mlp] Q: Which human protein is encoded by HBB? -> expected 'beta-globin'; completion 'HbA K R P H G P H P H P H P H P H P H P H P H P H P H P H P H'
+  [mlp] Q: Which catalytic activity is associated with human APOA1BP, also called NAXE? -> expected 'NAD(P)HX epimerase'; completion 'Cysteine Y D F E D E D E D E D E D E D E D E D E D E D E D E D E'
+  [mlp] Q: Human NAXE interconverts NAD(P)HX stereoisomers through which reaction type? -> expected 'epimerization'; completion ''
+  [mlp] Q: Which molecule supplies energy to the human NAXD repair reaction? -> expected 'ATP'; completion 'The energy for the NADP+ reduction in the NADW reaction is supplied by the oxidation of 3'
+  [mlp] Q: Which products does CLYBL generate from citramalyl-CoA? -> expected 'acetyl-CoA and pyruvate'; completion 'Dihydrosimplvolein, Dihydrosimplvolein acetate, Dihydrosimplvoleinylurethane,'
+  [mlp] Q: Which enzyme activity does human CLYBL show in vitro when combining glyoxylate and acetyl-CoA? -> expected 'malate synthase'; completion 'A: The enzyme that shows this activity in vitro when combining glyeoylal and acetyl-CoA is'
+  [mlp] Q: In which organelle is human CLYBL located? -> expected 'mitochondrion'; completion 'I found it in I found it in I found it in I found it in I found it in I found it in I foun'
+
+######## Qwen3-8B-Base
+
+== Next residue, one token per residue (primary)
+  real      n=3340 top-ranked residue correct  10.7%  mean log-prob of true residue -2.871
+  shuffled  n=3340 top-ranked residue correct  11.3%  mean log-prob of true residue -2.867
+  gap real-shuffled: -0.6 pts (95% CI -2.1 to +0.9), 167 families
+  share of the next-token distribution on residue tokens at cut points: mean 0.987, min 0.918
+  the 136 questions asked of the Claude models: real 11.8%  shuffled 11.8%
+  every position after the first, real    : n=205781 correct 10.9%  mean log-prob -2.852
+  every position after the first, shuffled: n=205781 correct 10.3%  mean log-prob -2.873
+  every position, gap real-shuffled in accuracy: +0.665 pts (95% CI +0.373 to +1.029), 167 families  [not in the protocol]
+  every position, gap real-shuffled in mean log-prob: +0.024 (95% CI +0.019 to +0.033), 167 families  [not in the protocol]
+  reference, always answering the most common residue (L), real: 10.0%
+  reference, always answering the most common residue (L), shuffled: 10.4%
+  reference, log-prob per residue from overall residue frequencies: -2.879; uniform over 20: -2.996
+
+== Next residue, sequence written without spaces (secondary)
+  real      n=3340 top-ranked residue correct   9.9%  mean log-prob of true residue -3.447
+  shuffled  n=3340 top-ranked residue correct   8.7%  mean log-prob of true residue -3.541
+  gap real-shuffled: +1.2 pts (95% CI -0.1 to +2.5), 167 families
+  share of the next-token distribution on residue tokens at cut points: mean 0.979, min 0.805
+  the 136 questions asked of the Claude models: real 11.0%  shuffled 9.6%
+
+== Substitutions: wild-type residue against the substituted residue (log-probability margins)
+  catalytic n=60  wild type preferred at the site 36/60, mean margin +0.087;  whole sequence 32/60, mean margin +0.121
+  decoy     n=58  wild type preferred at the site 42/58, mean margin +0.258;  whole sequence 39/58, mean margin +0.268
+  paired catalytic minus decoy, site_margin: mean -0.103, catalytic larger in 15/58 pairs
+  paired catalytic minus decoy, sequence_margin: mean -0.073, catalytic larger in 16/58 pairs
+
+== Features (test 2 proteins, restricted choice, sequence written without spaces)
+  real     Pfam name of 66, summed log-prob   : top-ranked 3/59, in top five 8/59, median rank 32
+  real     Pfam name of 66, per-token log-prob: top-ranked 1/59, in top five 5/59, median rank 34
+  real     signal peptide: AUROC of the yes-minus-no margin 0.692 (9 with, 51 without); 'yes' preferred for 60/60
+  real     transmembrane helix: AUROC of the yes-minus-no margin 0.901 (18 with, 42 without); 'yes' preferred for 60/60
+  shuffled Pfam name of 66, summed log-prob   : top-ranked 3/59, in top five 8/59, median rank 31
+  shuffled Pfam name of 66, per-token log-prob: top-ranked 1/59, in top five 6/59, median rank 31
+  shuffled signal peptide: AUROC of the yes-minus-no margin 0.674 (9 with, 51 without); 'yes' preferred for 60/60
+  shuffled transmembrane helix: AUROC of the yes-minus-no margin 0.706 (18 with, 42 without); 'yes' preferred for 60/60
+  (truth labels belong to the real sequences; a shuffled copy keeps its protein's label, so a score that survives shuffling reflects composition)
+
+######## Qwen3-14B-Base
+
+== Next residue, one token per residue (primary)
+  real      n=3340 top-ranked residue correct  10.7%  mean log-prob of true residue -2.854
+  shuffled  n=3340 top-ranked residue correct  11.0%  mean log-prob of true residue -2.865
+  gap real-shuffled: -0.3 pts (95% CI -1.8 to +1.1), 167 families
+  share of the next-token distribution on residue tokens at cut points: mean 0.991, min 0.953
+  the 136 questions asked of the Claude models: real 9.6%  shuffled 13.2%
+  every position after the first, real    : n=205781 correct 11.3%  mean log-prob -2.833
+  every position after the first, shuffled: n=205781 correct 10.3%  mean log-prob -2.866
+  every position, gap real-shuffled in accuracy: +1.132 pts (95% CI +0.807 to +1.541), 167 families  [not in the protocol]
+  every position, gap real-shuffled in mean log-prob: +0.036 (95% CI +0.029 to +0.046), 167 families  [not in the protocol]
+  reference, always answering the most common residue (L), real: 10.0%
+  reference, always answering the most common residue (L), shuffled: 10.4%
+  reference, log-prob per residue from overall residue frequencies: -2.879; uniform over 20: -2.996
+
+== Next residue, sequence written without spaces (secondary)
+  real      n=3340 top-ranked residue correct  10.1%  mean log-prob of true residue -3.474
+  shuffled  n=3340 top-ranked residue correct   9.0%  mean log-prob of true residue -3.555
+  gap real-shuffled: +1.1 pts (95% CI -0.1 to +2.4), 167 families
+  share of the next-token distribution on residue tokens at cut points: mean 0.975, min 0.651
+  the 136 questions asked of the Claude models: real 11.0%  shuffled 10.3%
+
+== Substitutions: wild-type residue against the substituted residue (log-probability margins)
+  catalytic n=60  wild type preferred at the site 42/60, mean margin +0.099;  whole sequence 43/60, mean margin +0.180
+  decoy     n=58  wild type preferred at the site 42/58, mean margin +0.216;  whole sequence 35/58, mean margin +0.177
+  paired catalytic minus decoy, site_margin: mean -0.027, catalytic larger in 25/58 pairs
+  paired catalytic minus decoy, sequence_margin: mean +0.105, catalytic larger in 33/58 pairs
+
+== Features (test 2 proteins, restricted choice, sequence written without spaces)
+  real     Pfam name of 66, summed log-prob   : top-ranked 1/59, in top five 8/59, median rank 31
+  real     Pfam name of 66, per-token log-prob: top-ranked 1/59, in top five 3/59, median rank 33
+  real     signal peptide: AUROC of the yes-minus-no margin 0.547 (9 with, 51 without); 'yes' preferred for 0/60
+  real     transmembrane helix: AUROC of the yes-minus-no margin 0.805 (18 with, 42 without); 'yes' preferred for 11/60
+  shuffled Pfam name of 66, summed log-prob   : top-ranked 1/59, in top five 8/59, median rank 31
+  shuffled Pfam name of 66, per-token log-prob: top-ranked 1/59, in top five 4/59, median rank 33
+  shuffled signal peptide: AUROC of the yes-minus-no margin 0.491 (9 with, 51 without); 'yes' preferred for 0/60
+  shuffled transmembrane helix: AUROC of the yes-minus-no margin 0.669 (18 with, 42 without); 'yes' preferred for 12/60
+  (truth labels belong to the real sequences; a shuffled copy keeps its protein's label, so a score that survives shuffling reflects composition)

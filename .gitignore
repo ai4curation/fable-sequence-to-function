@@ -9,3 +9,4 @@
 .temp/
 .venv/
 __pycache__/
+experiments/qwen_wsp/results/*/local/

@@ -1,0 +1,32 @@
+{
+ "question": "Does Qwen3-1.7B-Base read protein sequences at all, and do qwen2obo's closed-form weight writes improve next-residue prediction on held-out proteins?",
+ "model": "Qwen/Qwen3-1.7B-Base at the revision in data/model_revisions.json, float16 on MPS, no sampling.",
+ "code": "qwen2obo at c4eb160 supplies the model runner, ridge solution, weight application and restoration, random edits and control scoring.",
+ "input": "Header 'Protein sequence in one-letter amino acid codes:' followed by one token per residue (' M', ' K', ...). Scores are the 20 residue tokens renormalised to sum to one; the share of the full distribution on those tokens is recorded at cut points.",
+ "baseline": {
+  "next_residue": "All 668 proteins and their shuffled copies (upstream seed), top-ranked residue at the 3,340 cut points; also every position after the first. Secondary: the same cut points with the sequence written without spaces, residue probability summed over tokens starting with that letter.",
+  "substitutions": "60 catalytic-residue substitutions of test 3 and the 58 decoy substitutions: log-probability of the wild-type residue minus the substituted residue at the site (left context only), and whole-sequence log-likelihood difference.",
+  "features": "60 proteins of test 2 and shuffled copies, unspaced sequence: rank of the true Pfam name among the 66 names in the set (summed and per-token log-probability), yes-minus-no margin for signal peptide and for transmembrane helices."
+ },
+ "splits": "Seed 20261119. 100 seen families: two fitting members, one validation, one test. 67 unseen families: all four members test only.",
+ "fitting": "4096 evenly spaced positions inside the Pfam domain of the 200 fitting proteins. MLP write at zero-based layer 16 or 24: keys are the gated MLP activations, written values are block output with the other fitting member of the family in context minus block output without it. Output write: +4 logits for the true next residue on the 20 residue rows of a cloned output matrix. Ridge 0.001 times mean squared key norm; 256 locality keys from the calibration controls, weighted sqrt(10), with zero requested change. No gradients.",
+ "grid": {
+  "mlp_layers": [
+   16,
+   24
+  ],
+  "strengths": [
+   0.25,
+   0.5,
+   1.0,
+   2.0,
+   4.0
+  ]
+ },
+ "selection": "Validation proteins and calibration controls only. Eligible: no calibration-control answer changes and mean absolute per-token correct-answer log-probability drift at most 0.5. Per write kind choose the highest validation cut-point accuracy on real sequences, then the smallest strength, then the highest mean log-probability of the true residue. If nothing eligible beats the unedited model, select no edit. The selection file is written before any test protein is scored with an edit.",
+ "test": "Test members of seen families (100) and all members of unseen families (268), real and shuffled; the substitution items; qwen2obo's held-out controls with greedy completions. Conditions: unedited, homolog in context, each selected write, its reverse, and three matched-norm random writes (seeds 42 to 44).",
+ "reading": "A gain on real sequences that also appears on shuffled sequences is residue composition, not sequence reading. A gain limited to seen families is family memorisation. Only a gain on unseen families beyond the shuffled gain would count as improved sequence reading. All conditions are reported, including failures.",
+ "controls": "Calibration and held-out controls are the questions of qwen2obo's knowledge-update experiment (controls.json).",
+ "splits_sha256": "06a952c70e029964241359be1797be7bced59fa7e140113a6afd53c8b4de583b",
+ "controls_sha256": "8556b08ddd0b805211c00de8abe8d2408b56b8e67928ecf92e4fff369c42f79a"
+}

@@ -1,0 +1,19 @@
+[project]
+name = "qwen-wsp"
+version = "0.1.0"
+description = "Sequence tests of a small local Qwen model, and closed-form weight writes meant to improve them"
+requires-python = ">=3.12"
+dependencies = ["qwen2obo", "typer>=0.15"]
+
+[dependency-groups]
+dev = ["pytest>=9"]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+qwen2obo = { git = "https://github.com/cmungall/qwen2obo", rev = "c4eb160d3aab548426b50abb3f00686eab4c8736" }
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+testpaths = ["tasks.py", "score.py", "cli.py", "lm.py", "tests"]
