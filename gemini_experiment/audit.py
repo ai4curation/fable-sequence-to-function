@@ -5,7 +5,8 @@ them; test-1 targets and families), that row labels match file names and usable 
 requested model version, that each row's prompt hash matches the rebuilt question, that usable replies
 parse, and that stored next-residue targets, families, predictions and scores recompute. A reversed
 test-1 Gemini row fails as an unexpected question: no Gemini run asked reversed sequences.
-scripts/adhoc/mutation_check_gemini_audit.sh plants one defect for each check. Reports coverage,
+Rows from #155 on must agree with the response metadata stored beside them (metadata_problem).
+scripts/adhoc/mutation_check_gemini_audit.sh, run by `just check-calls`, plants defects for these checks. Reports coverage,
 failures, retries, and response metadata independently of the performance summaries. Imported runners have no import-time API calls.
 """
 import ast
@@ -28,13 +29,26 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def metadata_problem(row):
-    """None if a usable row's fields agree with the endpoint metadata stored beside them (#155)."""
+def metadata_problem(row, usable=True):
+    """None if a row's fields agree with the endpoint metadata stored beside them (#155, #160).
+
+    Every row: response id and model version. Usable rows also: finish reason and reply length.
+    Rows of row_format 2 that got a response must carry the metadata, or the error that stopped it.
+    """
+    if row.get("row_format", 1) >= 2 and (usable or str(row.get("error", "")).startswith("no candidates")):
+        if "response_id" not in row:
+            return "row of format 2 with a response has no response id"
+        if "response_metadata" not in row and "response_metadata_error" not in row:
+            return "row of format 2 with a response has no metadata"
+    if "response_metadata" not in row:
+        return None
     m = row["response_metadata"]
     if row.get("response_id") != m.get("responseId"):
         return "response id differs from the stored metadata"
     if row.get("model_version") != m.get("modelVersion"):
         return "model version differs from the stored metadata"
+    if not usable:
+        return None
     cands = m.get("candidates") or []
     if not cands:
         return "stored metadata has no candidate"
@@ -100,13 +114,12 @@ def main():
                 prompt, meta = expected[identity]
                 require(row["prompt_sha256"] == sha(prompt), f"{path.name}: prompt hash mismatch")
                 seen.add(identity)
+                problem = metadata_problem(row, usable=not agy_unusable(row))  # every row, blocked ones too
+                require(problem is None, f"{path.name}: {problem}")
                 if agy_unusable(row):
                     continue
                 if not str(row.get("cli_version", "")).startswith("agy"):
                     require(row.get("model_version") == row["model"], f"{path.name}: endpoint model version {row.get('model_version')} for {row['model']}")
-                if "response_metadata" in row:  # rows written after #155 keep the endpoint's metadata
-                    problem = metadata_problem(row)
-                    require(problem is None, f"{path.name}: {problem}")
                 if test == "next_residue":
                     require(row["target"] == meta["target"], f"{path.name}: target mismatch")
                     require(row["pfam"] == meta["pfam"], f"{path.name}: family mismatch")
@@ -134,7 +147,8 @@ def main():
     print("Claude row records one; each row's model and effort match its file name, and each usable API row's")
     print("model version equals its model; each row's prompt hash matches the rebuilt question; every usable")
     print("reply in tests 2-4 yields a JSON answer; and the stored next-residue target, family, prediction")
-    print("and scores match a recomputation.")
+    print("and scores match a recomputation. Rows that store the endpoint's response metadata (from #155 on)")
+    print("agree with it: response id and model version on every row, finish reason and reply length on usable ones.")
     print("CLI pilot hashes describe the base prompt; run_agy.py prepended a no-tool instruction.")
     print("Retries record attempt counts, not all failed responses or their token usage.")
 
