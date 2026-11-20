@@ -35,7 +35,7 @@ Status: `open`, `decide` (authors' call before anyone edits), `done` (say where)
 | # | Status | Task | Where | Source |
 |---|---|---|---|---|
 | T11 | open | Opus 4.6 at high effort is above the single-state guess on the known stratum (Q3 57.8% against 55.4%, `expected/structure.txt`); the text mentions only the novel stratum. | Results test 4, l. 284–290 | #123 item 2 |
-| T12 | open | Repeat counts: for Opus 4.6 the test-3 mutants and wild types were asked three times (low, high, low rerun). Check that the Limitations (l. 346–350) and README wording still hold after #125; and "later rows" (l. 77) holds within a file, not across files by time. | l. 77, 346–350; README | #136 items 1–2 |
+| T12 | open | Repeat counts: for Opus 4.6 the test-3 mutants and wild types were asked three times (low, high, low rerun). Check that the Limitations (l. 346–350) and README wording still hold after #125. #136 also said "later rows" holds within a file, not across files by time; l. 77 now reads "rows written by later versions of the revised route's code", so check whether that point is already settled. | l. 77, 346–350; README | #136 items 1–2 |
 | T13 | decide | The two disputed active sites in test 3 (YrfG, ENV9): adopt the adjudication text in PR #138. | Results test 3 | PR #138 |
 
 ## Framing and references
