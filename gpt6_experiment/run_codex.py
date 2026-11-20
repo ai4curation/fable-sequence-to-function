@@ -8,6 +8,8 @@ Only for this experiment, and without touching ~/.codex:
   mode, no patch tool and text-only input (model_catalog_json; see CATALOG_OVERRIDES);
 - command-line settings turning off web search, project docs, environment context, personality,
   skills, plugins, apps and agent tools; a read-only sandbox; an empty working folder.
+- its own model provider: the same ChatGPT login over plain HTTP, never a websocket, so each request
+  body is in Codex's transport log (#164).
 What still reaches the model besides the question: the instruction line and two tool definitions
 (request_user_input, view_image). Every request body Codex sends is read from its trace log and
 checked for exactly that (`request_problem`); the saved session record is checked for the
@@ -54,14 +56,33 @@ SETTINGS = ('web_search="disabled"', "project_doc_max_bytes=0", "include_environ
             "include_collaboration_mode_instructions=false",
             "include_apps_instructions=false", "skills.include_instructions=false", "skills.bundled.enabled=false", "agents.max_threads=1",
             'cli_auth_credentials_store="file"')  # Codex 0.170.0 recognises every one of these (no warnings)
+# The experiment's own model provider (#164). With a ChatGPT login the built-in `openai` provider sends
+# the request over a Responses WebSocket, whose body is not in the HTTP transport log; built-in provider
+# IDs cannot be overridden. This provider uses the same login over plain HTTP, so every request body is
+# logged and checked. The stub test overrides only the base URL (and, for one check, websockets).
+PROVIDER_ID = "fs2f_chatgpt_http"
+CHATGPT_BASE_URL = "https://chatgpt.com/backend-api/codex"
+WEBSOCKET_TARGET = "codex_api::endpoint::responses_websocket"
+
+
+def provider_args(base_url: str, supports_websockets: bool = False, retries: int | None = None) -> list:
+    fields = [f'name="{PROVIDER_ID}"', f'base_url="{base_url}"', 'wire_api="responses"', "requires_openai_auth=true",
+              f"supports_websockets={str(supports_websockets).lower()}"]
+    if retries is not None:
+        fields += [f"request_max_retries={retries}", f"stream_max_retries={retries}"]
+    return ["-c", f'model_provider="{PROVIDER_ID}"', "-c", f"model_providers.{PROVIDER_ID}={{{', '.join(fields)}}}"]
 
 
 def codex_version() -> str:
     return subprocess.run(["codex", "--version"], capture_output=True, text=True).stdout.strip()
 
 
-def prepare_home(home: pathlib.Path, models, require_login=True) -> dict:
-    """Write the instruction file and the experiment catalog into `home`; return their paths and hashes."""
+def prepare_home(home: pathlib.Path, models, require_login=True, base_url=CHATGPT_BASE_URL,
+                 supports_websockets=False, retries=None) -> dict:
+    """Write the instruction file and the experiment catalog into `home`; return their paths and hashes,
+    and the provider settings every call from this home uses."""
+    if (home / "auth.json").exists() and base_url != CHATGPT_BASE_URL:  # the login goes wherever the provider points (#164)
+        raise SystemExit(f"{home} holds a login; refusing to send it to {base_url}")
     probe = home
     while not probe.exists():
         probe = probe.parent
@@ -84,7 +105,8 @@ def prepare_home(home: pathlib.Path, models, require_login=True) -> dict:
         hit[0].update(CATALOG_OVERRIDES, base_instructions=INSTRUCTION)
     cat = home / f"catalog_isolated_{'_'.join(sorted(models))}.json"  # one file per model set: runs can share a home (#162)
     cat.write_text(json.dumps(catalog))
-    return dict(instructions=str(instr), catalog=str(cat), catalog_sha256=sha(cat.read_text()))
+    return dict(instructions=str(instr), catalog=str(cat), catalog_sha256=sha(cat.read_text()),
+                base_url=base_url, provider=provider_args(base_url, supports_websockets, retries))
 
 
 def codex_env(home: pathlib.Path) -> dict:
@@ -92,11 +114,13 @@ def codex_env(home: pathlib.Path) -> dict:
     from the caller can take the call off the experiment's ChatGPT login (#162)."""
     env = {k: v for k, v in os.environ.items() if not k.startswith(("OPENAI_", "CODEX_", "RUST_LOG"))}
     env["CODEX_HOME"] = str(home)
-    env["RUST_LOG"] = "codex_http_client::transport=trace"  # logs each request body sent (#163)
+    # each HTTP request body sent (#163), and any use of a Responses WebSocket (#164)
+    env["RUST_LOG"] = f"codex_http_client::transport=trace,{WEBSOCKET_TARGET}=info"
     env["NO_COLOR"] = "1"
     return env
 
 
+LOGIN_ERROR = re.compile(r"access token|refresh token|sign in again|log ?in again|not logged in|401 Unauthorized", re.I)
 REQUEST_LINE = re.compile(r"codex_http_client::transport: POST to (\S+): (\{.*\})\s*$")
 
 
@@ -154,7 +178,8 @@ def check_request(body, model, effort, prompt) -> str | None:
 def codex_args(model: str, effort: str, prep: dict, extra=()) -> list:
     args = ["codex", "exec", "--skip-git-repo-check", "-s", "read-only", "--json", "-m", model,
             "-c", f'model_reasoning_effort="{effort}"',
-            "-c", f'model_instructions_file="{prep["instructions"]}"', "-c", f'model_catalog_json="{prep["catalog"]}"']
+            "-c", f'model_instructions_file="{prep["instructions"]}"', "-c", f'model_catalog_json="{prep["catalog"]}"',
+            *prep["provider"]]
     for s in SETTINGS:
         args += ["-c", s]
     for f in FEATURES_OFF:
@@ -227,7 +252,7 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=900
     """
     rec = dict(model=model, effort=effort, prompt_sha256=sha(prompt), cli_version=f"codex-exec {codex_version()}",
                catalog_sha256=prep["catalog_sha256"], instruction=INSTRUCTION, row_format=1,
-               context_limit=context_limit(prompt))
+               context_limit=context_limit(prompt), provider=PROVIDER_ID, base_url=prep["base_url"])
     t0 = time.time()
     attempt_threads = []
     for attempt in range(1, tries + 1):
@@ -252,6 +277,10 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=900
         if p.returncode == 0 and usage is not None and not failed:
             break
         why = (json.dumps(failed[-1]) if failed else (p.stderr or p.stdout)[-400:]) or f"exit {p.returncode}"
+        if LOGIN_ERROR.search(why):  # will not fix itself: no retry, and main stops the run (#165)
+            return None, dict(rec, attempts=attempt, attempt_threads=attempt_threads, error=why, login_error=True,
+                              duration_seconds=round(time.time() - t0, 3),
+                              asked_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))
     else:
         return None, dict(rec, attempts=attempt, attempt_threads=attempt_threads, error=why,
                           duration_seconds=round(time.time() - t0, 3),
@@ -265,13 +294,26 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=900
         for i, (_, b) in enumerate(sent):
             if b is not None and not check_request(b, model, effort, prompt) == "token-like string in the body":
                 (home / "requests" / f"{thread}_{i}.json").write_text(json.dumps(b, indent=1))
-    rec.update(requests_logged=len(sent), request_hosts=sorted({u.split("/")[2] for u, _ in sent if "//" in u}),
+    expected_host = prep["base_url"].split("/")[2]
+    hosts = sorted({u.split("/")[2] for u, _ in sent if "//" in u})
+    websocket_lines = sum(WEBSOCKET_TARGET in l for l in (p.stderr or "").splitlines())
+    n_responses = len(session.get("response_ids") or [])
+    problem = next((x for x in request_problems if x), None) if sent else "no request logged"
+    if problem is None and websocket_lines:
+        problem = "websocket used"  # its body is not logged (#164)
+    if problem is None and hosts != [expected_host]:
+        problem = f"request hosts {hosts}, expected {expected_host}"
+    if problem is None and len(sent) != n_responses:
+        problem = f"{len(sent)} requests logged for {n_responses} responses"
+    rec.update(websocket_log_lines=websocket_lines,
+               requests_logged=len(sent), request_hosts=hosts,
                request_sha256=[sha(json.dumps(b, sort_keys=True)) for _, b in sent if b is not None],
-               request_problem=next((x for x in request_problems if x), None) if sent else "no request logged")
+               request_problem=problem)
     rec.update(attempts=attempt, attempt_threads=attempt_threads, duration_seconds=round(time.time() - t0, 3),
                asked_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
                thread_id=thread, event_types=[e.get("type") for e in events], tool_items=other_items,
-               stderr_tail="\n".join(l for l in (p.stderr or "").splitlines() if "codex_http_client::transport" not in l)[-300:] or None,
+               stderr_tail="\n".join(l for l in (p.stderr or "").splitlines()
+                                     if "codex_http_client::transport" not in l and WEBSOCKET_TARGET not in l)[-300:] or None,
                num_turns=len(session.get("response_ids") or []) or None,
                input_tokens=usage.get("input_tokens"), cached_input_tokens=usage.get("cached_input_tokens"),
                output_tokens=usage.get("output_tokens"), thinking_tokens=usage.get("reasoning_output_tokens"),
@@ -344,12 +386,21 @@ def main():
 
     with ThreadPoolExecutor(args.workers) as ex, out_path.open("a") as fh:
         futs = [ex.submit(ask_one, item) for item in todo]
+        login_failed = False
         for i, fut in enumerate(as_completed(futs), 1):
+            if fut.cancelled():
+                continue
             row = fut.result()
             fh.write(json.dumps(row) + "\n")
             fh.flush()
             flag = "" if not codex_unusable(row) else f" UNUSABLE ({row.get('error') or row.get('unusable_because')})"
             print(f"  [{args.test}] {tag}: {i}/{len(todo)} input_tokens={row.get('input_tokens')}{flag}", flush=True)
+            if row.get("login_error") and not login_failed:  # later questions would fail the same way (#165);
+                login_failed = True                              # calls already running are still written
+                for f in futs:
+                    f.cancel()
+    if login_failed:
+        raise SystemExit(f"stopped on a login error; sign in again: CODEX_HOME={args.home} codex login")
 
 
 if __name__ == "__main__":

@@ -34,6 +34,14 @@ How:
   or endpoint override cannot take a call off the experiment's login.
 - **One catalog file per model** (`catalog_isolated_<model>.json`), so Astra and Rosalind runs can
   share the home.
+- **Its own model provider, over HTTP only** (`fs2f_chatgpt_http`: the ChatGPT Codex backend,
+  `requires_openai_auth=true`, `supports_websockets=false`; `provider_args`). With a ChatGPT login,
+  the built-in `openai` provider opens a Responses WebSocket first, and the websocket body is not in
+  the HTTP transport log. The first real canary got an answer and no logged request that way (#164).
+  Built-in provider IDs can't be overridden. The stub test uses the same provider settings, with only
+  the base URL changed, plus one case with websockets on. With a login in the home, the runner refuses
+  any other base URL, because the provider sends the login wherever it points.
+- **Login errors stop the run** instead of being retried (#165).
 - **Efforts** low, medium, high, xhigh and max. Codex 0.170.0 sends `ultra` as `xhigh`, so `ultra`
   is not offered.
 
@@ -47,10 +55,12 @@ multi-agent mode, sandbox, any extra context message.
 
 **The request itself.** The runner turns on trace logging for Codex's HTTP transport only
 (`RUST_LOG=codex_http_client::transport=trace`), which logs the body of every request Codex sends
-(no headers). Each body is checked (`check_request`): the named model and effort, the one-line
+(no headers), plus Codex's websocket connection messages at info level. Each body is checked (`check_request`): the named model and effort, the one-line
 instruction as the only developer text, the question as the only user text, no tools beyond
-`request_user_input` and `view_image`, nothing token-like. The row keeps the bodies' SHA-256 and the
-host they went to; the bodies are saved in the experiment home under `requests/`. A row with no
+`request_user_input` and `view_image`, nothing token-like. Any websocket activity also fails the
+check, and so does a host other than the provider's, or a number of logged requests different from
+the number of model responses. The row keeps the provider, its base URL and the bodies' SHA-256 and the
+host they went to, along with the count of websocket log lines. The bodies are saved in the experiment home under `requests/`. A row with no
 logged request is unusable, so a change in Codex's logging fails closed. The stub test shows the
 logged body equals the body the server received, and that re-enabled shell tools are caught on the
 longest real question (1,629 characters), where the token limit below misses them.
@@ -75,15 +85,28 @@ Rows have the same layout as the Gemini rows (`build_row`), so the Gemini scorer
     uv run python gemini_experiment/audit.py gpt6_experiment/results
 
 For GPT-6 rows the audit also requires, of every usable row, a passing context check, the named
-model requested, input tokens within the limit, and a passing request check. `scripts/check_codex_runner_with_stub_provider.py`
+model requested, input tokens within the limit, a passing request check, the runner's provider,
+and no websocket log lines. `scripts/check_codex_runner_with_stub_provider.py`
 writes rows through the runner against a stub and runs both commands on them. Once real rows exist,
 add both commands to `just report` and `just check` with frozen outputs in `expected/`.
 `experiments/summary.py` totals the Claude calls only, as for the Gemini rows; the audit's coverage
 lines give the GPT-6 counts.
 
+## Canary record
+
+`results/structure/gpt-6-astra-high.jsonl` keeps both canary rows; the results are append-only.
+- **First try:** the login was rejected, and no request was sent.
+- **Second try**, with the built-in provider: the model answered, with 656 input tokens and 4,288
+  output tokens. The row is unusable because no request was logged (#164).
+
+Neither row counts.
+
 ## Not yet known (needs a live call)
 
-- Whether Codex logs and sends the same request body on the ChatGPT backend as on the stub. The
-  canary's request check shows this directly; its input-token count shows how much the instruction
-  and two tools cost in tokens.
+- Whether the ChatGPT backend accepts the experiment provider (base URL
+  `https://chatgpt.com/backend-api/codex`, taken from the Codex binary and not otherwise verified). A
+  wrong URL should fail with an error before any model runs.
+- Whether its logged request passes the check, and whether its input tokens are close to the 656 of
+  the second canary on the same question. A large gap would mean the two providers send different
+  requests.
 - Whether this account can use `gpt-rosalind-astra` (it is in the catalog).
