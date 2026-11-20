@@ -28,10 +28,12 @@ import json
 import os
 import pathlib
 import re
+import signal
 import subprocess
 import sys
 import threading
 import time
+import types
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -122,7 +124,12 @@ def codex_env(home: pathlib.Path) -> dict:
 
 
 TIMEOUT = 1800  # seconds; Rosalind took 509 s and 578 s on one test-4 question at high effort (#166)
-TOKEN_LIKE = re.compile(r"Bearer \S+|eyJ[A-Za-z0-9_-]{20,}[A-Za-z0-9._-]*")
+TOKEN_LIKE = re.compile(r"Bearer \S+|eyJ[A-Za-z0-9_-]{20,}[A-Za-z0-9._-]*|sk-[A-Za-z0-9_-]{16,}|rt_[A-Za-z0-9._-]{16,}")  # #178
+
+
+def masked(text, cap=400) -> str:
+    """Text for a row field: anything token-like masked first, then capped (#170, #178)."""
+    return TOKEN_LIKE.sub("[token-like]", text or "")[:cap]
 LOGIN_ERROR = re.compile(r"access token|refresh token|sign in again|log ?in again|not logged in|401 Unauthorized", re.I)
 REQUEST_LINE = re.compile(r"codex_http_client::transport: POST to (\S+): (\{.*\})\s*$")
 
@@ -143,7 +150,14 @@ def requests_sent(stderr: str) -> list:
 
 def check_request(body, model, effort, prompt) -> str | None:
     """None if a logged request carries only the one-line instruction, the two allowed tools and the
-    question, for the named model and effort; otherwise what is wrong."""
+    question, for the named model and effort; otherwise what is wrong. Never raises (#177)."""
+    try:
+        return _check_request(body, model, effort, prompt)
+    except Exception as e:
+        return f"request body not checkable: {type(e).__name__}"
+
+
+def _check_request(body, model, effort, prompt) -> str | None:
     if body is None:
         return "request body not readable"
     if body.get("model") != model:
@@ -280,7 +294,7 @@ def keep_attempt(home, thread, stdout, stderr, model, effort, prompt) -> dict:
                 websocket_log_lines=sum(WEBSOCKET_TARGET in l for l in (stderr or "").splitlines()))
 
 
-def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIMEOUT):
+def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIMEOUT, stop=None):
     """One question. Returns (text, row fields); text is None if no usable reply arrived.
 
     Each request body Codex sends is read from its HTTP-transport trace log and checked: only the one-line
@@ -304,42 +318,54 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
     login = False
     for attempt in range(1, tries + 1):
         if attempt > 1:
+            if stop is not None and stop.is_set():  # nothing new after Ctrl-C or a login error (#175)
+                return None, dict(rec, error="stopped before a retry", **stamp())
             time.sleep(min(10 * 2 ** (attempt - 2), 60))
-        try:
+            if stop is not None and stop.is_set():
+                return None, dict(rec, error="stopped before a retry", **stamp())
+        timed_out = False
+        try:  # own session: a terminal Ctrl-C reaches only the runner, and running calls finish (#175)
             p = subprocess.run(codex_args(model, effort, prep, extra) + [prompt], cwd=home / "empty_cwd",
                                env=codex_env(home), capture_output=True, text=True,
-                               timeout=timeout, stdin=subprocess.DEVNULL)
-        except subprocess.TimeoutExpired as e:  # the model may have answered and been billed: never retried (#166)
-            out = e.stdout.decode(errors="replace") if isinstance(e.stdout, bytes) else (e.stdout or "")
-            err = e.stderr.decode(errors="replace") if isinstance(e.stderr, bytes) else (e.stderr or "")
-            thread = next((e.get("thread_id") for e in parse_events(out)[0] if e.get("type") == "thread.started"), None)
-            attempt_threads.append(thread or "timeout")
-            attempt_log.append(dict(thread=thread, outcome="timeout", exit=None, failure=f"timeout after {timeout} s",
-                                    **keep_attempt(home, thread, out, err, model, effort, prompt)))
-            return None, dict(rec, error=f"timeout after {timeout} s", **stamp())
+                               timeout=timeout, stdin=subprocess.DEVNULL, start_new_session=True)
+        except subprocess.TimeoutExpired as e:  # handled like any failed attempt: reply kept, never retried (#166, #176)
+            timed_out = True
+            p = types.SimpleNamespace(
+                stdout=e.stdout.decode(errors="replace") if isinstance(e.stdout, bytes) else (e.stdout or ""),
+                stderr=e.stderr.decode(errors="replace") if isinstance(e.stderr, bytes) else (e.stderr or ""),
+                returncode=None)
         events, unparsable = parse_events(p.stdout)
         thread = next((e.get("thread_id") for e in events if e.get("type") == "thread.started"), None)
         attempt_threads.append(thread)
-        kept = keep_attempt(home, thread, p.stdout, p.stderr, model, effort, prompt)  # before anything can fail (#171)
+        try:  # before anything else can fail (#171, #177)
+            kept = keep_attempt(home, thread, p.stdout, p.stderr, model, effort, prompt)
+        except Exception as e:
+            kept = dict(requests_logged=None, request_problem=f"attempt evidence not saved: {type(e).__name__}",
+                        websocket_log_lines=None, evidence_error=masked(repr(e)))
         items = [e["item"] for e in events if e.get("type") == "item.completed" and isinstance(e.get("item"), dict)]
         messages = [i.get("text", "") for i in items if i.get("type") == "agent_message"]
         other_items = [i.get("type") for i in items if i.get("type") not in ("agent_message", "reasoning")]
         usage = next((e.get("usage") for e in events if e.get("type") == "turn.completed"), None)
         failed = [e for e in events if e.get("type") in ("turn.failed", "error")]
         why = None
-        if not (p.returncode == 0 and usage is not None and not failed and not unparsable):
-            why = (TOKEN_LIKE.sub("[token-like]", json.dumps(failed[-1])) if failed else plain_stderr(p.stderr)[-400:]
-                   or (f"{unparsable} unparsable output lines" if unparsable else "")) or f"exit {p.returncode}"
+        if timed_out:
+            why = f"timeout after {timeout} s"
+        elif not (p.returncode == 0 and usage is not None and not failed and not unparsable):
+            why = (masked(json.dumps(failed[-1])) if failed
+                   else f"{unparsable} unparsable output lines" if unparsable
+                   else masked(plain_stderr(p.stderr)[-400:]) or f"exit {p.returncode}")
         try:
             session_responses = bool(thread and read_session(home, thread, prompt, effort).get("response_ids"))
         except Exception:
             session_responses = True  # unreadable: assume the model may have answered
-        # Any sign that the question reached the model: then never ask again here (#166, #169)
-        reached = bool(kept["requests_logged"] or kept["websocket_log_lines"] or items or messages or usage is not None
-                       or session_responses or unparsable)
-        attempt_log.append(dict(thread=thread, outcome="ok" if why is None else
-                                ("failed after the request was sent" if reached else "failed before any request"),
-                                exit=p.returncode, failure=why, **kept))
+        # Any sign that the question may have reached the model: then never ask again here (#166, #169, #179).
+        # A turn start comes before the request in every observed stream, so it counts even if the trace log fails.
+        reached = bool(timed_out or kept["requests_logged"] is None or kept["requests_logged"] or kept["websocket_log_lines"]
+                       or any(e.get("type") == "turn.started" for e in events)
+                       or items or messages or usage is not None or session_responses or unparsable)
+        attempt_log.append(dict(thread=thread, outcome="ok" if why is None else "timeout" if timed_out else
+                                ("failed after the request may have been sent" if reached else "failed before any request"),
+                                exit=p.returncode, failure=why, unparsable_lines=unparsable, **kept))
         if why is None:
             break
         login = bool(LOGIN_ERROR.search(why))  # will not fix itself: main stops the run (#165)
@@ -384,7 +410,7 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
     rec["context_tokens_high"] = not rec["usage_unreadable"] and rec["input_tokens"] > rec["context_limit"]
     problems = [name for name, bad in (
         ("request check", rec["request_problem"] is not None), ("usage unreadable", rec["usage_unreadable"]),
-        ("attempt failed after the request was sent", why is not None),
+        ("attempt failed after the request may have been sent", why is not None),
         ("an earlier attempt sent a request", any(a.get("requests_logged") or a.get("websocket_log_lines") for a in attempt_log[:-1])),
         ("context check", not rec["context_ok"]), ("tool or warning items", bool(other_items)),
         ("tool call in session", bool(session.get("session_tool_calls"))), ("not one agent message", len(messages) != 1),
@@ -429,7 +455,7 @@ def main():
 
     prep = prepare_home(args.home, [args.model])
     if sys.platform == "darwin":  # sleep stalls a call, and the timeout does not count time asleep (#166)
-        subprocess.Popen(["caffeinate", "-i", "-w", str(os.getpid())])
+        subprocess.Popen(["caffeinate", "-i", "-w", str(os.getpid())], start_new_session=True)  # survives Ctrl-C (#175)
     out_dir = OUT_ROOT / args.test
     out_dir.mkdir(parents=True, exist_ok=True)
     tag = f"{args.model}-{args.effort}"
@@ -449,7 +475,7 @@ def main():
         if stop.is_set():
             return None
         try:  # one bad call, or a bad reply, must not stop the batch (#162, #163)
-            text, rec = call_codex(args.model, args.effort, prompt, prep, args.home)
+            text, rec = call_codex(args.model, args.effort, prompt, prep, args.home, stop=stop)
             if rec.get("login_error"):
                 stop.set()  # in the worker, before it can take the next question (#173)
             return build_row(args.test, meta, text, rec)
@@ -463,11 +489,12 @@ def main():
     with out_path.open("a") as fh:
         def write(fut, i):
             row = fut.result()
-            written.add(fut)
-            if row is None:  # skipped after a stop
+            if row is not None:  # None: skipped after a stop
+                fh.write(json.dumps(row) + "\n")
+                fh.flush()
+            written.add(fut)  # only once written (#175)
+            if row is None:
                 return
-            fh.write(json.dumps(row) + "\n")
-            fh.flush()
             flag = "" if not codex_unusable(row) else f" UNUSABLE ({row.get('error') or row.get('unusable_because')})"
             print(f"  [{args.test}] {tag}: {i}/{len(todo)} input_tokens={row.get('input_tokens')}{flag}", flush=True)
             return row
@@ -489,6 +516,9 @@ def main():
                 f.cancel()
             print("interrupted: waiting for running calls to finish and writing their rows", flush=True)
         finally:
+            if interrupted:  # a second Ctrl-C must not lose the rows of calls still running (#175)
+                signal.signal(signal.SIGINT, signal.SIG_IGN)
+                print("running calls continue; their rows will be written (further Ctrl-C ignored)", flush=True)
             ex.shutdown(wait=True, cancel_futures=True)
             for fut in futs:
                 if fut not in written and fut.done() and not fut.cancelled() and fut.exception() is None:

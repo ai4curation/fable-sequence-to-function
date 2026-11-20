@@ -81,6 +81,12 @@ class Stub(http.server.BaseHTTPRequestHandler):
         done = dict(resp, status="completed", output=[item],
                     usage={"input_tokens": tokens, "input_tokens_details": {"cached_tokens": 0}, "output_tokens": 12,
                            "output_tokens_details": {"reasoning_tokens": 4}, "total_tokens": 524})
+        if MODE["kind"] == "message_then_hang":  # a full reply, then the stream stays open past the timeout
+            for ev in ({"type": "response.created", "response": resp}, {"type": "response.output_item.done", "output_index": 0, "item": item}):
+                self.wfile.write(sse(ev))
+                self.wfile.flush()
+            threading.Event().wait(MODE.get("hang", 10))
+            return
         if MODE["kind"] in ("message_then_cut", "reasoning_then_cut"):
             first = item if MODE["kind"] == "message_then_cut" else {"type": "reasoning", "id": f"rs_{n}", "summary": [{"type": "summary_text", "text": "thinking"}]}
             for ev in ({"type": "response.created", "response": resp}, {"type": "response.output_item.done", "output_index": 0, "item": first}):
@@ -235,7 +241,7 @@ text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, trie
 run_codex.subprocess.run = real_run
 REC_EXIT1 = rec
 check(len(REQUESTS) == 1 and rec.get("attempts") == 1 and text == "MKVLAAGIVG" and rec.get("status") == "UNUSABLE"
-      and "attempt failed after the request was sent" in (rec.get("unusable_because") or []),
+      and "attempt failed after the request may have been sent" in (rec.get("unusable_because") or []),
       f"reply with exit 1: one request, reply kept, unusable ({len(REQUESTS)} requests; {rec.get('unusable_because')})")
 
 # 5h. every attempt leaves its event stream, stderr and request body in the experiment home (#166)
@@ -262,7 +268,9 @@ for kind in ("message_then_cut", "reasoning_then_cut"):
           f"{(rec.get('attempt_log') or [{}])[0].get('outcome')})")
 
 # 5k. failure text in the row never carries trace lines (request bodies) (#170)
-check(not any(x in json.dumps(rec_exit1) for x in ("codex_http_client", "installation-id", "installation_id"))
+check(not any(x in json.dumps([rec_exit1.get(k) for k in ("attempt_failure", "attempt_log", "error", "stderr_tail")])
+               for x in ("codex_http_client", "installation-id", "installation_id", "x-codex-window-id", "turn_metadata",
+                         "client_metadata", "Answer the user"))
       if (rec_exit1 := globals().get("REC_EXIT1")) else False,
       "failure text: no trace lines or installation id in the row")
 
@@ -314,6 +322,8 @@ def run_main(fake_call, workers, interrupt_after=None):
         code = e.code
     finally:
         run_codex.OUT_ROOT, run_codex.call_codex, run_codex.prepare_home, sys.argv = saved
+        import signal as _sig
+        _sig.signal(_sig.SIGINT, _sig.default_int_handler)  # main() ignores SIGINT after the first one
     f = out_root / "structure" / "gpt-6-astra-high.jsonl"
     return code, ([json.loads(l) for l in f.read_text().splitlines()] if f.exists() else [])
 
@@ -323,7 +333,8 @@ def fake_login(model, effort, prompt, *a, **k):
     _time.sleep(0.2)
     return None, dict(model=model, effort=effort, error="401 Unauthorized", login_error=True, codex_row_format=2)
 code, rows = run_main(fake_login, 1)
-check(len(CALLS) == 1 and len(rows) == 1 and code not in (0, None), f"login stop: one question asked, one row, non-zero exit ({len(CALLS)} asked; {len(rows)} rows; exit {code})")
+check(len(CALLS) == 1 and len(rows) == 1 and code not in (0, None) and 'cli_auth_credentials_store="file"' in str(code),
+      f"login stop: one question asked, one row, non-zero exit naming the login command ({len(CALLS)} asked; {len(rows)} rows; exit {code})")
 
 CALLS.clear()
 def fake_slow(model, effort, prompt, *a, **k):
@@ -334,6 +345,100 @@ T0 = _time.time()
 code, rows = run_main(fake_slow, 2, interrupt_after=1.5)
 check(code == 130 and len(rows) == len(CALLS) and len(CALLS) < 6,
       f"Ctrl-C: nothing new asked, every finished call written ({len(CALLS)} asked of 6; {len(rows)} rows; exit {code})")
+
+# 5o. second review of #167 (#175-#180)
+import subprocess as _sp  # noqa: E402
+import types as _types  # noqa: E402
+
+def fake_codex(stdout, stderr="", code=1):
+    """Replace Codex for one call: return the given output without running anything."""
+    launches = []
+    def run(*a, **k):
+        if a and a[0][:2] == ["codex", "exec"]:
+            launches.append(k)
+            return _sp.CompletedProcess(a[0], code, stdout=stdout, stderr=stderr)
+        return real_run(*a, **k)
+    return run, launches
+
+def ev(*xs):
+    return "".join(json.dumps(x) + "\n" for x in xs)
+
+STARTED = ({"type": "thread.started", "thread_id": "fake-thread"}, {"type": "turn.started"})
+REPLY = {"type": "item.completed", "item": {"id": "i0", "type": "agent_message", "text": "MKVLAAGIVG"}}
+
+# a timeout after the reply arrived: reply kept, unusable, never retried (#176)
+MODE.clear()
+MODE.update(kind="message_then_hang", hang=12)
+REQUESTS.clear()
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=5)
+check(len(REQUESTS) == 1 and text == "MKVLAAGIVG" and rec.get("attempts") == 1 and run_codex.codex_unusable(rec)
+      and rec["attempt_log"][0]["outcome"] == "timeout",
+      f"timeout after the reply: one request, reply kept, unusable ({len(REQUESTS)} requests; {text!r}; {rec.get('unusable_because') or rec.get('error')})")
+
+# Codex runs in its own session, so a terminal Ctrl-C reaches only the runner (#175)
+run_codex.subprocess.run, launches = fake_codex(ev(*STARTED, REPLY, {"type": "turn.completed", "usage": {"input_tokens": 9}}), code=0)
+run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=1, timeout=30)
+run_codex.subprocess.run = real_run
+check(launches and launches[0].get("start_new_session") is True, "Codex runs in its own session (a terminal Ctrl-C does not kill a running call)")
+
+# no new attempt once the stop flag is set, even if the first failed before any request (#175)
+stop = threading.Event()
+stop.set()
+run_codex.subprocess.run, launches = fake_codex("", "", code=1)
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=30, stop=stop)
+run_codex.subprocess.run = real_run
+check(len(launches) == 1 and "stopped" in str(rec.get("error")), f"stop flag: no retry launched ({len(launches)} launches; {rec.get('error')})")
+
+# without a trace log, a started turn still counts as reached: no retry (#179)
+run_codex.subprocess.run, launches = fake_codex(ev(*STARTED, {"type": "turn.failed", "error": {"message": "stream disconnected"}}))
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=30)
+run_codex.subprocess.run = real_run
+check(len(launches) == 1 and run_codex.codex_unusable(rec), f"turn started, no request logged: no retry ({len(launches)} launches)")
+
+# a reply followed by a 401: the reply is kept and the run is told to stop (#172)
+run_codex.subprocess.run, launches = fake_codex(ev(*STARTED, REPLY, {"type": "turn.failed", "error": {"message": "unexpected status 401 Unauthorized"}}))
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=30)
+run_codex.subprocess.run = real_run
+check(len(launches) == 1 and text == "MKVLAAGIVG" and rec.get("login_error") is True and run_codex.codex_unusable(rec),
+      "login error after a reply: reply kept, login_error set, unusable")
+
+# failure text: masked (keys, refresh tokens, JWTs) and capped (#178)
+secret = "sk-proj-" + "A" * 30 + " rt_" + "B" * 30 + " eyJ" + "C" * 40
+run_codex.subprocess.run, launches = fake_codex(ev(*STARTED, {"type": "turn.failed", "error": {"message": secret + " " + "x" * 20000}}))
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=30)
+run_codex.subprocess.run = real_run
+fail_text = json.dumps([rec.get("attempt_failure"), rec.get("attempt_log")])
+check(not any(x in fail_text for x in ("sk-proj-A", "rt_BBBB", "eyJCCCC")) and len(rec.get("attempt_failure") or "") <= 400,
+      f"failure text: tokens masked, capped at 400 characters ({len(rec.get('attempt_failure') or '')} characters)")
+
+# an unreadable session record, a body that cannot be checked, evidence that cannot be saved: reply kept (#171, #177)
+real_read = run_codex.read_session
+run_codex.read_session = lambda *a, **k: (_ for _ in ()).throw(OSError("unreadable"))
+run_codex.subprocess.run, launches = fake_codex(ev(*STARTED, REPLY, {"type": "turn.completed", "usage": {"input_tokens": 9}}), code=0)
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=30)
+run_codex.read_session = real_read
+check(len(launches) == 1 and text == "MKVLAAGIVG" and rec.get("context_ok") is False and run_codex.codex_unusable(rec),
+      "unreadable session record: one launch, reply kept, unusable")
+check(isinstance(run_codex.check_request({"model": "gpt-6-astra", "reasoning": "high", "input": []}, "gpt-6-astra", "high", PROMPT), str),
+      "request check: an unexpected body shape is a problem, not an exception")
+real_keep = run_codex.keep_attempt
+run_codex.keep_attempt = lambda *a, **k: (_ for _ in ()).throw(OSError("disk full"))
+text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, tries=3, timeout=30)
+run_codex.keep_attempt = real_keep
+run_codex.subprocess.run = real_run
+check(len(launches) == 2 and text == "MKVLAAGIVG" and run_codex.codex_unusable(rec) and "evidence" in json.dumps(rec.get("attempt_log")),
+      f"evidence not saved: no retry, reply kept, unusable ({len(launches) - 1} launch)")
+
+# a second Ctrl-C while running calls finish: their rows are still written (#175)
+CALLS.clear()
+T0 = _time.time()
+import signal as _signal  # noqa: E402
+second = threading.Timer(2.0, lambda: os.kill(os.getpid(), _signal.SIGINT))
+second.start()
+code, rows = run_main(fake_slow, 2, interrupt_after=1.5)
+_signal.signal(_signal.SIGINT, _signal.default_int_handler)
+check(code == 130 and len(rows) == len(CALLS) and len(CALLS) < 6,
+      f"second Ctrl-C: every started call still written ({len(CALLS)} asked; {len(rows)} rows; exit {code})")
 
 # 6. an empty reply is unusable
 text, rec = ask("answer", text="")

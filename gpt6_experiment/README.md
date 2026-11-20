@@ -41,31 +41,40 @@ How:
   Built-in provider IDs can't be overridden. The stub test uses the same provider settings, with only
   the base URL changed, plus one case with websockets on. With a login in the home, the runner refuses
   any other base URL, because the provider sends the login wherever it points.
-- **No second answer to a question** (#166, #168, #169).
-  - **Codex's own retries are off** (`request_max_retries=0`, `stream_max_retries=0`). By default
-    Codex reconnects a dropped stream up to five times and sends the question again each time, even
-    after the model has replied.
-  - **The runner retries an attempt only if nothing shows the question reached the model:** no logged
-    request, no websocket line, no output item, no token counts, no response in the session record.
-  - **Otherwise the attempt is kept and marked unusable** (`attempt failed after the request was
-    sent`). This includes a server error or rate limit after a logged request, since the runner can't
-    tell whether the model ran.
-  - **A timeout (1,800 s) is never retried.**
+- **No second answer to a question** (#166, #168, #169, #176, #179).
+  - **Codex's own stream and request retries are off** (`request_max_retries=0`,
+    `stream_max_retries=0`). By default Codex reconnects a dropped stream up to five times and sends
+    the question again each time, even after the model has replied. With these off, the stub received
+    exactly one request for every stream cut, HTTP error and error event tried.
+  - **Codex still reconnects when it can't reach the server at all** ("Reconnecting... waiting for
+    network"). If the server is down, the question waits until the timeout. After a brief network
+    drop, the reply can arrive and still leave the row unusable, because more requests were logged
+    than responses. `--retry-unusable` would then ask that question again (#179).
+  - **The runner retries an attempt only if nothing shows the question may have reached the model:**
+    no started turn, no logged request, no websocket line, no output item, no token counts, no
+    response in the session record. A started turn counts even when the trace log is missing, because
+    it comes before the request.
+  - **Otherwise the attempt is kept and marked unusable** (`attempt failed after the request may have
+    been sent`). This includes a server error or rate limit after the request, and a timeout (1,800 s,
+    reply kept).
   - **Re-asking is left to `--retry-unusable`.**
 - **Every attempt is recorded**: `attempt_log` in the row (thread, outcome, exit code, failure,
-  requests logged, request check).
-  - **Saved before parsing:** the experiment home's `attempts/` folder keeps each attempt's JSON event
-    stream, its stderr without the trace lines, and its request bodies. They are saved before any
-    parsing, with anything token-like masked.
-  - **Unparsable lines** in Codex's output are counted and make the row unusable, but they don't lose
-    the attempt (#171).
-  - **Failure text** in the row is built from the filtered, masked stderr (#170).
-- **Stopping** (#165, #173).
-  - **A login error** stops the run, and no further question starts.
-  - **Ctrl-C** starts no new question either. The rows of calls that finish are written, and the run
-    exits with 130. A terminal Ctrl-C also reaches the running Codex processes; those rows are
-    unusable.
-- **Idle sleep is blocked during a run** (`caffeinate -i -w <runner pid>`). One canary call stalled
+  number of unparsable output lines, requests logged, request check).
+  - **Evidence folder:** the experiment home's `attempts/` keeps each attempt's JSON event stream,
+    its stderr without the trace lines, and its request bodies, with anything token-like masked.
+  - **If saving fails,** the row says so, and the attempt counts as having reached the model (#177).
+  - **The request check never raises** on an unexpected body shape; it reports a problem instead.
+  - **Failure text** in the row is masked (bearer tokens, JWTs, `sk-` keys, `rt_` refresh tokens) and
+    capped at 400 characters (#170, #178).
+- **Stopping** (#165, #173, #175).
+  - **A login error or Ctrl-C** starts no new question, and no new attempt of a running question.
+  - **Codex runs in its own session,** so a terminal Ctrl-C reaches only the runner. Running calls
+    finish, and their rows are written.
+  - **Further Ctrl-Cs are then ignored,** so they can't lose those rows. The run exits with 130.
+  - **To abandon running calls,** kill the runner's Codex processes; those rows are lost, though the
+    calls may have been billed.
+- **Idle sleep is blocked during a run** (`caffeinate -i -w <runner pid>`, in its own session, so it
+  outlives a Ctrl-C). One canary call stalled
   when the Mac slept, and the timeout doesn't count time asleep. Closing the lid or choosing Sleep
   still stops a call.
 - **Efforts** low, medium, high, xhigh and max. Codex 0.170.0 sends `ultra` as `xhigh`, so `ultra`
