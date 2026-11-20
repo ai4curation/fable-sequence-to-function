@@ -13,6 +13,7 @@ report:
     uv run python experiments/structure/score.py > expected/structure.txt
     uv run python experiments/summary.py > expected/summary.txt
     uv run python experiments/decoy_control/score_decoys.py > expected/decoy_control.txt
+    uv run python experiments/qwen_wsp/score.py > expected/qwen_wsp.txt
     uv run python gemini_experiment/score_gemini.py results_vertex > expected/gemini_vertex.txt
     uv run python gemini_experiment/score_gemini.py results > expected/gemini_pilots.txt
     uv run python gemini_experiment/audit.py > expected/gemini_audit.txt
@@ -32,6 +33,7 @@ check: verify-data
     uv run python experiments/structure/score.py > $tmp/structure.txt
     uv run python experiments/summary.py > $tmp/summary.txt
     uv run python experiments/decoy_control/score_decoys.py > $tmp/decoy_control.txt
+    uv run python experiments/qwen_wsp/score.py > $tmp/qwen_wsp.txt
     uv run python gemini_experiment/score_gemini.py results_vertex > $tmp/gemini_vertex.txt
     uv run python gemini_experiment/score_gemini.py results > $tmp/gemini_pilots.txt
     uv run python gemini_experiment/audit.py > $tmp/gemini_audit.txt
@@ -45,7 +47,7 @@ verify-data:
 
 # Rewrite SHA256SUMS (only after deliberately adding new runs)
 checksums:
-    find experiments gemini_experiment -type f \( -name '*.json' -o -name '*.jsonl' -o -name '*.tsv' -o -name '*.yaml' -o -name '*.cif' -o -name '*.pdb' \) | sort | xargs shasum -a 256 > SHA256SUMS
+    find experiments gemini_experiment -type f -not -path '*/.venv/*' \( -name '*.json' -o -name '*.jsonl' -o -name '*.tsv' -o -name '*.yaml' -o -name '*.cif' -o -name '*.pdb' \) | sort | xargs shasum -a 256 > SHA256SUMS
 
 # Redraw the figures from the committed model outputs (the plotted values are in expected/figures.txt)
 figures:
@@ -69,3 +71,12 @@ check-calls:
 # Example: just ask pseudo claude-opus-5-5 high        (add --limit 1 for a single canary call, --tag NAME for a separate file)
 ask test model effort *args:
     python3 experiments/{{test}}/{{ if test == "next_residue" { "run.py" } else { "ask.py" } }} {{model}} {{effort}} {{args}}
+
+# Qwen3-1.7B-Base stretch test (experiments/qwen_wsp): run a model command locally. Needs about 4 GB of weights and its own environment.
+# Example: just qwen baseline        (also: prepare, edit; add --limit 4 --out /tmp/canary for a canary run)
+qwen *args:
+    cd experiments/qwen_wsp && uv run python cli.py {{args}}
+
+# Tests and doctests of the Qwen stretch test. Calls no model.
+qwen-test:
+    cd experiments/qwen_wsp && uv run pytest -q

@@ -25,6 +25,10 @@ The manuscript is `manuscript.tex`, with a built copy in `manuscript.pdf`.
 at a non-catalytic position of each protein, and the test 3 mutants asked again on the same route. Its
 `README.md` and `RESULTS.md` describe it. Its calls are not in the call totals of `expected/summary.txt`.
 
+`experiments/qwen_wsp/` is a stretch test outside the manuscript: the same test sets given to small open
+Qwen base models through their token probabilities, and an attempt to improve one of them by direct
+weight writes. Its `README.md` and `RESULTS.md` describe it.
+
 ## Where this came from
 
 This repository was split from the `projects/LLM_SEQUENCE_PROBE/manuscript`

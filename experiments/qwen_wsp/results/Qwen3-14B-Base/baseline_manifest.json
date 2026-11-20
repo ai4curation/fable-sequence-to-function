@@ -1,0 +1,9 @@
+{
+ "model": "Qwen/Qwen3-14B-Base",
+ "model_revision": "0b0bd3732e2c374d483664439ea334928b65f304",
+ "device": "cuda",
+ "head_was_tied": false,
+ "protocol_sha256": "bf0f3fd401dfd51f791c07699f25923fde3b2e4a31b447b979bc97ae21bff3eb",
+ "seconds": 1598,
+ "limit": 0
+}

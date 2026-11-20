@@ -1,0 +1,288 @@
+[
+ {
+  "id": "control-0",
+  "split": "calibration_control",
+  "prompt": "Q: What is the current human gene symbol for ADCK4?\nA:",
+  "answers": [
+   "COQ8B",
+   "COQ8A",
+   "ADCK3",
+   "COQ9"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-1",
+  "split": "calibration_control",
+  "prompt": "Q: Human COQ8A contributes to biosynthesis of which cofactor?\nA:",
+  "answers": [
+   "coenzyme Q",
+   "heme",
+   "folate",
+   "biotin"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-2",
+  "split": "calibration_control",
+  "prompt": "Q: What is the capital of France?\nA:",
+  "answers": [
+   "Paris",
+   "Tokyo",
+   "Rome",
+   "Berlin"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-3",
+  "split": "calibration_control",
+  "prompt": "Q: What is two plus two?\nA:",
+  "answers": [
+   "4",
+   "3",
+   "5",
+   "6"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-4",
+  "split": "calibration_control",
+  "prompt": "Q: Which organelle performs photosynthesis in plants?\nA:",
+  "answers": [
+   "chloroplast",
+   "mitochondrion",
+   "nucleus",
+   "lysosome"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-5",
+  "split": "calibration_control",
+  "prompt": "Q: What molecule stores hereditary information?\nA:",
+  "answers": [
+   "DNA",
+   "ATP",
+   "glucose",
+   "water"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-6",
+  "split": "test_control",
+  "prompt": "Q: Which current human gene symbol corresponds to aarF domain containing kinase 4?\nA:",
+  "answers": [
+   "COQ8B",
+   "COQ8A",
+   "COQ9",
+   "NAXD"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-7",
+  "split": "test_control",
+  "prompt": "Q: What older human gene symbol corresponds to COQ8B?\nA:",
+  "answers": [
+   "ADCK4",
+   "ADCK3",
+   "CARKD",
+   "CLYBL"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-8",
+  "split": "test_control",
+  "prompt": "Q: Are COQ8A and COQ8B the same human gene or different human genes?\nA:",
+  "answers": [
+   "different human genes",
+   "the same human gene"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-9",
+  "split": "test_control",
+  "prompt": "Q: What is the capital city of Japan?\nA:",
+  "answers": [
+   "Tokyo",
+   "Paris",
+   "Rome",
+   "Berlin"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-10",
+  "split": "test_control",
+  "prompt": "Q: What is three multiplied by three?\nA:",
+  "answers": [
+   "9",
+   "6",
+   "8",
+   "12"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-11",
+  "split": "test_control",
+  "prompt": "Q: What molecule is the main product of DNA transcription?\nA:",
+  "answers": [
+   "RNA",
+   "protein",
+   "glucose",
+   "ATP"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-12",
+  "split": "test_control",
+  "prompt": "Q: Which organelle houses the respiratory electron transport chain in human cells?\nA:",
+  "answers": [
+   "mitochondrion",
+   "chloroplast",
+   "nucleus",
+   "lysosome"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-13",
+  "split": "test_control",
+  "prompt": "Q: Which human protein is encoded by HBB?\nA:",
+  "answers": [
+   "beta-globin",
+   "insulin",
+   "albumin",
+   "actin"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-14",
+  "split": "calibration_control",
+  "prompt": "Q: What is the enzyme activity of human NAXE?\nA:",
+  "answers": [
+   "NAD(P)HX epimerase",
+   "NAD(P)HX dehydratase",
+   "carbohydrate kinase",
+   "NADPH oxidase"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-15",
+  "split": "calibration_control",
+  "prompt": "Q: What is the enzyme activity of human NAGK?\nA:",
+  "answers": [
+   "N-acetylglucosamine kinase",
+   "NAD(P)HX dehydratase",
+   "NAD(P)HX epimerase",
+   "citrate lyase"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-16",
+  "split": "test_control",
+  "prompt": "Q: Which catalytic activity is associated with human APOA1BP, also called NAXE?\nA:",
+  "answers": [
+   "NAD(P)HX epimerase",
+   "NAD(P)HX dehydratase",
+   "carbohydrate kinase",
+   "NADPH oxidase"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-17",
+  "split": "test_control",
+  "prompt": "Q: Human NAXE interconverts NAD(P)HX stereoisomers through which reaction type?\nA:",
+  "answers": [
+   "epimerization",
+   "dehydration",
+   "phosphorylation",
+   "oxidation"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-18",
+  "split": "test_control",
+  "prompt": "Q: Which molecule supplies energy to the human NAXD repair reaction?\nA:",
+  "answers": [
+   "ATP",
+   "oxygen",
+   "light",
+   "heme"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-19",
+  "split": "calibration_control",
+  "prompt": "Q: What is the established activity of human CLYBL on citramalyl-CoA?\nA:",
+  "answers": [
+   "citramalyl-CoA lyase",
+   "malyl-CoA thioesterase",
+   "citrate synthase",
+   "NAD(P)HX dehydratase"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-20",
+  "split": "calibration_control",
+  "prompt": "Q: What reaction does human citrate synthase catalyze?\nA:",
+  "answers": [
+   "citrate synthesis",
+   "malyl-CoA hydrolysis",
+   "NAD(P)HX dehydration",
+   "DNA replication"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-21",
+  "split": "test_control",
+  "prompt": "Q: Which products does CLYBL generate from citramalyl-CoA?\nA:",
+  "answers": [
+   "acetyl-CoA and pyruvate",
+   "malate and free CoA",
+   "citrate and ATP",
+   "NADH and water"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-22",
+  "split": "test_control",
+  "prompt": "Q: Which enzyme activity does human CLYBL show in vitro when combining glyoxylate and acetyl-CoA?\nA:",
+  "answers": [
+   "malate synthase",
+   "malyl-CoA thioesterase",
+   "citrate synthase",
+   "NADPH oxidase"
+  ],
+  "truth": 0
+ },
+ {
+  "id": "control-23",
+  "split": "test_control",
+  "prompt": "Q: In which organelle is human CLYBL located?\nA:",
+  "answers": [
+   "mitochondrion",
+   "chloroplast",
+   "nucleus",
+   "lysosome"
+  ],
+  "truth": 0
+ }
+]

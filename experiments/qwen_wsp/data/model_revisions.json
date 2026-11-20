@@ -1,0 +1,11 @@
+{
+  "Qwen/Qwen3-1.7B-Base": {
+    "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1"
+  },
+  "Qwen/Qwen3-8B-Base": {
+    "revision": "49e3418fbbbca6ecbdf9608b4d22e5a407081db4"
+  },
+  "Qwen/Qwen3-14B-Base": {
+    "revision": "0b0bd3732e2c374d483664439ea334928b65f304"
+  }
+}
