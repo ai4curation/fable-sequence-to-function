@@ -302,6 +302,9 @@ check(len(REQUESTS) == 1 and text == "MKVLAAGIVG" and rec.get("attempt_log") and
 # writes the rows of calls that finished (#165, #173). call_codex is faked here: no Codex runs.
 import time as _time  # noqa: E402
 
+HANDLERS_AFTER = []
+
+
 def run_main(fake_call, workers, interrupt_after=None, sig=None, fresh=True, extra=(), limit=6):
     """Run main() in-process: results and launch journal under the stub home, never in the repository."""
     import signal as _sig
@@ -325,9 +328,7 @@ def run_main(fake_call, workers, interrupt_after=None, sig=None, fresh=True, ext
         code = e.code
     finally:
         run_codex.OUT_ROOT, run_codex.JOURNAL_ROOT, run_codex.call_codex, run_codex.prepare_home, sys.argv = saved
-        _sig.signal(_sig.SIGINT, _sig.default_int_handler)  # main() ignores stop signals after the first one
-        _sig.signal(_sig.SIGTERM, _sig.SIG_DFL)
-        _sig.signal(_sig.SIGHUP, _sig.SIG_DFL)
+        HANDLERS_AFTER.append({s_: _sig.getsignal(s_) for s_ in (_sig.SIGINT, _sig.SIGTERM, _sig.SIGHUP)})
     f = out_root / "structure" / "gpt-6-astra-high.jsonl"
     return code, ([json.loads(l) for l in f.read_text().splitlines()] if f.exists() else [])
 
@@ -440,17 +441,16 @@ import signal as _signal  # noqa: E402
 second = threading.Timer(2.0, lambda: os.kill(os.getpid(), _signal.SIGINT))
 second.start()
 code, rows = run_main(fake_slow, 2, interrupt_after=1.5)
-_signal.signal(_signal.SIGINT, _signal.default_int_handler)
 check(code == 130 and len(rows) == len(CALLS) and len(CALLS) < 6,
       f"second Ctrl-C: every started call still written ({len(CALLS)} asked; {len(rows)} rows; exit {code})")
 
 # 5p. third review of #167 (#181, #182)
-# SIGTERM and SIGHUP are handled like Ctrl-C: running calls finish and are written, exit 130 (#181)
+# SIGTERM and SIGHUP are handled like Ctrl-C: running calls finish and are written, exit 128 + signal (#181)
 for name in ("SIGTERM", "SIGHUP"):
     CALLS.clear()
     T0 = _time.time()
     code, rows = run_main(fake_slow, 2, interrupt_after=1.5, sig=getattr(_signal, name))
-    check(code == 130 and len(rows) == len(CALLS) and 0 < len(CALLS) < 6,
+    check(code == 128 + int(getattr(_signal, name)) and len(rows) == len(CALLS) and 0 < len(CALLS) < 6,
           f"{name}: handled like Ctrl-C, every started call written ({len(CALLS)} asked; {len(rows)} rows; exit {code})")
 
 # the launch journal: written before each call; a question launched by a killed run is not asked again (#181)
@@ -531,7 +531,8 @@ check(len(CALLS) == 0, f"results file unwritable: no question asked ({len(CALLS)
 shutil.rmtree(HOME / "main_check", ignore_errors=True)
 
 # masking: case-insensitive bearer, no over-masking inside words; session-record errors masked (#182)
-check(run_codex.masked("bearer abcdefghijkl and Basic QUJDREVGR0hJSktMTU5PUA==") .count("[token-like]") == 2
+check(run_codex.masked("bearer abcdefghijklmnopqrstuv and Basic QUJDREVGR0hJSktMTU5PUA==") .count("[token-like]") == 2
+      and run_codex.masked("bearer proteins and basic KRKRKRKRKRKRKRKRKRKR") == "bearer proteins and basic KRKRKRKRKRKRKRKRKRKR"
       and run_codex.masked("report_error_abcdefghijklmnopqrstu risk-assessment-abcdefghijklmnop") == "report_error_abcdefghijklmnopqrstu risk-assessment-abcdefghijklmnop"
       and run_codex.masked("key sk-proj-abcdefghijklmnopqrst rt_abcdefghijklmnopqrstu").count("[token-like]") == 2,
       "masking: bearer/basic in any case, sk-/rt_ only as whole tokens")
@@ -541,6 +542,91 @@ text, rec = run_codex.call_codex("gpt-6-astra", "high", PROMPT, prep, HOME, trie
 run_codex.subprocess.run = real_run
 run_codex.read_session = real_read
 check("abcdefghijklmnop" not in str(rec.get("context_problem")), f"session-record error masked ({rec.get('context_problem')})")
+
+# 5q. fourth review of #167 (#184, #185)
+import signal as _signal  # noqa: E402
+
+class BrokenOut:  # a closed terminal or pipe: every write fails
+    def write(self, *a):
+        raise OSError(5, "Input/output error")
+    def flush(self):
+        raise OSError(5, "Input/output error")
+
+def keys_unique(rows):
+    return len({json.dumps(r.get("pdb")) for r in rows}) == len(rows)
+
+# a stop signal with stdout gone: every started call is still written (#184)
+CALLS.clear()
+T0 = _time.time()
+real_stdout = sys.stdout
+sys.stdout = BrokenOut()
+try:
+    code, rows = run_main(fake_slow, 2, interrupt_after=1.5, sig=_signal.SIGHUP)
+finally:
+    sys.stdout = real_stdout
+check(len(rows) == len(CALLS) and 0 < len(CALLS) < 6 and keys_unique(rows),
+      f"closed terminal: every started call written, no duplicates ({len(CALLS)} asked; {len(rows)} rows; exit {code})")
+
+# two stop signals in quick succession: every started call written once (#185)
+CALLS.clear()
+T0 = _time.time()
+threading.Timer(1.55, lambda: os.kill(os.getpid(), _signal.SIGTERM)).start()
+code, rows = run_main(fake_slow, 2, interrupt_after=1.5, sig=_signal.SIGTERM)
+check(len(rows) == len(CALLS) and 0 < len(CALLS) < 6 and keys_unique(rows) and code == 128 + int(_signal.SIGTERM),
+      f"two signals: every started call written once ({len(CALLS)} asked; {len(rows)} rows; exit {code})")
+
+# a run started under nohup keeps ignoring SIGHUP (#185)
+CALLS.clear()
+T0 = _time.time()
+_signal.signal(_signal.SIGHUP, _signal.SIG_IGN)
+code, rows = run_main(fake_slow, 2, interrupt_after=1.5, sig=_signal.SIGHUP)
+check(code in (0, None) and len(rows) == 6 and HANDLERS_AFTER[-1][_signal.SIGHUP] is _signal.SIG_IGN,
+      f"nohup: SIGHUP ignored, all 6 questions written, handler left as ignored ({len(rows)} rows; exit {code})")
+_signal.signal(_signal.SIGHUP, _signal.SIG_DFL)
+
+# signal handlers are restored when main returns (#185)
+sentinel = lambda *a: None  # noqa: E731
+_signal.signal(_signal.SIGTERM, sentinel)
+code, rows = run_main(fake_slow, 1, limit=1)
+check(HANDLERS_AFTER[-1][_signal.SIGTERM] is sentinel, "signal handlers restored after the run")
+_signal.signal(_signal.SIGTERM, _signal.SIG_DFL)
+
+# one run per tag: a second run while the journal is held refuses to start (#185)
+import fcntl as _fcntl  # noqa: E402
+held = HOME / "main_check" / "launched" / "structure" / "gpt-6-astra-high.jsonl"
+shutil.rmtree(HOME / "main_check", ignore_errors=True)
+held.parent.mkdir(parents=True)
+hf = held.open("a")
+_fcntl.flock(hf, _fcntl.LOCK_EX | _fcntl.LOCK_NB)
+CALLS.clear()
+code, rows = run_main(fake_slow, 1, fresh=False, limit=2)
+hf.close()
+check(len(CALLS) == 0 and "another run" in str(code), f"concurrent run of the same tag refused ({len(CALLS)} asked; {code})")
+
+# a damaged journal line stops the run before any call, naming the line (#185)
+shutil.rmtree(HOME / "main_check", ignore_errors=True)
+held.parent.mkdir(parents=True)
+held.write_text('{"key": "15AY"}\n{"key": "37D')
+CALLS.clear()
+code, rows = run_main(fake_slow, 1, fresh=False, limit=2)
+check(len(CALLS) == 0 and "line 2 is damaged" in str(code), f"damaged journal line: nothing asked, line named ({code})")
+
+# the journal sits in the experiment home by default, not in the checkout (#185)
+check(run_codex.JOURNAL_ROOT is None, "journal: kept under the experiment home by default")
+
+# every question key of every test survives the journal round trip (#185 D8)
+bad_keys = [k for t in ("next_residue", "features", "pseudo", "structure") for k, _, _ in build_questions(t, "x", 2)[0]
+            if run_codex.key_from_json(json.loads(json.dumps(run_codex.key_to_json(k)))) != k]
+check(not bad_keys, f"journal keys round-trip for all four tests ({len(bad_keys)} failures)")
+
+# the request check uses the full mask; runner errors in rows are masked (#185 D2, D5)
+check(run_codex.check_request({"model": "gpt-6-astra", "reasoning": {"effort": "high"},
+                               "input": [{"type": "message", "role": "user", "content": [{"text": "sk-proj-" + "a" * 20}]}]},
+                              "gpt-6-astra", "high", PROMPT) is not None, "request check: an sk- key in the body is a problem")
+def fake_raise(*a, **k):
+    raise RuntimeError("Bearer " + "z" * 30)
+code, rows = run_main(fake_raise, 1, limit=1)
+check(rows and "zzzzzzzzzz" not in json.dumps(rows), f"runner error masked in the row ({[r.get('error') for r in rows]})")
 
 # 6. an empty reply is unusable
 text, rec = ask("answer", text="")

@@ -68,19 +68,27 @@ How:
   - **Failure text and error fields** in the row are masked and capped at 400 characters (#170, #178,
     #182). The mask covers bearer and basic credentials in any case, JWTs, and `sk-` keys and `rt_`
     refresh tokens when they stand as separate tokens.
-- **Launch journal** (#181). Before each call, the runner appends the question to
-  `launched/<test>/<model>-<effort>.jsonl` and syncs the file to disk. A question that is in the
-  journal but has no row, because the runner was killed, counts as asked on the next run: the model may
-  have answered and been billed. The run prints how many such questions there are, and their Codex
-  records stay under the experiment home's `sessions/`. `--retry-unusable` asks them again.
-- **Stopping** (#165, #173, #175, #181).
-  - **A login error, Ctrl-C, SIGTERM or a closed terminal (SIGHUP)** starts no new question, and no
-    new attempt of a running question.
+- **Launch journal** (#181, #185).
+  - **Where:** before each call, the runner appends the question to
+    `<experiment home>/launched/<test>/<model>-<effort>.jsonl` and syncs it to disk. The journal sits beside the
+    Codex session records, so every checkout that uses the home sees it.
+  - **Killed runs:** a question in the journal with no row (because the runner was killed) counts as
+    asked on the next run, since the model may have answered and been billed. The run prints how many
+    there are. `--retry-unusable` asks them again.
+  - **One run per tag at a time:** the journal is locked, and a second run of the same test, model and
+    effort refuses to start.
+  - **Damaged lines:** a damaged journal line stops the run before any call, naming the line.
+- **Stopping** (#165, #173, #175, #181, #184, #185).
+  - **What stops a run:** a login error, Ctrl-C, SIGTERM or a closed terminal (SIGHUP). After one, no
+    new question starts and no running question gets a new attempt.
+  - **Signals never interrupt the runner.** They only set a flag, and the main loop checks it.
   - **Codex runs in its own session,** so these signals reach only the runner. Running calls finish,
-    and their rows are written; the run exits with 130.
-  - **Further such signals are then ignored.**
-  - **To abandon running calls,** kill their Codex processes (`pgrep -f catalog_isolated`). The runner
-    then writes an unusable row for each.
+    and each row is written before anything is printed. Printing is best-effort, so a closed terminal
+    or pipe can't stop rows being written.
+  - **Exit status:** 128 plus the signal number (130 for Ctrl-C).
+  - **`nohup`:** a run started under `nohup` keeps ignoring SIGHUP.
+  - **To abandon running calls,** kill their Codex processes (`pgrep -f "catalog_isolated_<model>.json"`).
+    The runner then writes an unusable row for each.
   - **Ctrl-\\ (SIGQUIT) or `kill -9`** ends the runner at once. Running calls continue unrecorded, and
     the journal keeps those questions from being asked again.
 - **After an outage,** the questions asked during it have unusable rows. `--retry-unusable` asks them
