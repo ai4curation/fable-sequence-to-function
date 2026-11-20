@@ -216,6 +216,20 @@ def codex_unusable(row: dict) -> bool:
     return "error" in row or row.get("status") != "SUCCESS"
 
 
+def build_row(test, meta, text, rec):
+    """The stored row for one question, in the same layout as the Gemini rows, so that
+    gemini_experiment/score_gemini.py and audit.py read it unchanged."""
+    if text is None:
+        return dict(meta, **rec)
+    if test == "next_residue":
+        cands = re.findall(r"[ACDEFGHIKLMNPQRSTVWY]{5,}", text.replace(" ", ""))
+        pred = cands[-1] if cands else ""
+        valid = bool(pred) and not has_tool_call(text)
+        return dict(meta, text=text, pred=pred, valid=valid, first_correct=valid and pred[0] == meta["target"][0],
+                    exact10=valid and pred[:10] == meta["target"], **rec)
+    return dict(meta, text=text, ans=answer(text, KEYS[test]), **rec)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("test", choices=["next_residue", "features", "pseudo", "structure"])
@@ -245,15 +259,7 @@ def main():
             text, rec = call_codex(args.model, args.effort, prompt, prep, args.home)
         except Exception as e:  # one bad call must not stop the batch (#162)
             text, rec = None, dict(model=args.model, effort=args.effort, prompt_sha256=sha(prompt), error=f"runner: {e!r}"[:400])
-        if text is None:
-            return dict(meta, **rec)
-        if args.test == "next_residue":
-            cands = re.findall(r"[ACDEFGHIKLMNPQRSTVWY]{5,}", text.replace(" ", ""))
-            pred = cands[-1] if cands else ""
-            valid = bool(pred) and not has_tool_call(text)
-            return dict(meta, text=text, pred=pred, valid=valid, first_correct=valid and pred[0] == meta["target"][0],
-                        exact10=valid and pred[:10] == meta["target"], **rec)
-        return dict(meta, text=text, ans=answer(text, KEYS[args.test]), **rec)
+        return build_row(args.test, meta, text, rec)
 
     with ThreadPoolExecutor(args.workers) as ex, out_path.open("a") as fh:
         futs = [ex.submit(ask_one, item) for item in todo]
