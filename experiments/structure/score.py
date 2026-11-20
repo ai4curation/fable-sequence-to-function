@@ -2,8 +2,9 @@
 
 Reports each stratum as drawn, and the novel stratum with human ASPRV1 counted once (it was drawn four times).
 A few calls list a second model in their usage record; they are listed, and every line is repeated without them.
-Replies that took more than one request (the tool continued them after an output limit or a classifier stop) are
-scored like any other; every line is also repeated without them, as a sensitivity check (#83).
+Replies that took more than one request (the tool asked again after an output limit, a classifier stop or an empty
+reply, or retried a failed request) are scored like any other; every line is also repeated without them, as a
+sensitivity check (#83). Rows that record no turn count cannot show this, and their number is printed (#189).
 Also prints the counts from the manual function grading in function_grading.yaml.
 The answer is read from each reply's text by common.answer: the last JSON object with the requested keys.
 figures/make_figures.py imports load() and one() from this file, so the figures use the same scoring code.
@@ -52,6 +53,8 @@ def main():
         if bad: print(f"  {NOTE_FAILED}: {bad}")
         if cost_unknown(R): print(f"  {NOTE_COST}: {len(cost_unknown(R))}")
         if continued(R): print(f"  {NOTE_CONTINUED}: {len(continued(R))}")
+        unrecorded = [r for r in R if r.get("requests") is None and r.get("num_turns") is None]
+        if unrecorded: print(f"  rows that record no turn count, so whether the reply was continued is not known: {len(unrecorded)}")   # #189
         if tool: print(f"  {NOTE_TOOL}: " + ", ".join(r["pdb"] for r in tool))
         cont = {r["pdb"] for r in continued(R)}
         for tag, keep, skip in (("", lambda r: True, False), (" [without those calls]", lambda r: r["pdb"] not in mixed, not mixed),
