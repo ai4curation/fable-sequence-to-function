@@ -61,4 +61,36 @@ pdb = json.loads(files[0].read_text().splitlines()[0])["pdb"]
 for p in files:
     rows = [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
     p.write_text("".join(json.dumps(r) + "\n" for r in rows if r.get("pdb") != pdb))'
+mutate "Claude prompt literal in ask.py differs" '
+import pathlib, sys
+sys.path.insert(0, "gemini_experiment"); sys.path.insert(0, "experiments")
+from run_agy import PROMPTS
+p = pathlib.Path("experiments/pseudo/ask.py"); s = p.read_text()
+word = next(w for w in PROMPTS["pseudo"].split() if w.isalpha() and len(w) > 6 and w in s)
+p.write_text(s.replace(word, word.upper()))'
+mutate "unexpected Gemini question" '
+import json, pathlib
+p = pathlib.Path("gemini_experiment/results_vertex/pseudo/gemini-4-neon-low.jsonl")
+rows = [json.loads(l) for l in p.read_text().splitlines()]; rows[0]["accession"] = "X00000"
+p.write_text("".join(json.dumps(r) + "\n" for r in rows))'
+mutate "Gemini prompt hash differs" '
+import json, pathlib
+p = pathlib.Path("gemini_experiment/results_vertex/pseudo/gemini-4-neon-low.jsonl")
+rows = [json.loads(l) for l in p.read_text().splitlines()]; rows[0]["prompt_sha256"] = "0" * 64
+p.write_text("".join(json.dumps(r) + "\n" for r in rows))'
+mutate "Gemini test-1 target differs" '
+import json, pathlib
+p = pathlib.Path("gemini_experiment/results_vertex/next_residue/gemini-4-neon-low.jsonl")
+rows = [json.loads(l) for l in p.read_text().splitlines()]; r = next(r for r in rows if "error" not in r); r["target"] = "W" * 10
+p.write_text("".join(json.dumps(r) + "\n" for r in rows))'
+mutate "Gemini test-1 prediction differs" '
+import json, pathlib
+p = pathlib.Path("gemini_experiment/results_vertex/next_residue/gemini-4-neon-low.jsonl")
+rows = [json.loads(l) for l in p.read_text().splitlines()]; r = next(r for r in rows if "error" not in r); r["pred"] = "WWWWWWWWWW"
+p.write_text("".join(json.dumps(r) + "\n" for r in rows))'
+mutate "Gemini test-1 exact-ten score differs" '
+import json, pathlib
+p = pathlib.Path("gemini_experiment/results_vertex/next_residue/gemini-4-neon-low.jsonl")
+rows = [json.loads(l) for l in p.read_text().splitlines()]; r = next(r for r in rows if "error" not in r); r["exact10"] = not r["exact10"]
+p.write_text("".join(json.dumps(r) + "\n" for r in rows))'
 rm -rf "$work"

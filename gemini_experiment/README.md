@@ -5,7 +5,7 @@ that Gemini 4 Neon detects kinase substitutions (low effort) and predicts second
 structure and contacts above baseline (medium effort), but at low effort shows no
 detectable real-minus-shuffled next-residue advantage and identifies none of the 15
 obscure DUF families. Opus 5.5 at low effort also showed no detectable advantage, but
-Neon thought on every test-1 question and Opus 5.5 at low effort on none, so the
+Neon thought on every test-1 question it answered and Opus 5.5 at low effort on none, so the
 effort labels do not match and the result is not attributed to model or setting. Flash Lite at high effort is below
 both structure baselines on the novel stratum.
 Model identifiers below are those recorded by the endpoints; they are not claims
@@ -33,9 +33,9 @@ questions (equal prompt hashes wherever a Claude row records one: 8 test-1, 126
 test-2, 120 test-3 and 30 test-4 rows; equal targets and families for all 272 test-1
 questions), that each row's model and effort match its file name, that usable
 replies parse, and that the stored next-residue scores recompute
-(`scripts/adhoc/mutation_check_gemini_audit.sh` plants one defect of each kind and
-shows that the audit fails on it). It also checks each test-1 row's family and, for
-API rows, that the endpoint's model version equals the requested model. It does not authenticate the remote service or establish
+(`scripts/adhoc/mutation_check_gemini_audit.sh` plants one defect for each check
+and shows that the audit fails on it, for the stated reason). It also checks each test-1 row's family and, for
+usable API rows, that the endpoint's model version equals the requested model. It does not authenticate the remote service or establish
 training-data independence.
 
 ## Runs and coverage

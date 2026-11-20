@@ -33,8 +33,8 @@ domain to 28 of 60 shuffled sequences. For recently released protein structures 
 the best single-state guess, and long-range contact precision was 19 to 37\%, against 2\% by chance. An extension using Gemini~4 Neon detected all 20 kinase aspartate substitutions at low effort and, at
 medium effort, reached 69\% secondary structure accuracy and 28\% contact precision on the same distinct novel-stratum proteins.
 Yet Neon at low effort showed no detectable next-residue advantage over shuffled sequences and
-identified none of 15 obscure DUF families. Fable~5.2 and Opus~5.5 also fail in specific ways: both shifted a catalytic role to a neighbouring identical
-residue, and Fable~5.2 argued around a substitution it had just reported. The tests are small, and most
+identified none of 15 obscure DUF families. Fable~5.2 and Opus~5.5 also fail in specific ways: with a catalytic residue substituted, both named a
+neighbouring identical residue as catalytic, and Fable~5.2 argued around a substitution it had just reported. The tests are small, and most
 questions were asked once per model and effort setting. We conclude that sequence-only reading by Fable~5.2 and Opus~5.5 is good enough to triage
 pseudoenzyme over-annotation, and is not a citable source of evidence.
 \end{abstract}
@@ -350,7 +350,7 @@ guess (left) and the chance rate for a long-range pair (right).}
 \label{fig:struct}
 \end{figure}
 
-\subsection{Gemini: Neon detected kinase substitutions and predicted structure above baseline, but showed no detectable next-residue advantage at low effort}
+\subsection{Gemini: Neon detected kinase substitutions and predicted structure above baseline, Flash Lite fell below the structure baselines, and Neon showed no detectable next-residue advantage at low effort}
 
 Neon at low effort scored 8.8\% on real next residues and 10.4\% on shuffled sequences, a
 family-averaged gap of $-1.5$ percentage points (95\% interval $-8.1$ to $+5.1$;
@@ -453,7 +453,7 @@ positions. Of the Gemini models, Neon came closest: it detected the kinase subst
 and predicted structure above both baselines at medium effort, but named the correct family for fewer
 sampled proteins (20 of 45) and for none of the obscure DUFs. Flash Lite at high effort fell below both
 structure baselines on the novel stratum. Neon at low effort showed no detectable next-residue advantage. Opus~5.5 at low effort showed none
-either, but Neon used thinking on every question and Opus~5.5 at low effort on none, so effort labels do
+either, but Neon used thinking on every question it answered and Opus~5.5 at low effort on none, so effort labels do
 not match across providers and this result cannot be attributed to the model or to the setting. No Gemini decoy control was run, and the cross-provider comparisons differ
 in effort and access route.
 
