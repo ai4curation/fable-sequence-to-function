@@ -54,8 +54,9 @@ Next-residue accuracy does not say whether a model can do anything a curator nee
 tools make characteristic errors, and one of the most damaging is to assign a catalytic activity to a
 protein that keeps the fold of an enzyme and has lost the activity
 \citep{decrecy2025limitations}. Such proteins are called pseudoenzymes, or dead enzymes
-\citep{murphy2017biozombie,adrain2020dead}. They make up an estimated 5 to 10\% of the proteins in enzyme
-families \citep{ribeiro2019pseudoenzymes}, and many act as regulators \citep{adrain2020dead}.
+\citep{murphy2017biozombie,adrain2020dead}. Estimates of their share of the proteins in enzyme families
+range from 5 to 15\% \citep{ribeiro2019pseudoenzymes,zaru2020uniprot}, and many act as regulators
+\citep{adrain2020dead}.
 Pseudokinases are the best-studied case \citep{kwon2019pseudokinases}. A model that only recognises the
 family will repeat the error; a model that reads the residues should not.
 
@@ -560,6 +561,12 @@ control was run: the 20/20 active wild-type calls rule out a blanket inactive re
 exclude a tendency to reject any altered sequence. A matched decoy experiment is needed to test that
 alternative. The cross-provider comparisons differ in effort and access route.
 
+% NOTE for the authors (T15 source check, 2026-11-20; see review/pseudoenzyme_sources_check_2026-11-20.md).
+% Possible additions to this paragraph, not yet in the text:
+% - MEROPS (release 12.5 glossary) lists "non-peptidase homologues": proteins placed in a peptidase family
+%   that lack one or more expected catalytic residues; it notes that some are enzymes of other kinds.
+% - Gene Ontology has no pseudoenzyme-specific guidance found; a missing catalytic residue is annotated with
+%   the NOT qualifier and IKR evidence (GO_REF:0000047), as Zaru et al. 2020 describe for UniProtKB.
 For annotation review, the practical use is narrow. A sequence-only read can flag a protein that has
 lost a canonical catalytic residue before a catalytic term is accepted, and can question an implausible
 name. It cannot show that the protein is inactive, since catalytic residues can be displaced
