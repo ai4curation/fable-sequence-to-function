@@ -2,7 +2,7 @@
 
 Reads upstream/confirm_sequences.tsv, copied from github.com/XinmingTu/LLM-bioseq-probe at commit 0d8d086.
 CONDITIONS is 2 (real, shuffled) or 3 (adds reversed). Calls the local
-`claude` CLI with no tools and an empty system prompt (see common.call for the route). Appends to
+`claude` CLI with its built-in tools turned off and an empty system prompt (see common.call for the route). Appends to
 results/EFFORT/MODEL.jsonl and resumes; questions whose earlier row is unusable are asked again (see common.resume).
 """
 import csv, json, pathlib, random, sys, zlib, re, collections

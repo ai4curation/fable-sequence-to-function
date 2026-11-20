@@ -25,7 +25,7 @@ for 35 to 39 of 45 sampled bacterial and archaeal proteins, with domain boundari
 reference by 0.85, and almost never assigned a domain to a shuffled sequence. They detected a single
 catalytic-residue substitution introduced into an active enzyme and named the changed position: a kinase
 with its catalytic aspartate changed to asparagine was called active in 0 of 20 cases by either model, and
-a matched substitution at an unannotated position left the protein called active in 58 of 58 cases. The
+a matched substitution at an unannotated position was called active in 58 of 58 cases. The
 older Claude Opus~4.6, at the same effort setting, also rejected the aspartate mutants (2 of 20 called
 active) but accepted 17 of 20 lysine mutants and 14 of 20 mutants of other enzymes, and assigned a Pfam
 domain to 28 of 60 shuffled sequences. For recently released protein structures with no earlier PDB entry at
@@ -34,7 +34,8 @@ the best single-state guess, and long-range contact precision was 19 to 37\%, ag
 69\% secondary structure accuracy and 28\% contact precision on the same distinct novel-stratum proteins.
 Yet Neon at low effort showed no detectable next-residue advantage over shuffled sequences and
 identified none of 15 obscure DUF families. The models also fail in specific ways: they shift a catalytic role to a neighbouring identical
-residue, and they argue around a substitution they have just reported. The tests are small, with no stochastic replicate runs under a fixed configuration. We conclude that sequence-only reading by these models is good enough to triage
+residue, and they argue around a substitution they have just reported. The tests are small, and most
+questions were asked once per model and effort setting. We conclude that sequence-only reading by these models is good enough to triage
 pseudoenzyme over-annotation, and is not a citable source of evidence.
 \end{abstract}
 
@@ -67,18 +68,20 @@ capabilities also occur through another provider and access route.
 
 \paragraph{Models and access.} We tested \texttt{claude-fable-5-2}, \texttt{claude-opus-5-5} and, as an
 older comparison, \texttt{claude-opus-4-6}. Each question was one call to the \texttt{claude} command-line
-tool in print mode with no tools and an empty system prompt; we confirmed that calls were single-turn with
-no web search or fetch. This route does not expose temperature, so answers were sampled, and it adds about
+tool in print mode with its built-in tools turned off and an empty system prompt. This route does not expose temperature, so answers were sampled, and it adds about
 1,400 tokens of its own context. Eight Opus~5.5 next-residue questions at high effort, left unasked when
 that run was interrupted, were asked on 19 November (UTC) with Claude Code 2.1.328 and flags that keep user
 settings and connector tools out of the call; that route adds about 600 tokens. Fable~5.2 and Opus~5.5 ran
-at high effort in tests 2 to 4. Opus~4.6 was asked tests 2 to 4 twice: at low effort on 18 November by the
+at high effort in tests 2 to 4; the rows of the test-2 runs of 18 November do not record the effort setting. Opus~4.6 was asked tests 2 to 4 twice: at low effort on 18 November by the
 original route, and at high effort on 19 November by the revised route. Unless stated, we report the
 high-effort run, which matches the effort of the other two models but not their route. Its answers were
 long: 7 of 120 replies in test 3 and 9 of 30 in test 4 took more than one request, because the tool asks again by
-itself after an output limit or a stopped reply, and in test 2 six such replies were asked again. In test 1 Opus~4.6 was run at
+itself after an output limit or a stopped reply, and in test 2 six such replies were asked again, one of whose new answers also took more than one request. In test 1 Opus~4.6 was run at
 low effort only.
-Each question was asked once per run. For 6 of the 2,854 Claude calls in the four tests, the tool's usage record lists a second model
+Counts of web search and fetch requests were kept only in rows written by later versions of the revised
+route's code, mostly those of the Opus~4.6 high-effort runs of tests 3 and 4 and of the rerun of the test-3
+mutants and wild types for the decoy control; none of those rows shows a web request. Each question has at most
+one scored answer per run. For 6 of the 2,854 Claude calls in the four tests, the tool's usage record lists a second model
 besides the one requested: three Opus~5.5 next-residue calls at high effort, all on shuffled sequences, and
 in test 4 one Fable~5.2 and two Opus~5.5 calls, all on known-stratum entries. One of the Opus~5.5 test-4
 calls (PDB 7IMP) returned an API error instead of an answer and is excluded from the scores; for the other
@@ -217,7 +220,8 @@ repeated them.
 \centering\small
 \caption{Annotation from sequence alone. IoU is the overlap of predicted and reference domain boundaries
 when the family is correct. The first two rows count proteins in each set; the other rows pool both sets,
-60 proteins. All three models at high effort.}
+60 proteins. All three models at high effort; the Fable~5.2 and Opus~5.5 rows do not record the setting
+(Methods).}
 \label{tab:feat}
 \begin{tabular}{lrrr}
 \toprule
@@ -301,7 +305,8 @@ substitution introduced for this study. All three models at high effort.}
 
 For the 12 novel proteins, Fable~5.2 and Opus~5.5 reached 76\% and 73\% three-state accuracy, against
 57\% for the best single-state guess, and 37\% and 19\% long-range contact precision, against 2\% by
-chance (Figure~\ref{fig:struct}). Scores for the known stratum were a few points higher. Fable~5.2 said
+chance (Figure~\ref{fig:struct}). For the known stratum, three-state accuracy was about 5 points higher and contact precision about 12
+points higher. Fable~5.2 said
 it recognised 2 of the 12 novel proteins (ASPRV1 and MrtR) and 14 of the 15 known entries; Opus~5.5 said
 it recognised none of the novel proteins. Opus~4.6 at high effort reached 54\% on secondary structure, below the single-state guess, and 8\%
 contact precision, above chance but far below the newer models; at low effort the values were 48\% and
@@ -425,7 +430,9 @@ converted into an aggregate abstention or accuracy count.
 
 Fable~5.2 and Opus~5.5 do more than recognise a family. They change their answer when one catalytic
 residue changes and name that residue, and they predict secondary structure and contacts above chance
-for proteins with no earlier PDB entry at 30\% identity. How far this extends is not established here. The comparison with Opus~4.6 is matched for effort but not for call route. On that comparison the older
+for proteins with no earlier PDB entry at 30\% identity. How far this extends is not established here. In
+tests 2 to 4 the comparison with Opus~4.6 is matched for effort but not for call route; in test 1
+and the decoy control Opus~4.6 ran at low effort only. On that comparison the older
 model is not a blank: it found all 9 signal peptides, 67 of 74 transmembrane helices, and the kinase
 aspartate substitution. What separates the newer models is breadth and restraint. They also caught the
 lysine substitution and the active-site changes in other enzyme families, and they left shuffled
@@ -443,10 +450,12 @@ the output has no provenance, its errors are stated as confidently as its correc
 modes we observed end in a confident ``active''. A named catalytic position should be checked against the
 sequence and a curated feature before it is used.
 
-\paragraph{Limitations.} Cells contain 12 to 68 proteins or families, without stochastic replicate runs
-under a fixed configuration. Claude answers were sampled through a command-line tool that adds its own
-context; Gemini API requests used a different route, and temperature was not specified. Neither the
-route effect nor a benefit of greedy decoding was measured. The Opus~4.6 high-effort runs used a revised call route and a later tool version than
+\paragraph{Limitations.} Cells contain 12 to 68 proteins or families, and each question has at most one
+scored answer per model, effort setting and run. The test-3 mutants and wild types were asked again at the
+same effort for the decoy control, and Claude calls marked as carrying attached context, or whose attempt
+failed, were asked again; the marked rows are not scored. Claude answers were sampled through a
+command-line tool that adds its own context; Gemini API requests used a different route, and temperature
+was not specified. Neither the route effect nor a benefit of greedy decoding was measured. The Opus~4.6 high-effort runs used a revised call route and a later tool version than
 the runs of the other two models, and its decoys were asked at low effort only. The decoy positions were
 chosen by a rule written with the help of two of the tested models, and avoid conserved positions.
 Swiss-Prot proteins are well known, so
