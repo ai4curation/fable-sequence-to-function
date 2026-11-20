@@ -8,7 +8,7 @@ A reply that contains a tool invocation instead of an answer is invalid and coun
 """
 import collections, json, pathlib, random
 import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from common import NOTE_CONTINUED, NOTE_COST, NOTE_FAILED, continued, cost_unknown, failed, has_tool_call, unusable
+from common import NOTE_CONTINUED, NOTE_NO_TURNS, no_turn_count, NOTE_COST, NOTE_FAILED, continued, cost_unknown, failed, has_tool_call, unusable
 HERE = pathlib.Path(__file__).parent
 AUTH = {}
 for l in open(HERE / "upstream" / "authors_outputs_subset.jsonl"):
@@ -41,6 +41,7 @@ def main():
             if bad: print(f"  {NOTE_FAILED}: {bad}")
             if cost_unknown(R): print(f"  {NOTE_COST}: {len(cost_unknown(R))}")
             if continued(R): print(f"  {NOTE_CONTINUED}: {len(continued(R))}")
+            if no_turn_count(R): print(f"  {NOTE_NO_TURNS}: {len(no_turn_count(R))}")   # #189, #192
             for c in ("real", "shuffled", "reversed"):
                 x = [r for r in R if r["condition"] == c]
                 if not x: continue

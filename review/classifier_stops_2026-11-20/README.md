@@ -21,7 +21,7 @@ eight stopped replies (a session matched by more than one row appears more than 
 | 3 | Q9V422 wt | `982bdce7`, the row asked 09:01:46Z (2 turns) | 1 | yes |
 | 4 | 9T71 | `8d868936`, the row asked 08:42:38Z (2 turns) | 1 | yes |
 
-Session `5075533d` ended in an API error 3 seconds before session `fb2a1356` began, and the scored A0A919RPG7
+Session `5075533d` ended in an API error about 2 seconds before session `fb2a1356` began, and the scored A0A919RPG7
 row records two attempts. So `5075533d` is very likely that row's failed first attempt (the `[bio]` error in
 #83); the link is inferred from the timing, not recorded.
 
@@ -32,6 +32,14 @@ also prints every line without the nine continued replies (`expected/structure.t
 **Rows without a turn count.** `continued()` can only find continued replies in rows that record a turn count.
 - **The 18 November runs** of Fable 5.2, Opus 5.5 and Opus 4.6 at low effort record none, so whether any of
   their replies was continued is not known (the scorer prints how many rows these are).
-- **15AY** in the Opus 4.6 high-effort test-4 file has no usage record either. Its one session shows a single
+- **15AY** in the Opus 4.6 high-effort test-4 file records no turn count or session id (it does record its tokens and cost). Its one session shows a single
   request (`end_turn`, 10,881 output tokens, the same as the row), so it was not continued. This was checked
   on 2026-11-20 by running the helper on a copy of the row marked as multi-request; that check isn't committed.
+- **The other Opus 4.6 high-effort rows without a turn count** were checked the same way on 2026-11-20 and
+  aren't committed either:
+  - test 2: 114 rows, matched to 114 sessions;
+  - test 3: Q2PAY3 wt, matched to 4 sessions.
+
+  None of these sessions shows a classifier stop, an output-limit stop or a message the tool added. So the count
+  of seven sessions with eight stopped replies covers every Opus 4.6 high-effort row. The scorers now print, for
+  each file, how many usable rows record no turn count.

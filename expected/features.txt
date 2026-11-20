@@ -1,5 +1,6 @@
 
 == claude-fable-5-2: 120 calls, 0 unparsed, effort not recorded in rows, cost $8.92
+  usable rows that record no turn count, so whether the reply was continued is not known: 120
   real     set B n=45: Pfam proteins with >=1 correct family 39/45; predicted domains 59 (correct by id 52, by id-or-name 52); true families 56; boundary IoU mean 0.847 (n=52)
            TM: membrane yes/no agrees 42/45, helix count exact 39/45, helices recovered 59/59, predicted 67; signal peptide TP 8 FN 0 FP 0 TN 37
   real     set A n=15: Pfam proteins with >=1 correct family 8/15; predicted domains 11 (correct by id 10, by id-or-name 10); true families 17; boundary IoU mean 0.935 (n=10)
@@ -16,6 +17,7 @@
 == claude-opus-4-6-high: 126 calls, 0 unparsed, effort high, cost $66.66
   calls that failed, returned an API error, carried attached context or had an unreadable usage record (not scored): 6
   replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply, or retried a failed request; read like any other): A0A919RPG7 real
+  usable rows that record no turn count, so whether the reply was continued is not known: 114
   real     set B n=45: Pfam proteins with >=1 correct family 7/45; predicted domains 32 (correct by id 9, by id-or-name 9); true families 56; boundary IoU mean 0.641 (n=9)
            TM: membrane yes/no agrees 42/45, helix count exact 37/45, helices recovered 53/59, predicted 62; signal peptide TP 8 FN 0 FP 4 TN 33
   real     set A n=15: Pfam proteins with >=1 correct family 0/15; predicted domains 8 (correct by id 0, by id-or-name 0); true families 17; boundary IoU mean nan (n=0)
@@ -30,6 +32,7 @@
            (shuffled = hallucination check) proteins given any Pfam domain 28/60
 
 == claude-opus-4-6: 120 calls, 0 unparsed, effort not recorded in rows, cost $1.31
+  usable rows that record no turn count, so whether the reply was continued is not known: 120
   replies with more than one JSON object, scored on the last: 3 (A0A1I4SBM8 real, A0ABU4WIK0 real, A0ABU4WRC2 shuffled)
     set all, real proteins with >=1 correct family and shuffled proteins given any Pfam domain: last object 5/60 and 5/60; first object 5/60 and 4/60; those replies left out 5/58 and 4/59
   real     set B n=45: Pfam proteins with >=1 correct family 5/45; predicted domains 19 (correct by id 5, by id-or-name 5); true families 56; boundary IoU mean 0.613 (n=5)
@@ -46,6 +49,7 @@
            (shuffled = hallucination check) proteins given any Pfam domain 5/60
 
 == claude-opus-5-5: 120 calls, 0 unparsed, effort not recorded in rows, cost $3.44
+  usable rows that record no turn count, so whether the reply was continued is not known: 120
   real     set B n=45: Pfam proteins with >=1 correct family 35/45; predicted domains 48 (correct by id 42, by id-or-name 42); true families 56; boundary IoU mean 0.851 (n=42)
            TM: membrane yes/no agrees 42/45, helix count exact 39/45, helices recovered 59/59, predicted 67; signal peptide TP 8 FN 0 FP 0 TN 37
   real     set A n=15: Pfam proteins with >=1 correct family 3/15; predicted domains 3 (correct by id 3, by id-or-name 3); true families 17; boundary IoU mean 0.925 (n=3)
