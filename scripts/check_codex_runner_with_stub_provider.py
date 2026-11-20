@@ -2,7 +2,8 @@
 
 Purpose: #52. Shows, offline, that call_codex (1) sends only the one-line instruction, the two allowed
 tools and the question (checked on the request the stub receives), (2) records the session's
-response id, served model, token counts and context check, (3) marks a reply that calls a tool,
+response id, the model Codex requested, token counts, the context check and the check of each
+request body Codex logged, (3) marks a reply that calls a tool,
 a server error and a broken context as unusable.
 Inputs: the local Codex CLI. A scratch CODEX_HOME with no login under ~/agent-work (outside any git
 repository, as the runner requires); the stub needs no login. The stub reports input tokens as a
@@ -113,6 +114,9 @@ check(rec["context_ok"] and rec["response_ids"] == ["resp_stub1"] and rec["reque
       "row: session record gives context check, response id and the model Codex requested")
 check(0 < rec["input_tokens"] <= rec["context_limit"] and rec["thinking_tokens"] == 4 and rec["num_turns"] == 1,
       f"row: token counts within the context limit ({rec['input_tokens']} of {rec['context_limit']}) and one turn")
+check(rec["request_problem"] is None and rec["requests_logged"] == 1 and rec["request_hosts"] == [f"127.0.0.1:{srv.server_address[1]}"],
+      f"row: the logged request body passes the request check ({rec.get('request_problem')})")
+check(rec["request_sha256"] == [run_codex.sha(json.dumps(REQUESTS[0], sort_keys=True))], "row: the logged body is the body the server received")
 check(rec["catalog_sha256"] == prep["catalog_sha256"] and rec["prompt_sha256"] == run_codex.sha(PROMPT), "row: catalog and prompt hashes")
 check(json.loads(json.dumps(rec)) == rec, "row: JSON-serialisable")
 
@@ -129,14 +133,27 @@ check(text is None and "error" in rec and run_codex.codex_unusable(rec), "server
 text, rec = ask("answer", ["-c", "include_environment_context=true"])
 check(rec.get("context_ok") is False and rec.get("status") == "UNUSABLE", f"broken context: caught ({rec.get('context_problem')})")
 
-# 5. extra context shows as input tokens above the limit: re-enable the shell tool
+# 5. extra tools on the longest real question: caught by the request check, whatever the length (#163)
+sys.path.insert(0, str(ROOT / "gemini_experiment"))
+from run_agy import build_questions  # noqa: E402
+
+LONGEST = max((p for t in ("next_residue", "features", "pseudo", "structure") for _, p, _ in build_questions(t, "x", 2)[0]), key=len)
 args_off = run_codex.FEATURES_OFF
 run_codex.FEATURES_OFF = tuple(f for f in args_off if f not in ("shell_tool", "unified_exec"))
-text, rec = ask("answer")
+MODE.clear()
+MODE.update(kind="answer")
+text, rec = run_codex.call_codex("gpt-6-astra", "high", LONGEST, prep, HOME, extra=PROVIDER, tries=1, timeout=120)
 run_codex.FEATURES_OFF = args_off
-tools5 = [t.get("name") for it in REQUESTS[0].get("input", []) if it.get("type") == "additional_tools" for ns in it.get("tools", []) for t in ns.get("tools", [ns])] if REQUESTS else []
-check(len(tools5) > 2 and rec.get("context_tokens_high") and rec.get("status") == "UNUSABLE",
-      f"extra tools: row unusable through the token limit ({tools5}; {rec.get('input_tokens')} > {rec.get('context_limit')})")
+check(rec.get("status") == "UNUSABLE" and "request check" in (rec.get("unusable_because") or []) and "tools" in (rec.get("request_problem") or ""),
+      f"extra tools, {len(LONGEST)}-character question: caught by the request check ({rec.get('request_problem')}; "
+      f"token limit alone: {'caught' if rec.get('context_tokens_high') else 'missed'})")
+
+# 5b. no request logged (trace log off): unusable, fail closed
+real_env = run_codex.codex_env
+run_codex.codex_env = lambda home: {k: v for k, v in real_env(home).items() if k != "RUST_LOG"}
+text, rec = ask("answer")
+run_codex.codex_env = real_env
+check(rec.get("status") == "UNUSABLE" and rec.get("request_problem") == "no request logged", "no request logged: unusable")
 
 # 6. an empty reply is unusable
 text, rec = ask("answer", text="")
@@ -154,18 +171,18 @@ before = pathlib.Path(prep["catalog"]).read_text()
 other = run_codex.prepare_home(HOME, ["gpt-6-sol"], require_login=False)
 check(other["catalog"] != prep["catalog"] and pathlib.Path(prep["catalog"]).read_text() == before, "catalog: one file per model, runs can share a home")
 
-# 9. a home inside a git repository is refused (Codex would send the remote and commit)
+# 9. a home inside a git repository is refused before anything is created there
+inside = ROOT / ".temp" / "codex_home_inside_repo_check" / "home"
+shutil.rmtree(inside.parent, ignore_errors=True)
 try:
-    run_codex.prepare_home(ROOT / ".temp" / "codex_home_in_repo", ["gpt-6-astra"], require_login=False)
+    run_codex.prepare_home(inside, ["gpt-6-astra"], require_login=False)
     refused = False
 except SystemExit:
     refused = True
-check(refused, "home inside a git repository: refused")
+check(refused and not inside.parent.exists(), "home inside a git repository: refused, nothing created")
 
 # 10. rows written as the runner writes them are read by the scorer and the audit (#52)
 import subprocess  # noqa: E402
-sys.path.insert(0, str(ROOT / "gemini_experiment"))
-from run_agy import build_questions  # noqa: E402
 
 RESULTS = HOME / "results"
 shutil.rmtree(RESULTS, ignore_errors=True)

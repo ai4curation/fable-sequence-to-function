@@ -122,7 +122,8 @@ def main():
                     continue
                 route = str(row.get("cli_version", ""))
                 if route.startswith("codex-exec"):  # GPT-6 through Codex: no endpoint model version is logged (#52)
-                    require(row.get("context_ok") is True and row.get("requested_model_logged") == [row["model"]]
+                    require(row.get("context_ok") is True and row.get("request_problem") is None
+                            and row.get("requests_logged", 0) >= 1 and row.get("requested_model_logged") == [row["model"]]
                             and not row.get("context_tokens_high") and (row.get("input_tokens") or 0) <= row.get("context_limit", 0),
                             f"{path.name}: Codex row without a passing context check")
                 elif not route.startswith("agy"):
