@@ -113,10 +113,12 @@ report values remain unchanged.
   *Rows that record a prompt hash* below). The exact prompt is the string `P` (or
   the `prompt` function) in each test's `ask.py` or `run.py`.
 - **Limits of that route:** temperature cannot be set, and the tool adds context of
-  its own, whose size the rows of 2026-11-18 do not record. Measured on 2026-11-19 with the original flags and
-  Claude Code 2.1.328 (`experiments/decoy_control/results/cli_context_check.json`,
-  `canary-original-flags.jsonl`): 5,851 input tokens for a one-sentence prompt to Haiku 5.5, and 97,813
-  and 6,413 for two test-3 questions to Fable 5.2; 573 with the extra flags of the revised route.
+  its own, whose size the rows of 2026-11-18 do not record. Measured on 2026-11-19 with the same context
+  flags and Claude Code 2.1.328 (`experiments/decoy_control/results/cli_context_check.json`,
+  `canary-original-flags.jsonl`): 5,851 input tokens for a one-sentence prompt to Haiku 5.5 (573 for that
+  prompt with the extra flags of the revised route), and 97,813 and 6,413 for two questions with the test-3
+  prompt to Fable 5.2, the larger most likely because the account's connector tools were attached. The stored test-3 calls'
+  costs rule out an attachment of that size there (an inference; `experiments/decoy_control/README.md`).
 - **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; the
   rows of the test-2 runs of 2026-11-18 do not record the effort setting. On
   2026-11-18 Opus 4.6 ran at low effort in every test; the authors record

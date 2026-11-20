@@ -78,12 +78,15 @@ capabilities also occur through another provider and access route.
 
 \paragraph{Models and access.} We tested \texttt{claude-fable-5-2}, \texttt{claude-opus-5-5} and, as an
 older comparison, \texttt{claude-opus-4-6}. Each question was asked through the \texttt{claude} command-line
-tool in print mode with its built-in tools turned off and an empty system prompt. The original scripts
-tried a question up to three times when the tool's output was not valid JSON and kept only the last
-attempt, so the counts below are of recorded calls; earlier attempts were not recorded. This route does not expose temperature, so answers were sampled, and it adds context of its own,
-whose size the rows of 18 November do not record. Measured on 19 November with the original
-flags and Claude Code 2.1.328, a one-sentence prompt to Haiku~5.5 carried 5,851 input tokens, and two
-test-3 questions to Fable~5.2 carried 97,813 and 6,413. Eight Opus~5.5 next-residue questions at high effort, left unasked when
+tool in print mode with its built-in tools turned off and an empty system prompt. The scripts of 18
+November tried a question up to three times when the tool's output was not valid JSON and kept only the
+last attempt, recording none of the earlier ones; the revised route used from 19 November records the
+number of attempts and keeps a failed call as a row. The call counts below are of recorded rows. This route does not expose temperature, so answers were sampled, and it adds context of its own,
+whose size the rows of 18 November do not record. Measured on 19 November with the same context flags and
+Claude Code 2.1.328, a one-sentence prompt to Haiku~5.5 carried 5,851 input tokens; two questions with the
+test-3 prompt to Fable~5.2 carried 97,813 and 6,413, the larger one most likely because the account's
+connector tools were attached. No stored test-3 call by Fable~5.2 cost more than a quarter of that call, so the stored runs did
+not carry an attachment of that size; this is an inference from cost. Eight Opus~5.5 next-residue questions at high effort, left unasked when
 that run was interrupted, were asked on 19 November (UTC) with Claude Code 2.1.328 and flags that keep user
 settings and connector tools out of the call; with these flags the one-sentence prompt carried 573 input tokens. Fable~5.2 and Opus~5.5 ran
 at high effort in tests 2 to 4; the rows of the test-2 runs of 18 November do not record the effort setting. Opus~4.6 was asked tests 2 to 4 twice: at low effort on 18 November by the
@@ -154,9 +157,9 @@ unreviewed entries are themselves predicted. Each protein was also presented shu
 \paragraph{Test 3, dead mutants and natural pseudoenzymes.} A dead mutant here is an active enzyme in
 which we substituted one catalytic residue; a natural pseudoenzyme is an evolved homologue, which usually
 differs from active relatives at many positions. UniProt curates pseudoenzymes in Swiss-Prot
-\citep{zaru2020uniprot}; in UniProt release 2026\_04, queried on 18 November 2026, 688 reviewed entries
-carried ``inactive'' in a recommended or alternative protein name (492 in the recommended name), 107 of them
-in the protein kinase superfamily. From Swiss-Prot, excluding human, mouse and rat, we took 20 active
+\citep{zaru2020uniprot}; in UniProt release \texttt{2026\_04}, queried on 19 November 2026 (UTC), 688
+reviewed entries carried ``inactive'' in a protein name (492 in the recommended name), 107 of them in the
+protein kinase superfamily. From Swiss-Prot, excluding human, mouse and rat, we took 20 active
 protein kinases with a curated proton-acceptor aspartate and ATP-binding lysine; 20 kinase-fold proteins
 whose name contains ``inactive''; and 20 non-kinase enzymes with a curated active site. Each kinase was
 also presented with the aspartate changed to asparagine and, separately, the lysine changed to
