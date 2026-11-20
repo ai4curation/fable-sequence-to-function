@@ -20,13 +20,13 @@
 \begin{abstract}
 A recent report showed that two general-purpose language models, Claude Fable~5.2 and Claude Opus~5.5,
 predict the next residue of obscure proteins far better than chance. We ask whether that ability is useful
-for annotation. Given only an amino-acid sequence and no tools, both models named the correct Pfam family
+for annotation. Given only an amino-acid sequence, with built-in tools turned off, both models named the correct Pfam family
 for 35 to 39 of 45 sampled bacterial and archaeal proteins, with domain boundaries overlapping the
 reference by 0.85, and almost never assigned a domain to a shuffled sequence. They detected a single
 catalytic-residue substitution introduced into an active enzyme and named the changed position: a kinase
 with its catalytic aspartate changed to asparagine was called active in 0 of 20 cases by either model, and
 a matched substitution at an unannotated position was called active in 58 of 58 cases. The
-older Claude Opus~4.6, at the same effort setting, also rejected the aspartate mutants (2 of 20 called
+older Claude Opus~4.6, at high effort, also rejected the aspartate mutants (2 of 20 called
 active) but accepted 17 of 20 lysine mutants and 14 of 20 mutants of other enzymes, and assigned a Pfam
 domain to 28 of 60 shuffled sequences. For recently released protein structures with no earlier PDB entry at
 30\% sequence identity or more, three-state secondary structure accuracy was 73 to 76\%, against 57\% for
@@ -35,7 +35,7 @@ medium effort, reached 69\% secondary structure accuracy and 28\% contact precis
 Yet Neon at low effort showed no detectable next-residue advantage over shuffled sequences and
 identified none of 15 obscure DUF families. Fable~5.2 and Opus~5.5 also fail in specific ways: with a catalytic residue substituted, both named a
 neighbouring identical residue as catalytic, and Fable~5.2 argued around a substitution it had just reported. The tests are small, and most
-questions were asked once per model and effort setting. We conclude that sequence-only reading by Fable~5.2, Opus~5.5 and Gemini~4 Neon can flag the loss of a catalytic residue for a curator to check, and is not a citable source of evidence.
+questions were asked once per model and effort setting. We conclude that sequence-only reading by Fable~5.2 and Opus~5.5 can flag the loss of a catalytic residue for a curator to check, and is not a citable source of evidence.
 \end{abstract}
 
 \section{Introduction}
@@ -262,7 +262,8 @@ with boundaries close to the reference (mean overlap 0.85 for both, over the cor
 Table~\ref{tab:feat} pools all 60). Fable~5.2 also named the exact family for 8
 of 15 proteins from obscure domain-of-unknown-function families. Both models declined to annotate
 shuffled sequences. Opus~4.6 at high effort named a correct family for 7 of the 45 sampled proteins and
-assigned a domain to 28 of 60 shuffled sequences; at low effort the counts were 5 of 45 and 5 of 60, so
+assigned a domain to 28 of 60 shuffled sequences; in its earlier run, at low effort by the authors' record
+(the test-2 rows of 18 November do not store the setting), the counts were 5 of 45 and 5 of 60, so
 more effort produced more invented domains and little more recall. Errors were not marked as such: Fable~5.2 assigned one DUF968 protein to a different
 family, and both models split helices in multi-pass transporters (85 and 87 predicted against 74
 annotated). Two test proteins carry implausible submitter names in UniProt, ``Glycerol dehydrogenase'' on
@@ -385,7 +386,7 @@ contact precision, above chance but far below the newer models; at low effort th
 4\%. On the known stratum, Opus~4.6 at high effort reached 58\%, slightly above the single-state guess of
 55\%, and 10\% contact precision. These values are far short of dedicated
 structure predictors \citep{jumper2021alphafold}; the point is that they are well above chance for a
-model given no alignment and no tools.
+model given no alignment and with built-in tools turned off.
 
 In the manual grading of function for the 12 novel proteins, Fable~5.2 was correct on 6, abstained on 5
 and was wrong on 1; Opus~5.5 was correct on 4, abstained on 7 and was wrong on 1. The correct calls were
@@ -537,7 +538,8 @@ from the collection account, not those stored rows. These counts do not establis
 
 Fable~5.2 and Opus~5.5 do more than recognise a family. They change their answer when one catalytic
 residue changes and name that residue, and they predict secondary structure and contacts above chance
-for proteins with no earlier PDB entry at 30\% identity. How far this extends is not established here. In tests 2 to 4 the comparison with Opus~4.6 is matched for effort but not for call route; in test 1
+for proteins with no earlier PDB entry at 30\% identity. How far this extends is not established here. In tests 2 to 4 the comparison with Opus~4.6 is matched for effort (in test 2 by the authors' record, since
+those rows do not store the setting) but not for call route; in test 1
 and the decoy control Opus~4.6 ran at low effort only. On that comparison the older
 model is not a blank: it found all 9 signal peptides, 67 of 74 transmembrane helices, and the kinase
 aspartate substitution. What separates the newer models is breadth and restraint. They also caught the
@@ -609,8 +611,9 @@ Scripts, prompts, test sets and all raw model outputs are at
 scoring scripts from the saved model outputs, and \texttt{just check} verifies the data checksums and
 that the numbers reproduce. Test sets were drawn from live UniProt, InterPro and RCSB services on 18
 November 2026 and are committed as drawn, because re-querying those services returns different entries.
-Claude model calls used Claude Code 2.1.327, except the eight above, the Opus~4.6 high-effort runs and the
-decoy control, which used 2.1.328. The reported Gemini calls went to the Vertex AI and Gemini REST
+By the authors' record, the Claude model calls of 18 November used Claude Code 2.1.327; those rows do not
+store the version. The eight above, the Opus~4.6 high-effort runs and the decoy control used 2.1.328, as
+their rows record. The reported Gemini calls went to the Vertex AI and Gemini REST
 endpoints. Repeating either will not return identical answers.
 
 Gemini collection scripts, raw replies, incomplete pilots, and an offline prompt/coverage audit are in
