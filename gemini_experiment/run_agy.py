@@ -91,12 +91,12 @@ def agy_unusable(row: dict) -> bool:
 NO_TOOL_PREFIX = "Do not call or invoke any tools. "
 
 
-# Fields that carry reply content. They are replaced by their size: the visible reply is already
-# in the row's `text` (#155, #157). The requests ask for no tools or logprobs, so only `text` and
-# `thoughtSignature` occur today.
+# Fields that carry reply or source content. They are replaced by their size: the visible reply is
+# already in the row's `text` (#155, #157, #159). The requests ask for no tools, grounding or
+# logprobs, so only `text` and `thoughtSignature` occur today. A field not named here is kept.
 _PART_CONTENT = ("text", "thoughtSignature", "functionCall", "functionResponse", "executableCode",
                  "codeExecutionResult", "inlineData", "fileData")
-_CANDIDATE_CONTENT = ("groundingMetadata", "logprobsResult")
+_CANDIDATE_CONTENT = ("groundingMetadata", "groundingAttributions", "logprobsResult")
 
 
 def _size(key, value):
@@ -110,10 +110,10 @@ def _size(key, value):
 def response_metadata(d: dict, headers=None) -> dict:
     """Everything the Gemini endpoint returned except reply content (#155, #157).
 
-    Keeps responseId, createTime, modelVersion, usageMetadata, promptFeedback and every candidate
-    field (finishReason, safetyRatings, citationMetadata, ...) as returned. Fields that carry reply
-    content (part text, thought signatures, tool calls, inline data, grounding segments, logprobs)
-    are replaced by their size. `headers` is a list of (name, value) pairs from the HTTP response,
+    Keeps responseId, createTime, modelVersion, usageMetadata, promptFeedback and every other field
+    as returned (finishReason, safetyRatings, citationMetadata, ...), except that the fields named in
+    _PART_CONTENT and _CANDIDATE_CONTENT are replaced by their size, a `content` that is not an
+    object is replaced by its size, and a null `candidates` or `parts` is stored as an empty list. `headers` is a list of (name, value) pairs from the HTTP response,
     repeats kept, cookies dropped.
     """
     meta = {k: v for k, v in d.items() if k != "candidates"}
@@ -124,7 +124,9 @@ def response_metadata(d: dict, headers=None) -> dict:
         for k, v in c.items():
             if k in _CANDIDATE_CONTENT:
                 c2.update([_size(k, v)])
-            elif k == "content" and isinstance(v, dict):
+            elif k == "content" and not isinstance(v, dict):
+                c2.update([_size(k, v)])
+            elif k == "content":
                 content = {ck: cv for ck, cv in v.items() if ck != "parts"}
                 if "parts" in v:
                     content["parts"] = []

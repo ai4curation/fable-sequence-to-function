@@ -121,11 +121,17 @@ from run_agy import response_metadata  # noqa: E402
 m = response_metadata({"candidates": [
     {"finishReason": "SAFETY"},
     {"content": {"parts": [{"functionCall": {"name": "f", "args": {"q": "SECRET-REPLY"}}},
-                           {"executableCode": {"code": "SECRET-REPLY"}}]},
+                           {"functionResponse": {"name": "f", "response": {"r": "SECRET-REPLY"}}},
+                           {"executableCode": {"code": "SECRET-REPLY"}},
+                           {"codeExecutionResult": {"output": "SECRET-REPLY"}},
+                           {"inlineData": {"mimeType": "text/plain", "data": "SECRET-REPLY"}},
+                           {"fileData": {"fileUri": "gs://SECRET-REPLY"}}]},
      "groundingMetadata": {"groundingSupports": [{"segment": {"text": "SECRET-REPLY"}}]},
+     "groundingAttributions": [{"content": {"parts": [{"text": "SECRET-REPLY"}]}}],
      "logprobsResult": {"chosenCandidates": [{"token": "SECRET-REPLY"}]}},
+    {"content": "SECRET-REPLY"},
 ]})
-check("SECRET-REPLY" not in json.dumps(m), "response_metadata: tool calls, code, grounding and logprobs stripped")
+check("SECRET-REPLY" not in json.dumps(m), "response_metadata: every named content field, and non-object content, stripped")
 check(m["candidates"][0] == {"finishReason": "SAFETY"}, "response_metadata: a candidate without content gets none")
 check("functionCall_json_chars" in m["candidates"][1]["content"]["parts"][0]
       and "groundingMetadata_json_chars" in m["candidates"][1], "response_metadata: stripped fields leave their size")
