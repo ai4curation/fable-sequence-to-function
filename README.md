@@ -254,7 +254,6 @@ RCSB Protein Data Bank.
 
 ## Open before posting the preprint
 
-- Author list, affiliations and funding (marked `TODO` in `manuscript.tex`).
 - This repository has no licence file yet.
 - Repeat runs, to measure sampling variability in the FEAT, PSEUDO and STRFN tests.
 - Matched effort and access-route comparisons across providers; labels such as
@@ -262,7 +261,8 @@ RCSB Protein Data Bank.
 - Training-cutoff evidence for any claim that a target was absent from training;
   the PDB date/homology strata alone do not establish this.
 - Opus 4.6 was not asked the decoy control at high effort, and not the NR test at high effort.
-- A blinded second grader for function in the STRFN test.
+- A human grader for function in the STRFN test (function is now graded by two blinded instances of a
+  Claude model).
 - The two disputed active sites (YrfG Asp9, ENV9 Ser172) have not been reported to UniProt.
-- Related work is thin: protein language model baselines on the same items are
-  not included.
+- No protein language model or specialised-tool baseline was run on the same items; the related work names
+  them, but the paper makes no comparison.
