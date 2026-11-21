@@ -7,7 +7,7 @@ the text edit that goes with it, and an item here names its issue.
 
 Line numbers refer to `manuscript.tex` on `main` at 21c86e0 (2026-11-19) and drift
 as the text changes (they are badly out of date after the readability edit of 2026-11-20, #198); each item
-also quotes enough to find the place. Updated 2026-11-20 after #183, #188 and #209.
+also quotes enough to find the place. Updated 2026-11-21 after #183, #188 and #209. Main has since been restructured (tests renamed NR, FEAT, PSEUDO, STRFN; strata unmatched and matched), so quoted wording in older items may have moved or changed.
 
 Status: `open`, `decide` (authors' call before anyone edits), `done` (say where).
 
@@ -29,7 +29,7 @@ Status: `open`, `decide` (authors' call before anyone edits), `done` (say where)
 | T7 | done | "Each question was one call" and "2,854 calls" count recorded rows; CLI retries in the original scripts were not recorded. Say "recorded answers", or say that retries are not counted. | l. 66, l. 80; README l. 82, 90, 182 | #40 |
 | T8 | done | Effort match for test 2 rests on a setting the rows do not record. Qualify "at the same effort setting" (l. 29), "matched for effort" (l. 329) and the low-versus-high test-2 contrast (l. 189–191), or leave as is. | l. 29, 189–191, 329 | #129 |
 | T9 | open | State for the authors, from the PR #98 review: the six re-sampled test-2 answers (first answers give 29/60, not 28/60, shuffled with a domain); test 4 basis (12-protein set); bootstrap bound moves with the seed; two dates that cannot be shown from the files. Decide which to say. | Results test 2 and 4; Methods | #104 |
-| T10 | done (pending #209) | Scoring of answers that took more than one request, and of replies stopped by a safety classifier: the decision is the authors'; the text should then say what was done. The scorer side stays in #83. | Methods, Limitations | #83 |
+| T10 | done | Scoring of answers that took more than one request, and of replies stopped by a safety classifier: the decision is the authors'; the text should then say what was done. The scorer side stays in #83. | Methods, Limitations | #83 |
 
 ## Results wording
 
@@ -72,6 +72,6 @@ Status: `open`, `decide` (authors' call before anyone edits), `done` (say where)
 
 - **T4, T5, T6, T7, T8, T11, T12, T15 (part), T19, T20:** PR #183 (merge 86fcdb5). T15 checked the seven
   pseudoenzyme references; five were read as abstracts only, so T15 stays open for those (#19).
-- **T10:** scoring in PR #188 (merge 16ae8c2); text in PR #209 (not merged yet). PR #209 also restores the
+- **T10:** scoring in PR #188 (merge 16ae8c2); text in PR #209 (merge f4d0ab0). PR #209 also restores the
   T11 sentence, which #187 dropped.
 - **T13:** PR #138. **T14:** PR #18.
