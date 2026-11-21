@@ -60,8 +60,8 @@ model and a Gemini model. Four models are a small selection and do not stand for
 general.
 
 General-purpose models have also been benchmarked on ranking protein variants. PG-LLM gave thirteen such
-models a wild-type sequence, a description of the assay and 50 mutant sequences to rank by fitness, in 276
-tasks, 217 of them built on ProteinGym and 59 from more recent studies, with no tools, alignment or structure. The best of them outperformed most
+models a wild-type sequence, a description of the assay and a list of variant sequences to rank, in 276
+tasks, 217 of them from ProteinGym and 59 from recently published studies, with no tools, alignment or structure. The best of them outperformed most
 sequence-only predictors and stayed below the leading specialist predictor \citep{arora2026pgllm}. That
 benchmark scores a ranking of whole sequences against measured fitness. The tests here ask instead for
 explicit annotation of residues and features, with matched decoys, and follow two disagreements with the
@@ -154,7 +154,9 @@ recalling a family label.}
 
 The runs differ in how well they exclude outside information, and Table~\ref{tab:routes} lists the
 three routes. The first Claude route cannot rule out that some calls carried extra context or connector
-tools. The \tfeat{} and \tstrfn{} results of Fable~5.2 and Opus~5.5 come from that route only. Details
+tools. The \tfeat{} and \tstrfn{} results of Fable~5.2 and Opus~5.5 come from that route only, as do
+their calls on the 20 proteins named inactive and, apart from eight Opus~5.5 questions, their \tnr{}
+answers. Of their results, only the \tpseudo{} wild types and mutants were repeated by the revised route. Details
 of retries, input sizes and software versions are in the Supplementary Methods.
 
 \begin{table}[ht]
@@ -221,11 +223,13 @@ its residues shuffled.
 
 Fable~5.2, Opus~5.5 and Neon each called all 20 wild-type kinases active and none of the 20
 aspartate-to-asparagine mutants (Figure~\ref{fig:pseudo}). Across the 60 mutant sequences, they reported
-the mutated position as substituted in 57, 47 and 47 (Table~\ref{tab:positions}). Opus~5.5 and Neon were
-weaker on the lysine: they called 7 and 4 of the 20 lysine-to-methionine mutants active. Neon was also
-weaker on the other enzymes and called 8 of 20 alanine mutants active.
+the mutated position as substituted in 57, 47 and 47 (Table~\ref{tab:positions}). Opus~5.5 and Neon
+changed their call less often for the lysine: they called 7 and 4 of the 20 lysine-to-methionine mutants active. Neon
+also called 8 of 20 alanine mutants of the other enzymes active. An ``active'' call on a mutant goes
+against our prediction that the mutant is inactive. We did not test that prediction, so such a call is
+not a demonstrated error.
 
-Opus~4.6 did worse. At high effort, Opus~4.6 called 2 of 20 aspartate-to-asparagine
+Opus~4.6 changed its call far less often. At high effort, it called 2 of 20 aspartate-to-asparagine
 mutants active and named the substituted position in 18. But it called 17 of 20 lysine-to-methionine
 mutants and 14 of 20 mutants of other enzymes active, and named the position in only 1 and 2 of them. At
 low effort it called 18, 18 and 16 of 20 active and named no position, so its result on the aspartate
@@ -254,7 +258,7 @@ Neither named a decoy position as a lost residue. One case ran the other way: Op
 wild type of a mannosyltransferase (P26725) active, but called its decoy active. Opus~4.6, given the
 decoys at low effort only, called decoys, mutants and wild types active at similar rates.
 
-Asking the mutants and wild types again by the second route also gave a replicate of the \tpseudo{} test. The
+Asking the mutants and wild types again by the revised route also gave a replicate of the \tpseudo{} test. The
 active-or-not call matched the first run for 99 of 100 questions for Fable~5.2 and 96 of 100 for
 Opus~5.5. We ran no decoy control for Neon. It called all 20 wild-type kinases active,
 which rules out a blanket ``inactive'' answer but not a tendency to reject any altered sequence.
@@ -304,19 +308,20 @@ therefore do not guarantee detectable activity, and a reading
 of catalytic residues cannot tell such a case from an active kinase. Nor does one assay settle whether
 kin-32 is inactive in the worm.
 
-Two failure modes recurred. In the first, the model moved the catalytic role to a neighbouring residue of
+Two patterns recurred among the mutants that were called active. In the first, the model moved the catalytic role to a neighbouring residue of
 the same type. When we changed Glu318 of a glucuronosyltransferase (Q9VLA1) to alanine, Fable~5.2 and
 Opus~5.5 named Glu317 as the catalytic base and called the enzyme active, although Fable~5.2 had named
 Glu318 in the wild type. Neon also called this mutant active, but for a different reason: it listed
 Asp233 and Asp235 and no catalytic glutamate in either the wild type or the mutant.
 
-In the second failure mode, the model reported the substitution and then argued around it. For the
+In the second pattern, the model reported the substitution and then argued around it. For the
 \textit{Toxoplasma} kinase ROP17 (Q2PAY3), Fable~5.2 noted methionine at the lysine position and proposed
 that a nearby lysine would take its place. A displaced catalytic lysine has a precedent in WNK1
 \citep{xu2000wnk1}, but here the model applied the argument to a substitution we had made in an active
-kinase.
+kinase. In this pattern the model did detect the substitution; what departs from our prediction is its
+call on activity.
 
-Two further apparent failures turn on disputed reference positions. For the nucleotidase YrfG (P64636)
+Two further disagreements turn on disputed reference positions. For the nucleotidase YrfG (P64636)
 and the reductase ENV9 (Q08651), Fable~5.2, Opus~5.5 and Neon each placed the catalytic residue at a
 different position from UniProt, in wild type and mutant alike, and so called the mutants active. We do
 not count agreement among models as evidence for a site, and it is not used below. Both UniProt
@@ -651,7 +656,8 @@ still shows no activity, as reported for kin-32. A flag should prompt a curator 
 protein having a function, since dead enzymes commonly act as regulators \citep{adrain2020dead}.
 
 By itself the read is also not enough to support a curated annotation. Its output has no provenance, its errors are stated as
-confidently as its correct calls, and both failure modes we observed end in a confident ``active''. Any
+confidently as its correct calls, and both patterns we observed among the mutants called active end in a
+confident ``active''. Any
 catalytic position a model names should be checked against the sequence and a curated feature before it
 is used.
 
