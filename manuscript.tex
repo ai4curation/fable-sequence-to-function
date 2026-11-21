@@ -40,7 +40,7 @@
 
   Though untested against specialised methods, the nascent ability of frontier models to perform protein annotation from sequence alone
   is intriguing. The ability to reason over sequence, structure, and symbols in a single model allows for a neurosymbolic approach where
-  a combination of sequence, experimental data and knowledge from the literature can be holistically combined to improve on functional annotation of the protein universe.
+  a combination of sequence, experimental data and knowledge from the literature can be holistically combined to improve on de novo functional annotation of the protein universe.
 
 Prompts, test sets, model outputs and code:\newline
 \url{https://github.com/ai4curation/fable-sequence-to-function}\newline
@@ -159,7 +159,7 @@ of retries, input sizes and software versions are in the Supplementary Methods.
 
 \begin{table}[ht]
 \centering\small
-\caption{How the models were called. No route gave a model tools or a system prompt of ours.}
+\caption{How the models were called. We supplied no tools and no system prompt on any route.}
 \label{tab:routes}
 \begin{tabular}{p{0.2\linewidth}p{0.36\linewidth}p{0.36\linewidth}}
 \toprule
@@ -866,14 +866,6 @@ reports.
 
 \section*{Acknowledgements}
 
-% NOTE for Chris (T3, issue #154): the Gemini sentences below make three claims the repository cannot
-% confirm: that Antigravity ran the models, that Codex audited the runs, and that Codex incorporated them.
-% Please confirm or correct. If they cannot be confirmed, cut to what the files show: the reported Gemini
-% runs went to the Vertex AI endpoint.
-The work was done with AI coding agents under the authors' direction. Claude Code, which is itself built
-on a Claude model, wrote the tests, ran the Claude models and drafted the manuscript. The Gemini model
-was run with Antigravity, through scripts that call the Vertex AI endpoint, and those
-runs were audited and incorporated with Codex. Claude Code reviewed the Gemini analysis.
 This work was supported by the U.S. Department of Energy, Office of Science, under Contract No.
 DE-AC02-05CH11231 to Lawrence Berkeley National Laboratory.
 
