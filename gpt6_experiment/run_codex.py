@@ -382,10 +382,10 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
         login = bool(LOGIN_ERROR.search(why))  # will not fix itself: main stops the run (#165)
         if reached:  # keep whatever arrived, unusable; re-asking is left to --retry-unusable (#166, #169, #172)
             break
-        if login:
-            return None, dict(rec, error=why, login_error=True, **stamp())
-    else:
-        return None, dict(rec, error=why, **stamp())
+        if login:  # no request was sent, so the question was not asked (#210)
+            return None, dict(rec, error=why, login_error=True, not_asked=True, **stamp())
+    else:  # every attempt failed before any request: not asked, so a plain re-run asks it again (#210)
+        return None, dict(rec, error=why, not_asked=True, **stamp())
     usage = usage or {}  # a reply can arrive without token counts when the turn then fails (#166)
     try:
         session = read_session(home, thread, prompt, effort) if thread else dict(context_ok=False, context_problem="no thread id")
@@ -431,6 +431,13 @@ def call_codex(model, effort, prompt, prep, home, extra=(), tries=3, timeout=TIM
         ("input tokens above the context limit", rec["context_tokens_high"])) if bad]
     rec.update(status="UNUSABLE" if problems else "SUCCESS", unusable_because=problems or None)
     return text, rec
+
+
+def not_sent(row: dict) -> bool:
+    """True if the row shows the question never reached the model: marked not asked, or every recorded attempt
+    failed before any request (rows written before the marker existed are read the same way) (#191, #210)."""
+    log = row.get("attempt_log") or []
+    return bool(row.get("not_asked")) or (bool(log) and all(a.get("outcome") == "failed before any request" for a in log))
 
 
 def codex_unusable(row: dict) -> bool:
@@ -506,7 +513,7 @@ def main():
     qs, key_fn = build_questions(args.test, tag, args.ncond)
     rows = [json.loads(l) for l in out_path.read_text().splitlines() if l.strip()] if out_path.exists() else []
     # a row that says the question was not asked never counts as asked (#191)
-    done = {key_fn(r) for r in rows if not r.get("not_asked") and not (args.retry_unusable and codex_unusable(r))}
+    done = {key_fn(r) for r in rows if not not_sent(r) and not (args.retry_unusable and codex_unusable(r))}
     # Questions launched by an earlier run that left no row (the runner was killed): the model may have
     # answered and been billed, so they count as asked unless --retry-unusable is given (#181)
     here = str(out_path.resolve())
@@ -523,8 +530,8 @@ def main():
                 launched.add(k)
             else:  # launched by a run writing another results file (another checkout) (#191)
                 elsewhere.setdefault(j["results"], set()).add(k)
-    asked_here = {key_fn(r) for r in rows if not r.get("not_asked")}
-    orphans = launched - asked_here
+    asked_here = {key_fn(r) for r in rows if not not_sent(r)}
+    orphans = launched - {key_fn(r) for r in rows}  # a not-asked row says the question was not sent (#210)
     if orphans:
         say(f"[{args.test}] {tag}: {len(orphans)} question(s) launched earlier left no row "
             f"({'asked again' if args.retry_unusable else 'not asked again; use --retry-unusable to ask'}); "

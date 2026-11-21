@@ -57,7 +57,9 @@ How:
   - **Otherwise the attempt is kept and marked unusable** (`attempt failed after the request may have
     been sent`). This includes a server error or rate limit after the request, and a timeout (1,800 s,
     reply kept).
-  - **Re-asking is left to `--retry-unusable`.**
+  - **Re-asking is left to `--retry-unusable`.** The exception is a question that never reached the model, where every
+    attempt failed before any request (for example a Codex start-up error) or the row is marked `not_asked`.
+    That question isn't counted as asked, so a plain re-run asks it again (#210).
 - **Every attempt is recorded**: `attempt_log` in the row (thread, outcome, exit code, failure,
   number of unparsable output lines, requests logged, request check).
   - **Evidence folder:** the experiment home's `attempts/` keeps each attempt's JSON event stream,

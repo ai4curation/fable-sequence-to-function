@@ -769,6 +769,31 @@ crow = HOME / "closed_stdout_check" / "structure" / "gpt-6-astra-high.jsonl"
 n_child_rows = len(crow.read_text().splitlines()) if crow.exists() else 0
 check(rc == 128 + int(_signal.SIGTERM) and n_child_rows >= 2, f"closed stdout: exit {rc} (want {128 + int(_signal.SIGTERM)}), {n_child_rows} rows written")
 
+# 5s. a question that never reached the model (every attempt failed before any request) is asked again by a
+# plain re-run; one that may have reached it is not (#210)
+FATE = {}
+def fake_fates(model, effort, prompt, *a, **k):
+    CALLS.append(prompt)
+    n = len(CALLS)
+    if n == 1:   # Codex start-up error: nothing sent
+        return None, dict(model=model, effort=effort, error="Error: Failed to load cloud config bundle", codex_row_format=2,
+                          attempt_log=[{"outcome": "failed before any request"}] * 3)
+    if n == 2:   # stream cut after the request: may have been billed
+        return "", dict(model=model, effort=effort, status="UNUSABLE", codex_row_format=2,
+                        attempt_log=[{"outcome": "failed after the request may have been sent"}])
+    return "{}", dict(model=model, effort=effort, status="UNUSABLE", codex_row_format=2)
+CALLS.clear()
+code, rows1 = run_main(fake_fates, 1, limit=2)
+first = [r["pdb"] for r in rows1]
+CALLS.clear()
+code, rows2 = run_main(fake_fates, 1, fresh=False, limit=1)
+asked_again = [r["pdb"] for r in rows2][len(rows1):]
+check(len(first) == 2 and asked_again == [first[0]],
+      f"never-sent question asked again by a plain re-run, possibly-billed one not (first run {first}; re-run asked {asked_again})")
+check(run_codex.not_sent({"attempt_log": [{"outcome": "failed before any request"}] * 3}) and run_codex.not_sent({"not_asked": True})
+      and not run_codex.not_sent({"attempt_log": [{"outcome": "failed before any request"}, {"outcome": "failed after the request may have been sent"}]})
+      and not run_codex.not_sent({}), "not_sent: only rows whose every attempt failed before any request, or marked not asked")
+
 # 6. an empty reply is unusable
 text, rec = ask("answer", text="")
 check(rec.get("status") == "UNUSABLE" and "empty reply" in (rec.get("unusable_because") or []), "empty reply: unusable")
