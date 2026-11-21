@@ -13,7 +13,7 @@
 \newcommand{\tpseudo}{\textmd{\textsc{pseudo}}}\newcommand{\tstrfn}{\textmd{\textsc{strfn}}}
 \setlength{\parindent}{0pt}\setlength{\parskip}{6pt plus 2pt minus 1pt}
 
-\title{Sequence-only protein annotation by general-purpose language models: catalytic residues, domains and structure in four models from two providers}
+\title{General-purpose language models are neurosymbolic reasoners able to annotate proteins from sequence}
 \author{Marcin P. Joachimiak \qquad Christopher J. Mungall\thanks{Corresponding author: \href{mailto:cjmungall@lbl.gov}{cjmungall@lbl.gov}}\\[1ex]
 \small Environmental Genomics and Systems Biology Division,\\
 \small Lawrence Berkeley National Laboratory, Berkeley, CA 94720, USA}
@@ -23,29 +23,28 @@
 \maketitle
 
 \begin{abstract}
-General-purpose language models are not built to analyse proteins, yet some of them predict the next
-residue of an obscure protein far better than chance. We asked whether that knowledge is of any use to a
-curator. We gave four models from two providers nothing but an amino-acid sequence, with tools turned off,
-and asked them to annotate it.
+  Determining the function of genes across the tree of life is one of the major challenges in biology. Generative AI approaches
+  to this problem generally fall into two categories: language models trained on biological sequences that are able to predict
+  structure and function from signals in those sequences; and generalist language models trained on text, that are able to reason
+  about biological function symbolically. A default operating assumption is that protein language models do not perform well on symbolic tasks,
+  and that generalist language models do not perform well on sequence tasks. However, recent reports have shown that frontier generalist models
+  perform surprisingly well on next-residue prediction tasks. We set out to explore whether
+  these capabilites extended to protein annotation.
 
-Three of the four, Claude Fable~5.2, Claude Opus~5.5 and Gemini~4 Neon, did more than recognise a protein
-family. They named Pfam domains and placed their boundaries, and they left shuffled sequences
-unannotated. When we changed one catalytic residue in an active enzyme, they called the mutant inactive
-and pointed to the change. In a control run on the two Claude models, they ignored the same change made
-at a position with no known function. For recently released structures with no close relative in the
-PDB, the three models predicted secondary structure and residue contacts well above chance, though far
-below dedicated predictors. The fourth, Claude Opus~4.6, did much worse. It caught only the most
-stereotyped substitution and invented domains for shuffled sequences.
+  We assigned different frontier generalist models a variety of protein annotation tasks, including predicting the
+  presence and coordinates of Pfam domains, loss of functional catalytic residues (including decoy controls), and predicting structure and activity. On
+  all annotation tasks, the frontier models performed well above chance, although short of state of the art predictors.
+  These capabilities were not
+  replicated in models trailing the frontier. Surprisingly, one model (Neon) performed well without showing advantages on the
+  simple next-residue prediction task. In two enzymes where the models disagreed with the curated
+  active site, alignment and structural models favour the position the models gave, clearly in one case
+  and tentatively in the other. The models also make characteristic hallucination errors, and they state them as confidently as their correct calls.
 
-Two results surprised us. Neon did all of this without showing any next-residue advantage, so the signal that
-prompted the work is not needed for it. And in two enzymes where the models disagreed with the curated
-active site, alignment and structural models favour the position the models gave, clearly in one case
-and tentatively in the other.
+  While capabilities fall short of non-generalist method, the nascent ability of frontier models to perform protein annotation from sequence alone
+  is intriguing. The ability to reason over sequence, structure, and symbols in a single model allows for a neurosymbolic approach where
+  a combination of sequence, experimental data and knowledge from the literature can be holistically combined to improve on functional annotation of the protein universe.
 
-The models also make characteristic errors, and they state them as confidently as their correct calls.
-The tests are small, and settings were not matched across providers. A sequence-only read by these
-models can flag a lost or misplaced catalytic residue for a curator to check, but it is not evidence for
-an annotation. Prompts, test sets, model outputs and code are at
+Prompts, test sets, model outputs and code are at
 \url{https://github.com/ai4curation/fable-sequence-to-function}.
 \end{abstract}
 
@@ -508,6 +507,30 @@ The read also cannot serve as evidence. Its output has no provenance, its errors
 confidently as its correct calls, and both failure modes we observed end in a confident ``active''. Any
 catalytic position a model names should be checked against the sequence and a curated feature before it
 is used.
+
+\paragraph{A neurosymbolic outlook.} Neurosymbolic AI combines sub-symbolic learning, which finds patterns
+in raw data, with symbolic knowledge and reasoning \citep{garcez2023neurosymbolic,kautz2022third}. Protein
+annotation has long divided the work in this way. Profile models and protein language models do the
+sub-symbolic part: they find a domain or a motif in a string of residues, which a person cannot do by
+reading it. Curators and annotation rules do the symbolic part: a kinase that has lost the aspartate of
+its catalytic loop is unlikely to be active, and a catalytic term should not be transferred to it. In
+current practice the two parts are joined by pipelines and by people.
+
+In our tests, the three stronger models did both parts in a single answer. They placed Pfam domains in
+raw sequence, which is sub-symbolic work, and they reasoned about what a substituted residue does, which
+is symbolic. The kin-32 answers show the combination: the models located the glycine loop, the VAVK
+lysine and the HRD and DFG motifs in the sequence, then argued from them to a call of activity. Stated
+reasons need not reflect how a model reaches its answer. The decoy control does not depend on them,
+though: the calls of Fable~5.2 and Opus~5.5 tracked the catalytic position whatever explanation came
+with them.
+
+This suggests a different design for annotation review. A single model could read the sequence, recall
+what the literature and curated rules say about the family, and weigh experimental data, then report
+where these disagree, as the models did for YrfG. The sequence-reading part is weak by the standard of
+dedicated predictors, and its output has no provenance, so in practice the model would propose and
+tools would check: an alignment to reviewed relatives, a predicted structure, the curated feature. Our
+tests do not show that such a combination improves annotation. They show that the three frontier
+models we tested already have both of the parts it would need.
 
 \paragraph{Limitations.} The tests are small. Cells contain 12 to 68 items, and each question has at most
 one scored answer per model, effort setting and run. For the Claude models, the \tpseudo{} mutants and wild types were asked again at the same effort for
