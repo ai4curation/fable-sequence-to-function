@@ -121,7 +121,7 @@ The answers were collected by three routes, which differ in what their records c
 (Table~\ref{tab:routes}). The first Claude runs went through a command-line tool with its built-in tools
 turned off. Their rows cannot show whether connector tools or other context were attached to a call
 (Section~\ref{sec:methods}). That is an open constraint on those runs and not evidence that anything
-was retrieved. The revised route keeps such attachments out and records what each call carried. Of the
+was retrieved. The revised route keeps such attachments out and records the size of each call's input. Of the
 results from the original route, only the \tpseudo{} mutants and wild types were asked again at the same
 effort by the revised route.
 
@@ -276,10 +276,12 @@ Shuffled sequences given any domain & 1/60 & 0/60 & 28/60 & 0/60 \\
 Fable~5.2, Opus~5.5 and Neon each called all 20 wild-type kinases active and none of the 20
 aspartate-to-asparagine mutants (Figure~\ref{fig:pseudo}). Across the 60 mutant sequences, they reported
 the mutated position as substituted in 57, 47 and 47 (Table~\ref{tab:positions}). Opus~5.5 and Neon were
-weaker on the lysine: they called 7 and 4 of the 20 lysine-to-methionine mutants active. Neon was also
-weaker on the other enzymes and called 8 of 20 alanine mutants active.
+less sensitive to the lysine substitution: they called 7 and 4 of the 20 lysine-to-methionine mutants active. Neon was also
+less sensitive in the other enzymes and called 8 of 20 alanine mutants active. An ``active'' call on a
+mutant disagrees with our prediction that the mutant is inactive. Since we did not test that prediction,
+it is not a demonstrated error.
 
-Opus~4.6 did worse. At high effort, Opus~4.6 called 2 of 20 aspartate-to-asparagine
+Opus~4.6 was much less sensitive. At high effort, it called 2 of 20 aspartate-to-asparagine
 mutants active and named the substituted position in 18. But it called 17 of 20 lysine-to-methionine
 mutants and 14 of 20 mutants of other enzymes active, and named the position in only 1 and 2 of them. At
 low effort it called 18, 18 and 16 of 20 active and named no position, so its result on the aspartate
@@ -311,7 +313,7 @@ wild type of a mannosyltransferase (P26725) active, but called its decoy active.
 decoys at low effort only, called decoys, mutants and wild types active at similar rates.
 
 Asking the mutants and wild types again by the revised route also gave a replicate of the \tpseudo{} test, and
-it is the better-controlled one: its rows record the input each call carried
+it is the better-controlled one: its rows record the size of the input each call carried
 (Table~\ref{tab:routes}). The
 active-or-not call matched the first run for 99 of 100 questions for Fable~5.2 and 96 of 100 for
 Opus~5.5. We ran no decoy control for Neon. It called all 20 wild-type kinases active,
@@ -344,8 +346,8 @@ These counts are agreement with a database name, not accuracy. The set was chose
 ``inactive'' in the name, and we did not check the 20 names against activity experiments. For one of
 them, \textit{Arabidopsis} RLK902 (Q9LVI6), the entry itself notes that autophosphorylation is proposed
 although the kinase domain is predicted to be catalytically inactive \citep{uniprot}. Fable~5.2, Opus~5.5,
-Neon and Opus~4.6 at high effort all called RLK902 inactive, so agreement with a name can itself be an
-error.
+Neon and Opus~4.6 at high effort all called RLK902 inactive. Agreeing with the name is therefore not
+the same as being right.
 
 All three of the stronger models called \textit{C.~elegans} kin-32 (Q95YD4) active, although Swiss-Prot
 names it an inactive tyrosine kinase. They cited an intact glycine loop, VAVK lysine, HRD and DFG motifs,
@@ -356,19 +358,20 @@ inactive in the worm. What the case does show is that intact canonical motifs do
 detectable activity, and a reading of catalytic residues cannot tell such a protein from an active
 kinase.
 
-Two failure modes recurred. In the first, the model moved the catalytic role to a neighbouring residue of
-the same type. When we changed Glu318 of a glucuronosyltransferase (Q9VLA1) to alanine, Fable~5.2 and
+Two patterns recurred among the mutants that were called active. In the first, the model moved the
+catalytic role to a neighbouring residue of the same type. When we changed Glu318 of a glucuronosyltransferase (Q9VLA1) to alanine, Fable~5.2 and
 Opus~5.5 named Glu317 as the catalytic base and called the enzyme active, although Fable~5.2 had named
 Glu318 in the wild type. Neon also called this mutant active, but for a different reason: it listed
 Asp233 and Asp235 and no catalytic glutamate in either the wild type or the mutant.
 
-In the second failure mode, the model reported the substitution and then argued around it. For the
+In the second pattern, the model reported the substitution and then argued around it. For the
 \textit{Toxoplasma} kinase ROP17 (Q2PAY3), Fable~5.2 noted methionine at the lysine position and proposed
 that a nearby lysine would take its place. A displaced catalytic lysine has a precedent in WNK1
 \citep{xu2000wnk1}, but here the model applied the argument to a substitution we had made in an active
-kinase.
+kinase. In this pattern the model did detect the substitution; what differs from our prediction is its
+call on activity.
 
-Two further apparent failures turn on disputed reference positions. For the nucleotidase YrfG (P64636)
+Two further disagreements turn on disputed reference positions. For the nucleotidase YrfG (P64636)
 and the reductase ENV9 (Q08651), Fable~5.2, Opus~5.5 and Neon each placed the catalytic residue at a
 different position from UniProt, in wild type and mutant alike, and so called the mutants active. We do
 not count agreement among models as evidence for a site, and it is not used below. Both UniProt
@@ -424,7 +427,8 @@ sequences the models have not seen, or any advantage over existing methods: ``no
 PDB held no close match, and most of these sequences were public before the structures were released.
 The claim is also bounded by the route (Table~\ref{tab:routes}). Neon's requests carried no tools. The
 Fable~5.2 and Opus~5.5 answers in the \tfeat{} and \tstrfn{} tests came by the original route, with the
-tool's built-in tools turned off, and these two tests were not repeated by the revised route. Model class,
+tool's built-in tools turned off, and for these two models the two tests were not repeated by the
+revised route. Model class,
 effort and route vary, so this is not a controlled comparison between generations or providers.
 
 We also asked each model whether it recognised the protein. Of the 12 novel proteins, Fable~5.2 said it
@@ -577,7 +581,8 @@ protein having a function, since dead enzymes commonly act as regulators \citep{
 
 The read is also not sufficient, by itself, to support a curated annotation. Computational predictions
 can contribute evidence, but this one has no provenance, its errors are stated as
-confidently as its correct calls, and both failure modes we observed end in a confident ``active''. Any
+confidently as its correct calls, and both patterns we observed among the mutants called active end in a
+confident ``active''. Any
 catalytic position a model names should be checked against the sequence and a curated feature before it
 is used.
 
