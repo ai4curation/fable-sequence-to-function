@@ -63,10 +63,10 @@ results/structure/gemini-3.1-flash-lite-high.jsonl
   route {'gemini-rest-v1beta': 30}; model version {'gemini-3.1-flash-lite': 30}; finish {'STOP': 30}
   median thinking tokens 5486.5
 gpt6_experiment/results/structure/gpt-6-astra-high.jsonl
-  expected 30; rows 37; unique attempted 30; usable 26; unusable rows 11; duplicate rows 7
-  safety-block rows 0; rows with retries 5; missing usable questions 4
-  route {'codex-exec codex-cli 0.170.0': 37}; model version {'None': 37}; finish {'None': 37}
-  median thinking tokens 3590.5
+  expected 30; rows 41; unique attempted 30; usable 30; unusable rows 11; duplicate rows 11
+  safety-block rows 0; rows with retries 5; missing usable questions 0
+  route {'codex-exec codex-cli 0.170.0': 41}; model version {'None': 41}; finish {'None': 41}
+  median thinking tokens 3537.5
 gpt6_experiment/results/structure/gpt-rosalind-astra-high.jsonl
   expected 30; rows 31; unique attempted 30; usable 30; unusable rows 1; duplicate rows 1
   safety-block rows 0; rows with retries 1; missing usable questions 0
