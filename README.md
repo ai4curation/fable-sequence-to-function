@@ -20,6 +20,7 @@ for the full extension, incomplete pilots, and limits of cross-model comparisons
 | STRFN | `experiments/structure/` | Does it predict secondary structure, contacts and function for recent structures stratified by prior homology? |
 
 The manuscript is `manuscript.tex`, with a built copy in `manuscript.pdf`.
+A one-page summary of the results for a general audience is in `docs/index.html` (a self-contained static page, ready for GitHub Pages from `/docs`).
 
 `experiments/decoy_control/` holds the decoy control for the PSEUDO test reported in the manuscript: the same substitution
 at a non-catalytic position of each protein, and the PSEUDO mutants asked again on the same route. Its
