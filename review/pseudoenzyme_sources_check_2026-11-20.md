@@ -33,7 +33,7 @@ returns some active enzymes.
 **Still open.** Five of the eight references were read as abstracts only, so T15 and issue #19 stay
 open for a full-text read of those five.
 
-**For the authors (left as LaTeX comments in the Discussion)**
+**For the authors.** These were LaTeX comments in the Discussion until PR #249 removed them. They are possible additions, not yet in the text, and are tracked as NEXT_TASKS T28.
 - **MEROPS** (release 12.5 glossary): "A protein of known sequence that can be placed in a peptidase
   family but lacks one or more of the expected catalytic residues is described as a non-peptidase
   homologue. Some non-peptidase homologues are enzymes of other kinds."
