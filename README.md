@@ -1,16 +1,23 @@
 # Sequence to function with general language models
 
 Can a general-purpose language model read a protein sequence directly? This
-repository holds four small tests of Claude Fable 5.2, Claude Opus 5.5 and
-Claude Opus 4.6, each given only an amino-acid sequence and no tools, together
-with a draft preprint describing the results.
+repository holds four small sequence-only tests of Claude Fable 5.2, Claude Opus
+5.5 and Claude Opus 4.6, plus a Gemini extension and a draft preprint. The completed
+Gemini API runs supplied no tools or system instruction in the request body.
+
+Gemini 4 Neon detects all 20 kinase Asp-to-Asn substitutions at low effort and,
+at medium effort, reaches 69.0% secondary-structure accuracy and 28.4% long-range
+contact precision on the 12 novel-stratum proteins. At low effort, however, it shows no detectable next-residue
+advantage over shuffled sequences and identifies none of the 15 obscure DUF
+families. See [the Gemini methods, coverage, and results](gemini_experiment/README.md)
+for the full extension, incomplete pilots, and limits of cross-model comparisons.
 
 | Test | Folder | Question |
 |---|---|---|
 | 1 | `experiments/next_residue/` | Does the model predict the next residue of an obscure protein better than of its shuffled copy? A subsample replication of Tu and Chen (2026). |
 | 2 | `experiments/features/` | Does it name Pfam domains with boundaries, transmembrane helices and signal peptides, and leave shuffled sequences blank? |
 | 3 | `experiments/pseudo/` | Does it notice one catalytic-residue substitution in an otherwise active enzyme? |
-| 4 | `experiments/structure/` | Does it predict secondary structure, contacts and function for structures released after its training? |
+| 4 | `experiments/structure/` | Does it predict secondary structure, contacts and function for recent structures stratified by prior homology? |
 
 The manuscript is `manuscript.tex`, with a built copy in `manuscript.pdf`.
 
@@ -39,10 +46,10 @@ just check
 ```
 
 This verifies the checksums of every test set and raw model output
-(`SHA256SUMS`), re-runs the scoring scripts, and compares their output with the
+including the Gemini extension (`SHA256SUMS`), re-runs the scoring scripts, and compares their output with the
 committed files in `expected/`. It prints "All reported numbers reproduce." when
-they match. Every number in the manuscript and both figures come from these
-scripts; none is typed in by hand. The figure script takes its values from the
+they match. The manuscript tables transcribe these deterministic summaries; the two original
+Claude figures are generated directly from the scoring code. The figure script takes its values from the
 same scoring code, and `expected/figures.txt` lists the plotted values.
 
 ```bash
@@ -67,34 +74,53 @@ pixel, so they are not byte-for-byte reproducible.
 |---|---|
 | Scoring, statistics, figures | Deterministic from committed files. The bootstrap uses a fixed seed. |
 | Test sets (`truth.json`, `upstream/`) | Committed exactly as drawn on 2026-11-18. The `build.py` scripts record how, but they query live UniProt, InterPro and RCSB services, so re-running them draws different entries. Do not re-run them to check the paper. |
-| Model answers (`results/*.jsonl`) | Committed in full, including raw reply text, thinking-token counts, cost and the models listed in each call's usage record. Re-asking will not give identical answers: the route used does not expose temperature, and models change. |
+| Model answers (`results/*.jsonl`, `gemini_experiment/results*/*/*.jsonl`) | Saved reply text and available usage metadata. Gemini retry records do not include all failed responses, their tokens, or total cost. Re-asking will not give identical answers; temperature and access routes vary and models change. |
 | Function grading (`structure/function_grading.yaml`) | One unblinded manual pass, committed with a note per protein. |
 
 ## Where each number comes from
 
 | Manuscript item | Command | Frozen output |
 |---|---|---|
-| Table 1, thinking split, authors' accuracy on the same questions | `uv run python experiments/next_residue/score.py` | `expected/next_residue.txt` |
+| Table 2 (Claude rows), thinking split, authors' accuracy on the same questions | `uv run python experiments/next_residue/score.py` | `expected/next_residue.txt` |
 | No-model heuristics on all 3,340 cut points | `uv run python experiments/next_residue/baselines.py` | `expected/next_residue_baselines.txt` |
-| Table 2 (`set all` lines for rows 3 to 7); overlap of 0.85 in the abstract and Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
-| Figure 1, mutant positions flagged, recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
-| Figure 2, structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
-| Call totals in Methods (2,854 calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
+| Table 3 (Claude columns; `set all` lines for rows 3 to 7); overlap of 0.85 in the Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
+| Figure 1 and Table 4 (Claude models), recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
+| Figure 2 and Table 6 (Claude models), structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
+| Claude call totals in Methods (2,854 recorded calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
-| Decoy-substitution control for test 3 (Table 3) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
+| Adjudication of the two disputed active sites (YrfG, ENV9) | `uv run python experiments/pseudo/adjudication/adjudicate.py` | `expected/adjudication.txt` |
+| Decoy-substitution control for test 3 (Table 5) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
 
-## How the model answers were collected
+The Gemini extension adds the following reports; the original figure and Claude
+report values remain unchanged.
+
+| Manuscript item | Command | Frozen output |
+|---|---|---|
+| Gemini next-residue row, feature and pseudoenzyme results, Neon/Pro structure rows | `uv run python gemini_experiment/score_gemini.py results_vertex` | `expected/gemini_vertex.txt` |
+| Flash Lite structure row; other API and CLI pilots (incomplete runs identified) | `uv run python gemini_experiment/score_gemini.py results` | `expected/gemini_pilots.txt` |
+| Recorded thinking tokens alongside Claude (including zeros; scored rows only) | `uv run python gemini_experiment/thinking.py` | `expected/gemini_thinking.txt` |
+| Coverage, safety blocks, retries, prompt integrity, recorded route and model version | `uv run python gemini_experiment/audit.py` | `expected/gemini_audit.txt` |
+
+## How the original Claude answers were collected
 
 - **Date:** 2026-11-18.
 - **Models:** `claude-fable-5-2`, `claude-opus-5-5`, `claude-opus-4-6`.
-- **Route:** Claude Code 2.1.327 in print mode, one call per question:
+- **Route:** Claude Code 2.1.327 (the authors' record; the rows of 2026-11-18 do not store the version) in
+  print mode, one recorded call per question (the scripts tried
+  up to three times when the output was not valid JSON and kept only the last attempt):
   `claude -p --model MODEL --system-prompt "" --tools "" --effort EFFORT --output-format json`.
   `--tools ""` turns off the tool's built-in tools; on a machine with account
   connectors this route could still let connector tools into the call (see
   *Rows that record a prompt hash* below). The exact prompt is the string `P` (or
   the `prompt` function) in each test's `ask.py` or `run.py`.
-- **Limits of that route:** temperature cannot be set, and the tool adds about
-  1,400 tokens of its own context to each call.
+- **Limits of that route:** temperature cannot be set, and the tool adds context of
+  its own, whose size the rows of 2026-11-18 do not record. Measured on 2026-11-19 with the same context
+  flags and Claude Code 2.1.328 (`experiments/decoy_control/results/cli_context_check.json`,
+  `canary-original-flags.jsonl`): 5,851 input tokens for a one-sentence prompt to Haiku 5.5 (573 for that
+  prompt with the extra flags of the revised route), and 97,813 and 6,413 for two questions with the test-3
+  prompt to Fable 5.2, the larger most likely because the account's connector tools were attached. Whether
+  the stored calls carried such an attachment is not known: the rows record cost, not tokens, and repeated
+  context is cached, so cost does not bound it.
 - **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; the
   rows of the test-2 runs of 2026-11-18 do not record the effort setting. On
   2026-11-18 Opus 4.6 ran at low effort in every test; the authors record
@@ -107,7 +133,7 @@ pixel, so they are not byte-for-byte reproducible.
   the input check of that time marked them, and one of the fresh answers
   (A0A919RPG7) also took more than one request; tests 3 and 4 keep theirs
   (#104). The manuscript reports these high-effort runs for Opus 4.6 in
-  tests 2 to 4 (Table 2, Figures 1 and 2) and gives the low-effort values in
+  tests 2 to 4 (Tables 3, 4 and 6, Figures 1 and 2) and gives the low-effort values in
   the text; both are in the Methods call totals. Test 1 has low and high runs;
   for Opus 4.6 at high effort only one canary question of test 1 was asked,
   and its row is not committed.
@@ -179,7 +205,7 @@ pixel, so they are not byte-for-byte reproducible.
   Calls marked as carrying attached context, or whose attempt failed, were
   asked again; the marked rows stay in the files and are not scored, and neither are the two rows of
   `experiments/decoy_control/results/canary-original-flags.jsonl`.
-- **Calls listing a second model:** for 6 of the 2,854 calls, the tool's usage
+- **Calls listing a second model:** for 6 of the 2,854 recorded calls, the tool's usage
   record (the `served` field, from `modelUsage`) lists a second model besides
   the one requested. Three are Opus 5.5 next-residue calls at high effort; three
   are in test 4 (PDB 29BS for Fable 5.2, 15AY and 7IMP for Opus 5.5). The record
@@ -228,10 +254,13 @@ RCSB Protein Data Bank.
 
 - Author list, affiliations and funding (marked `TODO` in `manuscript.tex`).
 - This repository has no licence file yet.
-- Repeat runs, to give intervals for tests 2 to 4.
+- Repeat runs, to measure sampling variability in tests 2 to 4.
+- Matched effort and access-route comparisons across providers; labels such as
+  "high" are not equivalent reasoning budgets.
+- Training-cutoff evidence for any claim that a target was absent from training;
+  the PDB date/homology strata alone do not establish this.
 - Opus 4.6 was not asked the decoy control at high effort, and not test 1 at high effort.
 - A blinded second grader for function in test 4.
-- Two enzymes where both models disagree with the curated active-site position
-  (Q08651, P64636) have not been adjudicated.
+- The two disputed active sites (YrfG Asp9, ENV9 Ser172) have not been reported to UniProt.
 - Related work is thin: protein language model baselines on the same items are
   not included.

@@ -209,4 +209,9 @@ NOTE_FAILED = "calls that failed, returned an API error, carried attached contex
 NOTE_TOOL = "replies with a tool invocation (no answer taken)"
 def cost_unknown(R): return [r for r in R if r.get("cost_reported") is not None]   # rows whose reported cost was not a usable number
 NOTE_COST = "rows whose reported cost is not a non-negative number (left out of the cost total; see cost_reported)"
+def no_turn_count(R):
+    """Scored rows (not failed, not an API-error reply) that record no turn count (#189, #192)."""
+    return [r for r in R if not unusable(r) and not r.get("is_error") and not (r.get("text") or "").lstrip().startswith("API Error")
+            and r.get("requests") is None and r.get("num_turns") is None]
+NOTE_NO_TURNS = "usable rows that record no turn count, so whether the reply was continued is not known"
 NOTE_CONTINUED = "replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply, or retried a failed request; read like any other)"

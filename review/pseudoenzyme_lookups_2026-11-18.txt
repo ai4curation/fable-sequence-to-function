@@ -1,0 +1,28 @@
+# Run at 2026-11-19T02:27:19Z
+## UniProt entry counts
+576073	reviewed:true
+688	reviewed:true AND protein_name:inactive
+139	reviewed:true AND protein_name:"probable inactive"
+22	reviewed:true AND protein_name:pseudokinase
+107	reviewed:true AND protein_name:inactive AND family:"protein kinase superfamily"
+39	reviewed:true AND protein_name:inactive AND ec:*
+41	reviewed:true AND protein_name:inactive AND ft_act_site:*
+465	reviewed:true AND protein_name:inactive AND cc_caution:*
+56602	reviewed:false AND protein_name:inactive
+## UniProt Q95YD4 (kin-32): name and function comment
+Inactive tyrosine-protein kinase kin-32 | entry version 188
+FUNCTION | Has apparently no tyrosine kinase activity in vitro when expressed in mammalian cells | ['ECO:0000269']
+## CrossRef records for the suggested references
+10.1042/bst20160400 | Bio-Zombie: the rise of pseudoenzymes in biology | Murphy, Farhan, Eyers | Biochemical Society Transactions 2017 45 537-544
+10.1186/s12915-016-0322-x | The evolving world of pseudoenzymes: proteins, prejudice and zombies | Eyers, Murphy | BMC Biology 2016 14 None
+10.1126/scisignal.aat9797 | Emerging concepts in pseudoenzyme classification, evolution, and signaling | Ribeiro, Das, Dawson, Zaru, Orchard, Thornton | Science Signaling 2019 12 None
+10.1111/febs.15142 | Identifying pseudoenzymes using functional annotation: pitfalls of common practice | Ribeiro, Tyzack, Borkakoti, Thornton | The FEBS Journal 2019 287 4128-4140
+10.1111/febs.15100 | Challenges in the annotation of pseudoenzymes in databases: the UniProtKB approach | Zaru, Magrane, Orchard, ? | The FEBS Journal 2019 287 4114-4127
+10.1111/febs.15535 | Pseudoenzymes: dead enzymes with a lively role in biology | Adrain | The FEBS Journal 2020 287 4102-4105
+10.1042/bcj20220373 | Emerging functions of pseudoenzymes | Goldberg, Sreelatha | Biochemical Journal 2023 480 715-728
+10.1016/s0969-2126(02)00861-4 | Sequence and Structural Differences between Enzyme and Nonenzyme Homologs | Todd, Orengo, Thornton | Structure 2002 10 1435-1451
+10.1016/j.jmb.2004.04.063 | Inactive Enzyme-homologues Find New Function in Regulatory Processes | Pils, Schultz | Journal of Molecular Biology 2004 340 399-404
+10.1093/nar/gkx1012 | Mechanism and Catalytic Site Atlas (M-CSA): a database of enzyme reaction mechanisms and active sites | Ribeiro, Holliday, Furnham, Tyzack, Ferris, Thornton | Nucleic Acids Research 2017 46 D618-D623
+10.1074/jbc.275.22.16795 | WNK1, a Novel Mammalian Serine/Threonine Protein Kinase Lacking the Catalytic Lysine in Subdomain II | Xu, English, Wilsbacher, Stippec, Goldsmith, Cobb | Journal of Biological Chemistry 2000 275 16795-16801
+10.1016/j.str.2004.04.014 | Crystal Structure of the Kinase Domain of WNK1, a Kinase that Causes a Hereditary Form of Hypertension | Min, Lee, Cobb, Goldsmith | Structure 2004 12 1303-1311
+10.1126/science.1075762 | The Protein Kinase Complement of the Human Genome | Manning, Whyte, Martinez, Hunter, Sudarsanam | Science 2002 298 1912-1934

@@ -1,0 +1,25 @@
+next_residue
+  gemini-4-neon-low, effort low: n=271, recorded=271, missing=0, median=634
+  claude-fable-5-2, effort high: n=272, recorded=272, missing=0, median=164
+  claude-opus-5-5, effort high: n=272, recorded=272, missing=0, median=0
+  claude-opus-4-6, effort low: n=272, recorded=272, missing=0, median=0
+features
+  gemini-4-neon-low, effort low: n=120, recorded=120, missing=0, median=1049
+  claude-fable-5-2, effort high: n=120, recorded=120, missing=0, median=703.5
+  claude-opus-5-5, effort high: n=120, recorded=120, missing=0, median=418
+  claude-opus-4-6-high, effort high: n=120, recorded=120, missing=0, median=14189.5
+pseudo
+  gemini-4-neon-low, effort low: n=120, recorded=120, missing=0, median=2474
+  claude-fable-5-2, effort high: n=120, recorded=120, missing=0, median=2548
+  claude-opus-5-5, effort high: n=120, recorded=120, missing=0, median=1275.5
+  claude-opus-4-6-high, effort high: n=120, recorded=120, missing=0, median=19921
+structure
+  gemini-4-neon-medium, effort medium: n=30, recorded=30, missing=0, median=17881.5
+  claude-fable-5-2, effort high: n=30, recorded=30, missing=0, median=3009
+  claude-opus-5-5, effort high: n=29, recorded=29, missing=0, median=1342
+  claude-opus-4-6-high, effort high: n=30, recorded=30, missing=0, median=42987
+Medians include zero-thinking replies; missing counts are not treated as zero.
+Test 1: real and shuffled only. Test 2: both real and shuffled included.
+Claude test-2 Fable/Opus 5.5 effort is reported in the methods, absent from those stored rows.
+Counts use each route's stored thinking field; retries/continuations may be accounted for differently.
+These are recorded token counts, not equal compute budgets across providers or tokenizers.

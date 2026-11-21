@@ -1,5 +1,6 @@
 
 == claude-fable-5-2, effort low: 408 answered; models in usage records ['claude-fable-5-2']; cost $11.60; calls whose usage record lists a second model: 0
+  usable rows that record no turn count, so whether the reply was continued is not known: 408
   real      n=136 invalid=0 first-residue=25.0%  exact10=1
             with thinking n= 38 first-residue=57.9%
             no thinking   n= 98 first-residue=12.2%
@@ -15,6 +16,7 @@
   authors' stored run, same 136 shuffled questions: 10.3%
 
 == claude-opus-4-6, effort low: 408 answered; models in usage records ['claude-opus-4-6']; cost $2.76; calls whose usage record lists a second model: 0
+  usable rows that record no turn count, so whether the reply was continued is not known: 408
   real      n=136 invalid=0 first-residue=5.1%  exact10=0
             with thinking n=  1 first-residue=0.0%
             no thinking   n=135 first-residue=5.2%
@@ -30,6 +32,7 @@
   authors' stored run, same 136 shuffled questions: 4.4%
 
 == claude-opus-5-5, effort low: 408 answered; models in usage records ['claude-opus-5-5']; cost $5.54; calls whose usage record lists a second model: 0
+  usable rows that record no turn count, so whether the reply was continued is not known: 408
   real      n=136 invalid=0 first-residue=16.9%  exact10=0
   shuffled  n=136 invalid=0 first-residue=9.6%  exact10=0
   reversed  n=136 invalid=0 first-residue=12.5%  exact10=0
@@ -39,6 +42,7 @@
   authors' stored run, same 136 shuffled questions: 7.4%
 
 == claude-fable-5-2, effort high: 272 answered; models in usage records ['claude-fable-5-2']; cost $6.21; calls whose usage record lists a second model: 0
+  usable rows that record no turn count, so whether the reply was continued is not known: 272
   real      n=136 invalid=0 first-residue=41.2%  exact10=2
   shuffled  n=136 invalid=0 first-residue=11.8%  exact10=0
   gap real-shuffled: +29.4 pts (95% CI +18.4 to +40.4), 68 families
@@ -46,6 +50,7 @@
   authors' stored run, same 136 shuffled questions: 10.3%
 
 == claude-opus-5-5, effort high: 272 answered; models in usage records ['claude-opus-5', 'claude-opus-5-5']; cost $2.34; calls whose usage record lists a second model: 3
+  usable rows that record no turn count, so whether the reply was continued is not known: 272
   real      n=136 invalid=0 first-residue=19.1%  exact10=1
             with thinking n= 43 first-residue=37.2%
             no thinking   n= 93 first-residue=10.8%

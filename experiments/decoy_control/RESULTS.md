@@ -155,8 +155,9 @@ decoy.
    whether the response is confined to the catalytic positions.
 2. **One answer per sequence in each run.** Each decoy has one scored answer, and each mutant and wild type two at
    the same effort (the stored run and the rerun); the intervals describe sampling of proteins, not run-to-run
-   change. The rerun shows the size of that change for the mutants: up to 4 of 100 calls for the two newer
-   models, all in Lys to Met kinase mutants.
+   change. The rerun used another route, so its differences mix the route's effect with run-to-run change
+   (see above): together they changed the active/not-active call in up to 4 of 100 questions for the two
+   newer models, all Lys to Met kinase mutants.
 3. **The decoy label.** "No functional annotation" is not a measurement that the substitution is harmless.
    Because every decoy was called active by Fable 5.2 and Opus 5.5, this cannot have inflated their result. It
    could hide a tendency to miss substitutions that do matter outside the catalytic residues.
