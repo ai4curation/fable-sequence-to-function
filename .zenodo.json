@@ -1,0 +1,39 @@
+{
+  "title": "Sequence to function with general language models: code, test sets and model outputs",
+  "description": "<p>Code, test sets, raw model outputs and draft manuscript for four sequence-only tests of general-purpose language models (Claude Fable 5.2, Claude Opus 5.5 and Claude Opus 4.6, with a Gemini extension) on protein sequences: next-residue prediction against shuffled controls, naming of Pfam domains, transmembrane helices and signal peptides, detection of single catalytic-residue substitutions, and prediction of secondary structure, contacts and function for recent structures stratified by prior homology.</p><p>Running <code>just check</code> verifies the checksums of every test set and model output and re-runs the scoring scripts to reproduce the reported numbers without network or model access.</p>",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "cc-by-4.0",
+  "creators": [
+    {
+      "name": "Joachimiak, Marcin P.",
+      "affiliation": "Lawrence Berkeley National Laboratory",
+      "orcid": "0000-0001-8175-045X"
+    },
+    {
+      "name": "Mungall, Christopher J.",
+      "affiliation": "Lawrence Berkeley National Laboratory",
+      "orcid": "0000-0002-6601-2165"
+    }
+  ],
+  "keywords": [
+    "large-language-models",
+    "protein-function",
+    "protein-sequence",
+    "catalytic-residues",
+    "protein-structure",
+    "pfam",
+    "benchmarking",
+    "reproducibility"
+  ],
+  "communities": [
+    {"identifier": "ai4curation"}
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/ai4curation/ai-gene-review",
+      "relation": "isDerivedFrom",
+      "scheme": "url"
+    }
+  ]
+}
