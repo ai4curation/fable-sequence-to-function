@@ -8,6 +8,7 @@
 \usepackage{placeins}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{xurl}  % lets long URLs break at any character
 % Short names of the four tests (medium weight so they keep small caps inside bold headings)
 \newcommand{\tnr}{\textmd{\textsc{nr}}}\newcommand{\tfeat}{\textmd{\textsc{feat}}}
 \newcommand{\tpseudo}{\textmd{\textsc{pseudo}}}\newcommand{\tstrfn}{\textmd{\textsc{strfn}}}
@@ -40,8 +41,9 @@
   is intriguing. The ability to reason over sequence, structure, and symbols in a single model allows for a neurosymbolic approach where
   a combination of sequence, experimental data and knowledge from the literature can be holistically combined to improve on functional annotation of the protein universe.
 
-Prompts, test sets, model outputs and code are at
-\url{https://github.com/ai4curation/fable-sequence-to-function}.
+Prompts, test sets, model outputs and code:\newline
+\url{https://github.com/ai4curation/fable-sequence-to-function}\newline
+Summary of results: \url{https://ai4curation.io/fable-sequence-to-function/}
 \end{abstract}
 
 \section{Introduction}
@@ -764,7 +766,8 @@ we give both counts where they differ. Both gradings are in the repository.
 \section*{Data and code availability}
 
 Scripts, prompts, test sets and all raw model outputs are at
-\url{https://github.com/ai4curation/fable-sequence-to-function}. Scoring scripts print the quantitative
+\url{https://github.com/ai4curation/fable-sequence-to-function}, and a summary of the results is at
+\url{https://ai4curation.io/fable-sequence-to-function/}. Scoring scripts print the quantitative
 summaries in this paper from the saved model outputs, and \texttt{just check} verifies the data checksums
 and that the numbers reproduce. Test sets were drawn from live UniProt, InterPro and RCSB services on 18
 November 2026. They are committed as drawn, because re-querying those services returns different entries.
