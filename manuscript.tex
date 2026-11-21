@@ -20,29 +20,29 @@
 \maketitle
 
 \begin{abstract}
-A recent report showed that some general-purpose language models predict the next residue of obscure
-proteins far better than chance. We ask whether such models can do anything useful for annotation when
-given only an amino-acid sequence, with tools turned off. We tested six models from two providers: Claude Fable~5.2,
-Opus~5.5 and Opus~4.6, and Gemini~4 Neon, 3.1 Pro Preview and 3.1 Flash Lite; four were run on all four
-tests. Fable~5.2, Opus~5.5 and Neon named a correct Pfam family for 39, 35 and 20 of 45 sampled bacterial
-and archaeal proteins, with domain boundaries overlapping the reference by 0.80 to 0.85, and assigned a
-domain to at most 1 of 60 shuffled sequences. Each of the three detected a single catalytic-residue
-substitution introduced into an active enzyme and named the changed position: a kinase with its
-catalytic aspartate changed to asparagine was called active in 0 of 20 cases. For Fable~5.2 and Opus~5.5,
-the two models tested with a decoy control, a matched substitution at an unannotated position was called
-active in 58 of 58 cases. Opus~4.6 also rejected the aspartate mutants (2 of 20 called active) but accepted
-17 of 20 lysine mutants and 14 of 20 mutants of other enzymes, and assigned a Pfam domain to 28 of 60
-shuffled sequences. For recently released protein structures with no earlier PDB entry at 30\% sequence
-identity or more, three-state secondary structure accuracy was 69 to 76\% for Fable~5.2, Opus~5.5 and
-Neon, against 57\% for the best single-state guess, and long-range contact precision was 19 to 37\%,
-against 2\% by chance; Flash Lite fell below both baselines. A next-residue advantage over shuffled
-sequence was detectable for Fable~5.2 and Opus~5.5 only: Neon showed none, yet performed the other tasks.
-The models also fail in specific ways: with a catalytic residue substituted, Fable~5.2 and Opus~5.5 named
-a neighbouring identical residue as catalytic, and Fable~5.2 argued around a substitution it had just
-reported. The tests are small, most questions were asked once per model and effort setting, and effort
-settings and access routes are not matched across providers. We conclude that sequence-only reading by
-Fable~5.2, Opus~5.5 and Gemini~4 Neon can flag the loss of a catalytic residue for a curator to check, and
-is not a citable source of evidence.
+General-purpose language models are not built to analyse proteins, yet some of them predict the next
+residue of an obscure protein far better than chance. We asked whether that knowledge is of any use to a
+curator. We gave six models from two providers nothing but an amino-acid sequence, with tools turned off,
+and asked them to annotate it.
+
+Three of the six, Claude Fable~5.2, Claude Opus~5.5 and Gemini~4 Neon, did more than recognise a protein
+family. They named Pfam domains and placed their boundaries, and they left shuffled sequences
+unannotated. When we changed one catalytic residue in an active enzyme, they called the mutant inactive
+and pointed to the change. In a control run for the two Claude models, the same change at a position of
+no known function was ignored. For recently released structures with no close
+relative in the PDB, the three models predicted secondary structure and residue contacts well above
+chance, though far below dedicated predictors. The other three models did much worse. One caught only the
+most stereotyped substitution and invented domains for shuffled sequences.
+
+Two results were unexpected. Neon did all of this without showing any next-residue advantage, so the
+signal that prompted the work is not needed for it. And in two enzymes where the models disagreed with
+the curated active site, alignment and structural models favour the position the models gave, clearly in
+one case and tentatively in the other.
+
+The models also make characteristic errors and state them as confidently as their correct calls. The
+tests are small, and settings were not matched across providers. A sequence-only read by these models
+can flag a lost or misplaced catalytic residue for a curator to check. It is not evidence for an
+annotation.
 \end{abstract}
 
 \section{Introduction}
