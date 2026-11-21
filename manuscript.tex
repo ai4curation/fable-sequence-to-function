@@ -9,6 +9,7 @@
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 \usepackage{xurl}  % lets long URLs break at any character
+\usepackage{tikz}\usetikzlibrary{arrows.meta,positioning,calc}
 % Short names of the four tests (medium weight so they keep small caps inside bold headings)
 \newcommand{\tnr}{\textmd{\textsc{nr}}}\newcommand{\tfeat}{\textmd{\textsc{feat}}}
 \newcommand{\tpseudo}{\textmd{\textsc{pseudo}}}\newcommand{\tstrfn}{\textmd{\textsc{strfn}}}
@@ -94,7 +95,7 @@ next-residue result.
 
 \subsection{Study design}
 
-We tested four models from two providers (Table~\ref{tab:models}), each on all four tests:
+Figure~\ref{fig:overview} summarises the design. We tested four models from two providers (Table~\ref{tab:models}), each on all four tests:
 \texttt{claude-fable-5-2}, \texttt{claude-opus-5-5}, \texttt{claude-opus-4-6} and
 \texttt{gemini-4-neon}. All models received the same frozen test sets and the same
 prompts. Effort settings are each provider's own labels and differ between models and tests. Because
@@ -106,6 +107,50 @@ and incomplete runs of other routes are kept in the repository and are not repor
 
 We call Fable~5.2, Opus~5.5 and Gemini~4 Neon the frontier models. Opus~4.6 is an earlier generation of
 Claude model, and we use it as a contrast.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\footnotesize, line width=0.6pt, >={Stealth[length=1.8mm,width=1.4mm]},
+  every node/.append style={execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000\relax}},
+  box/.style={draw, rounded corners=2pt, align=left, inner sep=4pt, text width=#1},
+  tag/.style={draw, rounded corners=2pt, fill=black!7, minimum width=1.5cm, minimum height=0.6cm, inner sep=2pt, font=\small},
+  cell/.style={align=left, text width=#1, inner sep=2pt, anchor=west},
+  head/.style={font=\footnotesize\bfseries, anchor=west, inner sep=2pt},
+]
+\node[box=2.0cm] (in) at (1.14,0) {%
+  \textbf{Input}\\[2pt]
+  an amino-acid sequence, nothing else\\[4pt]
+  {\ttfamily\scriptsize ..LVHGDVKLQ..}};
+\node[box=2.6cm, right=0.45cm of in] (llm) {%
+  \textbf{Language model}\\[2pt]
+  Frontier: Fable~5.2, Opus~5.5, Gemini~4 Neon\\[2pt]
+  Earlier: Opus~4.6\\[4pt]
+  {\scriptsize no alignment or search requested}};
+\draw[->] (in) -- (llm);
+\foreach \y/\code/\task/\ctrl/\score [count=\i] in {
+  2.25/\tpseudo/{Active or not? Which catalytic residues are present or substituted?}/{wild type\\ catalytic mutant\\ matched decoy}/{curated catalytic sites},
+  0.75/\tfeat/{Pfam domains and their boundaries; transmembrane helices; signal peptide}/{same protein, shuffled}/{InterPro and UniProt features},
+  -0.75/\tstrfn/{Secondary structure, long-range contacts, function}/{chance; best single-state guess}/{PDB entries released after Aug 2026},
+  -2.25/\tnr/{Next residue after a cut point}/{same protein, shuffled}/{the true next residue}%
+}{
+  \node[tag] (t\i) at (6.85,\y) {\code};
+  \node[cell=3.4cm] at (7.75,\y) {\task};
+  \node[cell=2.6cm] at (11.4,\y) {\ctrl};
+  \node[cell=1.95cm] at (14.25,\y) {\score};
+  \draw[->] (llm.east) -- ++(0.22,0) |- (t\i.west);
+}
+\node[head] at (6.1,3.3) {Task (what the model returns)};
+\node[head] at (11.4,3.3) {Control};
+\node[head] at (14.25,3.3) {Reference};
+\draw[black!40, line width=0.4pt] (6.1,3.0) -- (16.3,3.0);
+\foreach \y in {1.5,0,-1.5} \draw[black!15, line width=0.4pt] (6.1,\y) -- (16.3,\y);
+\end{tikzpicture}
+\caption{Study overview. Each model receives an amino-acid sequence and one of four tasks, named by the
+short codes used throughout. Every task has a control meant to separate reading the sequence from
+recalling a family label.}
+\label{fig:overview}
+\end{figure}
 
 The runs differ in how well they exclude outside information, and Table~\ref{tab:routes} lists the
 three routes. The first Claude route cannot rule out that some calls carried extra context or connector
