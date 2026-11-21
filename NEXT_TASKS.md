@@ -60,13 +60,16 @@ Status: `open`, `decide` (authors' call before anyone edits), `done` (say where)
 |---|---|---|---|---|
 | T19 | done | Done in #183. The abstract has since been rewritten (c114542) and names no model; its "frontier models" claim is about performance above chance, not the curator-flag claim T19 was about. | Abstract, last sentence | #183 |
 | T20 | done | README table row back to "Claude call totals". | README | #183 |
-| T21 | open | Before posting, remove the remaining LaTeX author note: MEROPS/GO in the Discussion ("% NOTE for the authors (T15 source check …"). The T3 note went with #228. | Acknowledgements, Discussion | #183 review |
+| T21 | done (#249) | Before posting, remove the remaining LaTeX author note: MEROPS/GO in the Discussion ("% NOTE for the authors (T15 source check …"). The T3 note went with #228. | Acknowledgements, Discussion | #183 review |
 | T22 | open | Methods, decoy control: "in kinases, the catalytic loop, the DFG motif and the subdomain IX aspartate" were excluded. The subdomain IX pattern finds nothing in 7 of 20 kinases, so there the Asp stayed a candidate (none was drawn). Say "where the pattern finds it". | Methods, decoy control | #14 |
 | T23 | open | Limitations: some enzyme decoys are easy (the second-to-last residue of P26725, a disordered region in P23594, a transmembrane helix in Q8RX88). The text doesn't say so; `experiments/decoy_control/README.md` does. | Limitations | #16 |
 | T24 | open | Limitations or Methods: the decoy rule was revised twice after looking at the positions it picked, before any model call, and git cannot show the order. The text says only that two tested models helped write the rule. | Limitations, decoy control | #15 |
 | T25 | decide | GPT-6 Astra and Rosalind: STRFN at high effort is answered for both models, 30 of 30 each (PR #167, not merged), and Chris's EC2 run covers the full grid. Nothing from GPT-6 is in the text yet. Decide which runs the paper reports, then add a section. | Results, Methods | #52 |
-| T26 | open | The new Figure 1 (#227) says the model received "an amino-acid sequence, nothing else", while the Methods say the first Claude route cannot rule out extra context or connector tools. Qualify the figure text as T5 did elsewhere. | Figure 1 | #158 review |
-| T27 | open | The README's "Open before posting" list is out of date: it says affiliations and funding are TODO, asks for a blinded second grader (two are now reported) and says related work is thin. | README | #158 review |
+| T26 | done (#249) | The new Figure 1 (#227) says the model received "an amino-acid sequence, nothing else", while the Methods say the first Claude route cannot rule out extra context or connector tools. Qualify the figure text as T5 did elsewhere. | Figure 1 | #158 review |
+| T27 | done (#249) | The README's "Open before posting" list is out of date: it says affiliations and funding are TODO, asks for a blinded second grader (two are now reported) and says related work is thin. | README | #158 review |
+| T28 | decide | Possible additions to the Discussion on curation, from the T15 source check: MEROPS lists "non-peptidase homologues" (some are enzymes of other kinds), and Gene Ontology has no pseudoenzyme-specific guidance; a missing catalytic residue is annotated with NOT and IKR evidence (GO_REF:0000047). Add, or drop. | Discussion | `review/pseudoenzyme_sources_check_2026-11-20.md` |
+| T29 | decide | "from sequence alone" (abstract; the FEAT table caption): the same kind of claim T26 fixed in Figure 1, since the first Claude route can't rule out extra context. Keep (meaning no alignment or structure), or qualify. | Abstract, FEAT table caption | #249 review |
+| T30 | open | The STRFN function grading reference is "the deposited title alone" in one place and "deposited title and molecule name" in another. Make them agree with what the graders were given. | Results STRFN, Supplementary | #249 review |
 
 ## Done
 
@@ -77,4 +80,5 @@ Status: `open`, `decide` (authors' call before anyone edits), `done` (say where)
 - **T10:** scoring in PR #188 (merge 16ae8c2); text in PR #209 (merge f4d0ab0). PR #209 also restores the
   T11 sentence, which #187 dropped.
 - **T13:** PR #138. **T14:** PR #18.
+- **T21, T26, T27:** PR #249.
 - **T2, T3:** PRs #200 and #228 (affiliation, funding, funding-only Acknowledgements; #154 closed).
