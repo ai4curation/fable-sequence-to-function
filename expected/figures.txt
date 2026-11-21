@@ -1,4 +1,4 @@
-Figure 1, called catalytically active (%): Kinase wild type; Kinase Asp→Asn; Kinase Lys→Met; Natural pseudokinase; Other enzyme wild type; Other enzyme site→Ala
+Figure 1, called catalytically active (%): Kinase wild type; Kinase Asp→Asn; Kinase Lys→Met; Named inactive in Swiss-Prot; Other enzyme wild type; Other enzyme site→Ala
   Fable 5.2     100.0    0.0    5.0    5.0  100.0   15.0
   Opus 5.5      100.0    0.0   35.0    5.0   95.0   15.0
   Opus 4.6       90.0   10.0   85.0   25.0   95.0   70.0
