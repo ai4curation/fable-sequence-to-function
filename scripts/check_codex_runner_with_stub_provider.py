@@ -20,6 +20,7 @@ import os
 import pathlib
 import shutil
 import sys
+import tempfile
 import threading
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -107,9 +108,10 @@ class Stub(http.server.BaseHTTPRequestHandler):
 srv = http.server.HTTPServer(("127.0.0.1", 0), Stub)
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 STUB_URL = f"http://127.0.0.1:{srv.server_address[1]}/v1"
-HOME = pathlib.Path.home() / "agent-work" / "fable-sequence-to-function" / "codex_stub_home_test"
-shutil.rmtree(HOME, ignore_errors=True)
-HOME.mkdir(parents=True)
+SCRATCH = pathlib.Path.home() / "agent-work" / "fable-sequence-to-function"
+SCRATCH.mkdir(parents=True, exist_ok=True)
+HOME = pathlib.Path(tempfile.mkdtemp(prefix="codex_stub_home_test-", dir=SCRATCH))
+print(f"Stub evidence: {HOME}")
 prep = run_codex.prepare_home(HOME, ["gpt-6-astra"], require_login=False, base_url=STUB_URL)  # the real provider settings; only the URL differs (#168)
 PROMPT = "Below is the beginning of a protein sequence.\n\n>sequence\nMKV"
 
@@ -672,9 +674,62 @@ run_codex.os.fsync = real_fsync
 check(len(CALLS) == 2 and len(rows) == 3 and sum(bool(r.get("not_asked")) for r in rows) == 1,
       f"journal write fails: not asked, row says so, others written ({len(CALLS)} asked; {len(rows)} rows)")
 # ... and a not-asked row does not count as asked on the next run (#191)
+not_asked_key = next(r["pdb"] for r in rows if r.get("not_asked"))
 CALLS.clear()
 code, rows = run_main(fake_slow, 1, fresh=False, limit=1)
-check(len(CALLS) == 1, f"a not-asked row is asked on the next run ({len(CALLS)} asked)")
+check(len(CALLS) == 1 and rows[-1]["pdb"] == not_asked_key,
+      f"a not-asked row is asked on the next run (expected {not_asked_key}, got {rows[-1]['pdb']})")
+
+# A failed submit must not discard futures for calls already launched (#190).
+real_executor = run_codex.ThreadPoolExecutor
+started = threading.Event()
+release = threading.Event()
+class FailingSubmitExecutor(real_executor):
+    def submit(self, *args, **kwargs):
+        if started.is_set():
+            release.set()
+            raise RuntimeError("injected submit failure")
+        future = super().submit(*args, **kwargs)
+        assert started.wait(5), "first call did not start"
+        return future
+
+def fake_pending(model, effort, prompt, *a, **k):
+    CALLS.append(prompt)
+    started.set()
+    assert release.wait(5), "submit failure did not release the call"
+    return "{}", dict(model=model, effort=effort, status="UNUSABLE", codex_row_format=2)
+
+CALLS.clear()
+run_codex.ThreadPoolExecutor = FailingSubmitExecutor
+submit_error = None
+try:
+    run_main(fake_pending, 1, limit=3)
+except RuntimeError as e:
+    submit_error = str(e)
+finally:
+    run_codex.ThreadPoolExecutor = real_executor
+rows = [json.loads(l) for l in f_rows.read_text().splitlines()] if f_rows.exists() else []
+check(submit_error == "injected submit failure" and len(rows) == len(CALLS) == 1,
+      f"submit failure: already launched call is written ({len(CALLS)} calls; {len(rows)} rows)")
+
+# A known unlaunched call is released even from another checkout; an older ambiguous
+# attempt for the same question must remain blocked (including legacy journal lines).
+first_key = build_questions("structure", "gpt-6-astra-high", 2)[0][0][0]
+jpath = HOME / "main_check" / "launched" / "structure" / "gpt-6-astra-high.jsonl"
+cancelled_launch = dict(key=first_key, launch_id="cancelled", results="/elsewhere/results.jsonl")
+for legacy in (None, True, False):
+    f_rows.write_text("")
+    entries = [cancelled_launch, dict(cancelled_launch, not_asked=True)]
+    if legacy is not None:
+        older = dict(key=first_key, results="/elsewhere/results.jsonl")
+        if not legacy:
+            older["launch_id"] = "older-ambiguous"
+        entries.insert(0, older)
+    jpath.write_text("".join(json.dumps(e) + "\n" for e in entries))
+    CALLS.clear()
+    code, rows = run_main(fake_slow, 1, fresh=False, limit=1)
+    check(len(CALLS) == 1 and (rows[0]["pdb"] == first_key) == (legacy is None),
+          f"cancelled launch: releases only its own attempt, across checkouts (older legacy={legacy})")
 
 # a stop that arrives after a question was taken: no Codex launch (#191)
 stop = threading.Event()
@@ -692,23 +747,39 @@ threading.Timer(1.6, lambda: os.kill(os.getpid(), _signal.SIGINT)).start()
 code, rows = run_main(fake_slow, 2, interrupt_after=1.5, sig=_signal.SIGTERM)
 check(code == 128 + int(_signal.SIGTERM) and len(rows) == len(CALLS), f"first signal sets the exit status (exit {code})")
 
-# the journal's default place is the experiment home, and each call is synced and each row flushed before the next (#185, #191)
+# Check the actual flush, not worker scheduling: a worker may start its next question
+# before the main thread collects its previous future (#185, #191).
 syncs = {"n": 0}
 def counting_fsync(fd):
     syncs["n"] += 1
     return real_fsync(fd)
-seen_rows = []
-def fake_sees_rows(model, effort, prompt, *a, **k):
-    f = HOME / "main_check" / "structure" / "gpt-6-astra-high.jsonl"
-    seen_rows.append(len(f.read_text().splitlines()) if f.exists() else 0)
+flushed_rows = []
+real_path_open = pathlib.Path.open
+class FlushObserver:
+    def __init__(self, fh): self.fh = fh
+    def __getattr__(self, name): return getattr(self.fh, name)
+    def __enter__(self): return self
+    def __exit__(self, *args): return self.fh.__exit__(*args)
+    def flush(self):
+        self.fh.flush()
+        with real_path_open(f_rows) as source:
+            flushed_rows.append(len(source.read().splitlines()))
+def observe_open(path, mode="r", *args, **kwargs):
+    fh = real_path_open(path, mode, *args, **kwargs)
+    return FlushObserver(fh) if path == f_rows and mode == "a" else fh
+def fake_fast(model, effort, prompt, *a, **k):
     return "{}", dict(model=model, effort=effort, status="UNUSABLE", codex_row_format=2)
 shutil.rmtree(HOME / "launched", ignore_errors=True)
 run_codex.os.fsync = counting_fsync
-code, rows = run_main(fake_sees_rows, 1, limit=3, journal_default=True)
-run_codex.os.fsync = real_fsync
+pathlib.Path.open = observe_open
+try:
+    code, rows = run_main(fake_fast, 1, limit=3, journal_default=True)
+finally:
+    run_codex.os.fsync = real_fsync
+    pathlib.Path.open = real_path_open
 home_journal = HOME / "launched" / "structure" / "gpt-6-astra-high.jsonl"
-check(home_journal.exists() and len(home_journal.read_text().splitlines()) == 3 and syncs["n"] == 3 and seen_rows == [0, 1, 2],
-      f"journal in <home>/launched, synced per call, rows flushed before the next call ({syncs['n']} syncs; rows seen {seen_rows})")
+check(home_journal.exists() and len(home_journal.read_text().splitlines()) == 3 and syncs["n"] == 3 and flushed_rows == [1, 2, 3],
+      f"journal in <home>/launched, synced per call, each row flushed ({syncs['n']} syncs; rows on flush {flushed_rows})")
 shutil.rmtree(HOME / "launched", ignore_errors=True)
 
 # a journal line from a run writing another results file: not asked here, reported as such (#191)
@@ -825,7 +896,7 @@ import subprocess  # noqa: E402
 
 RESULTS = HOME / "results"
 shutil.rmtree(RESULTS, ignore_errors=True)
-for test, n in (("next_residue", 2), ("structure", 1)):
+for test, n in (("next_residue", 2), ("structure", 1), ("decoy_control", 1)):
     qs, _ = build_questions(test, "gpt-6-astra-high", 2)
     rows = []
     for _, prompt, meta in qs[:n]:
@@ -834,6 +905,8 @@ for test, n in (("next_residue", 2), ("structure", 1)):
         if test == "structure":
             MODE["text"] = json.dumps({"helices": [[2, 9]], "strands": [], "fold": "f", "contacts": [], "protein_name": "p",
                                        "function": "f", "functional_residues": [], "recognised": "no"})
+        if test == "decoy_control":
+            MODE["text"] = json.dumps({"protein_name": "stub", "catalytically_active": "yes", "catalytic_residues": []})
         text, rec = run_codex.call_codex("gpt-6-astra", "high", prompt, prep, HOME, tries=1, timeout=120)
         rows.append(run_codex.build_row(test, meta, text, rec))
     (RESULTS / test).mkdir(parents=True, exist_ok=True)
@@ -845,6 +918,33 @@ check(score.returncode == 0 and "== gpt-6-astra-high: 2 usable" in score.stdout 
 audit = subprocess.run([sys.executable, str(ROOT / "gemini_experiment" / "audit.py"), str(RESULTS)],
                        capture_output=True, text=True, cwd=ROOT)
 check(audit.returncode == 0 and "gpt-6-astra-high.jsonl" in audit.stdout, f"audit: passes on the GPT-6 rows ({audit.stderr.strip()[-200:]})")
+decoy_score = subprocess.run([sys.executable, str(ROOT / "experiments/decoy_control/score_decoys.py"),
+                             "--results", str(RESULTS / "decoy_control"), "--pseudo-results", str(RESULTS / "pseudo")],
+                            capture_output=True, text=True, cwd=ROOT)
+check(decoy_score.returncode == 0 and "1 answers scored" in decoy_score.stdout, "decoy scorer: reads Codex rows")
+decoy_path = RESULTS / "decoy_control/gpt-6-astra-high.jsonl"
+decoy_row = json.loads(decoy_path.read_text())
+decoy_row["status"] = "UNUSABLE"
+decoy_path.write_text(json.dumps(decoy_row) + "\n")
+decoy_score = subprocess.run([sys.executable, str(ROOT / "experiments/decoy_control/score_decoys.py"),
+                             "--results", str(RESULTS / "decoy_control"), "--pseudo-results", str(RESULTS / "pseudo")],
+                            capture_output=True, text=True, cwd=ROOT)
+check(decoy_score.returncode == 0 and "0 answers scored" in decoy_score.stdout, "decoy scorer: excludes unusable Codex replies")
+
+_, prompt, meta = next(q for q in build_questions("next_residue", "gpt-6-astra-low", 3)[0] if q[2]["condition"] == "reversed")
+MODE.clear()
+MODE.update(kind="answer")
+text, rec = run_codex.call_codex("gpt-6-astra", "low", prompt, prep, HOME, tries=1, timeout=120)
+reversed_row = run_codex.build_row("next_residue", dict(meta, ncond=3), text, rec)
+reversed_path = RESULTS / "next_residue/gpt-6-astra-low.jsonl"
+reversed_path.write_text(json.dumps(reversed_row) + "\n")
+audit = subprocess.run([sys.executable, str(ROOT / "gemini_experiment/audit.py"), str(RESULTS)], capture_output=True, text=True, cwd=ROOT)
+check(audit.returncode == 0 and "expected 408" in audit.stdout, "audit: includes declared reversed-sequence Codex condition")
+reversed_row["ncond"] = 2
+reversed_path.write_text(json.dumps(reversed_row) + "\n")
+audit = subprocess.run([sys.executable, str(ROOT / "gemini_experiment/audit.py"), str(RESULTS)], capture_output=True, text=True, cwd=ROOT)
+check(audit.returncode != 0 and "unexpected question" in audit.stderr, "audit: rejects reversed sequences in a two-condition run")
+reversed_path.unlink()
 bad = [json.loads(l) for l in (RESULTS / "structure" / "gpt-6-astra-high.jsonl").read_text().splitlines()]
 bad[0]["context_ok"] = False
 (RESULTS / "structure" / "gpt-6-astra-high.jsonl").write_text("".join(json.dumps(r) + "\n" for r in bad))

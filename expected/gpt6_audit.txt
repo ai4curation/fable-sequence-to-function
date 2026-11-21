@@ -1,0 +1,82 @@
+next_residue: all 272 questions found in the Claude rows; 8 Claude rows with a prompt hash, all equal
+features: all 120 questions found in the Claude rows; 126 Claude rows with a prompt hash, all equal
+pseudo: all 120 questions found in the Claude rows; 120 Claude rows with a prompt hash, all equal
+structure: all 30 questions found in the Claude rows; 30 Claude rows with a prompt hash, all equal
+results_vertex/features/gemini-4-neon-low.jsonl
+  expected 120; rows 120; unique attempted 120; usable 120; unusable rows 0; duplicate rows 0
+  safety-block rows 0; rows with retries 1; missing usable questions 0
+  route {'vertex-ai-v1-global': 120}; model version {'gemini-4-neon': 120}; finish {'STOP': 120}
+  median thinking tokens 1049
+results_vertex/next_residue/gemini-4-neon-low.jsonl
+  expected 272; rows 272; unique attempted 272; usable 271; unusable rows 1; duplicate rows 0
+  safety-block rows 1; rows with retries 7; missing usable questions 1
+  route {'vertex-ai-v1-global': 272}; model version {'None': 1, 'gemini-4-neon': 271}; finish {'None': 1, 'STOP': 271}
+  median thinking tokens 634
+results_vertex/pseudo/gemini-4-neon-low.jsonl
+  expected 120; rows 120; unique attempted 120; usable 120; unusable rows 0; duplicate rows 0
+  safety-block rows 0; rows with retries 8; missing usable questions 0
+  route {'vertex-ai-v1-global': 120}; model version {'gemini-4-neon': 120}; finish {'STOP': 120}
+  median thinking tokens 2474
+results_vertex/structure/gemini-3.1-pro-preview-high.jsonl
+  expected 30; rows 30; unique attempted 30; usable 30; unusable rows 0; duplicate rows 0
+  safety-block rows 0; rows with retries 6; missing usable questions 0
+  route {'vertex-ai-v1-global': 30}; model version {'gemini-3.1-pro-preview': 30}; finish {'STOP': 30}
+  median thinking tokens 15081
+results_vertex/structure/gemini-4-carbon-medium.jsonl
+  expected 30; rows 4; unique attempted 4; usable 1; unusable rows 3; duplicate rows 0
+  safety-block rows 0; rows with retries 4; missing usable questions 29
+  route {'vertex-ai-v1-global': 4}; model version {'None': 3, 'gemini-4-carbon': 1}; finish {'None': 3, 'STOP': 1}
+  median thinking tokens 3015
+results_vertex/structure/gemini-4-neon-medium.jsonl
+  expected 30; rows 30; unique attempted 30; usable 30; unusable rows 0; duplicate rows 0
+  safety-block rows 0; rows with retries 4; missing usable questions 0
+  route {'vertex-ai-v1-global': 30}; model version {'gemini-4-neon': 30}; finish {'STOP': 30}
+  median thinking tokens 17881.5
+results/features/gemini-4-neon-medium.jsonl
+  expected 120; rows 70; unique attempted 70; usable 70; unusable rows 0; duplicate rows 0
+  safety-block rows 0; rows with retries 0; missing usable questions 50
+  route {'agy 1.5.12': 70}; model version {'None': 70}; finish {'None': 70}
+  median thinking tokens 4217.5
+results/pseudo/gemini-3.1-flash-lite-high.jsonl
+  expected 120; rows 120; unique attempted 120; usable 120; unusable rows 0; duplicate rows 0
+  safety-block rows 0; rows with retries 39; missing usable questions 0
+  route {'gemini-rest-v1beta': 120}; model version {'gemini-3.1-flash-lite': 120}; finish {'STOP': 120}
+  median thinking tokens 5396
+results/pseudo/gemini-4-neon-medium.jsonl
+  expected 120; rows 58; unique attempted 58; usable 58; unusable rows 0; duplicate rows 0
+  safety-block rows 0; rows with retries 0; missing usable questions 62
+  route {'agy 1.5.12': 58}; model version {'None': 58}; finish {'None': 58}
+  median thinking tokens 8097
+results/structure/gemini-2.5-flash-high.jsonl
+  expected 30; rows 37; unique attempted 30; usable 13; unusable rows 24; duplicate rows 7
+  safety-block rows 0; rows with retries 27; missing usable questions 17
+  route {'gemini-rest-v1beta': 37}; model version {'None': 24, 'gemini-2.5-flash': 13}; finish {'None': 24, 'STOP': 13}
+  median thinking tokens 7466
+results/structure/gemini-3-flash-preview-high.jsonl
+  expected 30; rows 34; unique attempted 30; usable 7; unusable rows 27; duplicate rows 4
+  safety-block rows 0; rows with retries 28; missing usable questions 23
+  route {'gemini-rest-v1beta': 34}; model version {'None': 27, 'gemini-3-flash-preview': 7}; finish {'None': 27, 'STOP': 7}
+  median thinking tokens 12584
+results/structure/gemini-3.1-flash-lite-high.jsonl
+  expected 30; rows 30; unique attempted 30; usable 30; unusable rows 0; duplicate rows 0
+  safety-block rows 0; rows with retries 7; missing usable questions 0
+  route {'gemini-rest-v1beta': 30}; model version {'gemini-3.1-flash-lite': 30}; finish {'STOP': 30}
+  median thinking tokens 5486.5
+gpt6_experiment/results/structure/gpt-6-astra-high.jsonl
+  expected 30; rows 37; unique attempted 30; usable 26; unusable rows 11; duplicate rows 7
+  safety-block rows 0; rows with retries 5; missing usable questions 4
+  route {'codex-exec codex-cli 0.170.0': 37}; model version {'None': 37}; finish {'None': 37}
+  median thinking tokens 3590.5
+gpt6_experiment/results/structure/gpt-rosalind-astra-high.jsonl
+  expected 30; rows 31; unique attempted 30; usable 30; unusable rows 1; duplicate rows 1
+  safety-block rows 0; rows with retries 1; missing usable questions 0
+  route {'codex-exec codex-cli 0.170.0': 31}; model version {'None': 31}; finish {'None': 31}
+  median thinking tokens 14199
+Verified: the Gemini and Claude questions are the same set, with equal prompt hashes wherever a
+Claude row records one; each row's model and effort match its file name, and each usable API row's
+model version equals its model; each row's prompt hash matches the rebuilt question; every usable
+reply in tests 2-4 yields a JSON answer; and the stored next-residue target, family, prediction
+and scores match a recomputation. Rows that store the endpoint's response metadata (from #155 on)
+agree with it: response id and model version on every row, finish reason and reply length on usable ones.
+CLI pilot hashes describe the base prompt; run_agy.py prepended a no-tool instruction.
+Retries record attempt counts, not all failed responses or their token usage.

@@ -5,6 +5,67 @@ and Gemini runs, through the Codex CLI signed in to ChatGPT (no OpenAI API key i
 coding agent and normally sends about 89,000 characters of its own context with each request; the
 runner strips that for this experiment only. `~/.codex` is never read or changed.
 
+## Where to run
+
+**Run Rosalind only on EC2 through the paired Orca `rosalind` environment, never on the laptop.**
+Use `orca environment list --json` to confirm the pairing and `orca repo list --environment rosalind --json`
+to locate the remote checkout. Launch the runner in a terminal belonging to that environment, with
+an experiment home and login on EC2. Verify the remote Codex version and run the offline stub checks
+there before making live calls; this runner was validated with Codex 0.170.0. A local shell does not
+become remote merely because an Orca environment is paired.
+
+The stub checks call no model and may run locally. Each invocation uses its own scratch home so
+checks in different checkouts cannot overwrite one another's evidence.
+
+## Full comparison (#52)
+
+After the remote preflight and one successful live question for each model, run on EC2:
+
+```bash
+uv run python gpt6_experiment/run_full.py --workers 4
+```
+
+This asks both models 1,008 distinct questions each: next residue at low effort with real, shuffled
+and reversed sequences (408), next residue at high effort with real and shuffled sequences (272),
+features (120), catalytic activity (120), structure (30), and decoy substitutions (58), the latter
+four at high effort. Existing answered questions, including the structure canaries, are skipped.
+The decoys use exactly the canonical test-3 prompt. Their comparator is the same model's new
+test-3 run on this route, so no extra bridge calls are needed.
+
+Each model runs one test at a time, in waves of at most four questions. Next-residue high runs last.
+An unusable new reply, an unparsed JSON answer, a runner error, or a launch journal that prevents
+progress stops further waves for both models; already-running calls finish. The controller never
+passes `--retry-unusable`. Inspect the saved evidence before deciding how to handle missing answers.
+
+Run under `nohup` with stdout/stderr redirected to a log for a detached batch. The experiment home's
+`full_analysis/` holds the launch manifest (host, code commit, CLI, grid), per-model JSON progress,
+wave logs and, after completion or a stop, `scores.txt`, `audit.txt`, and `decoys.txt`. Results remain
+append-only under `gpt6_experiment/results/`. Re-running the command resumes without re-asking
+attempted questions. Low-effort next-residue rows explicitly record `ncond=3` for the audit.
+
+`report_full.py` produces `gpt6_experiment/RESULTS.md` with coverage and summary tables, the canonical
+scores, sensitivity analyses, paired decoy comparisons and audit. It refuses incomplete grids unless
+`--allow-partial` is explicitly requested, which labels the report incomplete.
+
+For an unattended run, `finish_full.py PID --publish` waits for that controller process on EC2,
+requires both models to complete and the audit to pass, regenerates the reports and checksums, then
+commits and pushes the results to this PR branch without forcing. It records its outcome in
+`<home>/full_analysis/completion.json`. A stopped run, an audit failure, changed unrelated data,
+unexpected staged changes or an advanced remote branch prevents publication. The completion step
+does not make model calls or retry any question.
+
+Score the decoy comparison separately:
+
+```bash
+uv run python experiments/decoy_control/score_decoys.py \
+  --results gpt6_experiment/results/decoy_control \
+  --pseudo-results gpt6_experiment/results/pseudo
+```
+
+Codex does not report monetary cost; zero cost totals in the shared decoy report mean no recorded
+cost, not free calls. The decoy interpretation and limitations in `experiments/decoy_control/README.md`
+apply, including the lack of experimental activity measurements for the decoy substitutions.
+
 ## What the request carries
 
 Measured offline by pointing `codex exec` at a local stub server
@@ -84,7 +145,10 @@ How:
   - **Other checkouts:** each line records the results file it was written for. A question launched by a
     run writing another results file is reported as such and not asked again unless `--retry-unusable` is given.
   - **Not asked:** if writing the journal line fails, or a stop arrives before Codex starts, the question
-    gets a row marked `not_asked`, which never counts as asked.
+    gets a row marked `not_asked`. An append-only cancellation entry releases that specific launch
+    for the next run, including from another checkout. It cannot release an older attempt that may
+    have reached the model. If saving the cancellation fails, `journal_error` records the failure;
+    check the journal and its evidence before retrying.
   - **Damaged lines:** a damaged journal line stops the run before any call, naming the line.
 - **Stopping** (#165, #173, #175, #181, #184, #185).
   - **What stops a run:** a login error, Ctrl-C, SIGTERM or a closed terminal (SIGHUP). After one, no
@@ -159,15 +223,16 @@ Rows have the same layout as the Gemini rows (`build_row`), so the Gemini scorer
 For GPT-6 rows the audit also requires, of every usable row, a passing context check, the named
 model requested, input tokens within the limit, a passing request check, the runner's provider,
 and no websocket log lines. `scripts/check_codex_runner_with_stub_provider.py`
-writes rows through the runner against a stub and runs both commands on them. Once real rows exist,
-add both commands to `just report` and `just check` with frozen outputs in `expected/`.
+writes rows through the runner against a stub and runs both commands on them. `just report` and
+`just check` include the committed canaries, with frozen outputs in `expected/gpt6.txt` and
+`expected/gpt6_audit.txt`. Their raw results are covered by `SHA256SUMS`.
 `experiments/summary.py` totals the Claude calls only, as for the Gemini rows; the audit's coverage
 lines give the GPT-6 counts.
 
 ## Canary record
 
-The results are append-only. Only the last row of each file counts: every earlier row is from before
-`codex_row_format` 2.
+The results are append-only. For the initial canary question, only the final format-2 row counts;
+its earlier rows predate `codex_row_format` 2. Subsequent questions are scored independently.
 
 **Canary with the fixed runner** (commit 0f5a631, 2026-11-20), first test-4 question, high effort.
 Each model took one attempt. Each sent one logged request to chatgpt.com, which passed the request
