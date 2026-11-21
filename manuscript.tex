@@ -130,8 +130,8 @@ obscure domain-of-unknown-function families. Each protein was also given in shuf
 
 \textbf{Catalytic residues and pseudoenzymes (\tpseudo).} Say whether an enzyme is catalytically active and which catalytic
 residues are present or substituted. The sequences were 20 active kinases, the same kinases with the
-catalytic aspartate or the ATP-binding lysine substituted, 20 natural pseudokinases, and 20 other enzymes
-with and without an active-site residue changed to alanine. In a decoy control, run for the Claude models,
+catalytic aspartate or the ATP-binding lysine substituted, 20 kinase-fold proteins that Swiss-Prot names
+inactive, and 20 other enzymes with and without an active-site residue changed to alanine. In a decoy control, run for the Claude models,
 the same type of substitution was placed at a position with no functional annotation.
 
 \textbf{Structure and function (\tstrfn).} Predict secondary structure, residue contacts and function for
@@ -291,17 +291,27 @@ Opus 4.6 (low) & 34/38 & 45/58 & 50/58 \\
 \end{tabular}
 \end{table}
 
-Fable~5.2, Opus~5.5 and Neon called 18, 18 and 19 of the 20 natural pseudokinases inactive. In 17, 17 and
+Of the 20 kinase-fold proteins that Swiss-Prot names inactive, Fable~5.2, Opus~5.5 and Neon called 18, 18
+and 19 inactive. In 17, 17 and
 19 of those answers, though, the protein name the model gave already said ``inactive'' or
 ``pseudokinase'', so this set mostly measures recall of the database entry. Opus~4.6 at high effort
 called 12 of 20 inactive.
+
+These counts are agreement with a database name, not accuracy. The set was chosen by the word
+``inactive'' in the name, and we did not check the 20 names against activity experiments. For one of
+them, \textit{Arabidopsis} RLK902 (Q9LVI6), the entry itself notes that autophosphorylation is proposed
+although the kinase domain is predicted to be catalytically inactive \citep{uniprot}. Fable~5.2, Opus~5.5,
+Neon and Opus~4.6 at high effort all called RLK902 inactive, so agreement with a name can itself be an
+error.
 
 All three of the stronger models called \textit{C.~elegans} kin-32 (Q95YD4) active, although Swiss-Prot
 names it an inactive tyrosine kinase. They cited an intact glycine loop, VAVK lysine, HRD and DFG motifs,
 and all of these are present in the sequence. The Swiss-Prot name rests on an assay, not on the sequence:
 the entry records that the protein ``has apparently no tyrosine kinase activity in vitro when expressed in
-mammalian cells''. kin-32 is thus a pseudoenzyme that keeps its catalytic motifs, and no reading of
-catalytic residues can detect that class.
+mammalian cells''. That is a negative result in one assay system, and it does not show that kin-32 is
+inactive in the worm. What the case does show is that intact canonical motifs do not guarantee
+detectable activity, and a reading of catalytic residues cannot tell such a protein from an active
+kinase.
 
 Two failure modes recurred. In the first, the model moved the catalytic role to a neighbouring residue of
 the same type. When we changed Glu318 of a glucuronosyltransferase (Q9VLA1) to alanine, Fable~5.2 and
@@ -345,7 +355,9 @@ substituted position in 17, 15 and 11 of 18. Figure~\ref{fig:pseudo} keeps all 2
 \centering
 \includegraphics[width=\linewidth]{figures/fig1_pseudoenzyme.pdf}
 \caption{Share of sequences called catalytically active, 20 sequences per bar. Mutants carry one
-substitution introduced for this study. Claude models at high effort; Gemini~4 Neon at low effort.}
+substitution introduced for this study. ``Named inactive'' marks the 20 kinase-fold proteins whose
+Swiss-Prot name says inactive; the names were not checked against activity experiments. Claude models at
+high effort; Gemini~4 Neon at low effort.}
 \label{fig:pseudo}
 \end{figure}
 
@@ -503,8 +515,8 @@ result is consistent with theirs but does not replicate it.
 For annotation review, the practical use is narrow. Before a catalytic term is accepted, a sequence-only
 read can flag a protein that has lost a canonical catalytic residue, and it can question an implausible
 name. It cannot show that the protein is inactive, since catalytic residues can be displaced
-\citep{goldberg2023pseudoenzymes}. Nor can it find pseudoenzymes that keep every catalytic residue, such
-as kin-32. A flag should prompt a curator to check the catalytic term. It says nothing against the
+\citep{goldberg2023pseudoenzymes}. Nor can it find proteins that keep every canonical catalytic residue
+and still lack detectable activity, of which kin-32 may be one. A flag should prompt a curator to check the catalytic term. It says nothing against the
 protein having a function, since dead enzymes commonly act as regulators \citep{adrain2020dead}.
 
 The read also cannot serve as evidence. Its output has no provenance, its errors are stated as
@@ -553,7 +565,9 @@ The controls of the \tpseudo{} test have gaps. No decoy control was run for Neon
 were asked at low effort only. The decoy positions were chosen by a rule written with the help of two of
 the tested models, and they avoid conserved positions. The adjudication of the two reference sites rests
 on alignment and predicted structures. Neither disputed position, nor the activity of the mutants used
-here, has been tested directly by experiment. Swiss-Prot proteins are well known, so the wild-type
+here, has been tested directly by experiment. The 20 proteins that Swiss-Prot names inactive were
+selected by that name alone and were not curated independently; one of them, RLK902, carries a note of
+proposed autophosphorylation in the same entry. Swiss-Prot proteins are well known, so the wild-type
 results in the \tpseudo{} test may reflect recall. The mutants are new sequences and cannot. Dead mutants made by one
 substitution are also not natural pseudoenzymes. Those usually differ from active relatives at many
 positions and can be inactive for reasons that leave the catalytic residues intact. We examined no
@@ -665,7 +679,11 @@ differs from active relatives at many positions. UniProt curates pseudoenzymes i
 reviewed entries carried ``inactive'' in a protein name (492 in the recommended name), 107 of them in the
 protein kinase superfamily. From Swiss-Prot, excluding human, mouse and rat, we took three sets of 20:
 active protein kinases with a curated proton-acceptor aspartate and ATP-binding lysine; kinase-fold
-proteins whose name contains ``inactive''; and non-kinase enzymes with a curated active site. Each kinase
+proteins whose name contains ``inactive''; and non-kinase enzymes with a curated active site. For the
+second set the name was the only criterion. In most of these entries, UniProt's own comment says that
+the kinase domain is ``predicted to be catalytically inactive'', so the name is often a prediction from
+the sequence. We did not check the 20 names against published activity experiments. Calls on this set
+are therefore scored as agreement with the Swiss-Prot name. Each kinase
 was also presented with the aspartate changed to asparagine and, separately, with the lysine changed to
 methionine. Each other enzyme was presented with its first active-site residue changed to alanine. A
 single prompt, used for every sequence, asked for the catalytic residues present, any that were
