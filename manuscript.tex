@@ -58,6 +58,14 @@ signal in the models it tested from other vendors, and a smaller one in earlier 
 model and a Gemini model. Four models are a small selection and do not stand for language models in
 general.
 
+General-purpose models have also been benchmarked on ranking protein variants. PG-LLM gave thirteen such
+models a wild-type sequence, a description of the assay and 50 mutant sequences to rank by fitness, in 217
+tasks built on ProteinGym, with no alignment or structure. The best of them outperformed most
+sequence-only predictors and stayed below the leading specialist predictor \citep{arora2026pgllm}. That
+benchmark scores a ranking of whole sequences against measured fitness. The tests here ask instead for
+explicit annotation of residues and features, with matched decoys, and follow two disagreements with the
+curated record through to the evidence.
+
 Next-residue accuracy does not say whether a model can do anything a curator needs. Function prediction
 tools make characteristic errors that human annotators avoid \citep{decrecy2025limitations}. One that
 matters for enzymes is assigning a catalytic activity to a protein that has kept the fold of an enzyme
@@ -600,7 +608,7 @@ its structure was released. The random-contact baseline does not substitute for 
 predictors on the same proteins.
 
 We did not test eukaryotic multi-domain proteins in the \tfeat{} test, membrane proteins in the \tstrfn{} test or general
-variant-effect prediction. Apart from Opus~4.6, we did not test whether more reasoning effort improves results
+variant-effect prediction, which PG-LLM benchmarks \citep{arora2026pgllm}. Apart from Opus~4.6, we did not test whether more reasoning effort improves results
 in the \tfeat, \tpseudo{} and \tstrfn{} tests. Finally, we have no information on how these models were trained and draw no conclusion
 about it.
 
