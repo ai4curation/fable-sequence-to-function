@@ -54,12 +54,17 @@ models are built for other tasks. Even so, Tu and Chen \citep{tu2026claude,tu202
 knowledge. On proteins from little-studied domain-of-unknown-function families, Claude Fable~5.2 and
 Claude Opus~5.5 predicted the next amino acid much more often for real sequences than for shuffled ones,
 at a level comparable to dedicated protein language models. The same report found little or no such
-signal in the models it tested from other vendors, and a smaller one in earlier Claude models. Separately, the PG-LLM benchmark asked
-thirteen general-purpose models to rank protein variants given only a wild-type sequence and a
-description of the assay, with no tools, alignments or structures \citep{arora2026pgllm}. That is a
-different task from ours: it concerns the effect of mutations on a measured property, and we ask for annotation. We tested four models from two providers: those two, an earlier Claude
+signal in the models it tested from other vendors, and a smaller one in earlier Claude models. We tested four models from two providers: those two, an earlier Claude
 model and a Gemini model. Four models are a small selection and do not stand for language models in
 general.
+
+General-purpose models have also been benchmarked on ranking protein variants. PG-LLM gave thirteen such
+models a wild-type sequence, a description of the assay and 50 mutant sequences to rank by fitness, in 276
+tasks, 217 of them built on ProteinGym and 59 from more recent studies, with no tools, alignment or structure. The best of them outperformed most
+sequence-only predictors and stayed below the leading specialist predictor \citep{arora2026pgllm}. That
+benchmark scores a ranking of whole sequences against measured fitness. The tests here ask instead for
+explicit annotation of residues and features, with matched decoys, and follow two disagreements with the
+curated record through to the evidence.
 
 Next-residue accuracy does not say whether a model can do anything a curator needs. Function prediction
 tools make characteristic errors that human annotators avoid \citep{decrecy2025limitations}. One that
@@ -348,12 +353,7 @@ Opus~4.6 did much worse. On the unmatched proteins, at high effort, it reached 5
 secondary structure, below the single-state guess, and 8\% contact precision, above chance but far below
 the first three. At low effort it reached 48\% and 4\%.
 
-All of these values are far short of dedicated structure predictors \citep{jumper2021alphafold}.
-An update to the Tu and Chen report, posted while we were writing, also asks models for contact maps of
-recently released structures \citep{tu2026claude}. It reports that Fable~5.2 is right for about a quarter of its long-range
-contacts against 3\% by chance, that Opus~5.5 does worse, and that ESM-2 reaches about two-thirds. The direction agrees with ours. The percentages
-are not comparable, because that analysis uses a different protein set and prompt and defines a contact by
-C$\beta$ atoms where we use C$\alpha$. We claim
+All of these values are far short of dedicated structure predictors \citep{jumper2021alphafold}. We claim
 only that three models do well above chance without an alignment and with built-in tools turned off. Model class,
 effort and route vary, so this is not a controlled comparison between generations or providers.
 
@@ -659,7 +659,7 @@ its structure was released. The random-contact baseline does not substitute for 
 predictors on the same proteins.
 
 We did not test eukaryotic multi-domain proteins in the \tfeat{} test, membrane proteins in the \tstrfn{} test or general
-variant-effect prediction. Apart from Opus~4.6, we did not test whether more reasoning effort improves results
+variant-effect prediction, which PG-LLM benchmarks \citep{arora2026pgllm}. Apart from Opus~4.6, we did not test whether more reasoning effort improves results
 in the \tfeat, \tpseudo{} and \tstrfn{} tests. Finally, we have no information on how these models were trained and draw no conclusion
 about it.
 
