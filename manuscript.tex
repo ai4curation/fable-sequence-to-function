@@ -34,7 +34,7 @@ PDB, the three models predicted secondary structure and residue contacts well ab
 below dedicated predictors. The other three models did much worse. One caught only the most stereotyped
 substitution and invented domains for shuffled sequences.
 
-Two results surprised us. Neon did all of this without any next-residue advantage, so the signal that
+Two results surprised us. Neon did all of this without showing any next-residue advantage, so the signal that
 prompted the work is not needed for it. And in two enzymes where the models disagreed with the curated
 active site, alignment and structural models favour the position the models gave, clearly in one case
 and tentatively in the other.
@@ -320,9 +320,8 @@ different position from UniProt, in wild type and mutant alike, and so called th
 not count agreement among models as evidence for a site, and it is not used below. Both UniProt
 positions are annotated by similarity, and neither protein has an experimental structure.
 
-For YrfG, UniProt gives the nucleophile as Asp9 and the models give Asp16. In all 7 reviewed
-haloacid-dehalogenase-superfamily relatives we aligned, the experimentally supported nucleophile maps to
-Asp16. In two structural models, Asp16 lies within 3.3~\AA{} of the magnesium ion and 2.6~\AA{} of
+For YrfG, UniProt gives the nucleophile as Asp9 and the models give Asp16. We aligned 11 reviewed haloacid-dehalogenase-superfamily relatives. Seven of them carry an
+experimentally supported nucleophile, and all seven map to Asp16. In two structural models, Asp16 lies within 3.3~\AA{} of the magnesium ion and 2.6~\AA{} of
 Lys149, while Asp9 is more than 20~\AA{} from both. The evidence strongly favours Asp16.
 
 For ENV9, UniProt gives the catalytic serine as Ser172 and the models give the adjacent Ser173. UniProt's
@@ -699,8 +698,8 @@ the other models were reviewed qualitatively, without an aggregate grade.
 \section*{Data and code availability}
 
 Scripts, prompts, test sets and all raw model outputs are at
-\url{https://github.com/ai4curation/fable-sequence-to-function}. Scoring scripts print every quantitative
-summary in this paper from the saved model outputs, and \texttt{just check} verifies the data checksums
+\url{https://github.com/ai4curation/fable-sequence-to-function}. Scoring scripts print the quantitative
+summaries in this paper from the saved model outputs, and \texttt{just check} verifies the data checksums
 and that the numbers reproduce. Test sets were drawn from live UniProt, InterPro and RCSB services on 18
 November 2026. They are committed as drawn, because re-querying those services returns different entries.
 By the authors' record, the Claude calls of 18 November used Claude Code 2.1.327; those rows do not store
