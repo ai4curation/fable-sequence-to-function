@@ -1,0 +1,97 @@
+experiments/features/results/claude-opus-4-6-high.jsonl: 126 rows, 7 marked or with more than one request; 773 session files in <claude config dir>/projects/-private-tmp
+
+=== A0YG26 shuffled: asked_at 2026-11-19T06:08:17+00:00, marked True, requests None, turns None, summed input 1653, output 72966; matched by prompt hash: 2 session file(s)
+  -- 5be31600-1472-495c-b4cc-455c0c72e523.jsonl
+     2026-11-19T05:44:25 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 888 chars
+     2026-11-19T06:05:34 assistant assistant                  stop=max_tokens in=806 out=64000 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T06:05:34 user      user                       stop=None in=None out=None added_by_tool=True api_error=False  text 183 chars
+     2026-11-19T06:08:15 assistant assistant                  stop=end_turn in=847 out=8966 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T06:08:16 assistant assistant                  stop=end_turn in=847 out=8966 added_by_tool=False api_error=False  text 387 chars
+  -- d0efefbb-6ab9-4561-8be4-f08f42dbd8f1.jsonl
+     2026-11-19T07:43:01 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 888 chars
+     2026-11-19T07:54:32 assistant assistant                  stop=end_turn in=806 out=36054 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:54:33 assistant assistant                  stop=end_turn in=806 out=36054 added_by_tool=False api_error=False  text 471 chars
+
+=== Z9JV47 real: asked_at 2026-11-19T06:22:33+00:00, marked True, requests None, turns None, summed input 1455, output 65759; matched by prompt hash: 2 session file(s)
+  -- 6d2e7f60-e301-42de-9e9d-4e4ddbaed356.jsonl
+     2026-11-19T07:43:02 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 743 chars
+     2026-11-19T08:02:24 assistant assistant                  stop=end_turn in=707 out=59059 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T08:02:26 assistant assistant                  stop=end_turn in=707 out=59059 added_by_tool=False api_error=False  text 531 chars
+  -- eb6b5410-0f9d-494c-b98e-afed55897881.jsonl
+     2026-11-19T06:00:16 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 743 chars
+     2026-11-19T06:21:58 assistant assistant                  stop=max_tokens in=707 out=64000 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T06:21:58 user      user                       stop=None in=None out=None added_by_tool=True api_error=False  text 183 chars
+     2026-11-19T06:22:31 assistant assistant                  stop=end_turn in=748 out=1759 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T06:22:33 assistant assistant                  stop=end_turn in=748 out=1759 added_by_tool=False api_error=False  text 438 chars
+
+=== A0ABU4WIK0 shuffled: asked_at 2026-11-19T07:15:41+00:00, marked True, requests None, turns None, summed input 2517, output 172471; matched by prompt hash: 2 session file(s)
+  -- c25c88a5-b405-450d-a805-1ec9d3dd8700.jsonl
+     2026-11-19T07:43:01 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 873 chars
+     2026-11-19T08:00:05 assistant assistant                  stop=end_turn in=798 out=50896 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T08:00:07 assistant assistant                  stop=end_turn in=798 out=50896 added_by_tool=False api_error=False  text 385 chars
+  -- e80a87a4-64fa-45ad-9390-e35d69f4d8d4.jsonl
+     2026-11-19T06:16:37 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 873 chars
+     2026-11-19T06:38:28 assistant assistant                  stop=max_tokens in=798 out=64000 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T06:38:28 user      user                       stop=None in=None out=None added_by_tool=True api_error=False  text 183 chars
+     2026-11-19T07:00:22 assistant assistant                  stop=max_tokens in=839 out=64000 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:00:22 user      user                       stop=None in=None out=None added_by_tool=True api_error=False  text 183 chars
+     2026-11-19T07:15:39 assistant assistant                  stop=end_turn in=880 out=44471 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:15:40 assistant assistant                  stop=end_turn in=880 out=44471 added_by_tool=False api_error=False  text 420 chars
+
+=== A0ABS5VAT3 real: asked_at 2026-11-19T06:21:40+00:00, marked True, requests None, turns None, summed input 1712, output 15081; matched by prompt hash: 2 session file(s)
+  -- c2d5308d-dd59-420b-b453-77ab5f52d795.jsonl
+     2026-11-19T06:17:00 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 895 chars
+     2026-11-19T06:18:00 assistant assistant                  stop=refusal in=829 out=3355 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T06:18:00 system    informational              stop=None in=None out=None added_by_tool=False api_error=False  
+     2026-11-19T06:18:00 user      user                       stop=None in=None out=None added_by_tool=True api_error=False  text 224 chars
+     2026-11-19T06:21:38 assistant assistant                  stop=end_turn in=883 out=11726 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T06:21:39 assistant assistant                  stop=end_turn in=883 out=11726 added_by_tool=False api_error=False  text 457 chars
+  -- d81064b1-412c-44f7-a753-4d5d53aa7ead.jsonl
+     2026-11-19T07:43:02 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 895 chars
+     2026-11-19T08:01:19 assistant assistant                  stop=end_turn in=829 out=53965 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T08:01:20 assistant assistant                  stop=end_turn in=829 out=53965 added_by_tool=False api_error=False  text 395 chars
+
+=== A0A919RPG7 real: asked_at 2026-11-19T06:21:38+00:00, marked True, requests None, turns None, summed input 1794, output 11354; matched by prompt hash: 3 session file(s)
+  -- 0decc056-e0a7-4ac2-a35e-2198de9c7391.jsonl
+     2026-11-19T06:18:18 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 979 chars
+     2026-11-19T06:18:44 assistant assistant                  stop=refusal in=870 out=1310 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T06:18:44 system    informational              stop=None in=None out=None added_by_tool=False api_error=False  
+     2026-11-19T06:18:44 user      user                       stop=None in=None out=None added_by_tool=True api_error=False  text 224 chars
+     2026-11-19T06:21:36 assistant assistant                  stop=end_turn in=924 out=10044 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T06:21:37 assistant assistant                  stop=end_turn in=924 out=10044 added_by_tool=False api_error=False  text 458 chars
+  -- 5075533d-e8d1-422b-a03d-f4ea7af10b3a.jsonl
+     2026-11-19T07:43:02 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 979 chars
+     2026-11-19T07:43:49 assistant assistant                  stop=refusal in=870 out=2514 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:43:49 system    informational              stop=None in=None out=None added_by_tool=False api_error=False  
+     2026-11-19T07:43:49 user      user                       stop=None in=None out=None added_by_tool=True api_error=False  text 224 chars
+     2026-11-19T07:45:17 assistant assistant                  stop=refusal in=924 out=5447 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:45:17 system    model_refusal_no_fallback  stop=None in=None out=None added_by_tool=False api_error=False  
+     2026-11-19T07:45:17 assistant assistant                  stop=refusal in=0 out=0 added_by_tool=False api_error=True  text 225 chars
+  -- fb2a1356-15d1-4f20-bcbf-05838b4396be.jsonl
+     2026-11-19T07:45:19 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 979 chars
+     2026-11-19T07:46:25 assistant assistant                  stop=refusal in=870 out=3344 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:46:25 system    informational              stop=None in=None out=None added_by_tool=False api_error=False  
+     2026-11-19T07:46:25 user      user                       stop=None in=None out=None added_by_tool=True api_error=False  text 224 chars
+     2026-11-19T07:48:13 assistant assistant                  stop=end_turn in=924 out=6956 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:48:15 assistant assistant                  stop=end_turn in=924 out=6956 added_by_tool=False api_error=False  text 559 chars
+
+=== A0ABQ3YMM3 real: asked_at 2026-11-19T07:33:18+00:00, marked True, requests None, turns None, summed input 1789, output 104685; matched by prompt hash: 2 session file(s)
+  -- 95a56ccc-df98-4cfb-baa5-96d6220f7b4c.jsonl
+     2026-11-19T07:43:02 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 994 chars
+     2026-11-19T07:56:05 assistant assistant                  stop=end_turn in=874 out=38151 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:56:06 assistant assistant                  stop=end_turn in=874 out=38151 added_by_tool=False api_error=False  text 434 chars
+  -- c5c19c42-671b-483e-b9ce-a5b09240ac1d.jsonl
+     2026-11-19T06:57:22 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 994 chars
+     2026-11-19T07:19:36 assistant assistant                  stop=max_tokens in=874 out=64000 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:19:36 user      user                       stop=None in=None out=None added_by_tool=True api_error=False  text 183 chars
+     2026-11-19T07:33:17 assistant assistant                  stop=end_turn in=915 out=40685 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:33:17 assistant assistant                  stop=end_turn in=915 out=40685 added_by_tool=False api_error=False  text 457 chars
+
+=== A0A919RPG7 real: asked_at 2026-11-19T07:48:15+00:00, marked False, requests 1, turns 2, summed input 1794, output 10300; matched by session id: 1 session file(s)
+  -- fb2a1356-15d1-4f20-bcbf-05838b4396be.jsonl
+     2026-11-19T07:45:19 user      user                       stop=None in=None out=None added_by_tool=False api_error=False  text 979 chars
+     2026-11-19T07:46:25 assistant assistant                  stop=refusal in=870 out=3344 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:46:25 system    informational              stop=None in=None out=None added_by_tool=False api_error=False  
+     2026-11-19T07:46:25 user      user                       stop=None in=None out=None added_by_tool=True api_error=False  text 224 chars
+     2026-11-19T07:48:13 assistant assistant                  stop=end_turn in=924 out=6956 added_by_tool=False api_error=False  thinking 0 chars
+     2026-11-19T07:48:15 assistant assistant                  stop=end_turn in=924 out=6956 added_by_tool=False api_error=False  text 559 chars

@@ -2,6 +2,9 @@
 
 Reports each stratum as drawn, and the novel stratum with human ASPRV1 counted once (it was drawn four times).
 A few calls list a second model in their usage record; they are listed, and every line is repeated without them.
+Replies that took more than one request (the tool asked again after an output limit, a classifier stop or an empty
+reply, or retried a failed request) are scored like any other; every line is also repeated without them, as a
+sensitivity check (#83). Usable rows that record no turn count cannot show this; every scorer prints their number (#189, #192).
 Also prints the counts from the manual function grading in function_grading.yaml.
 The answer is read from each reply's text by common.answer: the last JSON object with the requested keys.
 figures/make_figures.py imports load() and one() from this file, so the figures use the same scoring code.
@@ -9,7 +12,7 @@ figures/make_figures.py imports load() and one() from this file, so the figures 
 import collections, json, math, pathlib, statistics
 import yaml
 import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from common import KEYS, NOTE_CONTINUED, NOTE_COST, NOTE_FAILED, NOTE_TOOL, efforts, continued, cost_unknown, failed, reparse, tool_calls
+from common import KEYS, NOTE_CONTINUED, NOTE_NO_TURNS, no_turn_count, NOTE_COST, NOTE_FAILED, NOTE_TOOL, efforts, continued, cost_unknown, failed, reparse, tool_calls
 HERE = pathlib.Path(__file__).parent
 T = {t["pdb"]: t for t in json.loads((HERE / "truth.json").read_text())}
 ASPRV1_REPEATS = {"27JP", "27JO", "27IQ"}   # 27IK is kept as the single ASPRV1 entry
@@ -50,9 +53,12 @@ def main():
         if bad: print(f"  {NOTE_FAILED}: {bad}")
         if cost_unknown(R): print(f"  {NOTE_COST}: {len(cost_unknown(R))}")
         if continued(R): print(f"  {NOTE_CONTINUED}: {len(continued(R))}")
+        if no_turn_count(R): print(f"  {NOTE_NO_TURNS}: {len(no_turn_count(R))}")   # #189, #192
         if tool: print(f"  {NOTE_TOOL}: " + ", ".join(r["pdb"] for r in tool))
-        for tag, keep in (("", lambda r: True), (" [without those calls]", lambda r: r["pdb"] not in mixed)):
-            if tag and not mixed: continue
+        cont = {r["pdb"] for r in continued(R)}
+        for tag, keep, skip in (("", lambda r: True, False), (" [without those calls]", lambda r: r["pdb"] not in mixed, not mixed),
+                                (" [without continued replies]", lambda r: r["pdb"] not in cont, not cont)):   # #83
+            if skip: continue
             sel = [r for r in ok if keep(r)]
             known = None
             for stratum in ("novel", "known"):

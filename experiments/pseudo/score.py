@@ -5,7 +5,7 @@ figures/make_figures.py imports load() from this file, so Figure 1 reads the ans
 """
 import collections, glob, json, pathlib
 import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from common import KEYS, NOTE_CONTINUED, NOTE_COST, NOTE_FAILED, NOTE_TOOL, efforts, continued, cost_unknown, failed, reparse, tool_calls
+from common import KEYS, NOTE_CONTINUED, NOTE_NO_TURNS, no_turn_count, NOTE_COST, NOTE_FAILED, NOTE_TOOL, efforts, continued, cost_unknown, failed, reparse, tool_calls
 HERE = pathlib.Path(__file__).parent
 T = {t["accession"]: t for t in json.loads((HERE / "truth.json").read_text())}
 # Enzymes whose curated active-site position is disputed by adjudication/; mutant activity is unresolved.
@@ -46,6 +46,7 @@ def main():
         if bad: print(f"  {NOTE_FAILED}: {bad}")
         if cost_unknown(R): print(f"  {NOTE_COST}: {len(cost_unknown(R))}")
         if continued(R): print(f"  {NOTE_CONTINUED}: {len(continued(R))}")
+        if no_turn_count(R): print(f"  {NOTE_NO_TURNS}: {len(no_turn_count(R))}")   # #189, #192
         if tool: print(f"  {NOTE_TOOL}: " + ", ".join(r["accession"] + " " + r["variant"] for r in tool))
         if multi: print(f"  replies with more than one JSON object, scored on the last: {len(multi)}")
         rows, flagged, still, wtsite = summarize(ok)

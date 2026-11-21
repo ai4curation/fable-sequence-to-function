@@ -6,7 +6,7 @@ reply holds more than one, the headline counts are also printed for the first ob
 """
 import json, glob, pathlib, re, collections
 import sys; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from common import KEYS, NOTE_CONTINUED, NOTE_COST, NOTE_FAILED, NOTE_TOOL, efforts, continued, cost_unknown, failed, json_objects, reparse, tool_calls
+from common import KEYS, NOTE_CONTINUED, NOTE_NO_TURNS, no_turn_count, NOTE_COST, NOTE_FAILED, NOTE_TOOL, efforts, continued, cost_unknown, failed, json_objects, reparse, tool_calls
 HERE = pathlib.Path(__file__).parent
 T = {t["accession"]: t for t in json.load(open(HERE / "truth.json"))}
 norm = lambda s: re.sub(r"[^a-z0-9]", "", (s or "").lower())
@@ -53,6 +53,7 @@ def main():
         if bad: print(f"  {NOTE_FAILED}: {bad}")
         if cost_unknown(R): print(f"  {NOTE_COST}: {len(cost_unknown(R))}")
         if continued(R): print(f"  {NOTE_CONTINUED}: " + ", ".join(r["accession"] + " " + r["condition"] for r in continued(R)))
+        if no_turn_count(R): print(f"  {NOTE_NO_TURNS}: {len(no_turn_count(R))}")   # #189, #192
         if tool: print(f"  {NOTE_TOOL}: " + ", ".join(r["accession"] + " " + r["condition"] for r in tool))
         if multi:
             ids = {id(r) for r in multi}; last = headline(R, lambda r: r["ans"])
