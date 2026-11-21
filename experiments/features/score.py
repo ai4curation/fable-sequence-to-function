@@ -23,6 +23,9 @@ def headline(R, pick):
         x = [(r, a) for r in R if r["condition"] == cond and (a := pick(r))]
         out.append(f"{sum(fam(T[r['accession']], a)[k] for r, a in x)}/{len(x)}")
     return out
+def tm_any(x):
+    """Rows whose answer predicts at least one well-formed transmembrane helix."""
+    return sum(any(isinstance(h, list) and len(h) == 2 and all(isinstance(v, int) for v in h) for h in (r["ans"].get("transmembrane_helices") or [])) for r in x)
 def summarize(x):
     """Aggregate parsed feature rows using the shared reference and overlap rules."""
     tp_id = tp_nm = npred = ntrue = prot_any = prot_hit = 0; iou = []; tmc = tmt = tmexact = tmn = 0; sp = collections.Counter(); helix_hit = helix_true = helix_pred = 0
@@ -72,6 +75,6 @@ def main():
                     print(f"           TM: membrane yes/no agrees {tmc}/{tmn}, helix count exact {tmexact}/{tmn}, helices recovered {helix_hit}/{helix_true}, predicted {helix_pred}; "
                           f"signal peptide TP {sp[(True,True)]} FN {sp[(False,True)]} FP {sp[(True,False)]} TN {sp[(False,False)]}")
                 else:
-                    print(f"           (shuffled = hallucination check) proteins given any Pfam domain {prot_any}/{len(x)}")
+                    print(f"           (shuffled = hallucination check) proteins given any Pfam domain {prot_any}/{len(x)}; given any transmembrane helix {tm_any(x)}/{len(x)}")
 
 if __name__ == "__main__": main()

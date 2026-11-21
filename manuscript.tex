@@ -27,9 +27,9 @@
   to this problem generally fall into two categories: language models trained on biological sequences that are able to predict
   structure and function from signals in those sequences; and generalist language models trained on text, that are able to reason
   about biological function symbolically. A default operating assumption is that protein language models do not perform well on symbolic tasks,
-  and that generalist language models do not perform well on sequence tasks. However, recent reports have shown that frontier generalist models
+  and that generalist language models do not perform well on sequence tasks. However, a recent report showed that frontier generalist models
   perform surprisingly well on next-residue prediction tasks. We set out to explore whether
-  these capabilites extended to protein annotation.
+  these capabilities extended to protein annotation.
 
   We assigned different frontier generalist models a variety of protein annotation tasks, including predicting the
   presence and coordinates of Pfam domains, loss of functional catalytic residues, and predicting structure and activity. On
@@ -92,6 +92,17 @@ they are not comparable reasoning budgets, we also report the thinking tokens ea
 high-effort run. Model identifiers are those returned by the endpoints. We did not establish any model's
 training cutoff. Runs of other Gemini models on some of the tests (Gemini~3.1 Pro Preview and Gemini~3.1 Flash Lite)
 and incomplete runs of other routes are kept in the repository and are not reported here.
+
+We call Fable~5.2, Opus~5.5 and Gemini~4 Neon the frontier models. Opus~4.6 is an earlier generation of
+Claude model, and we use it as a contrast.
+
+The runs differ in how well they exclude outside information. Neon was asked through an API whose
+request carried no tools and no system instruction. The Claude models were first asked through a
+command-line tool with its built-in tools turned off; its records cannot rule out that some calls carried
+extra context or connector tools (Section~\ref{sec:methods}). A revised route keeps these out. It was
+used to repeat the \tpseudo{} wild types and catalytic-site mutants, for the decoy control and for the
+high-effort Opus~4.6 runs. The \tfeat{} and \tstrfn{} results of Fable~5.2 and Opus~5.5 come from the
+original route only.
 
 \begin{table}[ht]
 \centering\small
@@ -183,14 +194,17 @@ Gemini 4 Neon & low & 8.8\% & 10.4\% & -- & $-1.5$ ($-8.1$ to $+5.1$) \\
 \end{tabular}
 \end{table}
 
-\subsection{Three models recover domains and membrane features and leave shuffled sequences blank}
+\subsection{Three models recover domains and membrane features and rarely assign a domain to a shuffled sequence}
 
 Fable~5.2, Opus~5.5 and Neon named at least one correct Pfam family for 39, 35 and 20 of the 45 sampled
 proteins. Their boundaries were close to the reference, with a mean overlap of 0.85, 0.85 and 0.80 over
 the correctly named domains in these proteins (Table~\ref{tab:feat} pools all 60). For the 15 proteins
 from obscure domain-of-unknown-function families, Fable~5.2 named the exact family for 8, Opus~5.5 for 3
 and Neon for none. Neon was the most conservative. It predicted 28 domains, 23 with the right accession,
-against 70 and 51 for the other two. All three left the shuffled sequences almost entirely blank.
+against 70 and 51 for the other two. All three almost never
+assigned a Pfam domain to a shuffled sequence (1, 0 and 0 of 60). They were not left unannotated,
+though: the three models predicted a transmembrane helix in 12, 15 and 15 of the 60. That need not be an
+error, because a shuffled sequence keeps its composition and can still contain a hydrophobic stretch.
 
 Opus~4.6 at high effort named a correct family for 7 of the 45 sampled proteins and assigned a domain to
 28 of the 60 shuffled sequences. Its earlier run gave 5 of 45 and 5 of 60. That run was at low effort by
@@ -360,7 +374,7 @@ secondary structure, below the single-state guess, and 8\% contact precision, ab
 the first three. At low effort it reached 48\% and 4\%.
 
 All of these values are far short of dedicated structure predictors \citep{jumper2021alphafold}. We claim
-only that three models do well above chance without an alignment and with tools turned off. Model class,
+only that three models do well above chance without an alignment and with built-in tools turned off. Model class,
 effort and route vary, so this is not a controlled comparison between generations or providers.
 
 We also asked each model whether it recognised the protein. Of the 12 novel proteins, Fable~5.2 said it
@@ -461,7 +475,7 @@ The counts do not show that budgets were matched.}
 Three of the four models, Fable~5.2, Opus~5.5 and Gemini~4 Neon, do more than recognise a family. When one
 catalytic residue changes, they change their answer and name that residue. They predict secondary
 structure and contacts above chance for proteins with no earlier PDB entry at 30\% identity. And they
-leave shuffled sequences unannotated. The three come from two providers and were reached by different
+rarely assign a Pfam domain to a shuffled sequence. The three come from two providers and were reached by different
 routes, so the behaviour is not peculiar to one vendor or one way of calling a model. We have not
 established how far it extends.
 
@@ -479,7 +493,7 @@ site, alignment and structural evidence favours the positions they proposed, mor
 for ENV9. A sequence-only read may therefore also help flag sites that were misplaced when annotation was
 transferred by similarity. Two cases do not give a rate, though.
 
-The next-residue signal that motivated this work was not needed for the other abilities. Neon showed no
+The other abilities appeared without a detectable advantage in our next-residue test. Neon showed no
 detectable next-residue advantage, yet it rejected all 20 aspartate mutants, reported 16 of 20 lysine
 substitutions and reached 28.4\% contact precision against 1.8\% by chance. The tasks dissociate, but
 that does not prove separate mechanisms or an absence of sequence knowledge, and a null result is weak
@@ -505,7 +519,7 @@ name. It cannot show that the protein is inactive, since catalytic residues can 
 still shows no activity, as reported for kin-32. A flag should prompt a curator to check the catalytic term. It says nothing against the
 protein having a function, since dead enzymes commonly act as regulators \citep{adrain2020dead}.
 
-The read also cannot serve as evidence. Its output has no provenance, its errors are stated as
+By itself the read is also not enough to support a curated annotation. Its output has no provenance, its errors are stated as
 confidently as its correct calls, and both failure modes we observed end in a confident ``active''. Any
 catalytic position a model names should be checked against the sequence and a curated feature before it
 is used.
@@ -536,7 +550,8 @@ tools would check: an alignment to reviewed relatives, a predicted structure, th
 tests do not show that such a combination improves annotation. They show that the three frontier
 models we tested already have both of the parts it would need.
 
-\paragraph{Limitations.} The tests are small. Cells contain 12 to 68 items, and each question has at most
+\paragraph{Limitations.} The tests are small. ``Frontier'' here means three models from two providers, and
+the contrast with earlier models rests on one, Opus~4.6. Cells contain 12 to 68 items, and each question has at most
 one scored answer per model, effort setting and run. For the Claude models, the \tpseudo{} mutants and wild types were asked again at the same effort for
 the decoy control. Calls marked as carrying attached context, or whose attempt failed, were also asked
 again, and the marked rows are not scored. The split of \tnr{} accuracy by thinking is observational.
@@ -555,7 +570,8 @@ were asked at low effort only. The decoy positions were chosen by a rule written
 the tested models, and they avoid conserved positions. The adjudication of the two reference sites rests
 on alignment and predicted structures. Neither disputed position, nor the activity of the mutants used
 here, has been tested directly by experiment. Swiss-Prot proteins are well known, so the wild-type
-results in the \tpseudo{} test may reflect recall. The mutants are new sequences and cannot. Mutants made by one
+results in the \tpseudo{} test may reflect recall. The mutants are new sequences, so a changed call shows more than a repeated label. A model could
+still recognise the parent protein and recall which residues its catalysis needs. Mutants made by one
 substitution are also not natural pseudoenzymes. Those usually differ from active relatives at many
 positions and can be inactive for reasons that leave the catalytic residues intact. We examined no
 over-annotated entry.
