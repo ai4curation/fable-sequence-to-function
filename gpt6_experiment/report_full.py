@@ -35,7 +35,7 @@ def main():
             rows = full.read_rows(full.runner.OUT_ROOT / test / f"{model}-{effort}.jsonl")
             cov = full.coverage(test, model, effort, ncond, rows)
             coverage.append((model, test, effort, cov))
-            complete &= cov["usable"] == cov["expected"]
+            complete &= cov["attempted"] == cov["expected"] and not cov["unusable_questions"]
             _, key = full.runner.build_questions(test, model, ncond)
             chosen = {key(r): dict(r) for r in rows if full.usable(test, r)}
             data[model, test, effort] = list(chosen.values())
@@ -59,9 +59,11 @@ def main():
              "Status: **complete**." if complete else "Status: **INCOMPLETE — diagnostic results only**.", "",
              "The planned grid contains 1,008 questions per model. Retained historical structure canaries are included; "
              "the new batch runs on EC2. Each scored question uses one usable answer. Earlier unusable canary rows "
-             "remain in the raw files but are excluded.", "",
-             "## Coverage", "", "| Model | Test | Effort | Usable | Attempted | Planned |",
-             "|---|---|---|---:|---:|---:|"]
+             "remain in the raw files but are excluded. Unparseable JSON answers are retained without repair or "
+             "re-asking and counted below; answer-based metrics exclude them. Complete means the planned "
+             "questions were answered with valid transport/context evidence, not that every answer parsed.", "",
+             "## Coverage", "", "| Model | Test | Effort | Usable | Unparsed | Attempted | Planned |",
+             "|---|---|---|---:|---:|---:|---:|"]
     manifest_path = HERE / "run_manifest.json"
     if manifest_path.exists():
         manifest = json.loads(manifest_path.read_text())
@@ -69,7 +71,7 @@ def main():
                       f"controller commit: `{manifest['commit']}`; started: {manifest['started_at']}. "
                       "See `run_manifest.json` for the run grid and concurrency.", ""]
     for model, test, effort, cov in coverage:
-        lines.append(f"| {model} | {test} | {effort} | {cov['usable']} | {cov['attempted']} | {cov['expected']} |")
+        lines.append(f"| {model} | {test} | {effort} | {cov['usable']} | {cov['unparsed_questions']} | {cov['attempted']} | {cov['expected']} |")
     lines += ["", "## Next residue", "",
               "First-residue accuracy; invalid sequence replies count as incorrect. Family-cluster intervals "
               "and bin-specific differences are in the canonical scores below.", "",

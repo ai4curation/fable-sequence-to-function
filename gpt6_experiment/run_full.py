@@ -2,7 +2,8 @@
 
 Usage: uv run python gpt6_experiment/run_full.py --workers 4
 Uses the experiment login already prepared on this host. Each model runs one test at a time;
-one unusable new row stops both models after their running calls finish. Logs, status and
+one failed transport/context check stops both models after their running calls finish. Malformed
+answer JSON is counted without repair or a second model call. Logs, status and
 reports live under <home>/full_analysis. Results remain in the repository's append-only files.
 """
 import argparse
@@ -39,9 +40,11 @@ def coverage(test, model, effort, ncond, rows):
     questions, key = runner.build_questions(test, f"{model}-{effort}", ncond)
     expected = {q[0] for q in questions}
     asked = {key(r) for r in rows if not r.get("not_asked")}
+    delivered = {key(r) for r in rows if not runner.codex_unusable(r)}
     accepted = {key(r) for r in rows if usable(test, r)}
     return dict(expected=len(expected), attempted=len(expected & asked), usable=len(expected & accepted),
-                remaining=len(expected - asked), unusable_questions=len((expected & asked) - accepted))
+                remaining=len(expected - asked), unusable_questions=len((expected & asked) - delivered),
+                unparsed_questions=len((expected & delivered) - accepted))
 
 
 def main():
@@ -70,7 +73,12 @@ def main():
                     workers_per_model=args.workers, grid=GRID,
                     commit=subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=runner.ROOT, text=True).strip(),
                     started_at=datetime.datetime.now(datetime.timezone.utc).isoformat())
-    (work / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    manifest_path = work / "manifest.json"
+    if manifest_path.exists():
+        previous = json.loads(manifest_path.read_text())
+        history = previous.pop("previous_runs", [])
+        manifest["previous_runs"] = [*history, previous]
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
 
     def save(model, state):
         state = dict(state, updated_at=datetime.datetime.now(datetime.timezone.utc).isoformat())
@@ -93,7 +101,7 @@ def main():
                     save(model, state)
                     if stage["unusable_questions"]:
                         raise RuntimeError(f"{test}/{effort}: attempted questions lack usable replies; inspect evidence before re-asking")
-                    if stage["usable"] == stage["expected"]:
+                    if stage["attempted"] == stage["expected"]:
                         break
                     if stop.is_set():
                         raise RuntimeError("stopped; running wave drained")
@@ -114,7 +122,7 @@ def main():
                                     signalled = True
                     after = read_rows(path)
                     stage.update(coverage(test, model, effort, ncond, after))
-                    if code or len(after) <= len(rows) or any(not usable(test, r) for r in after[len(rows):]):
+                    if code or len(after) <= len(rows) or any(runner.codex_unusable(r) for r in after[len(rows):]):
                         raise RuntimeError(f"{test}/{effort}: wave stopped (exit {code}); inspect {work} and launch journal")
             state["status"] = "complete"
         except Exception as exc:
