@@ -240,7 +240,7 @@ footer { padding: 36px 0 60px; border-top: 1px solid var(--rule); font-family: v
     <div class="kicker fade">Preprint · November 2026</div>
     <h1 class="fade d1">General-purpose language models are <em>neurosymbolic reasoners</em> able to annotate proteins from sequence</h1>
     <p class="lede fade d2">Frontier general-purpose language models, given nothing but an amino-acid sequence, can place protein domains, spot a lost catalytic residue, and predict structure well above chance. They do it in one answer, combining pattern recognition over raw sequence with symbolic biological reasoning.</p>
-    <div class="byline fade d3"><strong>Marcin P. Joachimiak</strong> · <strong>Christopher J. Mungall</strong> — Environmental Genomics and Systems Biology Division, Lawrence Berkeley National Laboratory</div>
+    <div class="byline fade d3"><strong>Christopher J. Mungall</strong> · <strong>Marcin P. Joachimiak</strong> — Environmental Genomics and Systems Biology Division, Lawrence Berkeley National Laboratory</div>
     <div class="cta fade d4">
       <a class="primary" href="https://github.com/ai4curation/fable-sequence-to-function/blob/main/manuscript.pdf">Read the manuscript (PDF)</a>
       <a href="https://github.com/ai4curation/fable-sequence-to-function">Code, prompts &amp; every model reply</a>
@@ -351,8 +351,8 @@ footer { padding: 36px 0 60px; border-top: 1px solid var(--rule); font-family: v
     </div>
 
     <div class="body-col prose">
-      <h3>Structure well above chance, short of dedicated predictors <span class="sc">STRFN</span></h3>
-      <p>For 12 proteins released after August 2026 with no close relative in the PDB, the frontier models beat the best single-state guess on secondary structure and far exceeded chance on long-range contacts. These values are well below AlphaFold-class predictors; the claim is only that the signal is there.</p>
+      <h3>Structure well above chance <span class="sc">STRFN</span></h3>
+      <p>For 12 proteins released after August 2026 with no close relative in the PDB, the frontier models beat the best single-state guess on secondary structure and far exceeded chance on long-range contacts. We did not run dedicated structure predictors such as AlphaFold on these proteins, so this is not a comparison with them; the claim is only that the signal is there.</p>
     </div>
     <div class="body-col">
       <div class="fig" id="figStruct"></div>
@@ -373,7 +373,7 @@ footer { padding: 36px 0 60px; border-top: 1px solid var(--rule); font-family: v
     <div class="body-col prose">
       <p>Neurosymbolic AI combines sub-symbolic learning from raw data with symbolic knowledge and reasoning (<a href="https://doi.org/10.1007/s10462-023-10448-w">Garcez &amp; Lamb 2023</a>; <a href="https://doi.org/10.1002/aaai.12036">Kautz 2022</a>). Protein annotation has always split the work this way: profile models find the domain, curators and rules decide what follows from it, and pipelines and people join the two.</p>
       <p>The frontier models we tested did both in one answer. Their stated reasons need not reflect how they reached an answer, but the decoy control doesn't rely on them: the calls tracked the catalytic position whatever explanation came with them.</p>
-      <p>That suggests a different design for annotation review. One model reads the sequence, recalls what the literature and curated rules say about the family, weighs experimental data, and reports where they disagree, as it did for YrfG. Because its sequence reading is weaker than dedicated tools and has no provenance, the model proposes and tools check: an alignment to reviewed relatives, a predicted structure, the curated feature.</p>
+      <p>That suggests a different design for annotation review. One model reads the sequence, recalls what the literature and curated rules say about the family, weighs experimental data, and reports where they disagree, as it did for YrfG. Because its sequence reading hasn't been compared with dedicated tools and has no provenance, the model proposes and tools check: an alignment to reviewed relatives, a predicted structure, the curated feature.</p>
     </div>
   </section>
 
@@ -406,7 +406,7 @@ just pdf       # build manuscript.pdf</pre>
   </section>
 
   <footer>
-    Joachimiak &amp; Mungall · Lawrence Berkeley National Laboratory · <a href="https://github.com/ai4curation/fable-sequence-to-function">github.com/ai4curation/fable-sequence-to-function</a>
+    Mungall &amp; Joachimiak · Lawrence Berkeley National Laboratory · <a href="https://github.com/ai4curation/fable-sequence-to-function">github.com/ai4curation/fable-sequence-to-function</a>
   </footer>
 </div>
 
