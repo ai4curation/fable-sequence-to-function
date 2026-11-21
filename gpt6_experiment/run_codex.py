@@ -449,7 +449,7 @@ def build_row(test, meta, text, rec):
         valid = bool(pred) and not has_tool_call(text)
         return dict(meta, text=text, pred=pred, valid=valid, first_correct=valid and pred[0] == meta["target"][0],
                     exact10=valid and pred[:10] == meta["target"], **rec)
-    return dict(meta, text=text, ans=answer(text, KEYS[test]), **rec)
+    return dict(meta, text=text, ans=answer(text, KEYS["pseudo" if test == "decoy_control" else test]), **rec)
 
 
 STOP_SIGNALS = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
@@ -465,13 +465,13 @@ def key_from_json(key):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("test", choices=["next_residue", "features", "pseudo", "structure"])
+    ap.add_argument("test", choices=["next_residue", "features", "pseudo", "structure", "decoy_control"])
     ap.add_argument("model", choices=["gpt-6-astra", "gpt-rosalind-astra"])
     ap.add_argument("--effort", choices=EFFORTS, default="high")
     ap.add_argument("--home", type=pathlib.Path, default=DEFAULT_HOME)
     ap.add_argument("--workers", type=int, default=1)
     ap.add_argument("--limit", type=int, default=None)
-    ap.add_argument("--ncond", type=int, default=2)
+    ap.add_argument("--ncond", type=int, choices=(2, 3), default=2)
     ap.add_argument("--retry-unusable", action="store_true",
                     help="ask again questions whose stored row is unusable (default: any stored row counts as asked, "
                          "so a systematic failure is not billed again on every rerun)")
@@ -561,6 +561,8 @@ def main():
 
     def ask_one(item):
         key, prompt, meta = item
+        if args.test == "next_residue":
+            meta = dict(meta, ncond=args.ncond)
         if stop.is_set():
             return None
         base = dict(meta, model=args.model, effort=args.effort, prompt_sha256=sha(prompt), codex_row_format=2)

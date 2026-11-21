@@ -855,7 +855,7 @@ import subprocess  # noqa: E402
 
 RESULTS = HOME / "results"
 shutil.rmtree(RESULTS, ignore_errors=True)
-for test, n in (("next_residue", 2), ("structure", 1)):
+for test, n in (("next_residue", 2), ("structure", 1), ("decoy_control", 1)):
     qs, _ = build_questions(test, "gpt-6-astra-high", 2)
     rows = []
     for _, prompt, meta in qs[:n]:
@@ -864,6 +864,8 @@ for test, n in (("next_residue", 2), ("structure", 1)):
         if test == "structure":
             MODE["text"] = json.dumps({"helices": [[2, 9]], "strands": [], "fold": "f", "contacts": [], "protein_name": "p",
                                        "function": "f", "functional_residues": [], "recognised": "no"})
+        if test == "decoy_control":
+            MODE["text"] = json.dumps({"protein_name": "stub", "catalytically_active": "yes", "catalytic_residues": []})
         text, rec = run_codex.call_codex("gpt-6-astra", "high", prompt, prep, HOME, tries=1, timeout=120)
         rows.append(run_codex.build_row(test, meta, text, rec))
     (RESULTS / test).mkdir(parents=True, exist_ok=True)
@@ -875,6 +877,33 @@ check(score.returncode == 0 and "== gpt-6-astra-high: 2 usable" in score.stdout 
 audit = subprocess.run([sys.executable, str(ROOT / "gemini_experiment" / "audit.py"), str(RESULTS)],
                        capture_output=True, text=True, cwd=ROOT)
 check(audit.returncode == 0 and "gpt-6-astra-high.jsonl" in audit.stdout, f"audit: passes on the GPT-6 rows ({audit.stderr.strip()[-200:]})")
+decoy_score = subprocess.run([sys.executable, str(ROOT / "experiments/decoy_control/score_decoys.py"),
+                             "--results", str(RESULTS / "decoy_control"), "--pseudo-results", str(RESULTS / "pseudo")],
+                            capture_output=True, text=True, cwd=ROOT)
+check(decoy_score.returncode == 0 and "1 answers scored" in decoy_score.stdout, "decoy scorer: reads Codex rows")
+decoy_path = RESULTS / "decoy_control/gpt-6-astra-high.jsonl"
+decoy_row = json.loads(decoy_path.read_text())
+decoy_row["status"] = "UNUSABLE"
+decoy_path.write_text(json.dumps(decoy_row) + "\n")
+decoy_score = subprocess.run([sys.executable, str(ROOT / "experiments/decoy_control/score_decoys.py"),
+                             "--results", str(RESULTS / "decoy_control"), "--pseudo-results", str(RESULTS / "pseudo")],
+                            capture_output=True, text=True, cwd=ROOT)
+check(decoy_score.returncode == 0 and "0 answers scored" in decoy_score.stdout, "decoy scorer: excludes unusable Codex replies")
+
+_, prompt, meta = next(q for q in build_questions("next_residue", "gpt-6-astra-low", 3)[0] if q[2]["condition"] == "reversed")
+MODE.clear()
+MODE.update(kind="answer")
+text, rec = run_codex.call_codex("gpt-6-astra", "low", prompt, prep, HOME, tries=1, timeout=120)
+reversed_row = run_codex.build_row("next_residue", dict(meta, ncond=3), text, rec)
+reversed_path = RESULTS / "next_residue/gpt-6-astra-low.jsonl"
+reversed_path.write_text(json.dumps(reversed_row) + "\n")
+audit = subprocess.run([sys.executable, str(ROOT / "gemini_experiment/audit.py"), str(RESULTS)], capture_output=True, text=True, cwd=ROOT)
+check(audit.returncode == 0 and "expected 408" in audit.stdout, "audit: includes declared reversed-sequence Codex condition")
+reversed_row["ncond"] = 2
+reversed_path.write_text(json.dumps(reversed_row) + "\n")
+audit = subprocess.run([sys.executable, str(ROOT / "gemini_experiment/audit.py"), str(RESULTS)], capture_output=True, text=True, cwd=ROOT)
+check(audit.returncode != 0 and "unexpected question" in audit.stderr, "audit: rejects reversed sequences in a two-condition run")
+reversed_path.unlink()
 bad = [json.loads(l) for l in (RESULTS / "structure" / "gpt-6-astra-high.jsonl").read_text().splitlines()]
 bad[0]["context_ok"] = False
 (RESULTS / "structure" / "gpt-6-astra-high.jsonl").write_text("".join(json.dumps(r) + "\n" for r in bad))

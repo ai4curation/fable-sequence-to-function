@@ -104,9 +104,15 @@ def main():
     for folder in folders:
         for path in sorted(folder.glob("*/*.jsonl")):
             test = path.parent.name
-            questions, key = build_questions(test, "audit", 2)
-            expected = {k: (prompt, meta) for k, prompt, meta in questions}
             rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+            conditions = {r.get("ncond", 2) for r in rows} or {2}
+            require(len(conditions) == 1 and conditions <= {2, 3}, f"{path.name}: inconsistent condition counts")
+            ncond = next(iter(conditions))
+            if ncond == 3:
+                require(test == "next_residue" and all(str(r.get("cli_version", "")).startswith("codex-exec") for r in rows),
+                        f"{path.name}: three conditions require an explicit Codex next-residue run")
+            questions, key = build_questions(test, "audit", ncond)
+            expected = {k: (prompt, meta) for k, prompt, meta in questions}
             seen, usable = set(), {}
             for row in rows:
                 label = row["model"] if row.get("effort") is None else f"{row['model']}-{row['effort']}"
@@ -139,7 +145,8 @@ def main():
                     require(row["first_correct"] == (valid and pred[0] == meta["target"][0]), f"{path.name}: first-residue score mismatch")
                     require(row["exact10"] == (valid and pred[:10] == meta["target"]), f"{path.name}: exact-ten score mismatch")
                 else:
-                    require(answer(row.get("text"), KEYS[test]) is not None, f"{path.name}: unparsed successful reply")
+                    require(answer(row.get("text"), KEYS["pseudo" if test == "decoy_control" else test]) is not None,
+                            f"{path.name}: unparsed successful reply")
                 usable[identity] = row
             errors = sum(agy_unusable(r) for r in rows)
             safety = sum("safety" in str(r.get("error", "")).lower() for r in rows)

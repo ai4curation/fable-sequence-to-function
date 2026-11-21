@@ -19,6 +19,7 @@ report:
     uv run python gemini_experiment/thinking.py > expected/gemini_thinking.txt
     uv run python gemini_experiment/score_gemini.py gpt6_experiment/results > expected/gpt6.txt
     uv run python gemini_experiment/audit.py gpt6_experiment/results > expected/gpt6_audit.txt
+    uv run python experiments/decoy_control/score_decoys.py --results gpt6_experiment/results/decoy_control --pseudo-results gpt6_experiment/results/pseudo > expected/gpt6_decoys.txt
     uv run python figures/make_figures.py --values-only > expected/figures.txt
 
 # Recompute the numbers and fail if they differ from the committed expected/ files
@@ -40,6 +41,7 @@ check: verify-data
     uv run python gemini_experiment/thinking.py > $tmp/gemini_thinking.txt
     uv run python gemini_experiment/score_gemini.py gpt6_experiment/results > $tmp/gpt6.txt
     uv run python gemini_experiment/audit.py gpt6_experiment/results > $tmp/gpt6_audit.txt
+    uv run python experiments/decoy_control/score_decoys.py --results gpt6_experiment/results/decoy_control --pseudo-results gpt6_experiment/results/pseudo > $tmp/gpt6_decoys.txt
     uv run python figures/make_figures.py --values-only > $tmp/figures.txt
     diff -r $tmp expected && echo "All reported numbers reproduce."
 
@@ -68,6 +70,7 @@ check-calls:
     uv run python scripts/check_call_scripts_with_stub_cli.py
     uv run python scripts/check_gemini_runners_with_stub_endpoint.py
     uv run python scripts/check_codex_runner_with_stub_provider.py
+    uv run python scripts/check_codex_full_analysis.py
     scripts/adhoc/mutation_check_gemini_audit.sh
 
 # Ask one model the questions of one test again (costs money; appends to results and resumes).

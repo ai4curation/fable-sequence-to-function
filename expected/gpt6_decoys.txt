@@ -1,0 +1,5 @@
+Decoy positions: 58 decoys in 38 proteins; distance to the nearest curated catalytic position of the protein: median 46, minimum 5, within 10 residues 6, within 20 12
+Kinases and enzymes of test 3 with no decoy: P00358, Q46925
+
+== records of each file (asked_at is the time a call returned)
+  rerun files together: cost $0.0000

@@ -17,6 +17,44 @@ become remote merely because an Orca environment is paired.
 The stub checks call no model and may run locally. Each invocation uses its own scratch home so
 checks in different checkouts cannot overwrite one another's evidence.
 
+## Full comparison (#52)
+
+After the remote preflight and one successful live question for each model, run on EC2:
+
+```bash
+uv run python gpt6_experiment/run_full.py --workers 4
+```
+
+This asks both models 1,008 distinct questions each: next residue at low effort with real, shuffled
+and reversed sequences (408), next residue at high effort with real and shuffled sequences (272),
+features (120), catalytic activity (120), structure (30), and decoy substitutions (58), the latter
+four at high effort. Existing answered questions, including the structure canaries, are skipped.
+The decoys use exactly the canonical test-3 prompt. Their comparator is the same model's new
+test-3 run on this route, so no extra bridge calls are needed.
+
+Each model runs one test at a time, in waves of at most four questions. Next-residue high runs last.
+An unusable new reply, an unparsed JSON answer, a runner error, or a launch journal that prevents
+progress stops further waves for both models; already-running calls finish. The controller never
+passes `--retry-unusable`. Inspect the saved evidence before deciding how to handle missing answers.
+
+Run under `nohup` with stdout/stderr redirected to a log for a detached batch. The experiment home's
+`full_analysis/` holds the launch manifest (host, code commit, CLI, grid), per-model JSON progress,
+wave logs and, after completion or a stop, `scores.txt`, `audit.txt`, and `decoys.txt`. Results remain
+append-only under `gpt6_experiment/results/`. Re-running the command resumes without re-asking
+attempted questions. Low-effort next-residue rows explicitly record `ncond=3` for the audit.
+
+Score the decoy comparison separately:
+
+```bash
+uv run python experiments/decoy_control/score_decoys.py \
+  --results gpt6_experiment/results/decoy_control \
+  --pseudo-results gpt6_experiment/results/pseudo
+```
+
+Codex does not report monetary cost; zero cost totals in the shared decoy report mean no recorded
+cost, not free calls. The decoy interpretation and limitations in `experiments/decoy_control/README.md`
+apply, including the lack of experimental activity measurements for the decoy substitutions.
+
 ## What the request carries
 
 Measured offline by pointing `codex exec` at a local stub server

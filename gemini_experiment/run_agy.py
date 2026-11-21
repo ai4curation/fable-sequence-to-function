@@ -230,8 +230,14 @@ def load_done(path: pathlib.Path, key_fn) -> set:
 
 
 def build_questions(test: str, model: str, ncond: int):
+    if test == "decoy_control":
+        decoys = json.loads((EXP / "decoy_control" / "decoys.json").read_text())
+        qs = [((d["accession"], d["variant"]), PROMPTS["pseudo"] + fasta(d["sequence"]),
+               {k: d[k] for k in ("accession", "group", "variant")}) for d in decoys]
+        return qs, lambda d: (d["accession"], d["variant"])
     if test == "next_residue":
-        rows = list(csv.DictReader(open(EXP / "next_residue" / "upstream" / "confirm_sequences.tsv"), delimiter="\t"))
+        with (EXP / "next_residue" / "upstream" / "confirm_sequences.tsv").open() as source:
+            rows = list(csv.DictReader(source, delimiter="\t"))
         byfam = collections.defaultdict(list)
         for r in rows:
             byfam[(r["size_bin"], r["pfam"])].append(r)
