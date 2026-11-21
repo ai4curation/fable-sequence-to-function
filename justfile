@@ -11,6 +11,7 @@ report:
     uv run python experiments/pseudo/score.py > expected/pseudo.txt
     uv run python experiments/pseudo/adjudication/adjudicate.py > expected/adjudication.txt
     uv run python experiments/structure/score.py > expected/structure.txt
+    uv run python experiments/structure/per_protein_table.py > expected/structure_per_protein.txt
     uv run python experiments/summary.py > expected/summary.txt
     uv run python experiments/decoy_control/score_decoys.py > expected/decoy_control.txt
     uv run python gemini_experiment/score_gemini.py results_vertex > expected/gemini_vertex.txt
@@ -30,6 +31,7 @@ check: verify-data
     uv run python experiments/pseudo/score.py > $tmp/pseudo.txt
     uv run python experiments/pseudo/adjudication/adjudicate.py > $tmp/adjudication.txt
     uv run python experiments/structure/score.py > $tmp/structure.txt
+    uv run python experiments/structure/per_protein_table.py > $tmp/structure_per_protein.txt
     uv run python experiments/summary.py > $tmp/summary.txt
     uv run python experiments/decoy_control/score_decoys.py > $tmp/decoy_control.txt
     uv run python gemini_experiment/score_gemini.py results_vertex > $tmp/gemini_vertex.txt
