@@ -1,7 +1,8 @@
 """Check, against the committed files, the factual claims in the external review filed as issues #201 to #207.
 
 Purpose: before the manuscript text is narrowed (branch text/issues-201-208), confirm what the review says the
-         stored answers contain. Reads only; calls no model and writes no file.
+         stored answers contain. Reads only; calls no model and writes no file. Files not tracked by git are
+         skipped, so the output is the same in a working folder that holds uncommitted runs.
 Inputs:  experiments/{pseudo,features,structure}/results/*.jsonl, experiments/decoy_control/results/*.jsonl,
          gemini_experiment/results_vertex/*/*.jsonl, the truth.json files.
 Output:  a printed report with one section per claim.
@@ -11,13 +12,14 @@ Serves:  issues #201 (calls on RLK902, RKL1, kin-32), #203/#207 (which rows were
 Date:    2026-11-20.
 Usage:   uv run python scripts/adhoc/check_review_claims_issues_201_to_207.py
 """
-import json, math, pathlib, statistics, sys
+import json, math, pathlib, statistics, subprocess, sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "experiments"))
-from common import KEYS, answer   # the rule every scorer uses to read a reply
+from common import KEYS, answer, unusable   # the rules every scorer uses to read a reply and to skip a marked row
+TRACKED = set(subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.split("\n"))
 
 def rows(path): return [json.loads(l) for l in open(path)]
-def ans(r, test): return answer(r.get("text") or "", KEYS[test])
+def ans(r, test): return None if unusable(r) else answer(r.get("text") or "", KEYS[test])   # a marked or failed row has no answer
 CLAUDE = ["claude-fable-5-2", "claude-opus-5-5", "claude-opus-4-6-high", "claude-opus-4-6"]
 NEON = {"pseudo": "gemini-4-neon-low", "features": "gemini-4-neon-low", "structure": "gemini-4-neon-medium"}
 def files(test):
@@ -43,6 +45,7 @@ for d in PS:
 print("\n== #203/#207: rows per results file, by route (a row with extra_flags or prompt_sha256 was written by call(), the revised route)")
 for d in ("next_residue", "features", "pseudo", "structure", "decoy_control"):
     for f in sorted((ROOT / "experiments" / d / "results").rglob("*.jsonl")):
+        if str(f.relative_to(ROOT)) not in TRACKED: continue
         R = rows(f); rev = [r for r in R if r.get("extra_flags") or r.get("prompt_sha256")]
         web = sum(1 for r in rev if any((r.get("usage") or {}).get("server_tool_use", {}).get(k) for k in ("web_search_requests", "web_fetch_requests")))
         hasweb = sum(1 for r in rev if isinstance((r.get("usage") or {}).get("server_tool_use"), dict))
