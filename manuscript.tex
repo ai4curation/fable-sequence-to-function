@@ -45,7 +45,8 @@ and tentatively in the other.
 The models also make characteristic errors, and they state them as confidently as their correct calls.
 The tests are small, and settings were not matched across providers. A sequence-only read by these
 models can flag a lost or misplaced catalytic residue for a curator to check, but it is not evidence for
-an annotation.
+an annotation. Prompts, test sets, model outputs and code are at
+\url{https://github.com/ai4curation/fable-sequence-to-function}.
 \end{abstract}
 
 \section{Introduction}
@@ -114,7 +115,8 @@ Gemini 4 Neon & Google & low & low & low & medium \\
 \end{table}
 
 Each model was given a protein sequence and asked one of four things (details in
-Section~\ref{sec:methods}). We refer to the tests by the short names in parentheses.
+Section~\ref{sec:methods}). We refer to the tests by the short names in parentheses. The prompts, test sets and every
+model reply are in the project repository (\url{https://github.com/ai4curation/fable-sequence-to-function}).
 
 \textbf{Next residue (\tnr).} Continue a sequence from a cut point. The control is the same protein with
 its residues shuffled.
