@@ -71,7 +71,7 @@ for mid, _, _, _, f4 in MODELS:
         if mid == MODELS[0][0]: base[t["stratum"]].append(100 * v["base"]); chance[t["stratum"]].append(100 * v["chance"])
     q3[mid] = [statistics.mean(q[s]) for s in ("novel", "known")]; cp[mid] = [statistics.mean(p[s]) for s in ("novel", "known")]
 fig, axs = plt.subplots(1, 2, figsize=(6.9, 2.8))
-labels = ["Novel\n(no earlier entry\nat 30% identity)", "Known\n(20 or more\nearlier entries)"]
+labels = ["Unmatched\n(no earlier entry\nat 30% identity)", "Matched\n(20 or more\nearlier entries)"]
 for ax, v, ymax, ylab, ref, name in ((axs[0], q3, 100, "Secondary structure accuracy, Q3 (%)", base, "best single\nstate"),
                                      (axs[1], cp, 62, "Long-range contact precision (%)", chance, "chance")):
     bars(ax, labels, v, ymax, "{:.0f}"); ax.set_ylabel(ylab); ax.set_xlim(-0.55, 1.95)
@@ -85,6 +85,6 @@ plt.close(fig)
 f1 = lambda v: "  ".join(f"{x:5.1f}" for x in v)
 print("Figure 1, called catalytically active (%): " + "; ".join(c[2].replace("\n", " ") for c in classes))
 for mid, label, *_ in MODELS: print(f"  {label:13s} {f1(vals[mid])}")
-print("Figure 2, novel and known stratum, ASPRV1 counted once")
+print("Figure 2, unmatched and matched stratum (novel and known in the data files), ASPRV1 counted once")
 for mid, label, *_ in MODELS: print(f"  {label:13s} Q3 (%) {f1(q3[mid])}   long-range contact precision (%) {f1(cp[mid])}")
 print(f"  reference lines: best single state {f1([statistics.mean(base[s]) for s in ('novel', 'known')])}   chance {f1([statistics.mean(chance[s]) for s in ('novel', 'known')])}")

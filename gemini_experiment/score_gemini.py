@@ -192,10 +192,11 @@ def score_structure():
         ):
             S = [one(T[r["pdb"]], r["ans"]) for r in sel]
             p = [s["prec"] for s in S if s["prec"] is not None]
+            pa = [s["prec_all"] or 0.0 for s in S]
             t5 = [s["top5"] for s in S if s["top5"] is not None]
             print(
                 f"  {label:28s} n={len(S):2d}: Q3 {m([s['q3'] for s in S]):.1f}% (base {m([s['base'] for s in S]):.1f}%); "
-                f"LR prec {m(p):.1f}% (top5 {m(t5):.1f}%; chance {m([s['chance'] for s in S]):.1f}%); rec {sum(s['rec'] for s in S)}/{len(S)}"
+                f"LR prec {m(p):.1f}% (over all submitted pairs {m(pa):.1f}%; top5 {m(t5):.1f}%; chance {m([s['chance'] for s in S]):.1f}%); rec {sum(s['rec'] for s in S)}/{len(S)}"
             )
 
 
