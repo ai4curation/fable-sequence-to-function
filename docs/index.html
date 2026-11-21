@@ -356,7 +356,7 @@ footer { padding: 36px 0 60px; border-top: 1px solid var(--rule); font-family: v
     </div>
     <div class="body-col">
       <div class="fig" id="figStruct"></div>
-      <p class="small">Function calls for the same 12 proteins were graded by hand: Fable 5.2 was right on 6, abstained on 5 and was wrong on 1; Opus 5.5 right on 4, abstained on 7, wrong on 1. Grading was unblinded and is being revisited with a finer rubric.</p>
+      <p class="small">Function calls for the same 12 proteins were graded by two blinded graders (instances of a Claude model, not people). Fable 5.2 was correct on 5 and partly correct on 2; Opus 5.5 on 4 and 1; Gemini 4 Neon on 2 and 1. The rest were wrong calls or abstentions: 2 to 3 wrong for Fable 5.2 and Opus 5.5, depending on the grader, and 4 to 6 for Neon.</p>
     </div>
 
     <div class="body-col prose">
@@ -388,7 +388,7 @@ footer { padding: 36px 0 60px; border-top: 1px solid var(--rule); font-family: v
       <li><b>Gaps in the controls.</b> No decoy control was run for Neon. The earlier model's decoys were asked at low effort only.</li>
       <li><b>Recall is not ruled out everywhere.</b> Wild-type Swiss-Prot proteins are well known. Shuffles, engineered mutants and decoys are the guards against recall.</li>
       <li><b>Four models.</b> Three frontier, one earlier. They don't stand for language models in general, and we know nothing about how they were trained.</li>
-      <li><b>“Novel” means no close earlier PDB match.</b> Remote homologs were not excluded, and most sequences were already public.</li>
+      <li><b>“Unmatched” (“novel” in the data files) means no close earlier PDB match.</b> Remote homologs were not excluded, and most sequences were already public.</li>
     </ul>
   </section>
 
