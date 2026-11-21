@@ -4,7 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}\usepackage{lmodern}   % so copied text keeps characters such as the underscore
 \usepackage[margin=1in]{geometry}
-\usepackage{graphicx,booktabs,xcolor}
+\usepackage{graphicx,booktabs,xcolor,array}
 \usepackage{placeins}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
@@ -113,6 +113,38 @@ Claude Fable 5.2 & Anthropic & low, high & high & high & high \\
 Claude Opus 5.5 & Anthropic & low, high & high & high & high \\
 Claude Opus 4.6 & Anthropic & low & low, high & low, high & low, high \\
 Gemini 4 Neon & Google & low & low & low & medium \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The answers were collected by three routes, which differ in what their records can show
+(Table~\ref{tab:routes}). The first Claude runs went through a command-line tool with its built-in tools
+turned off. Their rows cannot show whether connector tools or other context were attached to a call
+(Section~\ref{sec:methods}). That is an open constraint on those runs and not evidence that anything
+was retrieved. The revised route keeps such attachments out and records what each call carried. Of the
+results from the original route, only the \tpseudo{} mutants and wild types were asked again at the same
+effort by the revised route.
+
+\begin{table}[ht]
+\centering\small
+\caption{Collection routes and what the stored rows record. Dates are in November 2026.}
+\label{tab:routes}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.37\linewidth}>{\raggedright\arraybackslash}p{0.36\linewidth}}
+\toprule
+Route & Runs & What the rows record \\
+\midrule
+Original command line (18th) & Fable~5.2 and Opus~5.5 in all four tests; Opus~4.6 at low effort in all
+four tests & The reply, its cost and thinking tokens. No input-token count, tool version or web-request
+count, so attached context or connector tools cannot be excluded \\
+\addlinespace
+Revised command line (19th) & Opus~4.6 at high effort in the \tfeat, \tpseudo{} and \tstrfn{} tests; the decoy
+control, with the \tpseudo{} mutants and wild types asked again, for all three Claude models; eight
+Opus~5.5 \tnr{} questions & Flags that keep user settings and connector tools out of the call. Input tokens and tool
+version in every row; calls with oversized input are marked and not scored. Later rows also count web
+requests, and none shows one \\
+\addlinespace
+Vertex AI API (19th) & Gemini~4 Neon in all four tests & A request body with no tools and no system
+instruction; token counts \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -278,7 +310,9 @@ Substituting a catalytic residue does not always abolish activity \citep{ribeiro
 wild type of a mannosyltransferase (P26725) active, but called its decoy active. Opus~4.6, given the
 decoys at low effort only, called decoys, mutants and wild types active at similar rates.
 
-Asking the mutants and wild types again by the second route also gave a replicate of the \tpseudo{} test. The
+Asking the mutants and wild types again by the revised route also gave a replicate of the \tpseudo{} test, and
+it is the better-controlled one: its rows record the input each call carried
+(Table~\ref{tab:routes}). The
 active-or-not call matched the first run for 99 of 100 questions for Fable~5.2 and 96 of 100 for
 Opus~5.5. We ran no decoy control for Neon. It called all 20 wild-type kinases active,
 which rules out a blanket ``inactive'' answer but not a tendency to reject any altered sequence.
@@ -370,11 +404,12 @@ high effort; Gemini~4 Neon at low effort.}
 \label{fig:pseudo}
 \end{figure}
 
-\subsection{Structure is predicted above chance, and function called with abstentions, for recently released proteins}
+\subsection{Structure is predicted above chance for recently released proteins, and function is named correctly for half or fewer}
 
 For the 12 novel proteins, Fable~5.2, Opus~5.5 and Neon reached 76\%, 73\% and 69\% three-state accuracy,
 against 57\% for the best single-state guess. Their long-range contact precision was 37\%, 19\% and 28\%,
-against 2\% by chance (Figure~\ref{fig:struct}, Table~\ref{tab:structure}). For the known stratum,
+against 2\% by chance (Figure~\ref{fig:struct}, Table~\ref{tab:structure}). Precision is taken over the
+submitted pairs that qualify as long-range and resolved, not over all 20 requested (Methods). For the known stratum,
 accuracy was 78 to 82\% and contact precision 31 to 48\%. Twelve proteins are too few to rank two models
 by a numerical difference.
 
@@ -383,7 +418,13 @@ secondary structure, below the single-state guess, and 8\% contact precision, ab
 the first three. At low effort it reached 48\% and 4\%.
 
 All of these values are far short of dedicated structure predictors \citep{jumper2021alphafold}. We claim
-only that three models do well above chance without an alignment and with tools turned off. Model class,
+only that three models do well above chance when given a sequence without an alignment. Above-chance
+contacts show that the answers carry real structural information. They do not show generalisation to
+sequences the models have not seen, or any advantage over existing methods: ``novel'' means only that the
+PDB held no close match, and most of these sequences were public before the structures were released.
+The claim is also bounded by the route (Table~\ref{tab:routes}). Neon's requests carried no tools. The
+Fable~5.2 and Opus~5.5 answers in the \tfeat{} and \tstrfn{} tests came by the original route, with the
+tool's built-in tools turned off, and these two tests were not repeated by the revised route. Model class,
 effort and route vary, so this is not a controlled comparison between generations or providers.
 
 We also asked each model whether it recognised the protein. Of the 12 novel proteins, Fable~5.2 said it
@@ -395,7 +436,7 @@ recall or training exposure, and a wrong structure does not by itself prove a re
 \centering\small
 \caption{Structure scores (percent), with ASPRV1 counted once: 12 novel-stratum and 15 known-stratum
 proteins, except 14 known for Opus~5.5. Q3 is three-state accuracy; contacts are mean per-protein
-long-range precision. Effort labels are not comparable reasoning budgets. The Claude rows retain calls
+long-range precision, over the submitted pairs that are at least 24 apart with both residues resolved. Effort labels are not comparable reasoning budgets. The Claude rows retain calls
 listing more than one served model.}
 \label{tab:structure}
 \begin{tabular}{llrrrr}
@@ -414,7 +455,13 @@ Claude Opus 4.6 & low & 48.1 & 4.1 & 45.1 & 4.0 \\
 \end{table}
 
 We graded the function calls for the 12 novel proteins by hand. Fable~5.2 was correct on 6, abstained on
-5 and was wrong on 1. Opus~5.5 was correct on 4, abstained on 7 and was wrong on 1. Most of the correct
+5 and was wrong on 1. Opus~5.5 was correct on 4, abstained on 7 and was wrong on 1. In this rubric an
+abstention is an answer that says the function is unknown or gives only a generic guess. It is not an
+answer that claims nothing. For the designed cysteine protease HC34 (9YP0), both answers are graded as
+abstentions. Yet Fable~5.2 described a bacterial lipoprotein with no evident catalytic motif, and
+Opus~5.5 a secreted protein with a PepSY-like domain. Each declined to name a function while asserting an
+identity that is wrong, so the counts overstate the models' restraint. With 12 proteins and one
+unblinded grader, a finer rubric could move them. Most of the correct
 calls were for members of large, well-characterised families. We did not test whether the models got
 there through the predicted structure or by recognising the family from sequence.
 
@@ -427,8 +474,8 @@ was released, and a model trained after that date could have learned it. We did 
 descriptions of the other novel proteins.
 
 Fable~5.2's wrong call was the guanidine prenyltransferase NosH (9TGX), which it named a TenA-family
-thiaminase. Neither Fable~5.2 nor Opus~5.5 identified the RNase~P subunit Rpp30 (10CW) or a designed
-cysteine protease (9YP0).
+thiaminase. Neither Fable~5.2 nor Opus~5.5 identified the RNase~P subunit Rpp30 (10CW) or the designed
+cysteine protease HC34 (9YP0).
 
 We reviewed Neon's function calls without grading them. They show the same gap between recognising a
 family and annotating a protein. Neon correctly named a polynucleotide kinase for 9ZWQ and an
@@ -566,7 +613,10 @@ the decoy control. Calls marked as carrying attached context, or whose attempt f
 again, and the marked rows are not scored. The split of \tnr{} accuracy by thinking is observational.
 
 Settings and routes were not matched. Answers were sampled. Claude questions went through a command-line
-tool that adds its own context, and Gemini questions through provider APIs. We measured neither the
+tool that adds its own context, and Gemini questions through provider APIs. For the runs by the original
+route, the records cannot show that no connector tool or other context was attached. The headline
+Fable~5.2 and Opus~5.5 results in the \tfeat{} and \tstrfn{} tests rest on that route alone, and we did not
+repeat them through an API with complete request records. We measured neither the
 effect of the route nor any benefit of greedy decoding, and effort settings are not matched across
 providers. The Opus~4.6 high-effort runs used a revised call route and a later tool version than the runs
 of the other two Claude models.
@@ -588,7 +638,8 @@ over-annotated entry.
 
 The reference data and grading have limits too. Transmembrane and signal-peptide truth in the \tfeat{} test is
 itself predicted. Function calls in the \tstrfn{} test were graded for Fable~5.2 and Opus~5.5 only, once and
-unblinded, by the agent that ran those tests; for the other models the review is qualitative. The novel
+unblinded, by the agent that ran those tests; for the other models the review is qualitative. The rubric
+has three grades and does not separate a wrong family or identity from a true abstention. The novel
 stratum of the \tstrfn{} test excludes close homologs in the PDB and nothing else. Most of its sequences were already
 public, remote homologs were not excluded, and at least one protein was described in a preprint before
 its structure was released. The random-contact baseline does not substitute for running dedicated
@@ -733,7 +784,8 @@ them.
 or after 1 August 2026 with one protein entity of 100 to 350 residues and a resolution of 2.5~\AA{} or
 better. We kept 15 entries for which a sequence search found no PDB entity at 30\% identity or more
 released before 1 June 2026, and 15 entries with at least 20 such entities. We call these strata
-``novel'' and ``known'' for short, and the labels describe that criterion only. Novel entries may have
+``novel'' and ``known'' for short, and the labels describe that criterion only. ``Novel'' here means no
+close earlier match in the PDB. It does not mean a sequence that the models have not seen. Novel entries may have
 more distant homologs in the PDB. Of the 12 distinct novel proteins, 8 have UniProt accessions, so their
 sequences were public earlier. Structures are deposited months before release, and the work behind an
 entry may have been described in a preprint. We do not know the models' training cutoffs. The two dates
@@ -743,7 +795,10 @@ homology filters do not establish it.
 The model predicted helix and strand ranges, a fold, 20 residue pairs at least 24 apart in sequence that
 it expected to lie within 8~\AA{} (C$\alpha$), a function, and whether it recognised the sequence as a
 specific known protein. Truth was the deposited coordinates and the depositors' helix and sheet records,
-scored over resolved residues. One protein, human ASPRV1, was drawn four times in the novel set, and we
+scored over resolved residues. Contact precision is the share of true contacts among the submitted pairs
+that are at least 24 apart in sequence and have both residues resolved. A submitted pair that is closer
+in sequence, or that includes an unresolved residue, is dropped and not counted as a miss, so the
+denominator can be smaller than 20. One protein, human ASPRV1, was drawn four times in the novel set, and we
 count it once (12 novel proteins). For Fable~5.2 and Opus~5.5, the AI agent that ran those tests graded
 the function calls for these 12 proteins once, unblinded, against the deposited title. Function calls of
 the other models were reviewed qualitatively, without an aggregate grade.

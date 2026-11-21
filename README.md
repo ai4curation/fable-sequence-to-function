@@ -81,15 +81,15 @@ pixel, so they are not byte-for-byte reproducible.
 
 | Manuscript item | Command | Frozen output |
 |---|---|---|
-| Table 2 (Claude rows), thinking split, authors' accuracy on the same questions | `uv run python experiments/next_residue/score.py` | `expected/next_residue.txt` |
+| Table 3 (Claude rows), thinking split, authors' accuracy on the same questions | `uv run python experiments/next_residue/score.py` | `expected/next_residue.txt` |
 | No-model heuristics on all 3,340 cut points | `uv run python experiments/next_residue/baselines.py` | `expected/next_residue_baselines.txt` |
-| Table 3 (Claude columns; `set all` lines for rows 3 to 7); overlap of 0.85 in the Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
-| Figure 1 and Table 4 (Claude models), recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
-| Figure 2 and Table 6 (Claude models), structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
+| Table 4 (Claude columns; `set all` lines for rows 3 to 7); overlap of 0.85 in the Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
+| Figure 1 and Table 5 (Claude models), recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
+| Figure 2 and Table 7 (Claude models), structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
 | Claude call totals in Methods (2,854 recorded calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
 | Adjudication of the two disputed active sites (YrfG, ENV9) | `uv run python experiments/pseudo/adjudication/adjudicate.py` | `expected/adjudication.txt` |
-| Decoy-substitution control for the PSEUDO test (Table 5) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
+| Decoy-substitution control for the PSEUDO test (Table 6) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
 
 The Gemini extension adds the following reports; the original figure and Claude
 report values remain unchanged.
@@ -133,7 +133,7 @@ report values remain unchanged.
   the input check of that time marked them, and one of the fresh answers
   (A0A919RPG7) also took more than one request; tests 3 and 4 keep theirs
   (#104). The manuscript reports these high-effort runs for Opus 4.6 in
-  tests 2 to 4 (Tables 3, 4 and 6, Figures 1 and 2) and gives the low-effort values in
+  tests 2 to 4 (Tables 4, 5 and 7, Figures 1 and 2) and gives the low-effort values in
   the text; both are in the Methods call totals. The NR test has low and high runs;
   for Opus 4.6 at high effort only one canary question of the NR test was asked,
   and its row is not committed.
