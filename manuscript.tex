@@ -15,7 +15,7 @@
 \setlength{\parindent}{0pt}\setlength{\parskip}{6pt plus 2pt minus 1pt}
 
 \title{General-purpose language models are neurosymbolic reasoners able to annotate proteins from sequence}
-\author{Marcin P. Joachimiak \qquad Christopher J. Mungall\thanks{Corresponding author: \href{mailto:cjmungall@lbl.gov}{cjmungall@lbl.gov}}\\[1ex]
+\author{Christopher J. Mungall\thanks{Corresponding author: \href{mailto:cjmungall@lbl.gov}{cjmungall@lbl.gov}} \qquad Marcin P. Joachimiak\\[1ex]
 \small Environmental Genomics and Systems Biology Division,\\
 \small Lawrence Berkeley National Laboratory, Berkeley, CA 94720, USA}
 \date{}
@@ -34,10 +34,10 @@
 
   We assigned different frontier generalist models a variety of protein annotation tasks, including predicting the
   presence and coordinates of Pfam domains, loss of functional catalytic residues, and predicting structure and activity. On
-  all annotation tasks, the frontier models performed well above chance, although short of state of the art predictors.
+  all annotation tasks, the frontier models performed well above chance; we did not benchmark them against specialised tools.
   The models also make characteristic hallucination errors, and they state them as confidently as their correct calls.
 
-  While capabilities fall short of non-generalist methods, the nascent ability of frontier models to perform protein annotation from sequence alone
+  Though untested against specialised methods, the nascent ability of frontier models to perform protein annotation from sequence alone
   is intriguing. The ability to reason over sequence, structure, and symbols in a single model allows for a neurosymbolic approach where
   a combination of sequence, experimental data and knowledge from the literature can be holistically combined to improve on functional annotation of the protein universe.
 
@@ -353,8 +353,8 @@ Opus~4.6 did much worse. On the unmatched proteins, at high effort, it reached 5
 secondary structure, below the single-state guess, and 8\% contact precision, above chance but far below
 the first three. At low effort it reached 48\% and 4\%.
 
-All of these values are far short of dedicated structure predictors \citep{jumper2021alphafold}. We claim
-only that three models do well above chance without an alignment and with built-in tools turned off. Model class,
+We did not run dedicated structure predictors such as AlphaFold \citep{jumper2021alphafold} on these
+proteins, so we make no comparison with them. We claim only that three models do well above chance without an alignment and with built-in tools turned off. Model class,
 effort and route vary, so this is not a controlled comparison between generations or providers.
 
 We also asked each model whether it recognised the protein. Of the 12 unmatched proteins, Fable~5.2 said it
@@ -617,7 +617,7 @@ with them.
 
 This suggests a different design for annotation review. A single model could read the sequence, recall
 what the literature and curated rules say about the family, and weigh experimental data, then report
-where these disagree, as the models did for YrfG. The sequence-reading part is weak by the standard of
+where these disagree, as the models did for YrfG. The sequence-reading part has not been compared with
 dedicated predictors, and its output has no provenance, so in practice the model would propose and
 tools would check: an alignment to reviewed relatives, a predicted structure, the curated feature. Our
 tests do not show that such a combination improves annotation. They show that the three frontier
