@@ -82,15 +82,16 @@ pixel, so they are not byte-for-byte reproducible.
 
 | Manuscript item | Command | Frozen output |
 |---|---|---|
-| Table 2 (Claude rows), thinking split, authors' accuracy on the same questions | `uv run python experiments/next_residue/score.py` | `expected/next_residue.txt` |
+| Table 8 (Claude rows), thinking split, authors' accuracy on the same questions | `uv run python experiments/next_residue/score.py` | `expected/next_residue.txt` |
 | No-model heuristics on all 3,340 cut points | `uv run python experiments/next_residue/baselines.py` | `expected/next_residue_baselines.txt` |
-| Table 3 (Claude columns; `set all` lines for rows 3 to 7); overlap of 0.85 in the Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
-| Figure 1 and Table 4 (Claude models), recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
+| Table 5 (Claude columns; `set all` lines for rows 3 to 7); overlap of 0.85 in the Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
+| Figure 1 and Table 3 (Claude models), recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
 | Figure 2 and Table 6 (Claude models), structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
+| Table 7, per-protein structure scores and function grades | `uv run python experiments/structure/per_protein_table.py` | `expected/structure_per_protein.txt` |
 | Claude call totals in Methods (2,854 recorded calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
 | Adjudication of the two disputed active sites (YrfG, ENV9) | `uv run python experiments/pseudo/adjudication/adjudicate.py` | `expected/adjudication.txt` |
-| Decoy-substitution control for the PSEUDO test (Table 5) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
+| Decoy-substitution control for the PSEUDO test (Table 4) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
 
 The Gemini extension adds the following reports; the original figure and Claude
 report values remain unchanged.
@@ -122,19 +123,19 @@ report values remain unchanged.
   prompt to Fable 5.2, the larger most likely because the account's connector tools were attached. Whether
   the stored calls carried such an attachment is not known: the rows record cost, not tokens, and repeated
   context is cached, so cost does not bound it.
-- **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; the
+- **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in the FEAT, PSEUDO and STRFN tests; the
   rows of the FEAT runs of 2026-11-18 do not record the effort setting. On
   2026-11-18 Opus 4.6 ran at low effort in every test; the authors record
   that it did not finish at high effort that day (that attempt left no rows). On 2026-11-19 UTC, through `call()`, Opus 4.6 was asked
-  tests 2 to 4 at high effort and answered every question
+  the FEAT, PSEUDO and STRFN tests at high effort and answered every question
   (`results/claude-opus-4-6-high.jsonl`, #51). Nine of the 30 STRFN answers
   took more than one request: eight after reaching the 64,000-token output
   limit and one after a safety-classifier stop. In the FEAT test the six answers
   that took more than one request were replaced by fresh answers, because
   the input check of that time marked them, and one of the fresh answers
-  (A0A919RPG7) also took more than one request; tests 3 and 4 keep theirs
+  (A0A919RPG7) also took more than one request; the PSEUDO and STRFN tests keep theirs
   (#104). The manuscript reports these high-effort runs for Opus 4.6 in
-  tests 2 to 4 (Tables 3, 4 and 6, Figures 1 and 2) and gives the low-effort values in
+  the FEAT, PSEUDO and STRFN tests (Tables 3, 5 and 6, Figures 1 and 2) and gives the low-effort values in
   the text; both are in the Methods call totals. The NR test has low and high runs;
   for Opus 4.6 at high effort only one canary question of the NR test was asked,
   and its row is not committed.
@@ -193,7 +194,7 @@ report values remain unchanged.
   counts with the first object and with those replies left out. A reply that
   contains a written-out tool call (a shell block, a web request or tool-call
   markup) has no answer. In the NR test it is invalid and counts as wrong; in
-  tests 2 to 4 it is left out like any reply without an answer, and the
+  the FEAT, PSEUDO and STRFN tests it is left out like any reply without an answer, and the
   scorer lists it. There is one: the Opus 5.5 high-effort NR reply for
   A0A518ICW8 (shuffled, cut 301) is a `curl` command with an HTTP response,
   not a prediction. The stored record cannot show whether anything was run.
@@ -215,7 +216,7 @@ report values remain unchanged.
   instead of an answer and is excluded from the scores (so Opus 5.5 has 14
   entries in the matched stratum). The other calls are kept in the reported
   numbers; `expected/next_residue.txt` and `expected/structure.txt` also give
-  tests 1 and 4 without them.
+  the NR and STRFN tests without them.
   `expected/summary.txt` gives the totals.
 - **Completed run:** the Opus 5.5 high-effort run of the NR test stopped at 264 of
   272 answers when a container restarted on 2026-11-18. The 8 missing
@@ -255,7 +256,7 @@ RCSB Protein Data Bank.
 
 - Author list, affiliations and funding (marked `TODO` in `manuscript.tex`).
 - This repository has no licence file yet.
-- Repeat runs, to measure sampling variability in tests 2 to 4.
+- Repeat runs, to measure sampling variability in the FEAT, PSEUDO and STRFN tests.
 - Matched effort and access-route comparisons across providers; labels such as
   "high" are not equivalent reasoning budgets.
 - Training-cutoff evidence for any claim that a target was absent from training;
