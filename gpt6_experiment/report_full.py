@@ -4,6 +4,7 @@ Refuses to label an incomplete grid complete. --allow-partial produces an explic
 incomplete diagnostic report, useful when the batch controller has stopped.
 """
 import argparse
+import json
 import statistics
 import subprocess
 import sys
@@ -61,6 +62,12 @@ def main():
              "remain in the raw files but are excluded.", "",
              "## Coverage", "", "| Model | Test | Effort | Usable | Attempted | Planned |",
              "|---|---|---|---:|---:|---:|"]
+    manifest_path = HERE / "run_manifest.json"
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text())
+        lines[4:4] = [f"Execution host: `{manifest['host']}`; CLI: `{manifest['cli']}`; "
+                      f"controller commit: `{manifest['commit']}`; started: {manifest['started_at']}. "
+                      "See `run_manifest.json` for the run grid and concurrency.", ""]
     for model, test, effort, cov in coverage:
         lines.append(f"| {model} | {test} | {effort} | {cov['usable']} | {cov['attempted']} | {cov['expected']} |")
     lines += ["", "## Next residue", "",

@@ -62,6 +62,7 @@ def main():
                    ("gpt6_decoys.txt", ["experiments/decoy_control/score_decoys.py", "--results",
                      "gpt6_experiment/results/decoy_control", "--pseudo-results", "gpt6_experiment/results/pseudo"]))
         # A successful full report requires the entire usable grid and a fresh audit.
+        (root / "gpt6_experiment/run_manifest.json").write_bytes(manifest)
         run([sys.executable, "gpt6_experiment/report_full.py"])
         for name, cmd in reports:
             temp = work / name
@@ -72,10 +73,11 @@ def main():
         hashes = {p: digest for line in sums.read_text().splitlines() if line.strip()
                   for digest, p in [line.split(None, 1)]}
         for p, digest in hashes.items():
-            if not p.startswith("gpt6_experiment/results/") and hashlib.sha256((root / p).read_bytes()).hexdigest() != digest:
+            if not p.startswith("gpt6_experiment/") and hashlib.sha256((root / p).read_bytes()).hexdigest() != digest:
                 raise RuntimeError(f"unrelated frozen data changed: {p}")
         for path in (root / "gpt6_experiment/results").rglob("*.jsonl"):
             hashes[str(path.relative_to(root))] = hashlib.sha256(path.read_bytes()).hexdigest()
+        hashes["gpt6_experiment/run_manifest.json"] = hashlib.sha256(manifest).hexdigest()
         sums.write_text("".join(f"{hashes[p]}  {p}\n" for p in sorted(hashes)))
         run(["git", "diff", "--check"])
         if args.publish:
@@ -85,7 +87,7 @@ def main():
                 raise RuntimeError("unexpected branch or pre-existing staged changes; results remain on disk")
             run(["git", "fetch", "origin", "gpt6/codex-runner-on-115"])
             run(["git", "merge-base", "--is-ancestor", "origin/gpt6/codex-runner-on-115", "HEAD"])
-            run(["git", "add", "gpt6_experiment/results", "gpt6_experiment/RESULTS.md", "expected/gpt6.txt",
+            run(["git", "add", "gpt6_experiment/results", "gpt6_experiment/RESULTS.md", "gpt6_experiment/run_manifest.json", "expected/gpt6.txt",
                  "expected/gpt6_audit.txt", "expected/gpt6_decoys.txt", "SHA256SUMS"])
             run(["git", "commit", "-m", "Record the full GPT-6 Astra and Rosalind comparison"])
             run(["git", "push", "origin", "HEAD:gpt6/codex-runner-on-115"])
