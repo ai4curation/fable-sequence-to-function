@@ -96,8 +96,8 @@ report values remain unchanged.
 
 | Manuscript item | Command | Frozen output |
 |---|---|---|
-| Gemini next-residue row, feature and pseudoenzyme results, Neon/Pro structure rows | `uv run python gemini_experiment/score_gemini.py results_vertex` | `expected/gemini_vertex.txt` |
-| Flash Lite structure row; other API and CLI pilots (incomplete runs identified) | `uv run python gemini_experiment/score_gemini.py results` | `expected/gemini_pilots.txt` |
+| Gemini next-residue row, feature and pseudoenzyme results, Neon structure row (and a Pro structure row not reported in the manuscript) | `uv run python gemini_experiment/score_gemini.py results_vertex` | `expected/gemini_vertex.txt` |
+| Flash Lite structure row (not reported in the manuscript); other API and CLI pilots (incomplete runs identified) | `uv run python gemini_experiment/score_gemini.py results` | `expected/gemini_pilots.txt` |
 | Recorded thinking tokens alongside Claude (including zeros; scored rows only) | `uv run python gemini_experiment/thinking.py` | `expected/gemini_thinking.txt` |
 | Coverage, safety blocks, retries, prompt integrity, recorded route and model version | `uv run python gemini_experiment/audit.py` | `expected/gemini_audit.txt` |
 

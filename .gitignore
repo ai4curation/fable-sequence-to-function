@@ -9,3 +9,4 @@
 .temp/
 .venv/
 __pycache__/
+arxiv.tar.gz
