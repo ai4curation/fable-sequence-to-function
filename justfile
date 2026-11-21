@@ -11,6 +11,7 @@ report:
     uv run python experiments/pseudo/score.py > expected/pseudo.txt
     uv run python experiments/pseudo/adjudication/adjudicate.py > expected/adjudication.txt
     uv run python experiments/structure/score.py > expected/structure.txt
+    uv run python experiments/structure/per_protein_table.py > expected/structure_per_protein.txt
     uv run python experiments/summary.py > expected/summary.txt
     uv run python experiments/decoy_control/score_decoys.py > expected/decoy_control.txt
     uv run python gemini_experiment/score_gemini.py results_vertex > expected/gemini_vertex.txt
@@ -30,6 +31,7 @@ check: verify-data
     uv run python experiments/pseudo/score.py > $tmp/pseudo.txt
     uv run python experiments/pseudo/adjudication/adjudicate.py > $tmp/adjudication.txt
     uv run python experiments/structure/score.py > $tmp/structure.txt
+    uv run python experiments/structure/per_protein_table.py > $tmp/structure_per_protein.txt
     uv run python experiments/summary.py > $tmp/summary.txt
     uv run python experiments/decoy_control/score_decoys.py > $tmp/decoy_control.txt
     uv run python gemini_experiment/score_gemini.py results_vertex > $tmp/gemini_vertex.txt
@@ -69,3 +71,13 @@ check-calls:
 # Example: just ask pseudo claude-opus-5-5 high        (add --limit 1 for a single canary call, --tag NAME for a separate file)
 ask test model effort *args:
     python3 experiments/{{test}}/{{ if test == "next_residue" { "run.py" } else { "ask.py" } }} {{model}} {{effort}} {{args}}
+
+# Build arxiv.tar.gz for arXiv upload: comment-free manuscript.tex, its .bbl (arXiv does not run bibtex) and the figure PDFs
+arxiv: pdf
+    rm -rf .temp/arxiv && mkdir -p .temp/arxiv/figures
+    perl -ne 'next if /^\s*%/; s/(?<!\\)%.*$/%/; print' manuscript.tex > .temp/arxiv/manuscript.tex
+    cp manuscript.bbl .temp/arxiv/
+    cp figures/fig1_pseudoenzyme.pdf figures/fig2_structure.pdf .temp/arxiv/figures/
+    cd .temp/arxiv && pdflatex -interaction=nonstopmode manuscript.tex > /dev/null && pdflatex -interaction=nonstopmode manuscript.tex | grep -E "Warning|^!|Output written" || true
+    tar -czf arxiv.tar.gz -C .temp/arxiv manuscript.tex manuscript.bbl figures
+    @echo "Wrote arxiv.tar.gz"; tar -tzf arxiv.tar.gz

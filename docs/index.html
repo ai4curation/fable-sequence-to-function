@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neurosymbolic Protein Annotation</title>
+<meta name="description" content="Frontier general-purpose language models annotate proteins from sequence alone: domains, catalytic residues and structure. Results of a small, controlled study.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --paper: #f6f3ec;
+  --paper-2: #efebe1;
+  --card: #fcfbf8;
+  --ink: #16150f;
+  --ink-2: #4c4a42;
+  --ink-3: #807d72;
+  --rule: #d9d4c6;
+  --grid: #e6e2d6;
+  --accent: #b8431c;          /* the substituted residue */
+  --accent-soft: #f3d9cc;
+  --link: #1f5fb0;
+  --s1: #2a78d6;  /* Fable 5.2 */
+  --s2: #eb6834;  /* Opus 5.5 */
+  --s3: #1baf7a;  /* Opus 4.6 */
+  --s4: #eda100;  /* Gemini 4 Neon */
+  --ref: #6f6c62;
+  --display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --body: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --paper: #151513; --paper-2: #1c1c19; --card: #1d1d1a;
+    --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #8f8d84;
+    --rule: #34332e; --grid: #2a2a26;
+    --accent: #f08a5d; --accent-soft: #4a2a1c; --link: #7fb0f0;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --ref: #a3a197;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #151513; --paper-2: #1c1c19; --card: #1d1d1a;
+  --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #8f8d84;
+  --rule: #34332e; --grid: #2a2a26;
+  --accent: #f08a5d; --accent-soft: #4a2a1c; --link: #7fb0f0;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --ref: #a3a197;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-size: 19px; line-height: 1.55;
+  font-optical-sizing: auto;
+}
+a { color: var(--link); text-underline-offset: 2px; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+.prose { max-width: 680px; }
+
+/* ---------- top bar ---------- */
+.bar { display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: .02em; color: var(--ink-2); }
+.bar nav { display: flex; gap: 18px; flex-wrap: wrap; }
+.bar nav a { color: var(--ink-2); text-decoration: none; }
+.bar nav a:hover { color: var(--ink); text-decoration: underline; }
+.theme-btn { font: inherit; color: var(--ink-2); background: none; border: 1px solid var(--rule);
+  border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+
+/* ---------- hero ---------- */
+.hero { padding: 64px 0 40px; }
+.kicker { font-family: var(--mono); font-size: 12.5px; text-transform: uppercase; letter-spacing: .14em; color: var(--accent); }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(36px, 5.6vw, 66px);
+  line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 22px; max-width: 21ch; }
+h1 em { font-style: italic; color: var(--accent); }
+.lede { font-size: clamp(19px, 2.2vw, 23px); color: var(--ink-2); max-width: 640px; margin: 0; }
+.byline { margin-top: 24px; font-family: var(--mono); font-size: 13px; color: var(--ink-3); }
+.byline strong { color: var(--ink); font-weight: 500; }
+.cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+.cta a { font-family: var(--mono); font-size: 13px; text-decoration: none; color: var(--ink);
+  border: 1px solid var(--ink); padding: 8px 14px; border-radius: 2px; }
+.cta a.primary { background: var(--ink); color: var(--paper); }
+.cta a:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* the sequence strip */
+.strip { margin: 46px 0 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  padding: 22px 0 18px; overflow: hidden; }
+.strip-label { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.seq { font-family: var(--mono); font-size: clamp(15px, 2.3vw, 24px); letter-spacing: .18em;
+  white-space: nowrap; margin: 12px 0 8px; color: var(--ink-3); overflow-x: auto; scrollbar-width: none; }
+.seq::-webkit-scrollbar { display: none; }
+.seq .motif { color: var(--ink); }
+.seq .hit { position: relative; display: inline-block; color: var(--paper); background: var(--accent);
+  border-radius: 2px; padding: 0 .06em; margin: 0 .04em; min-width: 1.1em; text-align: center; letter-spacing: 0; }
+.seq .hit::after { content: attr(data-pos); position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
+  font-size: 10px; letter-spacing: 0; color: var(--accent); margin-top: 2px; }
+.verdict { font-family: var(--mono); font-size: 13px; color: var(--ink-2); min-height: 2.6em; margin-top: 16px; }
+.verdict b { color: var(--accent); font-weight: 500; }
+@media (prefers-reduced-motion: no-preference) {
+  .seq .hit { transition: background .4s ease; }
+  .fade { animation: fade .9s ease both; }
+  .fade.d1 { animation-delay: .08s } .fade.d2 { animation-delay: .18s } .fade.d3 { animation-delay: .3s } .fade.d4 { animation-delay: .45s }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+}
+
+/* ---------- sections ---------- */
+section { padding: 56px 0; border-top: 1px solid var(--rule); }
+.sec-head { display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: baseline; margin-bottom: 18px; }
+.sec-num { font-family: var(--mono); font-size: 12.5px; color: var(--ink-3); letter-spacing: .08em; }
+h2 { font-family: var(--display); font-weight: 400; font-size: clamp(32px, 4.6vw, 52px); line-height: 1.04; margin: 0; letter-spacing: -.005em; }
+h3 { font-family: var(--body); font-weight: 600; font-size: 21px; margin: 34px 0 6px; }
+.body-col { margin-left: 144px; }
+p { margin: 0 0 14px; }
+.small { font-size: 16px; color: var(--ink-2); }
+.code { font-family: var(--mono); font-size: .86em; background: var(--paper-2); padding: 1px 5px; border-radius: 3px; }
+.sc { font-family: var(--mono); font-size: .78em; letter-spacing: .06em; font-weight: 500; }
+
+/* two traditions */
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); margin: 26px 0 8px; background: var(--card); }
+.duo > div { padding: 22px 22px 18px; }
+.duo > div + div { border-left: 1px solid var(--rule); }
+.duo h4 { font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .12em; margin: 0 0 8px; color: var(--ink-3); font-weight: 500; }
+.duo .big { font-family: var(--display); font-size: 30px; line-height: 1.05; margin-bottom: 8px; }
+.duo p { font-size: 16.5px; color: var(--ink-2); margin: 0; }
+.bridge { text-align: center; font-family: var(--mono); font-size: 13px; color: var(--accent); padding: 10px; border: 1px dashed var(--accent); border-top: 0; background: var(--card); }
+
+/* test cards */
+.tests { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--rule); margin-top: 24px; background: var(--card); }
+.test { padding: 20px 18px 18px; }
+.test + .test { border-left: 1px solid var(--rule); }
+.test .code-name { font-family: var(--mono); font-size: 22px; font-weight: 500; letter-spacing: .04em; color: var(--accent); }
+.test .t-title { font-weight: 600; font-size: 17px; margin: 6px 0 6px; line-height: 1.25; }
+.test p { font-size: 15.5px; color: var(--ink-2); margin: 0 0 8px; line-height: 1.45; }
+.test .ctrl { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); border-top: 1px solid var(--grid); padding-top: 8px; margin-top: 10px; }
+
+/* models legend */
+.models { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 18px 0 0; font-family: var(--mono); font-size: 13px; color: var(--ink-2); }
+.models span { display: inline-flex; align-items: center; gap: 8px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.tag { font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-3); border: 1px solid var(--rule); border-radius: 999px; padding: 1px 7px; }
+
+/* figures */
+.fig { background: var(--card); border: 1px solid var(--rule); padding: 20px 20px 14px; margin: 22px 0 10px; }
+.fig-title { font-weight: 600; font-size: 17.5px; margin: 0 0 2px; }
+.fig-sub { font-size: 15px; color: var(--ink-2); margin: 0 0 12px; }
+.fig svg { display: block; width: 100%; height: auto; overflow: visible; }
+.fig svg text { font-family: var(--mono); fill: var(--ink-2); }
+.fig .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); margin: 0 0 10px; }
+.fig .legend span { display: inline-flex; align-items: center; gap: 7px; }
+.fig .legend svg { width: 14px; height: 14px; display: inline-block; flex: none; }
+.fig details { margin-top: 10px; font-size: 14px; }
+.fig summary { cursor: pointer; font-family: var(--mono); font-size: 12.5px; color: var(--ink-3); }
+.fig table { border-collapse: collapse; width: 100%; margin-top: 8px; font-family: var(--mono); font-size: 12.5px; }
+.fig th, .fig td { text-align: right; padding: 4px 8px; border-bottom: 1px solid var(--grid); }
+.fig th:first-child, .fig td:first-child { text-align: left; }
+.fig th { color: var(--ink-3); font-weight: 500; }
+.table-wrap { overflow-x: auto; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; overflow: hidden; margin: 0 0 12px; }
+.seg button { font: 12.5px var(--mono); background: none; border: 0; padding: 5px 12px; color: var(--ink-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* stat tiles */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--rule); margin: 22px 0 10px; background: var(--card); }
+.stat { padding: 18px 20px; }
+.stat + .stat { border-left: 1px solid var(--rule); }
+.stat .n { font-family: var(--display); font-size: 54px; line-height: 1; }
+.stat .n small { font-size: 26px; color: var(--ink-3); }
+.stat .l { font-size: 15px; color: var(--ink-2); margin-top: 6px; line-height: 1.35; }
+
+/* answer quote */
+.answer { border-left: 3px solid var(--accent); background: var(--card); padding: 18px 22px; margin: 22px 0; }
+.answer .who { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin-bottom: 8px; }
+.answer blockquote { margin: 0; font-size: 18px; font-style: italic; color: var(--ink); }
+.answer .json { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); margin-top: 12px; white-space: pre-wrap; word-break: break-word; }
+.answer .json b { color: var(--accent); font-weight: 500; }
+
+/* cases */
+.cases { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 18px; }
+.case { background: var(--card); border: 1px solid var(--rule); padding: 18px 20px; }
+.case h4 { margin: 0 0 4px; font-size: 18px; }
+.case .acc { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+.case .vs { display: flex; gap: 10px; margin: 12px 0; font-family: var(--mono); font-size: 13px; flex-wrap: wrap; }
+.case .vs span { border: 1px solid var(--rule); padding: 4px 8px; border-radius: 2px; }
+.case .vs .win { border-color: var(--accent); color: var(--accent); }
+.case p { font-size: 16px; color: var(--ink-2); margin: 0; }
+.meter { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); margin-top: 10px; }
+
+/* caveats */
+.caveats { columns: 2; column-gap: 40px; margin-top: 10px; padding: 0; list-style: none; }
+.caveats li { break-inside: avoid; font-size: 16.5px; color: var(--ink-2); padding: 10px 0; border-top: 1px solid var(--grid); }
+.caveats li b { color: var(--ink); font-weight: 600; }
+
+pre.cmd { font-family: var(--mono); font-size: 13.5px; background: var(--ink); color: var(--paper); padding: 16px 18px; overflow-x: auto; border-radius: 2px; line-height: 1.6; }
+footer { padding: 36px 0 60px; border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 12.5px; color: var(--ink-3); }
+
+/* tooltip */
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); font: 12.5px/1.4 var(--mono);
+  padding: 7px 10px; border-radius: 3px; opacity: 0; transition: opacity .12s; z-index: 10; max-width: 260px; }
+.tip.on { opacity: 1; }
+.hit-target { fill: transparent; cursor: default; }
+
+@media (max-width: 860px) {
+  .sec-head { grid-template-columns: 1fr; gap: 6px; }
+  .body-col { margin-left: 0; }
+  .tests { grid-template-columns: 1fr 1fr; }
+  .test:nth-child(3) { border-left: 0; }
+  .test:nth-child(n+3) { border-top: 1px solid var(--rule); }
+  .grid2, .cases { grid-template-columns: 1fr; }
+  .caveats { columns: 1; }
+}
+@media (max-width: 560px) {
+  body { font-size: 17.5px; }
+  .duo { grid-template-columns: 1fr; }
+  .duo > div + div { border-left: 0; border-top: 1px solid var(--rule); }
+  .tests { grid-template-columns: 1fr; }
+  .test + .test { border-left: 0; border-top: 1px solid var(--rule); }
+  .stats { grid-template-columns: 1fr; }
+  .stat + .stat { border-left: 0; border-top: 1px solid var(--rule); }
+  .bar nav { display: none; }
+  .fig { padding: 16px 12px 12px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <span>ai4curation / fable-sequence-to-function</span>
+    <nav>
+      <a href="#question">Question</a><a href="#tests">Tests</a><a href="#results">Results</a><a href="#outlook">Outlook</a><a href="#caveats">Caveats</a><a href="#data">Data</a>
+    </nav>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle colour theme">◐ theme</button>
+  </div>
+
+  <header class="hero">
+    <div class="kicker fade">Preprint · November 2026</div>
+    <h1 class="fade d1">General-purpose language models are <em>neurosymbolic reasoners</em> able to annotate proteins from sequence</h1>
+    <p class="lede fade d2">Frontier general-purpose language models, given nothing but an amino-acid sequence, can place protein domains, spot a lost catalytic residue, and predict structure well above chance. They do it in one answer, combining pattern recognition over raw sequence with symbolic biological reasoning.</p>
+    <div class="byline fade d3"><strong>Christopher J. Mungall</strong> · <strong>Marcin P. Joachimiak</strong> — Environmental Genomics and Systems Biology Division, Lawrence Berkeley National Laboratory</div>
+    <div class="cta fade d4">
+      <a class="primary" href="https://github.com/ai4curation/fable-sequence-to-function/blob/main/manuscript.pdf">Read the manuscript (PDF)</a>
+      <a href="https://github.com/ai4curation/fable-sequence-to-function">Code, prompts &amp; every model reply</a>
+    </div>
+
+    <div class="strip fade d4" aria-label="Example: a single substitution in the catalytic loop of the kinase ROP17">
+      <div class="strip-label"><span>ROP17 · <i>Toxoplasma gondii</i> · Q2PAY3 · residues 410–470</span><span id="stripState">wild type</span></div>
+      <div class="seq" id="seq"></div>
+      <div class="verdict" id="verdict"></div>
+    </div>
+  </header>
+
+  <section id="question">
+    <div class="sec-head"><div class="sec-num">01 — QUESTION</div><h2>Two kinds of model, one task</h2></div>
+    <div class="body-col prose">
+      <p>Working out what genes do across the tree of life is one of biology's central problems. AI approaches to it fall into two camps. <b>Protein language models</b> learn from sequences and predict structure and function from patterns in them. <b>General-purpose language models</b> learn from text and reason about biology in words. The working assumption has been that each is poor at the other's job.</p>
+      <p>Recent reports showed that some frontier general-purpose models predict the next residue of obscure proteins far better than chance. We asked whether that sequence knowledge goes further: can these models actually <i>annotate</i> a protein from its sequence alone?</p>
+    </div>
+    <div class="body-col">
+      <div class="duo">
+        <div><h4>Sub-symbolic</h4><div class="big">Pattern in a string</div><p>Finding a domain, a motif or a helix in raw residues. People can't do this by reading; it's the job profile HMMs and protein language models were built for.</p></div>
+        <div><h4>Symbolic</h4><div class="big">Knowledge and rules</div><p>“A kinase that has lost its catalytic-loop aspartate is unlikely to be active.” Curators and annotation rules work at this level, and generalist models are known to be good at it.</p></div>
+      </div>
+      <div class="bridge">neurosymbolic: both in a single model, in a single answer</div>
+    </div>
+  </section>
+
+  <section id="tests">
+    <div class="sec-head"><div class="sec-num">02 — DESIGN</div><h2>Four tests, each with a control</h2></div>
+    <div class="body-col prose">
+      <p>Each model got a protein sequence and one question. Every test has a control built to show whether a model is reading the sequence or just recalling a family label.</p>
+    </div>
+    <div class="tests">
+      <div class="test"><div class="code-name">NR</div><div class="t-title">Next residue</div><p>Continue an obscure protein from a cut point. Replicates the result that motivated the study.</p><div class="ctrl">CONTROL · the same protein, shuffled</div></div>
+      <div class="test"><div class="code-name">FEAT</div><div class="t-title">Domains &amp; membrane features</div><p>Name Pfam domains with boundaries, transmembrane helices and signal peptides, for 60 proteins, including 15 from obscure DUF families.</p><div class="ctrl">CONTROL · every protein also shuffled</div></div>
+      <div class="test"><div class="code-name">PSEUDO</div><div class="t-title">Catalytic residues</div><p>Is this enzyme active, and which catalytic residues are present or substituted? Active kinases and other enzymes, the same proteins with one catalytic residue changed, and natural pseudokinases.</p><div class="ctrl">CONTROL · same substitution at a non-catalytic position</div></div>
+      <div class="test"><div class="code-name">STRFN</div><div class="t-title">Structure &amp; function</div><p>Predict secondary structure, long-range contacts and function for 30 structures released after August 2026, split by whether close relatives were already in the PDB.</p><div class="ctrl">CONTROL · chance and single-state baselines</div></div>
+    </div>
+    <div class="body-col">
+      <div class="models" aria-label="Models tested">
+        <span><i class="sw" style="background:var(--s1)"></i>Claude Fable 5.2 <em class="tag">frontier</em></span>
+        <span><i class="sw" style="background:var(--s2)"></i>Claude Opus 5.5 <em class="tag">frontier</em></span>
+        <span><i class="sw" style="background:var(--s4)"></i>Gemini 4 Neon <em class="tag">frontier</em></span>
+        <span><i class="sw" style="background:var(--s3)"></i>Claude Opus 4.6 <em class="tag">earlier</em></span>
+      </div>
+      <p class="small" style="margin-top:12px">Sequence only, no alignment or database search requested. Effort settings are each provider's own labels and are not matched across providers.</p>
+    </div>
+  </section>
+
+  <section id="results">
+    <div class="sec-head"><div class="sec-num">03 — RESULTS</div><h2>What the models could do</h2></div>
+
+    <div class="body-col prose">
+      <h3>A single catalytic substitution is noticed, and a matched decoy is ignored <span class="sc">PSEUDO</span></h3>
+      <p>The three frontier models called every wild-type kinase active and every kinase with its catalytic aspartate changed to asparagine inactive. That could just mean “any change looks broken”. So for the Claude models we made a <b>decoy</b> for each mutant: the same kind of substitution in the same protein, but at a position with no known function.</p>
+    </div>
+    <div class="body-col">
+      <div class="stats">
+        <div class="stat"><div class="n">3<small>/58</small></div><div class="l">catalytic-site mutants Fable 5.2 called active</div></div>
+        <div class="stat"><div class="n">58<small>/58</small></div><div class="l">decoys, same substitution elsewhere, Fable 5.2 called active</div></div>
+        <div class="stat"><div class="n">99<small>/100</small></div><div class="l">active-or-not calls Fable 5.2 repeated on a second asking</div></div>
+      </div>
+      <div class="fig" id="figDecoy"></div>
+      <div class="fig" id="figPseudo"></div>
+    </div>
+
+    <div class="body-col prose">
+      <h3>What a correct answer looks like</h3>
+      <p>Here is Fable 5.2 on ROP17 with Asp436 changed to asparagine, the substitution shown at the top of this page. It found the motifs in the raw sequence and reasoned from them about the residue that was missing.</p>
+    </div>
+    <div class="body-col">
+      <div class="answer">
+        <div class="who">Claude Fable 5.2 · high effort · ROP17 (Q2PAY3) Asp436→Asn · from <span class="code">experiments/pseudo/results/claude-fable-5-2.jsonl</span></div>
+        <blockquote>“The sequence has a recognisable kinase domain with the glycine loop, beta3 lysine and DFG aspartate intact, but the catalytic-loop HRD motif reads HGN, so the catalytic base aspartate is replaced by asparagine at position 436. […] this points to a pseudokinase; the call rests on motif inspection from memory, with no alignment or database search run.”</blockquote>
+        <div class="json">"substituted_or_missing": [{"role": "Catalytic base aspartate of the HRD motif", "expected": "D", <b>"found": "N", "position": 436</b>}, …]
+"catalytically_active": <b>"no"</b></div>
+      </div>
+    </div>
+
+    <div class="body-col prose">
+      <h3>Two places where the models may be right and the database wrong</h3>
+      <p>For two enzymes, all three frontier models put the catalytic residue at a different position from UniProt, and so called our “mutant” active. Both UniProt positions were transferred by similarity. We checked them with alignments to reviewed relatives and with structural models.</p>
+    </div>
+    <div class="body-col">
+      <div class="cases">
+        <div class="case">
+          <h4>YrfG nucleotidase</h4><div class="acc">P64636 · HAD superfamily</div>
+          <div class="vs"><span>UniProt: Asp9</span><span class="win">Models: Asp16</span></div>
+          <p>All seven aligned relatives with an experimentally supported nucleophile map to Asp16. In structural models Asp16 sits 3.3 Å from the magnesium ion; Asp9 is more than 20 Å away.</p>
+          <div class="meter">EVIDENCE ▮▮▮▮▮ strongly favours the models</div>
+        </div>
+        <div class="case">
+          <h4>ENV9 reductase</h4><div class="acc">Q08651 · short-chain dehydrogenase</div>
+          <div class="vs"><span>UniProt: Ser172</span><span class="win">Models: Ser173</span></div>
+          <p>UniProt's own source enzyme has its catalytic serine at the position that aligns with Ser173, and in structural models Ser173 points at the catalytic tyrosine while Ser172 points away.</p>
+          <div class="meter">EVIDENCE ▮▮▮▯▯ tentative: adjacent residues</div>
+        </div>
+      </div>
+      <p class="small" style="margin-top:14px">Neither position has been tested by experiment. These cases show a sequence read can flag a misplaced site for a curator; two cases don't give a rate.</p>
+    </div>
+
+    <div class="body-col prose">
+      <h3>Domains are placed in raw sequence, and shuffles are left alone <span class="sc">FEAT</span></h3>
+      <p>The frontier models named the right Pfam family for most proteins and placed domain boundaries close to the reference. Given the same residues shuffled, they almost never assigned a domain. The earlier model, Opus 4.6, invented one for nearly half the shuffles.</p>
+    </div>
+    <div class="body-col">
+      <div class="fig" id="figFeat"></div>
+    </div>
+
+    <div class="body-col prose">
+      <h3>Structure well above chance <span class="sc">STRFN</span></h3>
+      <p>For 12 proteins released after August 2026 with no close relative in the PDB, the frontier models beat the best single-state guess on secondary structure and far exceeded chance on long-range contacts. We did not run dedicated structure predictors such as AlphaFold on these proteins, so this is not a comparison with them; the claim is only that the signal is there.</p>
+    </div>
+    <div class="body-col">
+      <div class="fig" id="figStruct"></div>
+      <p class="small">Function calls for the same 12 proteins were graded by two blinded graders (instances of a Claude model, not people). Fable 5.2 was correct on 5 and partly correct on 2; Opus 5.5 on 4 and 1; Gemini 4 Neon on 2 and 1. The rest were wrong calls or abstentions: 2 to 3 wrong for Fable 5.2 and Opus 5.5, depending on the grader, and 4 to 6 for Neon.</p>
+    </div>
+
+    <div class="body-col prose">
+      <h3>The next-residue signal isn't required <span class="sc">NR</span></h3>
+      <p>We replicated the next-residue advantage for Fable 5.2 and, at high effort, Opus 5.5. But Gemini 4 Neon showed no detectable advantage over shuffled sequence, and still did well on every annotation test. Annotation ability and this next-residue test come apart.</p>
+    </div>
+    <div class="body-col">
+      <div class="fig" id="figNR"></div>
+    </div>
+  </section>
+
+  <section id="outlook">
+    <div class="sec-head"><div class="sec-num">04 — OUTLOOK</div><h2>A neurosymbolic annotator</h2></div>
+    <div class="body-col prose">
+      <p>Neurosymbolic AI combines sub-symbolic learning from raw data with symbolic knowledge and reasoning (<a href="https://doi.org/10.1007/s10462-023-10448-w">Garcez &amp; Lamb 2023</a>; <a href="https://doi.org/10.1002/aaai.12036">Kautz 2022</a>). Protein annotation has always split the work this way: profile models find the domain, curators and rules decide what follows from it, and pipelines and people join the two.</p>
+      <p>The frontier models we tested did both in one answer. Their stated reasons need not reflect how they reached an answer, but the decoy control doesn't rely on them: the calls tracked the catalytic position whatever explanation came with them.</p>
+      <p>That suggests a different design for annotation review. One model reads the sequence, recalls what the literature and curated rules say about the family, weighs experimental data, and reports where they disagree, as it did for YrfG. Because its sequence reading hasn't been compared with dedicated tools and has no provenance, the model proposes and tools check: an alignment to reviewed relatives, a predicted structure, the curated feature.</p>
+    </div>
+  </section>
+
+  <section id="caveats">
+    <div class="sec-head"><div class="sec-num">05 — CAVEATS</div><h2>What this does not show</h2></div>
+    <ul class="caveats body-col">
+      <li><b>The tests are small.</b> Cells hold 12 to 68 items, with at most one scored answer per model, setting and run.</li>
+      <li><b>Settings and routes weren't matched.</b> Effort labels differ between providers; Claude went through a command-line tool, Gemini through provider APIs.</li>
+      <li><b>“Sequence only” rests partly on records.</b> The original Claude route could admit extra context or connector tools, and its records can't fully rule that out. The mutants and wild types were asked again on a revised route that keeps user settings and connector tools out; Fable 5.2 and Opus 5.5 repeated 99 and 96 of 100 calls, and the decoys were asked only on that route.</li>
+      <li><b>Confident errors.</b> Wrong answers are stated as confidently as right ones. A model's output is a flag for a curator, not sufficient evidence for an annotation by itself.</li>
+      <li><b>Mutant activity is assumed.</b> We substituted curated catalytic residues; we didn't assay the mutants. The robust result is the difference between catalytic-site and decoy substitutions.</li>
+      <li><b>Gaps in the controls.</b> No decoy control was run for Neon. The earlier model's decoys were asked at low effort only.</li>
+      <li><b>Recall is not ruled out everywhere.</b> Wild-type Swiss-Prot proteins are well known. Shuffles, engineered mutants and decoys are the guards against recall.</li>
+      <li><b>Four models.</b> Three frontier, one earlier. They don't stand for language models in general, and we know nothing about how they were trained.</li>
+      <li><b>“Unmatched” (“novel” in the data files) means no close earlier PDB match.</b> Remote homologs were not excluded, and most sequences were already public.</li>
+    </ul>
+  </section>
+
+  <section id="data">
+    <div class="sec-head"><div class="sec-num">06 — DATA</div><h2>Check every number</h2></div>
+    <div class="body-col prose">
+      <p>The test sets, prompts, scoring scripts and every raw model reply are in the repository. One command verifies the data checksums and re-derives each reported number from the saved outputs, without calling any model.</p>
+      <pre class="cmd">git clone https://github.com/ai4curation/fable-sequence-to-function
+cd fable-sequence-to-function
+just check     # checksums + every reported number
+just figures   # redraw the manuscript figures
+just pdf       # build manuscript.pdf</pre>
+      <p class="small">Needs <a href="https://docs.astral.sh/uv/">uv</a> and <a href="https://just.systems/">just</a>. Test sets were drawn from UniProt, InterPro and RCSB on 18 November 2026 and are committed as drawn. Re-asking the models will not give identical answers.</p>
+    </div>
+  </section>
+
+  <footer>
+    Mungall &amp; Joachimiak · Lawrence Berkeley National Laboratory · <a href="https://github.com/ai4curation/fable-sequence-to-function">github.com/ai4curation/fable-sequence-to-function</a>
+  </footer>
+</div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- theme ---------- */
+(function () {
+  const root = document.documentElement, btn = document.getElementById('themeBtn');
+  let saved = null;
+  try { saved = localStorage.getItem('theme'); } catch (e) { /* storage unavailable */ }
+  if (saved) root.dataset.theme = saved;
+  btn.addEventListener('click', () => {
+    const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) { /* storage unavailable */ }
+  });
+})();
+
+/* ---------- hero sequence: ROP17 residues 410–470, the catalytic loop HGD at 434–436 ---------- */
+(function () {
+  const start = 410, seq = 'YNMRMSSTIQMVKLLARFHAFGLVHGDVKLQNFLVDKSGLLLLSDFTQILRTNERRYPPVV';
+  const el = document.getElementById('seq'), verdict = document.getElementById('verdict'), state = document.getElementById('stripState');
+  const motif = new Set([434, 435, 437, 438, 439, 440, 441]);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function render(mut) {
+    el.innerHTML = [...seq].map((a, i) => {
+      const pos = start + i;
+      if (pos === 436) return `<span class="hit" data-pos="${pos}">${mut ? 'N' : 'D'}</span>`;
+      return motif.has(pos) ? `<span class="motif">${a}</span>` : a;
+    }).join('');
+    state.textContent = mut ? 'Asp436 → Asn' : 'wild type';
+    verdict.innerHTML = mut
+      ? 'Fable 5.2: catalytic-loop motif reads HG<b>N</b>; catalytic base lost → <b>catalytically active: no</b>'
+      : 'Fable 5.2: glycine loop, β3 lysine, catalytic loop HG<b>D</b> and DFG intact → catalytically active: yes';
+  }
+  let mut = false; render(mut);
+  if (!reduce) setInterval(() => { mut = !mut; render(mut); }, 3200);
+})();
+
+/* ---------- charts ---------- */
+const M = {
+  fable: { name: 'Fable 5.2', c: '--s1' },
+  opus55: { name: 'Opus 5.5', c: '--s2' },
+  opus46: { name: 'Opus 4.6', c: '--s3' },
+  neon: { name: 'Gemini 4 Neon', c: '--s4' },
+};
+const ORDER = ['fable', 'opus55', 'opus46', 'neon'];
+const NS = 'http://www.w3.org/2000/svg';
+const tip = document.getElementById('tip');
+function showTip(e, html) { tip.innerHTML = html; tip.classList.add('on'); moveTip(e); }
+function moveTip(e) {
+  const x = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8), y = e.clientY + 14;
+  tip.style.left = x + 'px'; tip.style.top = (y + tip.offsetHeight > innerHeight ? e.clientY - tip.offsetHeight - 10 : y) + 'px';
+}
+function hideTip() { tip.classList.remove('on'); }
+function s(tag, attrs, parent) {
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function txt(parent, x, y, str, attrs = {}) { const t = s('text', { x, y, 'font-size': 12, ...attrs }, parent); t.textContent = str; return t; }
+function bindTip(node, html) {
+  node.addEventListener('mousemove', e => showTip(e, html));
+  node.addEventListener('mouseleave', hideTip);
+  node.setAttribute('tabindex', '0');
+  node.addEventListener('focus', () => { const r = node.getBoundingClientRect(); showTip({ clientX: r.right, clientY: r.top }, html); });
+  node.addEventListener('blur', hideTip);
+}
+/* bar with 4px rounded data end, square at the baseline */
+function hbarPath(x0, y, w, h) {
+  const r = Math.min(4, w, h / 2);
+  if (w <= 0) return '';
+  return `M${x0},${y} H${x0 + w - r} Q${x0 + w},${y} ${x0 + w},${y + r} V${y + h - r} Q${x0 + w},${y + h} ${x0 + w - r},${y + h} H${x0} Z`;
+}
+function vbarPath(x, y0, w, h) {
+  const r = Math.min(4, h, w / 2);
+  if (h <= 0) return '';
+  return `M${x},${y0} V${y0 - h + r} Q${x},${y0 - h} ${x + r},${y0 - h} H${x + w - r} Q${x + w},${y0 - h} ${x + w},${y0 - h + r} V${y0} Z`;
+}
+function innerW(el, min = 320) {
+  const cs = getComputedStyle(el);
+  return Math.max(min, Math.round(el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)));
+}
+const CHARTS = [];
+function legend(keys) {
+  return `<div class="legend">${keys.map(k => `<span><i class="sw" style="background:var(${M[k].c})"></i>${M[k].name}</span>`).join('')}</div>`;
+}
+function tableHTML(head, rows) {
+  return `<details><summary>Show as table</summary><div class="table-wrap"><table><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`;
+}
+
+/* Fig: decoy control — dot plot, three conditions per model */
+CHARTS.push(function () {
+  const D = [
+    { k: 'fable', label: 'Fable 5.2 (high)', wt: [38, 38], mut: [3, 58], dec: [58, 58] },
+    { k: 'opus55', label: 'Opus 5.5 (high)', wt: [37, 38], mut: [8, 58], dec: [58, 58] },
+    { k: 'opus46', label: 'Opus 4.6 (low)', wt: [34, 38], mut: [45, 58], dec: [50, 58] },
+  ];
+  const fig = document.getElementById('figDecoy');
+  fig.innerHTML = `<p class="fig-title">Decoy control: share of sequences called catalytically active</p>
+    <p class="fig-sub">38 proteins; 58 catalytic-site mutants and 58 decoys carrying the same substitution type at an unannotated position. A model reading the catalytic residues should put the mutant far left and the decoy far right.</p>
+    <div class="legend"><span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>wild type (ring)</span><span><svg viewBox="0 0 14 14"><rect x="2" y="2" width="10" height="10" rx="2" fill="currentColor"/></svg>catalytic-site mutant</span><span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="currentColor"/></svg>decoy</span></div>`;
+  const W = innerW(fig), L = Math.min(132, W * .38), R = 24, rowH = 46, T = 10, H = T + D.length * rowH + 30;
+  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Dot plot of decoy control' }, fig);
+  const x = v => L + v / 100 * (W - L - R);
+  [0, 25, 50, 75, 100].forEach(v => {
+    s('line', { x1: x(v), x2: x(v), y1: T, y2: H - 24, stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+    txt(svg, x(v), H - 8, v + '%', { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--ink-3)' });
+  });
+  D.forEach((d, i) => {
+    const y = T + i * rowH + rowH / 2, col = `var(${M[d.k].c})`;
+    txt(svg, 0, y + 4, d.label, { fill: 'var(--ink)', 'font-size': W < 480 ? 11 : 12 });
+    const p = a => 100 * a[0] / a[1];
+    s('line', { x1: x(Math.min(p(d.mut), p(d.dec))), x2: x(Math.max(p(d.mut), p(d.dec))), y1: y, y2: y, stroke: col, 'stroke-width': 2, opacity: .45 }, svg);
+    const marks = [
+      ['wild type', d.wt, n => s('circle', { cx: x(p(d.wt)), cy: y, r: 10, fill: 'none', stroke: col, 'stroke-width': 2 }, n)],
+      ['catalytic-site mutant', d.mut, n => s('rect', { x: x(p(d.mut)) - 6, y: y - 6, width: 12, height: 12, rx: 2, fill: col, stroke: 'var(--card)', 'stroke-width': 2 }, n)],
+      ['decoy', d.dec, n => s('circle', { cx: x(p(d.dec)), cy: y, r: 6.5, fill: col, stroke: 'var(--card)', 'stroke-width': 2 }, n)],
+    ];
+    marks.forEach(([name, v, draw]) => {
+      const g = s('g', {}, svg); draw(g);
+      const cx = x(p(v));
+      s('rect', { class: 'hit-target', x: cx - 12, y: y - 14, width: 24, height: 28 }, g);
+      bindTip(g, `<b>${d.label}</b><br>${name}: ${v[0]}/${v[1]} called active (${p(v).toFixed(0)}%)`);
+    });
+  });
+  fig.insertAdjacentHTML('beforeend', tableHTML(['Model (effort)', 'Wild type', 'Catalytic-site mutant', 'Decoy'],
+    D.map(d => [d.label, d.wt.join('/'), d.mut.join('/'), d.dec.join('/')])));
+});
+
+/* Fig: PSEUDO — grouped horizontal bars, % called active, 6 groups x 4 models */
+CHARTS.push(function () {
+  const G = ['Kinase wild type', 'Kinase Asp→Asn', 'Kinase Lys→Met', 'Natural pseudokinase', 'Other enzyme wild type', 'Other enzyme site→Ala'];
+  const V = { fable: [100, 0, 5, 5, 100, 15], opus55: [100, 0, 35, 5, 95, 15], opus46: [90, 10, 85, 25, 95, 70], neon: [100, 0, 20, 5, 90, 40] };
+  const fig = document.getElementById('figPseudo');
+  fig.innerHTML = `<p class="fig-title">Share of sequences called catalytically active</p>
+    <p class="fig-sub">20 sequences per bar. Wild types should be high, mutants low. Claude models at high effort; Neon at low effort.</p>${legend(ORDER)}`;
+  const W = innerW(fig), L = 168, R = 44, bh = 9, gap = 2, gpad = 16, T = 4;
+  const gh = ORDER.length * (bh + gap) - gap, H = T + G.length * (gh + gpad) + 22;
+  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Grouped bar chart of activity calls' }, fig);
+  const x = v => v / 100 * (W - L - R);
+  [0, 50, 100].forEach(v => {
+    s('line', { x1: L + x(v), x2: L + x(v), y1: T, y2: H - 22, stroke: 'var(--grid)' }, svg);
+    txt(svg, L + x(v), H - 6, v + '%', { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--ink-3)' });
+  });
+  G.forEach((g, gi) => {
+    const y0 = T + gi * (gh + gpad);
+    const mutant = /→/.test(g) || /pseudo/.test(g);
+    txt(svg, 0, y0 + gh / 2 + 4, g, { fill: mutant ? 'var(--ink)' : 'var(--ink-2)' });
+    ORDER.forEach((k, mi) => {
+      const v = V[k][gi], y = y0 + mi * (bh + gap);
+      const grp = s('g', {}, svg);
+      if (v > 0) s('path', { d: hbarPath(L, y, x(v), bh), fill: `var(${M[k].c})` }, grp);
+      else s('line', { x1: L, x2: L + 2, y1: y + bh / 2, y2: y + bh / 2, stroke: `var(${M[k].c})`, 'stroke-width': 2 }, grp);
+      s('rect', { class: 'hit-target', x: L, y: y - 1, width: W - L - R, height: bh + 2 }, grp);
+      bindTip(grp, `<b>${M[k].name}</b><br>${g}: ${v}% called active (${v / 5}/20)`);
+    });
+    // label only the frontier-vs-earlier contrast on mutant rows: value of Fable and Opus 4.6
+    if (mutant) {
+      [['fable', 0], ['opus46', 2]].forEach(([k, mi]) => {
+        const v = V[k][gi], y = y0 + mi * (bh + gap);
+        txt(svg, L + x(v) + 5, y + bh - 1, v + '%', { 'font-size': 10.5, fill: 'var(--ink-3)' });
+      });
+    }
+  });
+  fig.insertAdjacentHTML('beforeend', tableHTML(['Group (20 each)', ...ORDER.map(k => M[k].name)], G.map((g, i) => [g, ...ORDER.map(k => V[k][i] + '%')])));
+});
+
+/* Fig: FEAT — two panels: correct Pfam family (sampled 45) and shuffled given a domain (60) */
+CHARTS.push(function () {
+  const P = [
+    { t: 'Correct Pfam family, 45 sampled proteins', sub: 'higher is better', n: 45, v: { fable: 39, opus55: 35, opus46: 7, neon: 20 } },
+    { t: 'Shuffled sequences given any domain, of 60', sub: 'lower is better', n: 60, v: { fable: 1, opus55: 0, opus46: 28, neon: 0 } },
+  ];
+  const fig = document.getElementById('figFeat');
+  fig.innerHTML = `<p class="fig-title">Domain annotation from sequence, and restraint on shuffles</p>
+    <p class="fig-sub">Claude models at high effort, Neon at low effort. Boundary overlap with the reference (IoU, correct families): 0.86, 0.86, 0.64 and 0.80.</p>${legend(ORDER)}<div class="grid2" id="featGrid"></div>`;
+  const grid = fig.querySelector('#featGrid');
+  P.forEach(p => {
+    const box = document.createElement('div'); grid.appendChild(box);
+    box.insertAdjacentHTML('beforeend', `<div style="font-family:var(--mono);font-size:12.5px;color:var(--ink-2);margin-bottom:6px">${p.t} <span style="color:var(--ink-3)">· ${p.sub}</span></div>`);
+    const W = innerW(box, 280), L = 104, R = 48, bh = 16, gap = 8, H = ORDER.length * (bh + gap) + 4;
+    const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': p.t }, box);
+    const x = v => v / p.n * (W - L - R);
+    s('line', { x1: L, x2: L, y1: 0, y2: H - 4, stroke: 'var(--rule)' }, svg);
+    ORDER.forEach((k, i) => {
+      const y = i * (bh + gap), v = p.v[k], g = s('g', {}, svg);
+      txt(g, 0, y + bh - 4, M[k].name, { 'font-size': 11.5, fill: 'var(--ink)' });
+      if (v > 0) s('path', { d: hbarPath(L, y, x(v), bh), fill: `var(${M[k].c})` }, g);
+      txt(g, L + x(v) + 6, y + bh - 4, `${v}/${p.n}`, { 'font-size': 11, fill: 'var(--ink-2)' });
+      s('rect', { class: 'hit-target', x: 0, y, width: W, height: bh }, g);
+      bindTip(g, `<b>${M[k].name}</b><br>${p.t}: ${v}/${p.n}`);
+    });
+  });
+  fig.insertAdjacentHTML('beforeend', tableHTML(['', ...ORDER.map(k => M[k].name)], [
+    ['Sampled: correct Pfam family', '39/45', '35/45', '7/45', '20/45'],
+    ['Obscure DUFs: correct Pfam family', '8/15', '3/15', '0/15', '0/15'],
+    ['Predicted domains: right accession', '62/70', '45/51', '9/40', '23/28'],
+    ['Boundary overlap (IoU)', '0.86', '0.86', '0.64', '0.80'],
+    ['Transmembrane helices recovered', '74/74', '74/74', '67/74', '74/74'],
+    ['Signal peptide, true / false positives', '9 / 0', '9 / 0', '9 / 4', '9 / 0'],
+    ['Shuffled sequences given any domain', '1/60', '0/60', '28/60', '0/60'],
+  ]));
+});
+
+/* Fig: STRFN — two panels (Q3, contacts) with reference lines; stratum toggle */
+CHARTS.push(function () {
+  const S = {
+    novel: { q3: { fable: 76.3, opus55: 73.4, opus46: 53.9, neon: 69.0 }, cp: { fable: 36.6, opus55: 19.0, opus46: 8.1, neon: 28.4 }, base: 56.6, chance: 1.8, n: '12 proteins with no PDB entity at ≥30% identity released before June 2026' },
+    known: { q3: { fable: 81.8, opus55: 78.3, opus46: 57.8, neon: 78.6 }, cp: { fable: 48.3, opus55: 31.4, opus46: 9.7, neon: 48.0 }, base: 55.4, chance: 1.7, n: '15 proteins with at least 20 such earlier entities' },
+  };
+  const fig = document.getElementById('figStruct');
+  fig.innerHTML = `<p class="fig-title">Structure from sequence, recently released PDB entries</p>
+    <p class="fig-sub" id="structSub"></p>
+    <div class="seg" role="group" aria-label="Stratum"><button type="button" data-s="novel" aria-pressed="true">No close earlier match</button><button type="button" data-s="known" aria-pressed="false">Well-known families</button></div>
+    ${legend(ORDER)}<div class="grid2" id="structGrid"></div>`;
+  const grid = fig.querySelector('#structGrid');
+  function draw(key) {
+    const d = S[key]; grid.innerHTML = '';
+    fig.querySelector('#structSub').textContent = d.n + '. Claude models at high effort, Neon at medium. Opus 4.6 at high effort.';
+    [['Three-state secondary structure accuracy (Q3)', d.q3, d.base, 'best single-state guess'], ['Long-range contact precision', d.cp, d.chance, 'chance']].forEach(([t, v, ref, refName]) => {
+      const box = document.createElement('div'); grid.appendChild(box);
+      box.insertAdjacentHTML('beforeend', `<div style="font-family:var(--mono);font-size:12.5px;color:var(--ink-2);margin-bottom:6px">${t}<br><span style="color:var(--ink-3)">dashed: ${refName}, ${ref}%</span></div>`);
+      const W = innerW(box, 280), H = 210, B = 180, T = 14, L = 34, gp = Math.round((W - L) * .1), bw = Math.round(((W - L - 18) - 4 * gp) / 4 + gp * .2);
+      const max = 100;
+      const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': t }, box);
+      const y = val => B - val / max * (B - T);
+      [0, 50, 100].forEach(g => { s('line', { x1: L, x2: W, y1: y(g), y2: y(g), stroke: 'var(--grid)' }, svg); txt(svg, L - 6, y(g) + 4, g + '%', { 'text-anchor': 'end', 'font-size': 10.5, fill: 'var(--ink-3)' }); });
+      ORDER.forEach((k, i) => {
+        const xx = L + 18 + i * (bw + gp), g = s('g', {}, svg);
+        s('path', { d: vbarPath(xx, B, bw, B - y(v[k])), fill: `var(${M[k].c})` }, g);
+        txt(g, xx + bw / 2, y(v[k]) - 5, v[k].toFixed(0), { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--ink-2)' });
+        s('rect', { class: 'hit-target', x: xx - gp / 2, y: T, width: bw + gp, height: B - T }, g);
+        bindTip(g, `<b>${M[k].name}</b><br>${t}: ${v[k].toFixed(1)}%<br>${refName}: ${ref}%`);
+      });
+      s('line', { x1: L, x2: W, y1: y(ref), y2: y(ref), stroke: 'var(--ref)', 'stroke-width': 1.5, 'stroke-dasharray': '5 4' }, svg);
+      s('line', { x1: L, x2: W, y1: B, y2: B, stroke: 'var(--rule)' }, svg);
+    });
+  }
+  fig.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    fig.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    window.__stratum = b.dataset.s; draw(b.dataset.s);
+  }));
+  draw(window.__stratum || 'novel');
+  fig.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x.dataset.s === (window.__stratum || 'novel')));
+  fig.insertAdjacentHTML('beforeend', tableHTML(['Model', 'Q3 no close match', 'Contacts no close match', 'Q3 well known', 'Contacts well known'],
+    [...ORDER.map(k => [M[k].name, S.novel.q3[k], S.novel.cp[k], S.known.q3[k], S.known.cp[k]]), ['Reference', `${S.novel.base} (single state)`, `${S.novel.chance} (chance)`, `${S.known.base}`, `${S.known.chance}`]]));
+});
+
+/* Fig: NR — gap with 95% interval */
+CHARTS.push(function () {
+  const D = [
+    { k: 'fable', label: 'Fable 5.2 · low', g: 17.6, lo: 9.6, hi: 26.5 },
+    { k: 'fable', label: 'Fable 5.2 · high', g: 29.4, lo: 18.4, hi: 40.4 },
+    { k: 'opus55', label: 'Opus 5.5 · low', g: 7.4, lo: -1.5, hi: 16.2 },
+    { k: 'opus55', label: 'Opus 5.5 · high', g: 11.8, lo: 3.7, hi: 20.6 },
+    { k: 'opus46', label: 'Opus 4.6 · low', g: -2.2, lo: -7.4, hi: 2.9 },
+    { k: 'neon', label: 'Gemini 4 Neon · low', g: -1.5, lo: -8.1, hi: 5.1 },
+  ];
+  const fig = document.getElementById('figNR');
+  fig.innerHTML = `<p class="fig-title">Next-residue advantage over shuffled sequence</p>
+    <p class="fig-sub">Accuracy on real minus shuffled sequence, percentage points, with 95% bootstrap interval over 68 families. Intervals crossing zero show no detectable advantage.</p>${legend(ORDER)}`;
+  const W = innerW(fig), L = Math.min(150, W * .46), R = 20, rowH = 30, T = 6, H = T + D.length * rowH + 26;
+  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Interval plot of next-residue advantage' }, fig);
+  const lo = -10, hi = 45, x = v => L + (v - lo) / (hi - lo) * (W - L - R);
+  [-10, 0, 10, 20, 30, 40].forEach(v => {
+    s('line', { x1: x(v), x2: x(v), y1: T, y2: H - 22, stroke: v === 0 ? 'var(--ref)' : 'var(--grid)', 'stroke-width': v === 0 ? 1.5 : 1 }, svg);
+    txt(svg, x(v), H - 6, (v > 0 ? '+' : '') + v, { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--ink-3)' });
+  });
+  D.forEach((d, i) => {
+    const y = T + i * rowH + rowH / 2, col = `var(${M[d.k].c})`, g = s('g', {}, svg);
+    txt(g, 0, y + 4, d.label, { fill: 'var(--ink)', 'font-size': W < 480 ? 10.5 : 11.5 });
+    s('line', { x1: x(d.lo), x2: x(d.hi), y1: y, y2: y, stroke: col, 'stroke-width': 2, 'stroke-linecap': 'round' }, g);
+    s('circle', { cx: x(d.g), cy: y, r: 5.5, fill: col, stroke: 'var(--card)', 'stroke-width': 2 }, g);
+    s('rect', { class: 'hit-target', x: L, y: y - rowH / 2, width: W - L - R, height: rowH }, g);
+    bindTip(g, `<b>${d.label}</b><br>gap ${d.g > 0 ? '+' : ''}${d.g} pts (95% ${d.lo} to ${d.hi})`);
+  });
+  fig.insertAdjacentHTML('beforeend', tableHTML(['Model · effort', 'Gap (pts)', '95% interval'], D.map(d => [d.label, d.g, `${d.lo} to ${d.hi}`])));
+});
+function renderAll() { CHARTS.forEach(f => f()); }
+renderAll();
+let lastW = innerWidth, rt;
+addEventListener('resize', () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(rt); rt = setTimeout(renderAll, 150); });
+if (document.fonts) document.fonts.ready.then(renderAll);
+</script>
+</body>
+</html>

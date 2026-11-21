@@ -1,45 +1,127 @@
 
 == claude-fable-5-2: 30 calls, 0 unparsed, 0 API-error replies (no answer; excluded), effort high, cost $6.01; calls listing a second model: {'29BS': ['claude-fable-5-2', 'claude-opus-4-8']}
   usable rows that record no turn count, so whether the reply was continued is not known: 30
-  novel                              n=15: Q3 75.8% (best single state 54.1%); long-range contact precision 39.7% (top-5 57.3%; chance 2.0%); says it recognises the protein 5/15
-  known                              n=15: Q3 81.8% (best single state 55.4%); long-range contact precision 48.3% (top-5 69.3%; chance 1.7%); says it recognises the protein 14/15
-  novel, ASPRV1 counted once         n=12: Q3 76.3% (best single state 56.6%); long-range contact precision 36.6% (top-5 53.3%; chance 1.8%); says it recognises the protein 2/12
+  novel                              n=15: Q3 75.8% (best single state 54.1%); long-range contact precision 39.7% (top-5 57.3%; chance 2.0%; over all submitted pairs 37.7%, 287 of 300 pairs qualifying); says it recognises the protein 5/15
+  known                              n=15: Q3 81.8% (best single state 55.4%); long-range contact precision 48.3% (top-5 69.3%; chance 1.7%; over all submitted pairs 46.3%, 289 of 300 pairs qualifying); says it recognises the protein 14/15
+  novel, ASPRV1 counted once         n=12: Q3 76.3% (best single state 56.6%); long-range contact precision 36.6% (top-5 53.3%; chance 1.8%; over all submitted pairs 34.2%, 229 of 240 pairs qualifying); says it recognises the protein 2/12
   known minus novel (ASPRV1 once): Q3 +5.6 points; long-range contact precision +11.7 points
-  novel [without those calls]        n=15: Q3 75.8% (best single state 54.1%); long-range contact precision 39.7% (top-5 57.3%; chance 2.0%); says it recognises the protein 5/15
-  known [without those calls]        n=14: Q3 84.2% (best single state 54.9%); long-range contact precision 51.7% (top-5 74.3%; chance 1.7%); says it recognises the protein 14/14
-  novel, ASPRV1 counted once [without those calls] n=12: Q3 76.3% (best single state 56.6%); long-range contact precision 36.6% (top-5 53.3%; chance 1.8%); says it recognises the protein 2/12
+  novel [without those calls]        n=15: Q3 75.8% (best single state 54.1%); long-range contact precision 39.7% (top-5 57.3%; chance 2.0%; over all submitted pairs 37.7%, 287 of 300 pairs qualifying); says it recognises the protein 5/15
+  known [without those calls]        n=14: Q3 84.2% (best single state 54.9%); long-range contact precision 51.7% (top-5 74.3%; chance 1.7%; over all submitted pairs 49.6%, 269 of 280 pairs qualifying); says it recognises the protein 14/14
+  novel, ASPRV1 counted once [without those calls] n=12: Q3 76.3% (best single state 56.6%); long-range contact precision 36.6% (top-5 53.3%; chance 1.8%; over all submitted pairs 34.2%, 229 of 240 pairs qualifying); says it recognises the protein 2/12
   known minus novel (ASPRV1 once) [without those calls]: Q3 +7.9 points; long-range contact precision +15.2 points
 
 == claude-opus-4-6-high: 30 calls, 0 unparsed, 0 API-error replies (no answer; excluded), effort high, cost $45.71; calls listing a second model: none
   replies that took more than one request (the tool asked again by itself after an output limit, a classifier stop or an empty reply, or retried a failed request; read like any other): 9
   usable rows that record no turn count, so whether the reply was continued is not known: 1
-  novel                              n=15: Q3 51.6% (best single state 54.1%); long-range contact precision 7.1% (top-5 6.7%; chance 2.0%); says it recognises the protein 6/15
-  known                              n=15: Q3 57.8% (best single state 55.4%); long-range contact precision 9.7% (top-5 16.0%; chance 1.7%); says it recognises the protein 7/15
-  novel, ASPRV1 counted once         n=12: Q3 53.9% (best single state 56.6%); long-range contact precision 8.1% (top-5 8.3%; chance 1.8%); says it recognises the protein 4/12
+  novel                              n=15: Q3 51.6% (best single state 54.1%); long-range contact precision 7.1% (top-5 6.7%; chance 2.0%; over all submitted pairs 7.0%, 289 of 300 pairs qualifying); says it recognises the protein 6/15
+  known                              n=15: Q3 57.8% (best single state 55.4%); long-range contact precision 9.7% (top-5 16.0%; chance 1.7%; over all submitted pairs 9.7%, 299 of 300 pairs qualifying); says it recognises the protein 7/15
+  novel, ASPRV1 counted once         n=12: Q3 53.9% (best single state 56.6%); long-range contact precision 8.1% (top-5 8.3%; chance 1.8%; over all submitted pairs 7.9%, 233 of 240 pairs qualifying); says it recognises the protein 4/12
   known minus novel (ASPRV1 once): Q3 +3.9 points; long-range contact precision +1.6 points
-  novel [without continued replies]  n=10: Q3 51.7% (best single state 52.3%); long-range contact precision 8.6% (top-5 10.0%; chance 2.5%); says it recognises the protein 5/10
-  known [without continued replies]  n=11: Q3 56.3% (best single state 54.4%); long-range contact precision 10.5% (top-5 16.4%; chance 1.7%); says it recognises the protein 6/11
-  novel, ASPRV1 counted once [without continued replies] n= 7: Q3 55.8% (best single state 55.8%); long-range contact precision 10.9% (top-5 14.3%; chance 2.5%); says it recognises the protein 3/7
+  novel [without continued replies]  n=10: Q3 51.7% (best single state 52.3%); long-range contact precision 8.6% (top-5 10.0%; chance 2.5%; over all submitted pairs 8.5%, 192 of 200 pairs qualifying); says it recognises the protein 5/10
+  known [without continued replies]  n=11: Q3 56.3% (best single state 54.4%); long-range contact precision 10.5% (top-5 16.4%; chance 1.7%; over all submitted pairs 10.5%, 219 of 220 pairs qualifying); says it recognises the protein 6/11
+  novel, ASPRV1 counted once [without continued replies] n= 7: Q3 55.8% (best single state 55.8%); long-range contact precision 10.9% (top-5 14.3%; chance 2.5%; over all submitted pairs 10.7%, 136 of 140 pairs qualifying); says it recognises the protein 3/7
   known minus novel (ASPRV1 once) [without continued replies]: Q3 +0.5 points; long-range contact precision -0.4 points
 
 == claude-opus-4-6: 30 calls, 0 unparsed, 0 API-error replies (no answer; excluded), effort low, cost $0.54; calls listing a second model: none
   usable rows that record no turn count, so whether the reply was continued is not known: 30
-  novel                              n=15: Q3 45.3% (best single state 54.1%); long-range contact precision 3.3% (top-5 6.7%; chance 2.0%); says it recognises the protein 3/15
-  known                              n=15: Q3 45.1% (best single state 55.4%); long-range contact precision 4.0% (top-5 4.0%; chance 1.7%); says it recognises the protein 9/15
-  novel, ASPRV1 counted once         n=12: Q3 48.1% (best single state 56.6%); long-range contact precision 4.1% (top-5 8.3%; chance 1.8%); says it recognises the protein 1/12
+  novel                              n=15: Q3 45.3% (best single state 54.1%); long-range contact precision 3.3% (top-5 6.7%; chance 2.0%; over all submitted pairs 3.0%, 272 of 300 pairs qualifying); says it recognises the protein 3/15
+  known                              n=15: Q3 45.1% (best single state 55.4%); long-range contact precision 4.0% (top-5 4.0%; chance 1.7%; over all submitted pairs 3.3%, 272 of 300 pairs qualifying); says it recognises the protein 9/15
+  novel, ASPRV1 counted once         n=12: Q3 48.1% (best single state 56.6%); long-range contact precision 4.1% (top-5 8.3%; chance 1.8%; over all submitted pairs 3.8%, 224 of 240 pairs qualifying); says it recognises the protein 1/12
   known minus novel (ASPRV1 once): Q3 -2.9 points; long-range contact precision -0.2 points
 
 == claude-opus-5-5: 30 calls, 0 unparsed, 1 API-error replies (no answer; excluded), effort high, cost $1.77; calls listing a second model: {'15AY': ['claude-opus-5-5', 'claude-opus-5'], '7IMP': ['claude-opus-5-5', 'claude-opus-5']}
   usable rows that record no turn count, so whether the reply was continued is not known: 29
-  novel                              n=15: Q3 73.1% (best single state 54.1%); long-range contact precision 21.5% (top-5 37.3%; chance 2.0%); says it recognises the protein 0/15
-  known                              n=14: Q3 78.3% (best single state 55.2%); long-range contact precision 31.4% (top-5 60.0%; chance 1.7%); says it recognises the protein 9/14
-  novel, ASPRV1 counted once         n=12: Q3 73.4% (best single state 56.6%); long-range contact precision 19.0% (top-5 30.0%; chance 1.8%); says it recognises the protein 0/12
+  novel                              n=15: Q3 73.1% (best single state 54.1%); long-range contact precision 21.5% (top-5 37.3%; chance 2.0%; over all submitted pairs 20.3%, 265 of 300 pairs qualifying); says it recognises the protein 0/15
+  known                              n=14: Q3 78.3% (best single state 55.2%); long-range contact precision 31.4% (top-5 60.0%; chance 1.7%; over all submitted pairs 28.2%, 259 of 280 pairs qualifying); says it recognises the protein 9/14
+  novel, ASPRV1 counted once         n=12: Q3 73.4% (best single state 56.6%); long-range contact precision 19.0% (top-5 30.0%; chance 1.8%; over all submitted pairs 17.9%, 208 of 240 pairs qualifying); says it recognises the protein 0/12
   known minus novel (ASPRV1 once): Q3 +4.9 points; long-range contact precision +12.4 points
-  novel [without those calls]        n=15: Q3 73.1% (best single state 54.1%); long-range contact precision 21.5% (top-5 37.3%; chance 2.0%); says it recognises the protein 0/15
-  known [without those calls]        n=13: Q3 79.7% (best single state 55.6%); long-range contact precision 32.3% (top-5 61.5%; chance 1.7%); says it recognises the protein 8/13
-  novel, ASPRV1 counted once [without those calls] n=12: Q3 73.4% (best single state 56.6%); long-range contact precision 19.0% (top-5 30.0%; chance 1.8%); says it recognises the protein 0/12
+  novel [without those calls]        n=15: Q3 73.1% (best single state 54.1%); long-range contact precision 21.5% (top-5 37.3%; chance 2.0%; over all submitted pairs 20.3%, 265 of 300 pairs qualifying); says it recognises the protein 0/15
+  known [without those calls]        n=13: Q3 79.7% (best single state 55.6%); long-range contact precision 32.3% (top-5 61.5%; chance 1.7%; over all submitted pairs 28.8%, 239 of 260 pairs qualifying); says it recognises the protein 8/13
+  novel, ASPRV1 counted once [without those calls] n=12: Q3 73.4% (best single state 56.6%); long-range contact precision 19.0% (top-5 30.0%; chance 1.8%; over all submitted pairs 17.9%, 208 of 240 pairs qualifying); says it recognises the protein 0/12
   known minus novel (ASPRV1 once) [without those calls]: Q3 +6.3 points; long-range contact precision +13.3 points
 
-== manual function grading, 12 distinct novel proteins
+== per protein (ASPRV1 once): Q3 %, best single state %, long-range contact precision % (qualifying pairs correct/qualifying, of submitted)
+  claude-fable-5-2         12WN  Q3  71.9 (base  60.1)  contacts  55.0 (11/20, of 20)
+  claude-fable-5-2         9SA5  Q3  77.8 (base  54.3)  contacts  30.0 (6/20, of 20)
+  claude-fable-5-2         37QB  Q3  84.4 (base  62.6)  contacts  80.0 (12/15, of 20)
+  claude-fable-5-2         27IK  Q3  75.2 (base  44.5)  contacts  75.0 (15/20, of 20)
+  claude-fable-5-2         9TGX  Q3  81.9 (base  86.5)  contacts   0.0 (0/19, of 20)
+  claude-fable-5-2         9WIA  Q3  74.7 (base  56.8)  contacts  21.1 (4/19, of 20)
+  claude-fable-5-2         9T71  Q3  74.8 (base  39.3)  contacts  10.5 (2/19, of 20)
+  claude-fable-5-2         10ZI  Q3  79.3 (base  65.1)  contacts  25.0 (5/20, of 20)
+  claude-fable-5-2         23AA  Q3  77.9 (base  57.7)  contacts  10.5 (2/19, of 20)
+  claude-fable-5-2         9ZWQ  Q3  76.1 (base  52.9)  contacts  94.7 (18/19, of 20)
+  claude-fable-5-2         10CW  Q3  61.8 (base  56.2)  contacts  36.8 (7/19, of 20)
+  claude-fable-5-2         9YP0  Q3  79.5 (base  42.7)  contacts   0.0 (0/20, of 20)
+  claude-opus-4-6-high     12WN  Q3  66.7 (base  60.1)  contacts  20.0 (4/20, of 20)
+  claude-opus-4-6-high     9SA5  Q3  52.4 (base  54.3)  contacts  15.0 (3/20, of 20)
+  claude-opus-4-6-high     37QB  Q3  60.6 (base  62.6)  contacts  20.0 (4/20, of 20)
+  claude-opus-4-6-high     27IK  Q3  38.0 (base  44.5)  contacts   5.0 (1/20, of 20)
+  claude-opus-4-6-high     9TGX  Q3  50.6 (base  86.5)  contacts   0.0 (0/20, of 20)
+  claude-opus-4-6-high     9WIA  Q3  57.9 (base  56.8)  contacts   6.2 (1/16, of 20)
+  claude-opus-4-6-high     9T71  Q3  47.9 (base  39.3)  contacts   5.9 (1/17, of 20)
+  claude-opus-4-6-high     10ZI  Q3  53.5 (base  65.1)  contacts   0.0 (0/20, of 20)
+  claude-opus-4-6-high     23AA  Q3  50.0 (base  57.7)  contacts  15.0 (3/20, of 20)
+  claude-opus-4-6-high     9ZWQ  Q3  67.7 (base  52.9)  contacts  10.0 (2/20, of 20)
+  claude-opus-4-6-high     10CW  Q3  49.4 (base  56.2)  contacts   0.0 (0/20, of 20)
+  claude-opus-4-6-high     9YP0  Q3  51.9 (base  42.7)  contacts   0.0 (0/20, of 20)
+  claude-opus-4-6          12WN  Q3  61.4 (base  60.1)  contacts  15.0 (3/20, of 20)
+  claude-opus-4-6          9SA5  Q3  47.3 (base  54.3)  contacts   0.0 (0/20, of 20)
+  claude-opus-4-6          37QB  Q3  45.7 (base  62.6)  contacts   0.0 (0/20, of 20)
+  claude-opus-4-6          27IK  Q3  32.8 (base  44.5)  contacts   0.0 (0/19, of 20)
+  claude-opus-4-6          9TGX  Q3  70.5 (base  86.5)  contacts   7.1 (1/14, of 20)
+  claude-opus-4-6          9WIA  Q3  40.0 (base  56.8)  contacts  22.2 (4/18, of 20)
+  claude-opus-4-6          9T71  Q3  42.6 (base  39.3)  contacts   0.0 (0/16, of 20)
+  claude-opus-4-6          10ZI  Q3  49.0 (base  65.1)  contacts   0.0 (0/20, of 20)
+  claude-opus-4-6          23AA  Q3  55.8 (base  57.7)  contacts   0.0 (0/20, of 20)
+  claude-opus-4-6          9ZWQ  Q3  48.4 (base  52.9)  contacts   5.0 (1/20, of 20)
+  claude-opus-4-6          10CW  Q3  50.0 (base  56.2)  contacts   0.0 (0/20, of 20)
+  claude-opus-4-6          9YP0  Q3  33.5 (base  42.7)  contacts   0.0 (0/17, of 20)
+  claude-opus-5-5          12WN  Q3  79.8 (base  60.1)  contacts  33.3 (6/18, of 20)
+  claude-opus-5-5          9SA5  Q3  71.4 (base  54.3)  contacts  26.3 (5/19, of 20)
+  claude-opus-5-5          37QB  Q3  81.5 (base  62.6)  contacts  60.0 (12/20, of 20)
+  claude-opus-5-5          27IK  Q3  68.6 (base  44.5)  contacts  25.0 (4/16, of 20)
+  claude-opus-5-5          9TGX  Q3  84.0 (base  86.5)  contacts   0.0 (0/7, of 20)
+  claude-opus-5-5          9WIA  Q3  64.2 (base  56.8)  contacts  12.5 (2/16, of 20)
+  claude-opus-5-5          9T71  Q3  70.2 (base  39.3)  contacts   0.0 (0/19, of 20)
+  claude-opus-5-5          10ZI  Q3  75.5 (base  65.1)  contacts  20.0 (4/20, of 20)
+  claude-opus-5-5          23AA  Q3  73.1 (base  57.7)  contacts   5.3 (1/19, of 20)
+  claude-opus-5-5          9ZWQ  Q3  72.3 (base  52.9)  contacts  40.0 (8/20, of 20)
+  claude-opus-5-5          10CW  Q3  64.6 (base  56.2)  contacts   5.6 (1/18, of 20)
+  claude-opus-5-5          9YP0  Q3  75.7 (base  42.7)  contacts   0.0 (0/16, of 20)
+
+== first function grading (one grader, unblinded, three grades; superseded by the regrading below), 12 distinct novel proteins
   claude-fable-5-2: correct 6, abstain 5, wrong 1
   claude-opus-5-5: correct 4, abstain 7, wrong 1
+
+== blinded regrading of function calls, 12 distinct proteins x 3 models, two graders
+  claude-fable-5-2   grader A: correct 5, partly_correct 2, wrong 3, abstained 2; wrong identity or origin claims 4
+  claude-fable-5-2   grader B: correct 5, partly_correct 2, wrong 2, abstained 3; wrong identity or origin claims 2
+  claude-opus-5-5    grader A: correct 4, partly_correct 1, wrong 3, abstained 4; wrong identity or origin claims 2
+  claude-opus-5-5    grader B: correct 4, partly_correct 1, wrong 2, abstained 5; wrong identity or origin claims 1
+  gemini-4-neon      grader A: correct 2, partly_correct 1, wrong 4, abstained 5; wrong identity or origin claims 4
+  gemini-4-neon      grader B: correct 2, partly_correct 1, wrong 6, abstained 3; wrong identity or origin claims 3
+  agreement between graders (36 items):
+    family             31/36, kappa 0.79
+    specific_function  35/36, kappa 0.95
+    identity_claim     31/36, kappa 0.73
+    true_abstention    32/36, kappa 0.74
+    overall            32/36, kappa 0.85
+  items where the overall grades differ:
+    10CW claude-opus-5-5: A wrong, B abstained
+    10CW claude-fable-5-2: A wrong, B abstained
+    9SA5 gemini-4-neon: A abstained, B wrong
+    9YP0 gemini-4-neon: A abstained, B wrong
+  per protein, overall grade (A/B where they differ):
+    10CW: claude-fable-5-2 wrong/abstained; claude-opus-5-5 wrong/abstained; gemini-4-neon wrong
+    10ZI: claude-fable-5-2 partly_correct; claude-opus-5-5 correct; gemini-4-neon correct
+    12WN: claude-fable-5-2 correct; claude-opus-5-5 abstained; gemini-4-neon wrong
+    23AA: claude-fable-5-2 abstained; claude-opus-5-5 abstained; gemini-4-neon abstained
+    27IK: claude-fable-5-2 correct; claude-opus-5-5 correct; gemini-4-neon partly_correct
+    37QB: claude-fable-5-2 partly_correct; claude-opus-5-5 partly_correct; gemini-4-neon wrong
+    9SA5: claude-fable-5-2 correct; claude-opus-5-5 correct; gemini-4-neon abstained/wrong
+    9T71: claude-fable-5-2 correct; claude-opus-5-5 abstained; gemini-4-neon abstained
+    9TGX: claude-fable-5-2 wrong; claude-opus-5-5 abstained; gemini-4-neon abstained
+    9WIA: claude-fable-5-2 abstained; claude-opus-5-5 wrong; gemini-4-neon wrong
+    9YP0: claude-fable-5-2 wrong; claude-opus-5-5 wrong; gemini-4-neon abstained/wrong
+    9ZWQ: claude-fable-5-2 correct; claude-opus-5-5 correct; gemini-4-neon correct

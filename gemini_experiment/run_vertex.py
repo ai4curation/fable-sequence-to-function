@@ -10,6 +10,7 @@ Usage:
 import argparse
 import datetime
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -29,7 +30,8 @@ sys.path.insert(0, str(HERE))
 from common import KEYS, answer, has_tool_call, sha  # noqa: E402
 from run_agy import agy_unusable, build_questions, response_metadata  # noqa: E402
 
-DEFAULT_PROJECT = "test-project-covid-19-277821"
+# No project is built in: pass --project or set GOOGLE_CLOUD_PROJECT. Rows do not record the project.
+PROJECT_ENV = "GOOGLE_CLOUD_PROJECT"
 
 _token_lock = threading.Lock()
 _token_cache = {"token": None, "fetched_at": 0.0}
@@ -142,11 +144,14 @@ def main():
     ap.add_argument("test", choices=["next_residue", "features", "pseudo", "structure"])
     ap.add_argument("model")
     ap.add_argument("--effort", choices=["low", "medium", "high"], default="high")
-    ap.add_argument("--project", default=DEFAULT_PROJECT)
+    ap.add_argument("--project", default=os.environ.get(PROJECT_ENV),
+                    help=f"Google Cloud project to bill; defaults to ${PROJECT_ENV}")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--ncond", type=int, default=2)
     args = ap.parse_args()
+    if not args.project:
+        ap.error(f"no Google Cloud project: pass --project or set {PROJECT_ENV}")
     if args.model.startswith("gemini-2.5"):  # these take a thinking budget, not a level (#141, #150, #151)
         ap.error("run_vertex.py sends thinkingLevel; use run_api.py for gemini-2.5 models")
 

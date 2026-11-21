@@ -120,7 +120,8 @@ pass. The original Claude grading remains in `experiments/structure/function_gra
 ## Collection and interpretation limits
 
 `run_vertex.py` calls the global Vertex AI `generateContent` endpoint using an
-existing `gcloud auth print-access-token` credential. Its request body contains
+existing `gcloud auth print-access-token` credential. The project to bill is given with
+`--project` or the `GOOGLE_CLOUD_PROJECT` variable; none is built in, and rows do not record it. Its request body contains
 the sequence prompt and thinking level, with no tools or system instruction.
 `run_api.py` uses the Gemini REST API with `GEMINI_API_KEY`; `run_agy.py` records
 the earlier CLI route, which added `Do not call or invoke any tools.` to the

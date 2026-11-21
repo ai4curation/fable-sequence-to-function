@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 ARGS = [a for a in sys.argv[1:] if a != "--values-only"]; DRAW = "--values-only" not in sys.argv[1:]
 if len(ARGS) > 1: sys.exit(__doc__)
 HERE = pathlib.Path(__file__).parent; ROOT = pathlib.Path(ARGS[0]) if ARGS else HERE.parent / "experiments"
-# The four models run on all four tests. Each entry: key, legend label, colour, results file for test 3, results file for test 4.
-# Claude models at high effort; Gemini 4 Neon at the settings it was run at (low in test 3, medium in test 4).
+# The four models run on all four tests. Each entry: key, legend label, colour, results file for the PSEUDO test, results file for the STRFN test.
+# Claude models at high effort; Gemini 4 Neon at the settings it was run at (low in the PSEUDO test, medium in the STRFN test).
 GEM = HERE.parent / "gemini_experiment" / "results_vertex"
 MODELS = [("claude-fable-5-2", "Fable 5.2", "#2a78d6", ROOT / "pseudo/results/claude-fable-5-2.jsonl", ROOT / "structure/results/claude-fable-5-2.jsonl"),
           ("claude-opus-5-5", "Opus 5.5", "#eb6834", ROOT / "pseudo/results/claude-opus-5-5.jsonl", ROOT / "structure/results/claude-opus-5-5.jsonl"),
@@ -39,10 +39,10 @@ def bars(ax, groups, values, ymax, fmt="{:.0f}"):
     ax.set_xticks(range(len(groups))); ax.set_xticklabels(groups); ax.set_ylim(0, ymax); ax.tick_params(length=0)
     ax.grid(axis="y", color=GRID, linewidth=0.6, zorder=0); ax.spines["left"].set_visible(False)
 
-# Figure 1: share of sequences called catalytically active, by sequence class
+# Figure 2: share of sequences called catalytically active, by sequence class
 T = {t["accession"]: t for t in json.loads((ROOT / "pseudo/truth.json").read_text())}
 classes = [("kinase", "wt", "Kinase\nwild type"), ("kinase", "asp_to_asn", "Kinase\nAsp→Asn"), ("kinase", "lys_to_met", "Kinase\nLys→Met"),
-           ("pseudo", "wt", "Natural\npseudokinase"), ("enzyme", "wt", "Other enzyme\nwild type"), ("enzyme", "site_to_ala", "Other enzyme\nsite→Ala")]
+           ("pseudo", "wt", "Named inactive\nin Swiss-Prot"), ("enzyme", "wt", "Other enzyme\nwild type"), ("enzyme", "site_to_ala", "Other enzyme\nsite→Ala")]
 vals = {}
 for mid, _, _, f3, _ in MODELS:
     c = collections.Counter(); n = collections.Counter()
@@ -58,7 +58,7 @@ fig.tight_layout()
 if DRAW: fig.savefig(HERE / "fig1_pseudoenzyme.pdf")
 plt.close(fig)
 
-# Figure 2: secondary structure and contact precision against deposited structures (ASPRV1 counted once)
+# Figure 3: secondary structure and contact precision against deposited structures (ASPRV1 counted once)
 S = {t["pdb"]: t for t in json.loads((ROOT / "structure/truth.json").read_text())}
 q3 = {}; cp = {}; base = collections.defaultdict(list); chance = collections.defaultdict(list)
 for mid, _, _, _, f4 in MODELS:
@@ -71,7 +71,7 @@ for mid, _, _, _, f4 in MODELS:
         if mid == MODELS[0][0]: base[t["stratum"]].append(100 * v["base"]); chance[t["stratum"]].append(100 * v["chance"])
     q3[mid] = [statistics.mean(q[s]) for s in ("novel", "known")]; cp[mid] = [statistics.mean(p[s]) for s in ("novel", "known")]
 fig, axs = plt.subplots(1, 2, figsize=(6.9, 2.8))
-labels = ["Novel\n(no earlier entry\nat 30% identity)", "Known\n(20 or more\nearlier entries)"]
+labels = ["Unmatched\n(no earlier entry\nat 30% identity)", "Matched\n(20 or more\nearlier entries)"]
 for ax, v, ymax, ylab, ref, name in ((axs[0], q3, 100, "Secondary structure accuracy, Q3 (%)", base, "best single\nstate"),
                                      (axs[1], cp, 62, "Long-range contact precision (%)", chance, "chance")):
     bars(ax, labels, v, ymax, "{:.0f}"); ax.set_ylabel(ylab); ax.set_xlim(-0.55, 1.95)
@@ -83,8 +83,8 @@ fig.tight_layout(rect=(0, 0, 1, 0.92))
 if DRAW: fig.savefig(HERE / "fig2_structure.pdf")
 plt.close(fig)
 f1 = lambda v: "  ".join(f"{x:5.1f}" for x in v)
-print("Figure 1, called catalytically active (%): " + "; ".join(c[2].replace("\n", " ") for c in classes))
+print("Figure 2, called catalytically active (%): " + "; ".join(c[2].replace("\n", " ") for c in classes))
 for mid, label, *_ in MODELS: print(f"  {label:13s} {f1(vals[mid])}")
-print("Figure 2, novel and known stratum, ASPRV1 counted once")
+print("Figure 3, unmatched and matched stratum (novel and known in the data files), ASPRV1 counted once")
 for mid, label, *_ in MODELS: print(f"  {label:13s} Q3 (%) {f1(q3[mid])}   long-range contact precision (%) {f1(cp[mid])}")
 print(f"  reference lines: best single state {f1([statistics.mean(base[s]) for s in ('novel', 'known')])}   chance {f1([statistics.mean(chance[s]) for s in ('novel', 'known')])}")
