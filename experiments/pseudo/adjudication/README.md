@@ -37,7 +37,8 @@ position is better supported by alignment and structural evidence, without using
   2026-11-21) assayed two ENV9 mutants: N146L, in the predicted active site, and G23-24A, in the
   cofactor-binding motif. Both left only residual oxidoreductase activity. The paper names
   `Y202AMSK206` as the key active-site residues, which agrees with UniProt and with the models. It
-  neither mutates nor names a catalytic serine: the text has no mention of Ser172 or Ser173.
+  neither mutates nor names a catalytic serine: the text has no mention of Ser172 or Ser173. So it
+  does not test either candidate, and does not establish the activity of the S172A mutant used here.
 
 ## Limits
 
