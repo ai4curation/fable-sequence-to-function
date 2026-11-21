@@ -15,7 +15,7 @@ for the full extension, incomplete pilots, and limits of cross-model comparisons
 | Test | Folder | Question |
 |---|---|---|
 | NR | `experiments/next_residue/` | Does the model predict the next residue of an obscure protein better than of its shuffled copy? A subsample replication of Tu and Chen (2026). |
-| FEAT | `experiments/features/` | Does it name Pfam domains with boundaries, transmembrane helices and signal peptides, and leave shuffled sequences blank? |
+| FEAT | `experiments/features/` | Does it name Pfam domains with boundaries, transmembrane helices and signal peptides, and assign no Pfam domain to shuffled sequences? |
 | PSEUDO | `experiments/pseudo/` | Does it notice one catalytic-residue substitution in an otherwise active enzyme? |
 | STRFN | `experiments/structure/` | Does it predict secondary structure, contacts and function for recent structures stratified by prior homology? |
 

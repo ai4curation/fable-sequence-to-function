@@ -132,7 +132,10 @@ obscure domain-of-unknown-function families. Each protein was also given in shuf
 residues are present or substituted. The sequences were 20 active kinases, the same kinases with the
 catalytic aspartate or the ATP-binding lysine substituted, 20 kinase-fold proteins that Swiss-Prot names
 inactive, and 20 other enzymes with and without an active-site residue changed to alanine. In a decoy control, run for the Claude models,
-the same type of substitution was placed at a position with no functional annotation.
+the same type of substitution was placed at a position with no functional annotation. The endpoint is
+sensitivity to the catalytic site: whether a model answers differently when the substitution is at an
+annotated catalytic position than when it is elsewhere. We measured the activity of no mutant and no
+decoy, so that a catalytic-site mutant is inactive, and that a decoy is neutral, are predictions.
 
 \textbf{Structure and function (\tstrfn).} Predict secondary structure, residue contacts and function for
 30 PDB structures released from August 2026. We call an entry ``novel'' when no PDB entity at 30\%
@@ -188,14 +191,18 @@ Gemini 4 Neon & low & 8.8\% & 10.4\% & -- & $-1.5$ ($-8.1$ to $+5.1$) \\
 \end{tabular}
 \end{table}
 
-\subsection{Three models recover domains and membrane features and leave shuffled sequences blank}
+\subsection{Three models recover domains and membrane features and rarely assign a domain to shuffled sequences}
 
 Fable~5.2, Opus~5.5 and Neon named at least one correct Pfam family for 39, 35 and 20 of the 45 sampled
 proteins. Their boundaries were close to the reference, with a mean overlap of 0.85, 0.85 and 0.80 over
 the correctly named domains in these proteins (Table~\ref{tab:feat} pools all 60). For the 15 proteins
 from obscure domain-of-unknown-function families, Fable~5.2 named the exact family for 8, Opus~5.5 for 3
 and Neon for none. Neon was the most conservative. It predicted 28 domains, 23 with the right accession,
-against 70 and 51 for the other two. All three left the shuffled sequences almost entirely blank.
+against 70 and 51 for the other two. All three assigned almost no Pfam domain to the shuffled sequences:
+Fable~5.2 to 1 of 60, and Opus~5.5 and Neon to none. The shuffled answers were not empty, however. Each
+of the three models predicted transmembrane helices for some of the shuffled sequences, which our
+scoring does not count. Shuffling keeps the composition of a protein, so hydrophobic stretches can
+remain, and these predictions are not necessarily errors.
 
 Opus~4.6 at high effort named a correct family for 7 of the 45 sampled proteins and assigned a domain to
 28 of the 60 shuffled sequences. Its earlier run gave 5 of 45 and 5 of 60. That run was at low effort by
@@ -265,7 +272,9 @@ Other enzyme site$\to$Ala & 17 & 15 & 2 & 11 \\
 The decoy control shows that Fable~5.2 and Opus~5.5 respond to the catalytic position and not to just
 any change (Table~\ref{tab:decoy}). With every question asked by one route, both models called all 58
 decoys active, while calling only 3 and 8 of the 58 catalytic-site mutants of the same proteins active.
-Neither named a decoy position as a lost residue. One case ran the other way: Opus~5.5 did not call the
+Neither named a decoy position as a lost residue. This contrast is the main result of the test, and it
+holds without assuming that every catalytic-site mutant is inactive or that every decoy is active.
+Substituting a catalytic residue does not always abolish activity \citep{ribeiro2020pitfalls}. One case ran the other way: Opus~5.5 did not call the
 wild type of a mannosyltransferase (P26725) active, but called its decoy active. Opus~4.6, given the
 decoys at low effort only, called decoys, mutants and wild types active at similar rates.
 
@@ -475,7 +484,7 @@ The counts do not show that budgets were matched.}
 Three of the four models, Fable~5.2, Opus~5.5 and Gemini~4 Neon, do more than recognise a family. When one
 catalytic residue changes, they change their answer and name that residue. They predict secondary
 structure and contacts above chance for proteins with no earlier PDB entry at 30\% identity. And they
-leave shuffled sequences unannotated. The three come from two providers and were reached by different
+almost never assign a Pfam domain to a shuffled sequence. The three come from two providers and were reached by different
 routes, so the behaviour is not peculiar to one vendor or one way of calling a model. We have not
 established how far it extends.
 
@@ -493,11 +502,11 @@ site, alignment and structural evidence favours the positions they proposed, mor
 for ENV9. A sequence-only read may therefore also help flag sites that were misplaced when annotation was
 transferred by similarity. Two cases do not give a rate, though.
 
-The next-residue signal that motivated this work was not needed for the other abilities. Neon showed no
-detectable next-residue advantage, yet it rejected all 20 aspartate mutants, reported 16 of 20 lysine
+The other abilities occurred without a detectable advantage in our next-residue test. Neon showed no
+such advantage, yet it rejected all 20 aspartate mutants, reported 16 of 20 lysine
 substitutions and reached 28.4\% contact precision against 1.8\% by chance. The tasks dissociate, but
-that does not prove separate mechanisms or an absence of sequence knowledge, and a null result is weak
-evidence. Neon was run on the \tnr{} test at low effort only. Opus~5.5 at low effort also showed no detectable
+that does not prove separate mechanisms or an absence of sequence knowledge. A null result at one
+setting is weak evidence and does not establish that the signal is absent. Neon was run on the \tnr{} test at low effort only. Opus~5.5 at low effort also showed no detectable
 advantage. Neon used thinking on every question it answered and Opus~5.5 at low effort on none, so we
 cannot tell whether Neon's null result comes from the model or from the setting. The Claude models
 scored well below the published values on the identical questions (Section~\ref{sec:nextres}), so this
@@ -519,7 +528,8 @@ name. It cannot show that the protein is inactive, since catalytic residues can 
 and still lack detectable activity, of which kin-32 may be one. A flag should prompt a curator to check the catalytic term. It says nothing against the
 protein having a function, since dead enzymes commonly act as regulators \citep{adrain2020dead}.
 
-The read also cannot serve as evidence. Its output has no provenance, its errors are stated as
+The read is also not sufficient, by itself, to support a curated annotation. Computational predictions
+can contribute evidence, but this one has no provenance, its errors are stated as
 confidently as its correct calls, and both failure modes we observed end in a confident ``active''. Any
 catalytic position a model names should be checked against the sequence and a curated feature before it
 is used.
@@ -565,10 +575,13 @@ The controls of the \tpseudo{} test have gaps. No decoy control was run for Neon
 were asked at low effort only. The decoy positions were chosen by a rule written with the help of two of
 the tested models, and they avoid conserved positions. The adjudication of the two reference sites rests
 on alignment and predicted structures. Neither disputed position, nor the activity of the mutants used
-here, has been tested directly by experiment. The 20 proteins that Swiss-Prot names inactive were
+here, nor the neutrality of the decoys, has been tested directly by experiment. The 20 proteins that Swiss-Prot names inactive were
 selected by that name alone and were not curated independently; one of them, RLK902, carries a note of
 proposed autophosphorylation in the same entry. Swiss-Prot proteins are well known, so the wild-type
-results in the \tpseudo{} test may reflect recall. The mutants are new sequences and cannot. Dead mutants made by one
+results in the \tpseudo{} test may reflect recall. The mutants are new sequences, so a call on a mutant is not a
+repeated database label. A model could still recognise the parent protein and recall which residues its
+family needs. The mutants therefore show sensitivity beyond repeating the wild-type label, and they do
+not exclude recall. Mutants made by one
 substitution are also not natural pseudoenzymes. Those usually differ from active relatives at many
 positions and can be inactive for reasons that leave the catalytic residues intact. We examined no
 over-annotated entry.
@@ -672,8 +685,10 @@ Pfam domains with coordinates \citep{mistry2021pfam}, transmembrane helices, a s
 and a function. Truth was the InterPro Pfam matches and the UniProt transmembrane and signal features,
 which in unreviewed entries are themselves predicted. Each protein was also presented shuffled.
 
-\paragraph{Dead mutants and natural pseudoenzymes (\tpseudo).} By a dead mutant we mean an active enzyme in
-which we substituted one catalytic residue. A natural pseudoenzyme is an evolved homologue, which usually
+\paragraph{Catalytic-site mutants and proteins named inactive (\tpseudo).} A catalytic-site mutant is an
+active enzyme in which we substituted one annotated catalytic residue. The substitution is established.
+The loss of activity is a prediction that we did not test, and substitution of a catalytic residue is not
+always a good indication of lost activity \citep{ribeiro2020pitfalls}. A natural pseudoenzyme is an evolved homologue, which usually
 differs from active relatives at many positions. UniProt curates pseudoenzymes in Swiss-Prot
 \citep{zaru2020uniprot}. In UniProt release \texttt{2026\_04}, queried on 19 November 2026 (UTC), 688
 reviewed entries carried ``inactive'' in a protein name (492 in the recommended name), 107 of them in the
@@ -699,7 +714,9 @@ residues from the nearest curated catalytic position. Decoys were asked with the
 revised route. The wild types and catalytic-site mutants of the same proteins were asked again by that
 route, so that all three are compared within one route. The control was run for the three Claude models
 only: Fable~5.2 and Opus~5.5 at high effort, and Opus~4.6 at low effort. It added 174 decoy calls and 300
-repeat calls. The design does not test a substitution at another conserved position.
+repeat calls. The comparison of interest is between the calls on catalytic-site mutants and the calls on
+decoys. A position with no annotation is not shown to be neutral, and a decoy substitution could itself
+change activity. The design does not test a substitution at another conserved position.
 
 \paragraph{Adjudication of two reference sites.} We selected two enzymes with disputed catalytic
 positions after inspecting the model answers. We aligned each with reviewed UniProt relatives carrying an
