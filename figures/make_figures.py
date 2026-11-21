@@ -42,7 +42,7 @@ def bars(ax, groups, values, ymax, fmt="{:.0f}"):
 # Figure 1: share of sequences called catalytically active, by sequence class
 T = {t["accession"]: t for t in json.loads((ROOT / "pseudo/truth.json").read_text())}
 classes = [("kinase", "wt", "Kinase\nwild type"), ("kinase", "asp_to_asn", "Kinase\nAsp→Asn"), ("kinase", "lys_to_met", "Kinase\nLys→Met"),
-           ("pseudo", "wt", "Natural\npseudokinase"), ("enzyme", "wt", "Other enzyme\nwild type"), ("enzyme", "site_to_ala", "Other enzyme\nsite→Ala")]
+           ("pseudo", "wt", "Named inactive\nin Swiss-Prot"), ("enzyme", "wt", "Other enzyme\nwild type"), ("enzyme", "site_to_ala", "Other enzyme\nsite→Ala")]
 vals = {}
 for mid, _, _, f3, _ in MODELS:
     c = collections.Counter(); n = collections.Counter()
