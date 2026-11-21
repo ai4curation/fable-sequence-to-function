@@ -33,8 +33,11 @@ The decoys use exactly the canonical test-3 prompt. Their comparator is the same
 test-3 run on this route, so no extra bridge calls are needed.
 
 Each model runs one test at a time, in waves of at most four questions. Next-residue high runs last.
-An unusable new reply, an unparsed JSON answer, a runner error, or a launch journal that prevents
-progress stops further waves for both models; already-running calls finish. The controller never
+Failed transport/context checks, a runner error, or a launch journal that prevents progress stop
+further waves for both models; already-running calls finish. Malformed model JSON is retained and
+counted as unparsed, without repair or re-asking; answer-based scores exclude it. It does not stop
+the remaining questions. Completion means all questions were attempted with valid call evidence,
+not that every answer parsed. The controller never
 passes `--retry-unusable`. Inspect the saved evidence before deciding how to handle missing answers.
 
 Run under `nohup` with stdout/stderr redirected to a log for a detached batch. The experiment home's
@@ -50,7 +53,8 @@ scores, sensitivity analyses, paired decoy comparisons and audit. It refuses inc
 For an unattended run, `finish_full.py PID --publish` waits for that controller process on EC2,
 requires both models to complete and the audit to pass, regenerates the reports and checksums, then
 commits and pushes the results to this PR branch without forcing. It records its outcome in
-`<home>/full_analysis/completion.json`. A stopped run, an audit failure, changed unrelated data,
+`<home>/full_analysis/completion.json`. Resuming preserves earlier launch manifests in `previous_runs`.
+A stopped run, an audit failure, changed unrelated data,
 unexpected staged changes or an advanced remote branch prevents publication. The completion step
 does not make model calls or retry any question.
 
@@ -231,6 +235,12 @@ lines give the GPT-6 counts.
 
 The results are append-only. For the initial canary question, only the final format-2 row counts;
 its earlier rows predate `codex_row_format` 2. Subsequent questions are scored independently.
+
+The EC2 full run first stopped on 2026-11-21 at 01:53 UTC because Astra's real-sequence feature
+answer for A0ABU2CW75 had malformed JSON (`"transmembrane_helices":[342,361]]`). The request and
+context checks passed. The answer remains unchanged and is counted as unparsed; it is not re-asked.
+The controller and audit now distinguish this model-format failure from a transport/context failure,
+so the remaining questions can continue. That policy applies to all Codex answers in this comparison.
 
 **Canary with the fixed runner** (commit 0f5a631, 2026-11-20), first test-4 question, high effort.
 Each model took one attempt. Each sent one logged request to chatgpt.com, which passed the request

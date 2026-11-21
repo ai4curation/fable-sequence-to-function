@@ -114,6 +114,7 @@ def main():
             questions, key = build_questions(test, "audit", ncond)
             expected = {k: (prompt, meta) for k, prompt, meta in questions}
             seen, usable = set(), {}
+            unparsed_codex = 0
             for row in rows:
                 label = row["model"] if row.get("effort") is None else f"{row['model']}-{row['effort']}"
                 require(label == path.stem, f"{path.name}: row labelled {label}")
@@ -145,8 +146,13 @@ def main():
                     require(row["first_correct"] == (valid and pred[0] == meta["target"][0]), f"{path.name}: first-residue score mismatch")
                     require(row["exact10"] == (valid and pred[:10] == meta["target"]), f"{path.name}: exact-ten score mismatch")
                 else:
-                    require(answer(row.get("text"), KEYS["pseudo" if test == "decoy_control" else test]) is not None,
-                            f"{path.name}: unparsed successful reply")
+                    parsed = answer(row.get("text"), KEYS["pseudo" if test == "decoy_control" else test]) is not None
+                    if not parsed and route.startswith("codex-exec"):
+                        # Transport/context succeeded, but the model failed the requested format.
+                        # Keep the raw reply, count it, and exclude it from answer-based scores.
+                        unparsed_codex += 1
+                        continue
+                    require(parsed, f"{path.name}: unparsed successful reply")
                 usable[identity] = row
             errors = sum(agy_unusable(r) for r in rows)
             safety = sum("safety" in str(r.get("error", "")).lower() for r in rows)
@@ -155,6 +161,8 @@ def main():
             print(path.relative_to(HERE) if path.is_relative_to(HERE) else path.relative_to(HERE.parent) if path.is_relative_to(HERE.parent) else path)
             print(f"  expected {len(expected)}; rows {len(rows)}; unique attempted {len(seen)}; usable {len(usable)}; unusable rows {errors}; duplicate rows {len(rows)-len(seen)}")
             print(f"  safety-block rows {safety}; rows with retries {retries}; missing usable questions {len(expected)-len(usable)}")
+            if unparsed_codex:
+                print(f"  unparsed Codex replies {unparsed_codex}; raw answers retained, excluded from answer-based scores")
             print(f"  route {counts('cli_version')}; model version {counts('model_version')}; finish {counts('finish_reason')}")
             if usable:
                 thinking = [r.get("thinking_tokens") or 0 for r in usable.values()]

@@ -61,7 +61,7 @@ def main():
                    ("gpt6_audit.txt", ["gemini_experiment/audit.py", "gpt6_experiment/results"]),
                    ("gpt6_decoys.txt", ["experiments/decoy_control/score_decoys.py", "--results",
                      "gpt6_experiment/results/decoy_control", "--pseudo-results", "gpt6_experiment/results/pseudo"]))
-        # A successful full report requires the entire usable grid and a fresh audit.
+        # A full report requires every planned call and a fresh audit; unparsed replies are counted.
         (root / "gpt6_experiment/run_manifest.json").write_bytes(manifest)
         run([sys.executable, "gpt6_experiment/report_full.py"])
         for name, cmd in reports:

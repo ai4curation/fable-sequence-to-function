@@ -5,6 +5,7 @@ import io
 import json
 import pathlib
 import signal
+import subprocess
 import sys
 import tempfile
 import types
@@ -31,7 +32,7 @@ class FullAnalysisTests(unittest.TestCase):
             self.assertEqual(identity, key(decoy))
             self.assertEqual(meta["group"], decoy["group"])
 
-    def exercise(self, fail=False):
+    def exercise(self, fail=False, unparsed=False):
         with tempfile.TemporaryDirectory() as tmp:
             home = pathlib.Path(tmp)
             calls = []
@@ -58,6 +59,8 @@ class FullAnalysisTests(unittest.TestCase):
                             # Two requested keys suffice for the canonical JSON parser.
                             keys = full.runner.KEYS["pseudo" if test == "decoy_control" else test] if test != "next_residue" else []
                             text = json.dumps({k: [] for k in list(keys)[:2]}) if keys else "MKVLAAGIVG"
+                            if unparsed and test == "features" and identity == qs[0][0]:
+                                text = '{"pfam_domains":[],"transmembrane_helices":[342,361]]}'
                             row = dict(meta, text=text, model=model, effort=effort, num_turns=1,
                                        status="UNUSABLE" if fail else "SUCCESS", codex_row_format=2,
                                        cli_version="codex-exec stub", prompt_sha256=full.runner.sha(prompt))
@@ -96,13 +99,42 @@ class FullAnalysisTests(unittest.TestCase):
             else:
                 self.assertTrue(all(s["status"] == "complete" for s in states))
                 self.assertEqual(len(calls), 24)  # two waves per stage, six stages, two models
-                self.assertTrue(all(stage["usable"] == 3 for s in states for stage in s["stages"]))
+                for state in states:
+                    for stage in state["stages"]:
+                        malformed = int(unparsed and stage["test"] == "features")
+                        self.assertEqual(stage["attempted"], 3)
+                        self.assertEqual(stage["usable"], 3 - malformed)
+                        self.assertEqual(stage["unparsed_questions"], malformed)
 
     def test_bounded_waves_and_completed_resume(self):
         self.exercise()
 
     def test_failure_stops_batch_and_is_not_retried(self):
         self.exercise(fail=True)
+
+    def test_malformed_answer_is_counted_without_retry_or_stopping(self):
+        self.exercise(unparsed=True)
+
+    def test_audit_counts_malformed_codex_but_still_rejects_bad_context(self):
+        row = json.loads((ROOT / "gpt6_experiment/results/structure/gpt-6-astra-high.jsonl").read_text().splitlines()[-1])
+        row["text"] = '{"helices":[342,361]],"strands":[]}'
+        row["ans"] = None
+        with tempfile.TemporaryDirectory() as tmp:
+            path = pathlib.Path(tmp) / "structure/gpt-6-astra-high.jsonl"
+            path.parent.mkdir()
+            path.write_text(json.dumps(row) + "\n")
+            original = path.read_bytes()
+            cmd = [sys.executable, str(ROOT / "gemini_experiment/audit.py"), tmp]
+            result = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("unparsed Codex replies 1", result.stdout)
+            self.assertIn("usable 0", result.stdout)
+            self.assertEqual(path.read_bytes(), original)
+            row["context_ok"] = False
+            path.write_text(json.dumps(row) + "\n")
+            result = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("context check", result.stderr)
 
 
 if __name__ == "__main__":
