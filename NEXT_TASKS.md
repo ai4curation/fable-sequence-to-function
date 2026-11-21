@@ -15,9 +15,9 @@ Status: `open`, `decide` (authors' call before anyone edits), `done` (say where)
 
 | # | Status | Task | Where | Source |
 |---|---|---|---|---|
-| T1 | decide | Data availability names a private repository. Make it public or cite an archived release (DOI), then reword the statement. The licence itself is code work. | Data and code availability, l. 365–368 | #27 |
-| T2 | open | Affiliations (l. 13–14) and funding (l. 378) are still marked TODO; the author list is in (#113). | front matter, Acknowledgements | README "Open before posting" |
-| T3 | decide | Acknowledgements for the Gemini runs: confirm the Antigravity/Codex attribution. On `main` since #115. Chris was asked on #154 on 2026-11-20; a LaTeX note above the sentence repeats the question. | Acknowledgements (PR #115) | #154 |
+| T1 | open | The repository is now public (checked 2026-11-21), and the Data availability names it and the results site. Still missing: a licence file, a tagged release and an archived DOI (for example Zenodo). Add those, then cite the DOI. | Data and code availability, l. 365–368 | #27 |
+| T2 | done | Affiliation and funding are in (Lawrence Berkeley National Laboratory; DOE contract DE-AC02-05CH11231), done by #200 and #228. | front matter, Acknowledgements | README "Open before posting" |
+| T3 | done | #228 removed the agent and Antigravity/Codex sentences, leaving the Acknowledgements funding-only, and closed #154. | Acknowledgements (PR #115) | #154 |
 
 ## Methods and route
 
@@ -28,7 +28,7 @@ Status: `open`, `decide` (authors' call before anyone edits), `done` (say where)
 | T6 | done | "Model calls used Claude Code 2.1.327": no row of the original route records a tool version. Qualify, or cite a record of the original runs. | l. 372 | #122 |
 | T7 | done | "Each question was one call" and "2,854 calls" count recorded rows; CLI retries in the original scripts were not recorded. Say "recorded answers", or say that retries are not counted. | l. 66, l. 80; README l. 82, 90, 182 | #40 |
 | T8 | done | Effort match for test 2 rests on a setting the rows do not record. Qualify "at the same effort setting" (l. 29), "matched for effort" (l. 329) and the low-versus-high test-2 contrast (l. 189–191), or leave as is. | l. 29, 189–191, 329 | #129 |
-| T9 | open | State for the authors, from the PR #98 review: the six re-sampled test-2 answers (first answers give 29/60, not 28/60, shuffled with a domain); test 4 basis (12-protein set); bootstrap bound moves with the seed; two dates that cannot be shown from the files. Decide which to say. | Results test 2 and 4; Methods | #104 |
+| T9 | open | Left from the PR #98 review: the six re-sampled FEAT answers (the first answers give 29/60, not 28/60, shuffled with a domain) are not stated with that figure, and the bootstrap seed is not mentioned. The STRFN 12-protein basis and the dates are now handled. | Results test 2 and 4; Methods | #104 |
 | T10 | done | Scoring of answers that took more than one request, and of replies stopped by a safety classifier: the decision is the authors'; the text should then say what was done. The scorer side stays in #83. | Methods, Limitations | #83 |
 
 ## Results wording
@@ -44,8 +44,8 @@ Status: `open`, `decide` (authors' call before anyone edits), `done` (say where)
 | # | Status | Task | Where | Source |
 |---|---|---|---|---|
 | T14 | done | Pseudoenzyme framing edits (introduction definition, test 3 naming, Discussion bounds, a limitation, seven references). Applied on the PR #18 branch, which also contains the PR #138 branch: merge #138 first. | Introduction, test 3, Discussion, Limitations, `references.bib` | PR #18 |
-| T15 | open (part done) | Before T14 lands: read the full text of the seven pseudoenzyme references (only abstracts were read), confirm the WNK1, MEROPS and Gene Ontology statements, and pin the UniProt release behind the counts. | `review/pseudoenzyme_framing_v1.md` (PR #18) | #19 |
-| T16 | open | Related work is thin: no protein language model baselines on the same items. Add a sentence or a comparison. | Introduction, Discussion | README "Open before posting" |
+| T15 | open (part done) | Read the five pseudoenzyme references checked by abstract only (Xu 2000, Murphy 2017, Adrain 2020, Ribeiro 2019 and 2020) in full. The other three were read in full, and the UniProt release is pinned (#183). | `review/pseudoenzyme_framing_v1.md` (PR #18) | #19 |
+| T16 | decide | Related work now has a PG-LLM paragraph and says no specialised tools or protein language models were benchmarked. What is left is a decision: run a baseline, or leave it as a stated limitation. | Introduction, Discussion | README "Open before posting" |
 
 ## Review notes (PR #1)
 
@@ -58,20 +58,23 @@ Status: `open`, `decide` (authors' call before anyone edits), `done` (say where)
 
 | # | Status | Task | Where | Source |
 |---|---|---|---|---|
-| T19 | done | The conclusion named Gemini 4 Neon after the #115 rebuild; it now names Fable 5.2 and Opus 5.5 only. | Abstract, last sentence | #183 |
+| T19 | done | Done in #183. The abstract has since been rewritten (c114542) and names no model; its "frontier models" claim is about performance above chance, not the curator-flag claim T19 was about. | Abstract, last sentence | #183 |
 | T20 | done | README table row back to "Claude call totals". | README | #183 |
-| T21 | open | Before posting: remove the LaTeX author notes (the T3 note for Chris above the Acknowledgements, and the MEROPS/GO notes in the Discussion). They are not in the PDF but would ship in a source upload. | Acknowledgements, Discussion | #183 review |
+| T21 | open | Before posting, remove the remaining LaTeX author note: MEROPS/GO in the Discussion ("% NOTE for the authors (T15 source check …"). The T3 note went with #228. | Acknowledgements, Discussion | #183 review |
 | T22 | open | Methods, decoy control: "in kinases, the catalytic loop, the DFG motif and the subdomain IX aspartate" were excluded. The subdomain IX pattern finds nothing in 7 of 20 kinases, so there the Asp stayed a candidate (none was drawn). Say "where the pattern finds it". | Methods, decoy control | #14 |
-| T23 | open | Limitations: some enzyme decoys are easy (the second-to-last residue of P26725, a disordered region in P23594, a transmembrane helix in Q8RX88). The text does not say so; the README does. | Limitations | #16 |
+| T23 | open | Limitations: some enzyme decoys are easy (the second-to-last residue of P26725, a disordered region in P23594, a transmembrane helix in Q8RX88). The text doesn't say so; `experiments/decoy_control/README.md` does. | Limitations | #16 |
 | T24 | open | Limitations or Methods: the decoy rule was revised twice after looking at the positions it picked, before any model call, and git cannot show the order. The text says only that two tested models helped write the rule. | Limitations, decoy control | #15 |
-| T25 | decide | GPT-6 (Astra, Rosalind): test 4 is being run (PR #167); the results are not in the text. Decide the scope (tests 1 to 3?) and add a section. | Results, Methods | #52 |
+| T25 | decide | GPT-6 Astra and Rosalind: STRFN at high effort is answered for both models, 30 of 30 each (PR #167, not merged), and Chris's EC2 run covers the full grid. Nothing from GPT-6 is in the text yet. Decide which runs the paper reports, then add a section. | Results, Methods | #52 |
+| T26 | open | The new Figure 1 (#227) says the model received "an amino-acid sequence, nothing else", while the Methods say the first Claude route cannot rule out extra context or connector tools. Qualify the figure text as T5 did elsewhere. | Figure 1 | #158 review |
+| T27 | open | The README's "Open before posting" list is out of date: it says affiliations and funding are TODO, asks for a blinded second grader (two are now reported) and says related work is thin. | README | #158 review |
 
 ## Done
 
 (Move items here with the commit or PR that did them.)
 
-- **T4, T5, T6, T7, T8, T11, T12, T15 (part), T19, T20:** PR #183 (merge 86fcdb5). T15 checked the seven
-  pseudoenzyme references; five were read as abstracts only, so T15 stays open for those (#19).
+- **T4, T5, T6, T7, T8, T11, T12, T15 (part), T19, T20:** PR #183 (merge 86fcdb5). T15 checked the eight
+  pseudoenzyme references; three were read in full and five as abstracts only, so T15 stays open for those (#19).
 - **T10:** scoring in PR #188 (merge 16ae8c2); text in PR #209 (merge f4d0ab0). PR #209 also restores the
   T11 sentence, which #187 dropped.
 - **T13:** PR #138. **T14:** PR #18.
+- **T2, T3:** PRs #200 and #228 (affiliation, funding, funding-only Acknowledgements; #154 closed).
