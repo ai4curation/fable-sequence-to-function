@@ -125,7 +125,7 @@ def score_features():
                         f"SP TP {sp[(True,True)]} FN {sp[(False,True)]} FP {sp[(True,False)]} TN {sp[(False,False)]}"
                     )
                 else:
-                    print(f"           (shuffled hallucination) any Pfam domain {prot_any}/{len(x)}")
+                    print(f"           (shuffled hallucination) any Pfam domain {prot_any}/{len(x)}; any transmembrane helix {FEATURES.tm_any(x)}/{len(x)}")
 
 
 def score_pseudo():

@@ -9,9 +9,9 @@ TEST 2: DOMAINS & MEMBRANE FEATURES
   real     set all n=35: Pfam >=1 right 17/35; pred 26 (id 23, id/name 23); true 45; IoU 0.762 (n=23)
            TM: agree 33/35, exact 30/35, helices 49/49 (pred 55); SP TP 6 FN 0 FP 0 TN 29
   shuffled set B   n=35: Pfam >=1 right 0/35; pred 0 (id 0, id/name 0); true 45; IoU nan (n=0)
-           (shuffled hallucination) any Pfam domain 0/35
+           (shuffled hallucination) any Pfam domain 0/35; any transmembrane helix 9/35
   shuffled set all n=35: Pfam >=1 right 0/35; pred 0 (id 0, id/name 0); true 45; IoU nan (n=0)
-           (shuffled hallucination) any Pfam domain 0/35
+           (shuffled hallucination) any Pfam domain 0/35; any transmembrane helix 9/35
 
 ========================================================================
 TEST 3: PSEUDOENZYMES
