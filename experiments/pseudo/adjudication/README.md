@@ -33,9 +33,11 @@ position is better supported by alignment and structural evidence, without using
   Ser172 side chain points away (7.0 and 6.8 A).
 - The SWISS-MODEL template is 1yxm chain A, with 18.48% sequence identity (recorded in the PDB header).
   Its side-chain geometry is supporting evidence, not a direct observation of ENV9.
-- [Siddiqah et al. (2017)](https://doi.org/10.1007/s00294-017-0702-y) assayed ENV9 mutants N146L
-  and G23--24A. Those experiments support a role for other residues in activity, but do not test
-  Ser172 or Ser173 or establish activity of the S172A mutant used here.
+- [Siddiqah et al. (2017)](https://doi.org/10.1007/s00294-017-0702-y) (PMID 28540421; full text read
+  2026-11-21) assayed two ENV9 mutants: N146L, in the predicted active site, and G23-24A, in the
+  cofactor-binding motif. Both left only residual oxidoreductase activity. The paper names
+  `Y202AMSK206` as the key active-site residues, which agrees with UniProt and with the models. It
+  neither mutates nor names a catalytic serine: the text has no mention of Ser172 or Ser173.
 
 ## Limits
 
