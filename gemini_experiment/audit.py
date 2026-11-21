@@ -99,13 +99,22 @@ def main():
         require(covered == len(expected), f"{test}: {len(expected) - covered} Gemini questions absent from the Claude rows")
         print(f"{test}: all {covered} questions found in the Claude rows; {hashed} Claude rows with a prompt hash, all equal")
 
-    for directory in ("results_vertex", "results"):
-        for path in sorted((HERE / directory).glob("*/*.jsonl")):
+    # The Gemini folders, then any results folder named on the command line (e.g. gpt6_experiment/results, #52).
+    folders = [HERE / "results_vertex", HERE / "results"] + [(HERE.parent / a).resolve() for a in sys.argv[1:]]
+    for folder in folders:
+        for path in sorted(folder.glob("*/*.jsonl")):
             test = path.parent.name
-            questions, key = build_questions(test, "audit", 2)
-            expected = {k: (prompt, meta) for k, prompt, meta in questions}
             rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+            conditions = {r.get("ncond", 2) for r in rows} or {2}
+            require(len(conditions) == 1 and conditions <= {2, 3}, f"{path.name}: inconsistent condition counts")
+            ncond = next(iter(conditions))
+            if ncond == 3:
+                require(test == "next_residue" and all(str(r.get("cli_version", "")).startswith("codex-exec") for r in rows),
+                        f"{path.name}: three conditions require an explicit Codex next-residue run")
+            questions, key = build_questions(test, "audit", ncond)
+            expected = {k: (prompt, meta) for k, prompt, meta in questions}
             seen, usable = set(), {}
+            unparsed_codex = 0
             for row in rows:
                 label = row["model"] if row.get("effort") is None else f"{row['model']}-{row['effort']}"
                 require(label == path.stem, f"{path.name}: row labelled {label}")
@@ -118,7 +127,14 @@ def main():
                 require(problem is None, f"{path.name}: {problem}")
                 if agy_unusable(row):
                     continue
-                if not str(row.get("cli_version", "")).startswith("agy"):
+                route = str(row.get("cli_version", ""))
+                if route.startswith("codex-exec"):  # GPT-6 through Codex: no endpoint model version is logged (#52)
+                    require(row.get("context_ok") is True and row.get("request_problem") is None
+                            and row.get("requests_logged", 0) >= 1 and row.get("requested_model_logged") == [row["model"]]
+                            and not row.get("context_tokens_high") and (row.get("input_tokens") or 0) <= row.get("context_limit", 0)
+                            and row.get("provider") == "fs2f_chatgpt_http" and row.get("websocket_log_lines") == 0,  # HTTP only (#164)
+                            f"{path.name}: Codex row without a passing context check")
+                elif not route.startswith("agy"):
                     require(row.get("model_version") == row["model"], f"{path.name}: endpoint model version {row.get('model_version')} for {row['model']}")
                 if test == "next_residue":
                     require(row["target"] == meta["target"], f"{path.name}: target mismatch")
@@ -130,15 +146,23 @@ def main():
                     require(row["first_correct"] == (valid and pred[0] == meta["target"][0]), f"{path.name}: first-residue score mismatch")
                     require(row["exact10"] == (valid and pred[:10] == meta["target"]), f"{path.name}: exact-ten score mismatch")
                 else:
-                    require(answer(row.get("text"), KEYS[test]) is not None, f"{path.name}: unparsed successful reply")
+                    parsed = answer(row.get("text"), KEYS["pseudo" if test == "decoy_control" else test]) is not None
+                    if not parsed and route.startswith("codex-exec"):
+                        # Transport/context succeeded, but the model failed the requested format.
+                        # Keep the raw reply, count it, and exclude it from answer-based scores.
+                        unparsed_codex += 1
+                        continue
+                    require(parsed, f"{path.name}: unparsed successful reply")
                 usable[identity] = row
             errors = sum(agy_unusable(r) for r in rows)
             safety = sum("safety" in str(r.get("error", "")).lower() for r in rows)
             retries = sum((r.get("attempts") or 1) > 1 for r in rows)
             counts = lambda field: dict(sorted(collections.Counter(str(r.get(field)) for r in rows).items()))
-            print(path.relative_to(HERE))
+            print(path.relative_to(HERE) if path.is_relative_to(HERE) else path.relative_to(HERE.parent) if path.is_relative_to(HERE.parent) else path)
             print(f"  expected {len(expected)}; rows {len(rows)}; unique attempted {len(seen)}; usable {len(usable)}; unusable rows {errors}; duplicate rows {len(rows)-len(seen)}")
             print(f"  safety-block rows {safety}; rows with retries {retries}; missing usable questions {len(expected)-len(usable)}")
+            if unparsed_codex:
+                print(f"  unparsed Codex replies {unparsed_codex}; raw answers retained, excluded from answer-based scores")
             print(f"  route {counts('cli_version')}; model version {counts('model_version')}; finish {counts('finish_reason')}")
             if usable:
                 thinking = [r.get("thinking_tokens") or 0 for r in usable.values()]

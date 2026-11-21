@@ -22,18 +22,31 @@ as in Figure 1; answers without the field are listed.
 Files: results/NAME.jsonl is one block, compared with PROBE_DIR/pseudo/results/NAME.jsonl and results/bridge-NAME.jsonl,
 where NAME is MODEL or MODEL-TAG. Empty files are skipped. A question may have one usable row per file; a second one stops the script.
 """
-import ast, collections, json, math, pathlib, re, sys
+import argparse, ast, collections, json, math, pathlib, re, sys
 HERE = pathlib.Path(__file__).resolve().parent; sys.path.insert(0, str(HERE.parent))
-from common import KEYS, NOTE_CONTINUED, NOTE_FAILED, NOTE_TOOL, continued, efforts, failed, reparse, requests_made, sha, tool_calls, unusable
-if len(sys.argv) > 2: sys.exit(__doc__)
-PROBE = pathlib.Path(sys.argv[1]) if len(sys.argv) == 2 else HERE.parent
+from common import KEYS, NOTE_CONTINUED, NOTE_FAILED, NOTE_TOOL, answer, continued, efforts, requests_made, sha, tool_calls, unusable as common_unusable
+ap = argparse.ArgumentParser(description=__doc__)
+ap.add_argument("probe_dir", nargs="?", type=pathlib.Path, default=HERE.parent)
+ap.add_argument("--results", type=pathlib.Path, default=HERE / "results")
+ap.add_argument("--pseudo-results", type=pathlib.Path)
+args = ap.parse_args()
+PROBE, RESULTS = args.probe_dir, args.results
+PSEUDO_RESULTS = args.pseudo_results or PROBE / "pseudo/results"
+def unusable(row):
+    if "codex_row_format" in row or str(row.get("cli_version", "")).startswith("codex-exec"):
+        sys.path.insert(0, str(HERE.parent.parent / "gemini_experiment"))
+        from run_agy import agy_unusable
+        return agy_unusable(row)
+    return common_unusable(row)
+def failed(rows): return sum(unusable(r) for r in rows)
 VARIANTS = [("asp_decoy_to_asn", "asp_to_asn"), ("lys_decoy_to_met", "lys_to_met"), ("site_decoy_to_ala", "site_to_ala")]
 D = {(d["accession"], d["variant"]): d for d in json.loads((HERE / "decoys.json").read_text())}
 T = {t["accession"]: t for t in json.loads((PROBE / "pseudo/truth.json").read_text())}
 def site(acc, variant): t = T[acc]; return {"asp_to_asn": t.get("asp"), "lys_to_met": t.get("lys"), "site_to_ala": t.get("site")}[variant]
 def load(path):
     """Rows of one results file with `ans` read from the reply text; the answered rows by (accession, variant)."""
-    R = [json.loads(l) for l in path.open() if l.strip()] if path.exists() else []; reparse(R, KEYS["pseudo"])
+    R = [json.loads(l) for l in path.open() if l.strip()] if path.exists() else []
+    for row in R: row["ans"] = None if unusable(row) else answer(row.get("text"), KEYS["pseudo"])
     twice = sorted(k for k, n in collections.Counter((r["accession"], r["variant"]) for r in R if not unusable(r)).items() if n > 1)
     if twice: sys.exit(f"{path}: more than one usable row for {twice}; a question is scored on one answer")
     return R, {(r["accession"], r["variant"]): r for r in R if r.get("ans")}
@@ -107,8 +120,8 @@ print(f"Decoy positions: {len(D)} decoys in {len({d['accession'] for d in D.valu
 nodecoy = sorted(t["accession"] for t in T.values() if t["group"] in ("kinase", "enzyme") and t["accession"] not in {d["accession"] for d in D.values()})
 print(f"Kinases and enzymes of test 3 with no decoy: {', '.join(nodecoy) or 'none'}")
 ORDER = ["claude-fable-5-2", "claude-opus-5-5", "claude-opus-4-6"]   # as in the manuscript; other files follow by name
-for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.startswith(("bridge-", "canary-"))), key=lambda p: (ORDER.index(p.stem) if p.stem in ORDER else len(ORDER), p.stem)):
-    m = f.stem; R, dec = load(f); S, stored = load(PROBE / "pseudo/results" / f"{m}.jsonl"); B, bridge = load(HERE / "results" / f"bridge-{m}.jsonl")
+for f in sorted((p for p in RESULTS.glob("*.jsonl") if not p.name.startswith(("bridge-", "canary-"))), key=lambda p: (ORDER.index(p.stem) if p.stem in ORDER else len(ORDER), p.stem)):
+    m = f.stem; R, dec = load(f); S, stored = load(PSEUDO_RESULTS / f"{m}.jsonl"); B, bridge = load(RESULTS / f"bridge-{m}.jsonl")
     if not R: continue   # an empty file, as a zero-question run could leave
     tokens = sorted(map(ctx, dec.values()))
     print(f"\n== {m}: {len(R)} decoy calls, {len(dec)} answers scored, {len(R) - len(dec) - failed(R)} without an answer, effort {efforts(R)}, "
@@ -164,14 +177,14 @@ for f in sorted((p for p in (HERE / "results").glob("*.jsonl") if not p.name.sta
         flip = [f"{acc} {v} (decoy {call_of(r)}, wild type {call_of(ref[(acc, 'wt')])})" for (acc, v), r in sorted(dec.items()) if (acc, "wt") in ref and active(r) != active(ref[(acc, "wt")])]
         print(f"  decoys whose call differs from the wild type of the same protein ({name}): " + ("; ".join(flip) or "none"))
 
-names = {p.stem for p in (HERE / "results").glob("*.jsonl") if not p.name.startswith(("bridge-", "canary-")) and p.stat().st_size}
-for p in sorted((HERE / "results").glob("bridge-*.jsonl")):
+names = {p.stem for p in RESULTS.glob("*.jsonl") if not p.name.startswith(("bridge-", "canary-")) and p.stat().st_size}
+for p in sorted(RESULTS.glob("bridge-*.jsonl")):
     if p.stem[len("bridge-"):] not in names: print(f"\nWARNING: {p.name} has no decoy file {p.stem[len('bridge-'):]}.jsonl and is not read")
 for m in sorted(names):
-    if not (PROBE / "pseudo/results" / f"{m}.jsonl").exists(): print(f"\nWARNING: no stored test 3 file pseudo/results/{m}.jsonl for {m}.jsonl; its stored-run comparisons are empty")
+    if not (PSEUDO_RESULTS / f"{m}.jsonl").exists(): print(f"\nWARNING: no stored test 3 file pseudo/results/{m}.jsonl for {m}.jsonl; its stored-run comparisons are empty")
 print("\n== records of each file (asked_at is the time a call returned)")
 tot = 0.0
-for p in sorted((HERE / "results").glob("*.jsonl")):
+for p in sorted(RESULTS.glob("*.jsonl")):
     R = [json.loads(l) for l in p.open() if l.strip()]
     if not R: continue
     rng = {g: (min(ctx(r) for r in R if r.get("group") == g), max(ctx(r) for r in R if r.get("group") == g)) for g in ("kinase", "enzyme") if any(r.get("group") == g for r in R)}
@@ -185,7 +198,7 @@ for p in sorted((HERE / "results").glob("*.jsonl")):
                                                                     f" (without: {'; '.join(nohash)})" if 0 < len(nohash) <= 3 else "")
           + (f"; rows with a usage record {len(us)}, of them one request and no web search or fetch {one}" if us else ""))
 print(f"  rerun files together: cost ${tot:.4f}")
-c = HERE / "results" / "cli_context_check.json"
+c = RESULTS / "cli_context_check.json"
 if c.exists():
     j = json.loads(c.read_text()); runs = j["original_flags"] + j["with_extra_flags"] + [j["description_with_extra_flags"]]
     print(f"  cli_context_check.json: model {j['model']}, run {j['run_at']}, {len(runs)} calls, cost ${sum(money(r) for r in runs):.4f}")
