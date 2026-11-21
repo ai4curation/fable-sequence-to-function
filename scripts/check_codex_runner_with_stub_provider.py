@@ -20,6 +20,7 @@ import os
 import pathlib
 import shutil
 import sys
+import tempfile
 import threading
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -107,9 +108,10 @@ class Stub(http.server.BaseHTTPRequestHandler):
 srv = http.server.HTTPServer(("127.0.0.1", 0), Stub)
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 STUB_URL = f"http://127.0.0.1:{srv.server_address[1]}/v1"
-HOME = pathlib.Path.home() / "agent-work" / "fable-sequence-to-function" / "codex_stub_home_test"
-shutil.rmtree(HOME, ignore_errors=True)
-HOME.mkdir(parents=True)
+SCRATCH = pathlib.Path.home() / "agent-work" / "fable-sequence-to-function"
+SCRATCH.mkdir(parents=True, exist_ok=True)
+HOME = pathlib.Path(tempfile.mkdtemp(prefix="codex_stub_home_test-", dir=SCRATCH))
+print(f"Stub evidence: {HOME}")
 prep = run_codex.prepare_home(HOME, ["gpt-6-astra"], require_login=False, base_url=STUB_URL)  # the real provider settings; only the URL differs (#168)
 PROMPT = "Below is the beginning of a protein sequence.\n\n>sequence\nMKV"
 
@@ -672,9 +674,62 @@ run_codex.os.fsync = real_fsync
 check(len(CALLS) == 2 and len(rows) == 3 and sum(bool(r.get("not_asked")) for r in rows) == 1,
       f"journal write fails: not asked, row says so, others written ({len(CALLS)} asked; {len(rows)} rows)")
 # ... and a not-asked row does not count as asked on the next run (#191)
+not_asked_key = next(r["pdb"] for r in rows if r.get("not_asked"))
 CALLS.clear()
 code, rows = run_main(fake_slow, 1, fresh=False, limit=1)
-check(len(CALLS) == 1, f"a not-asked row is asked on the next run ({len(CALLS)} asked)")
+check(len(CALLS) == 1 and rows[-1]["pdb"] == not_asked_key,
+      f"a not-asked row is asked on the next run (expected {not_asked_key}, got {rows[-1]['pdb']})")
+
+# A failed submit must not discard futures for calls already launched (#190).
+real_executor = run_codex.ThreadPoolExecutor
+started = threading.Event()
+release = threading.Event()
+class FailingSubmitExecutor(real_executor):
+    def submit(self, *args, **kwargs):
+        if started.is_set():
+            release.set()
+            raise RuntimeError("injected submit failure")
+        future = super().submit(*args, **kwargs)
+        assert started.wait(5), "first call did not start"
+        return future
+
+def fake_pending(model, effort, prompt, *a, **k):
+    CALLS.append(prompt)
+    started.set()
+    assert release.wait(5), "submit failure did not release the call"
+    return "{}", dict(model=model, effort=effort, status="UNUSABLE", codex_row_format=2)
+
+CALLS.clear()
+run_codex.ThreadPoolExecutor = FailingSubmitExecutor
+submit_error = None
+try:
+    run_main(fake_pending, 1, limit=3)
+except RuntimeError as e:
+    submit_error = str(e)
+finally:
+    run_codex.ThreadPoolExecutor = real_executor
+rows = [json.loads(l) for l in f_rows.read_text().splitlines()] if f_rows.exists() else []
+check(submit_error == "injected submit failure" and len(rows) == len(CALLS) == 1,
+      f"submit failure: already launched call is written ({len(CALLS)} calls; {len(rows)} rows)")
+
+# A known unlaunched call is released even from another checkout; an older ambiguous
+# attempt for the same question must remain blocked (including legacy journal lines).
+first_key = build_questions("structure", "gpt-6-astra-high", 2)[0][0][0]
+jpath = HOME / "main_check" / "launched" / "structure" / "gpt-6-astra-high.jsonl"
+cancelled_launch = dict(key=first_key, launch_id="cancelled", results="/elsewhere/results.jsonl")
+for legacy in (None, True, False):
+    f_rows.write_text("")
+    entries = [cancelled_launch, dict(cancelled_launch, not_asked=True)]
+    if legacy is not None:
+        older = dict(key=first_key, results="/elsewhere/results.jsonl")
+        if not legacy:
+            older["launch_id"] = "older-ambiguous"
+        entries.insert(0, older)
+    jpath.write_text("".join(json.dumps(e) + "\n" for e in entries))
+    CALLS.clear()
+    code, rows = run_main(fake_slow, 1, fresh=False, limit=1)
+    check(len(CALLS) == 1 and (rows[0]["pdb"] == first_key) == (legacy is None),
+          f"cancelled launch: releases only its own attempt, across checkouts (older legacy={legacy})")
 
 # a stop that arrives after a question was taken: no Codex launch (#191)
 stop = threading.Event()

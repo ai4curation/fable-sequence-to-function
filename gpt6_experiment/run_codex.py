@@ -36,6 +36,7 @@ import sys
 import threading
 import time
 import types
+import uuid
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -511,18 +512,29 @@ def main():
     # answered and been billed, so they count as asked unless --retry-unusable is given (#181)
     here = str(out_path.resolve())
     launched, elsewhere = set(), {}
+    journal_entries = []
+    not_launched = set()
     for n, line in enumerate(journal_path.read_text().splitlines(), 1):
         if line.strip():
             try:
                 j = json.loads(line)
                 k = key_from_json(j["key"])
+                # A cancellation applies only to this launch, never an older ambiguous attempt.
+                launch = (j.get("launch_id"), k, j.get("results", here))
+                if j.get("not_asked") and launch[0]:
+                    not_launched.add(launch)
+                else:
+                    journal_entries.append((j, k, launch))
             except (ValueError, KeyError, TypeError):  # fail safe: never guess which question a damaged line was
                 raise SystemExit(f"{journal_path} line {n} is damaged; check that question's Codex record under "
                                  f"{args.home}/sessions, then fix or remove the line")
-            if j.get("results", here) == here:
-                launched.add(k)
-            else:  # launched by a run writing another results file (another checkout) (#191)
-                elsewhere.setdefault(j["results"], set()).add(k)
+    for j, k, launch in journal_entries:
+        if launch in not_launched:
+            continue
+        if j.get("results", here) == here:
+            launched.add(k)
+        else:  # launched by a run writing another results file (another checkout) (#191)
+            elsewhere.setdefault(j["results"], set()).add(k)
     asked_here = {key_fn(r) for r in rows if not r.get("not_asked")}
     orphans = launched - asked_here
     if orphans:
@@ -541,24 +553,40 @@ def main():
     state = dict(signal=None)
     journal_lock = threading.Lock()
 
+    def journal(entry):
+        with journal_lock:
+            jf.write(json.dumps(entry) + "\n")
+            jf.flush()
+            os.fsync(jf.fileno())
+
     def ask_one(item):
         key, prompt, meta = item
         if stop.is_set():
             return None
         base = dict(meta, model=args.model, effort=args.effort, prompt_sha256=sha(prompt), codex_row_format=2)
+        entry = dict(key=key_to_json(key), prompt_sha256=sha(prompt), model=args.model, effort=args.effort,
+                     results=here, launch_id=str(uuid.uuid4()),
+                     launched_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))
+
+        def not_asked(row):
+            # Keep the journal append-only, and release only this known unlaunched attempt.
+            # If recording this fails, the journal may still block a retry; retain the error.
+            try:
+                journal(dict(entry, not_asked=True))
+            except Exception as e:
+                row["journal_error"] = masked(f"not-asked journal entry not saved: {e!r}")
+            return row
+
         try:  # on disk before the call, so a killed run cannot lead to a second answer (#181)
-            with journal_lock:
-                jf.write(json.dumps(dict(key=key_to_json(key), prompt_sha256=sha(prompt), model=args.model, effort=args.effort,
-                                         results=here, launched_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"))) + "\n")
-                jf.flush()
-                os.fsync(jf.fileno())
+            journal(entry)
         except Exception as e:  # not recorded, so not asked (#190)
-            return dict(base, error=masked(f"journal write failed, question not asked: {e!r}"), not_asked=True)
+            return not_asked(dict(base, error=masked(f"journal write failed, question not asked: {e!r}"), not_asked=True))
         try:  # one bad call, or a bad reply, must not stop the batch (#162, #163)
             text, rec = call_codex(args.model, args.effort, prompt, prep, args.home, stop=stop)
             if rec.get("login_error"):
                 stop.set()  # in the worker, before it can take the next question (#173)
-            return build_row(args.test, meta, text, rec)
+            row = build_row(args.test, meta, text, rec)
+            return not_asked(row) if rec.get("not_asked") else row
         except Exception as e:
             return dict(base, error=masked(f"runner: {e!r}"))
 
@@ -588,7 +616,8 @@ def main():
     ex = ThreadPoolExecutor(args.workers)
     futs = []
     try:
-        futs = [ex.submit(ask_one, item) for item in todo]  # inside the try (#190)
+        for item in todo:  # retain each future even if a later submit raises (#190)
+            futs.append(ex.submit(ask_one, item))
         pending = set(futs)
         with out_path.open("a") as fh:
             announced = False

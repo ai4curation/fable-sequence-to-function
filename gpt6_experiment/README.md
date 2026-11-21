@@ -5,6 +5,18 @@ and Gemini runs, through the Codex CLI signed in to ChatGPT (no OpenAI API key i
 coding agent and normally sends about 89,000 characters of its own context with each request; the
 runner strips that for this experiment only. `~/.codex` is never read or changed.
 
+## Where to run
+
+**Run Rosalind only on EC2 through the paired Orca `rosalind` environment, never on the laptop.**
+Use `orca environment list --json` to confirm the pairing and `orca repo list --environment rosalind --json`
+to locate the remote checkout. Launch the runner in a terminal belonging to that environment, with
+an experiment home and login on EC2. Verify the remote Codex version and run the offline stub checks
+there before making live calls; this runner was validated with Codex 0.170.0. A local shell does not
+become remote merely because an Orca environment is paired.
+
+The stub checks call no model and may run locally. Each invocation uses its own scratch home so
+checks in different checkouts cannot overwrite one another's evidence.
+
 ## What the request carries
 
 Measured offline by pointing `codex exec` at a local stub server
@@ -82,7 +94,10 @@ How:
   - **Other checkouts:** each line records the results file it was written for. A question launched by a
     run writing another results file is reported as such and not asked again unless `--retry-unusable` is given.
   - **Not asked:** if writing the journal line fails, or a stop arrives before Codex starts, the question
-    gets a row marked `not_asked`, which never counts as asked.
+    gets a row marked `not_asked`. An append-only cancellation entry releases that specific launch
+    for the next run, including from another checkout. It cannot release an older attempt that may
+    have reached the model. If saving the cancellation fails, `journal_error` records the failure;
+    check the journal and its evidence before retrying.
   - **Damaged lines:** a damaged journal line stops the run before any call, naming the line.
 - **Stopping** (#165, #173, #175, #181, #184, #185).
   - **What stops a run:** a login error, Ctrl-C, SIGTERM or a closed terminal (SIGHUP). After one, no
@@ -157,8 +172,9 @@ Rows have the same layout as the Gemini rows (`build_row`), so the Gemini scorer
 For GPT-6 rows the audit also requires, of every usable row, a passing context check, the named
 model requested, input tokens within the limit, a passing request check, the runner's provider,
 and no websocket log lines. `scripts/check_codex_runner_with_stub_provider.py`
-writes rows through the runner against a stub and runs both commands on them. Once real rows exist,
-add both commands to `just report` and `just check` with frozen outputs in `expected/`.
+writes rows through the runner against a stub and runs both commands on them. `just report` and
+`just check` include the committed canaries, with frozen outputs in `expected/gpt6.txt` and
+`expected/gpt6_audit.txt`. Their raw results are covered by `SHA256SUMS`.
 `experiments/summary.py` totals the Claude calls only, as for the Gemini rows; the audit's coverage
 lines give the GPT-6 counts.
 

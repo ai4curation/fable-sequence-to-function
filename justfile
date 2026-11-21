@@ -17,6 +17,8 @@ report:
     uv run python gemini_experiment/score_gemini.py results > expected/gemini_pilots.txt
     uv run python gemini_experiment/audit.py > expected/gemini_audit.txt
     uv run python gemini_experiment/thinking.py > expected/gemini_thinking.txt
+    uv run python gemini_experiment/score_gemini.py gpt6_experiment/results > expected/gpt6.txt
+    uv run python gemini_experiment/audit.py gpt6_experiment/results > expected/gpt6_audit.txt
     uv run python figures/make_figures.py --values-only > expected/figures.txt
 
 # Recompute the numbers and fail if they differ from the committed expected/ files
@@ -36,6 +38,8 @@ check: verify-data
     uv run python gemini_experiment/score_gemini.py results > $tmp/gemini_pilots.txt
     uv run python gemini_experiment/audit.py > $tmp/gemini_audit.txt
     uv run python gemini_experiment/thinking.py > $tmp/gemini_thinking.txt
+    uv run python gemini_experiment/score_gemini.py gpt6_experiment/results > $tmp/gpt6.txt
+    uv run python gemini_experiment/audit.py gpt6_experiment/results > $tmp/gpt6_audit.txt
     uv run python figures/make_figures.py --values-only > $tmp/figures.txt
     diff -r $tmp expected && echo "All reported numbers reproduce."
 
@@ -45,7 +49,7 @@ verify-data:
 
 # Rewrite SHA256SUMS (only after deliberately adding new runs)
 checksums:
-    find experiments gemini_experiment -type f \( -name '*.json' -o -name '*.jsonl' -o -name '*.tsv' -o -name '*.yaml' -o -name '*.cif' -o -name '*.pdb' \) | sort | xargs shasum -a 256 > SHA256SUMS
+    find experiments gemini_experiment gpt6_experiment -type f \( -name '*.json' -o -name '*.jsonl' -o -name '*.tsv' -o -name '*.yaml' -o -name '*.cif' -o -name '*.pdb' \) | sort | xargs shasum -a 256 > SHA256SUMS
 
 # Redraw the figures from the committed model outputs (the plotted values are in expected/figures.txt)
 figures:

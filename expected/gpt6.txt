@@ -1,0 +1,14 @@
+
+========================================================================
+TEST 4: STRUCTURE & FUNCTION
+========================================================================
+
+== gpt-6-astra-high: 1 usable (3 unusable, 0 unparsed)
+  novel                        n= 0: Q3 nan% (base nan%); LR prec nan% (top5 nan%; chance nan%); rec 0/0
+  known                        n= 1: Q3 51.5% (base 50.3%); LR prec 0.0% (top5 0.0%; chance 2.1%); rec 0/1
+  novel, ASPRV1 counted once   n= 0: Q3 nan% (base nan%); LR prec nan% (top5 nan%; chance nan%); rec 0/0
+
+== gpt-rosalind-astra-high: 1 usable (1 unusable, 0 unparsed)
+  novel                        n= 0: Q3 nan% (base nan%); LR prec nan% (top5 nan%; chance nan%); rec 0/0
+  known                        n= 1: Q3 50.9% (base 50.3%); LR prec 10.5% (top5 0.0%; chance 2.1%); rec 0/1
+  novel, ASPRV1 counted once   n= 0: Q3 nan% (base nan%); LR prec nan% (top5 nan%; chance nan%); rec 0/0
