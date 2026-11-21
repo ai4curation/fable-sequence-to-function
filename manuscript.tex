@@ -143,9 +143,11 @@ annotated catalytic residue is substituted, and not when a matched residue elsew
 measure the activity of any mutant or decoy.
 
 \textbf{Structure and function (\tstrfn).} Predict secondary structure, residue contacts and function for
-30 PDB structures released from August 2026. We call an entry ``novel'' when no PDB entity at 30\%
-sequence identity or more was released before June 2026, and ``known'' when at least 20 were. One novel
-protein, human ASPRV1, was drawn four times and is counted once, leaving 12 novel proteins.
+30 PDB structures released from August 2026. We call an entry ``unmatched'' when no PDB entity at 30\%
+sequence identity or more was released before June 2026, and ``matched'' when at least 20 were. The labels
+describe that search and nothing else: an unmatched protein is not necessarily new to science or to the
+models. One unmatched protein, human ASPRV1, was drawn four times and is counted once, leaving 12
+unmatched proteins.
 
 \subsection{A next-residue advantage is detectable for two of the four models tested}\label{sec:nextres}
 
@@ -365,13 +367,15 @@ substitution introduced for this study. Claude models at high effort; Gemini~4 N
 
 \subsection{Structure is predicted above chance, and function called with abstentions, for recently released proteins}
 
-For the 12 novel proteins, Fable~5.2, Opus~5.5 and Neon reached 76\%, 73\% and 69\% three-state accuracy,
+For the 12 unmatched proteins, Fable~5.2, Opus~5.5 and Neon reached 76\%, 73\% and 69\% three-state accuracy,
 against 57\% for the best single-state guess. Their long-range contact precision was 37\%, 19\% and 28\%,
-against 2\% by chance (Figure~\ref{fig:struct}, Table~\ref{tab:structure}). For the known stratum,
+against 2\% by chance (Figure~\ref{fig:struct}, Table~\ref{tab:structure}). Precision here is over the
+pairs that met the request, at least 24 residues apart with both residues resolved in the structure.
+Counting every submitted pair, with a pair that did not qualify counted as wrong, gives 34\%, 18\% and 28\%. For the matched stratum,
 accuracy was 78 to 82\% and contact precision 31 to 48\%. Twelve proteins are too few to rank two models
 by a numerical difference.
 
-Opus~4.6 did much worse. On the novel proteins, at high effort, it reached 54\% on
+Opus~4.6 did much worse. On the unmatched proteins, at high effort, it reached 54\% on
 secondary structure, below the single-state guess, and 8\% contact precision, above chance but far below
 the first three. At low effort it reached 48\% and 4\%.
 
@@ -379,21 +383,22 @@ All of these values are far short of dedicated structure predictors \citep{jumpe
 only that three models do well above chance without an alignment and with built-in tools turned off. Model class,
 effort and route vary, so this is not a controlled comparison between generations or providers.
 
-We also asked each model whether it recognised the protein. Of the 12 novel proteins, Fable~5.2 said it
+We also asked each model whether it recognised the protein. Of the 12 unmatched proteins, Fable~5.2 said it
 did for 2 (ASPRV1 and MrtR), Neon for 1, Opus~5.5 for none and Opus~4.6 for 4. These self-reports do not
 track accuracy: Opus~4.6 claimed the most recognitions and had the lowest structure scores. Recognition counts therefore cannot establish
 recall or training exposure, and a wrong structure does not by itself prove a recognition claim false.
 
 \begin{table}[ht]
 \centering\small
-\caption{Structure scores (percent), with ASPRV1 counted once: 12 novel-stratum and 15 known-stratum
-proteins, except 14 known for Opus~5.5. Q3 is three-state accuracy; contacts are mean per-protein
-long-range precision. Effort labels are not comparable reasoning budgets. The Claude rows retain calls
+\caption{Structure scores (percent), with ASPRV1 counted once: 12 unmatched and 15 matched
+proteins, except 14 matched for Opus~5.5. Q3 is three-state accuracy; contacts are mean per-protein
+long-range precision over the submitted pairs that were at least 24 residues apart with both residues
+resolved. Effort labels are not comparable reasoning budgets. The Claude rows retain calls
 listing more than one served model.}
 \label{tab:structure}
 \begin{tabular}{llrrrr}
 \toprule
- & & \multicolumn{2}{c}{Novel stratum} & \multicolumn{2}{c}{Known stratum} \\
+ & & \multicolumn{2}{c}{Unmatched} & \multicolumn{2}{c}{Matched} \\
 \cmidrule(lr){3-4}\cmidrule(lr){5-6}
 Model & Effort & Q3 & Contacts & Q3 & Contacts \\
 \midrule
@@ -406,8 +411,13 @@ Claude Opus 4.6 & low & 48.1 & 4.1 & 45.1 & 4.0 \\
 \end{tabular}
 \end{table}
 
-We graded the function calls for the 12 novel proteins by hand. Fable~5.2 was correct on 6, abstained on
-5 and was wrong on 1. Opus~5.5 was correct on 4, abstained on 7 and was wrong on 1. Most of the correct
+Two graders, working separately and without knowing which model wrote an answer, graded the function
+calls of the three frontier models for the 12 unmatched proteins against the deposited title. Both graders
+were instances of a Claude model, not people (Methods). They agreed on 32 of the 36 overall grades. Fable~5.2
+was correct on 5 proteins and partly correct on 2, Opus~5.5 on 4 and 1, and Neon on 2 and 1. The rest
+were wrong or were abstentions: 2 or 3 wrong calls each for Fable~5.2 and Opus~5.5, depending on the
+grader, and 4 to 6 for Neon. The four disagreements were all over whether a vague answer was an
+abstention or an error. No model was correct on more than half of the proteins. Most of the correct
 calls were for members of large, well-characterised families. We did not test whether the models got
 there through the predicted structure or by recognising the family from sequence.
 
@@ -417,19 +427,21 @@ triad, ``possibly a deubiquitinase''. The entry is the structure of its deubiqui
 cannot be credited to the sequence alone, however. A preprint describing this protein family as
 deubiquitinases was posted in December 2025 \citep{lachmayer2025ducs}, eight months before the structure
 was released, and a model trained after that date could have learned it. We did not search for earlier
-descriptions of the other novel proteins.
+descriptions of the other unmatched proteins.
 
-Fable~5.2's wrong call was the guanidine prenyltransferase NosH (9TGX), which it named a TenA-family
-thiaminase. Neither Fable~5.2 nor Opus~5.5 identified the RNase~P subunit Rpp30 (10CW) or a designed
-cysteine protease (9YP0).
+Good secondary structure did not imply a correct function. For the guanidine prenyltransferase NosH
+(9TGX), Fable~5.2 scored 82\% three-state accuracy on an almost entirely helical protein, where calling
+every residue helix scores 87\%. None of its 19 qualifying contacts was right, and it named the protein a
+TenA-family thiaminase. No model identified the RNase~P subunit Rpp30 (10CW). For a designed cysteine
+protease (9YP0), Fable~5.2 and Opus~5.5 each described a natural bacterial surface protein with no
+catalytic function. Both graders counted these as wrong claims and not as abstentions.
 
-We reviewed Neon's function calls without grading them. They show the same gap between recognising a
+Neon's calls show the same gap between recognising a
 family and annotating a protein. Neon correctly named a polynucleotide kinase for 9ZWQ and an
 AHL-responsive LuxR-family regulator for 10ZI. For the retained ASPRV1 entry (27IK), it predicted the
 right family, the aspartic proteases, but named the protein DDI2 and gave it DDI2-specific substrate
 biology. It also assigned PanG (37QB) to the TyrA dehydrogenase family and Rpp30 (10CW) to a metabolic
-enzyme. Several other answers were generic guesses, which we did not turn into an abstention or accuracy
-count.
+enzyme.
 
 One of the ASPRV1 constructs (27IQ) gave an unplanned repeat of the \tpseudo{} test, because its catalytic DSG motif
 is changed to NSG. Without being asked about activity, Fable~5.2 and Opus~5.5 said that the catalytic
@@ -440,8 +452,8 @@ substitution.
 \centering
 \includegraphics[width=\linewidth]{figures/fig2_structure.pdf}
 \caption{Structure prediction from sequence for PDB entries released from August 2026, with ASPRV1
-counted once. Novel: no PDB entity at 30\% identity or more released before June 2026. Known: at least 20
-such entities. There are 12 novel and 15 known proteins; for Opus~5.5, the call for one known entry
+counted once. Unmatched: no PDB entity at 30\% identity or more released before June 2026. Matched: at least 20
+such entities. There are 12 unmatched and 15 matched proteins; for Opus~5.5, the call for one matched entry
 returned an API error instead of an answer. Claude models at high effort; Gemini~4 Neon at medium effort.
 Dashed lines show the best single-state guess (left) and the chance rate for a long-range pair (right).}
 \label{fig:struct}
@@ -579,8 +591,9 @@ positions and can be inactive for reasons that leave the catalytic residues inta
 over-annotated entry.
 
 The reference data and grading have limits too. Transmembrane and signal-peptide truth in the \tfeat{} test is
-itself predicted. Function calls in the \tstrfn{} test were graded for Fable~5.2 and Opus~5.5 only, once and
-unblinded, by the agent that ran those tests; for the other models the review is qualitative. The novel
+itself predicted. Function calls in the \tstrfn{} test were graded by two blinded instances of a Claude model, the
+family of two of the three models graded, and by no human. They were graded against the deposited title alone, for
+12 proteins. The unmatched
 stratum of the \tstrfn{} test excludes close homologs in the PDB and nothing else. Most of its sequences were already
 public, remote homologs were not excluded, and at least one protein was described in a preprint before
 its structure was released. The random-contact baseline does not substitute for running dedicated
@@ -628,7 +641,7 @@ mutants and wild types for the decoy control. None of those rows shows a web req
 Each question has at most one scored answer per run. For 6 of the 2,854 recorded calls in the four tests,
 the tool's usage record lists a second model besides the one requested. Three are Opus~5.5 next-residue
 calls at high effort, all on shuffled sequences. The other three are in the \tstrfn{} test, one Fable~5.2 and two
-Opus~5.5 calls, all on known-stratum entries. One of the Opus~5.5 \tstrfn{} calls (PDB 7IMP) returned an
+Opus~5.5 calls, all on matched entries. One of the Opus~5.5 \tstrfn{} calls (PDB 7IMP) returned an
 API error instead of an answer and is excluded from the scores. For the other five, the record does not
 show which model wrote the answer. We kept them in the reported numbers; the repository also gives tests
 1 and 4 with them excluded, and no conclusion changes. Where a reply held more than one JSON object, we
@@ -723,8 +736,9 @@ them.
 or after 1 August 2026 with one protein entity of 100 to 350 residues and a resolution of 2.5~\AA{} or
 better. We kept 15 entries for which a sequence search found no PDB entity at 30\% identity or more
 released before 1 June 2026, and 15 entries with at least 20 such entities. We call these strata
-``novel'' and ``known'' for short, and the labels describe that criterion only. Novel entries may have
-more distant homologs in the PDB. Of the 12 distinct novel proteins, 8 have UniProt accessions, so their
+``unmatched'' and ``matched'' for short, and the labels describe that criterion only (the data files call
+them \texttt{novel} and \texttt{known}). Unmatched entries may have
+more distant homologs in the PDB. Of the 12 distinct unmatched proteins, 8 have UniProt accessions, so their
 sequences were public earlier. Structures are deposited months before release, and the work behind an
 entry may have been described in a preprint. We do not know the models' training cutoffs. The two dates
 rest on our assumption that structures released from August 2026 were not in training, and the date and
@@ -733,10 +747,21 @@ homology filters do not establish it.
 The model predicted helix and strand ranges, a fold, 20 residue pairs at least 24 apart in sequence that
 it expected to lie within 8~\AA{} (C$\alpha$), a function, and whether it recognised the sequence as a
 specific known protein. Truth was the deposited coordinates and the depositors' helix and sheet records,
-scored over resolved residues. One protein, human ASPRV1, was drawn four times in the novel set, and we
-count it once (12 novel proteins). For Fable~5.2 and Opus~5.5, the AI agent that ran those tests graded
-the function calls for these 12 proteins once, unblinded, against the deposited title. Function calls of
-the other models were reviewed qualitatively, without an aggregate grade.
+scored over resolved residues. Contact precision is computed per protein over the submitted pairs that
+were at least 24 apart with both residues resolved, and then averaged. The models did not always comply:
+of 240 pairs submitted for the 12 unmatched proteins, 229 qualified for Fable~5.2 and 208 for Opus~5.5. We
+therefore also report precision over all submitted pairs. One protein, human ASPRV1, was drawn four times
+in the unmatched set, and we count it once (12 unmatched proteins).
+
+Function calls for these 12 proteins were graded twice. The AI agent that ran the Claude tests first
+graded Fable~5.2 and Opus~5.5 once, unblinded, as correct, abstaining or wrong. That grading counted
+confident descriptions of the wrong kind of protein as abstentions, so we replaced it. For the grades
+reported here, the answers of Fable~5.2, Opus~5.5 and Neon were stripped of model names and shuffled. Two
+separate instances of a Claude model each graded all 36 against the deposited title and molecule name.
+Each recorded whether the family, the specific function and any claim about the protein's identity or
+origin were right, whether the answer was a true abstention, and an overall grade (correct, partly
+correct, wrong or abstained). The graders agreed on 32 of 36 overall grades (Cohen's $\kappa = 0.85$), and
+we give both counts where they differ. Both gradings are in the repository.
 
 \section*{Data and code availability}
 

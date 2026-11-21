@@ -1,0 +1,326 @@
+[
+ {
+  "item": "12WN-A",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Calls it an uncharacterized alpha/beta protein with only a vague ligand-binding guess; does not recognise design but asserts no firm natural identity."
+ },
+ {
+  "item": "12WN-B",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "correct",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "Says it is likely a computationally designed construct, which matches the de novo design; no wrong natural identity asserted (fold given is not the TIM barrel)."
+ },
+ {
+  "item": "12WN-C",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "wrong",
+  "true_abstention": false,
+  "overall": "wrong",
+  "note": "Asserts a natural thermophilic Rossmann-fold metabolic enzyme for a de novo designed TIM-barrel protein."
+ },
+ {
+  "item": "9SA5-A",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "correct",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "Names a CD-NTase from a CBASS antiphage system that synthesises cyclic oligonucleotide signals."
+ },
+ {
+  "item": "9SA5-B",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Only an uncharacterised Rossmann-like nucleotide-binding enzyme with a vague redox/group-transfer guess; no family named."
+ },
+ {
+  "item": "9SA5-C",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "none",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "Names cGAS/DncV-like nucleotidyltransferase making cyclic oligonucleotides for antiphage defence."
+ },
+ {
+  "item": "37QB-A",
+  "family": "broader_only",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": false,
+  "overall": "partly_correct",
+  "note": "Correctly an NADP-dependent Rossmann oxidoreductase but substrate unidentified; ketopantoate reductase not named."
+ },
+ {
+  "item": "37QB-B",
+  "family": "broader_only",
+  "specific_function": "generic",
+  "identity_claim": "correct",
+  "true_abstention": false,
+  "overall": "partly_correct",
+  "note": "NADP-dependent reductase said to be related to ketopantoate reductases but substrate left unknown; actinobacterial structural-genomics origin is right."
+ },
+ {
+  "item": "37QB-C",
+  "family": "wrong",
+  "specific_function": "wrong",
+  "identity_claim": "wrong",
+  "true_abstention": false,
+  "overall": "wrong",
+  "note": "Calls it prephenate/arogenate dehydrogenase (TyrA) rather than ketopantoate reductase."
+ },
+ {
+  "item": "27IK-A",
+  "family": "broader_only",
+  "specific_function": "correct",
+  "identity_claim": "wrong",
+  "true_abstention": false,
+  "overall": "partly_correct",
+  "note": "Right retroviral-like aspartic protease fold and activity, but identifies the protein as DDI2 with NRF1 processing instead of ASPRV1."
+ },
+ {
+  "item": "27IK-B",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "correct",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "Names ASPRV1/SASPase, the retroviral-like aspartic protease, exactly."
+ },
+ {
+  "item": "27IK-C",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "none",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "Names a retroviral-like aspartic protease domain acting as a homodimeric aspartic endopeptidase; specific protein only hedged."
+ },
+ {
+  "item": "9TGX-A",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Uncharacterized helical protein with a vague protein-interaction guess; misses the prenyltransferase."
+ },
+ {
+  "item": "9TGX-B",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Uncharacterized helical protein with a vague metal/ligand-binding guess; no family or activity named."
+ },
+ {
+  "item": "9TGX-C",
+  "family": "wrong",
+  "specific_function": "wrong",
+  "identity_claim": "wrong",
+  "true_abstention": false,
+  "overall": "wrong",
+  "note": "Assigns TenA thiaminase II family and thiamine-salvage hydrolysis instead of guanidine prenyltransferase."
+ },
+ {
+  "item": "9WIA-A",
+  "family": "none",
+  "specific_function": "wrong",
+  "identity_claim": "none",
+  "true_abstention": false,
+  "overall": "wrong",
+  "note": "Asserts carbohydrate binding for an insect oral-secretion effector that suppresses plant immunity; nothing specific is right."
+ },
+ {
+  "item": "9WIA-B",
+  "family": "wrong",
+  "specific_function": "wrong",
+  "identity_claim": "none",
+  "true_abstention": false,
+  "overall": "wrong",
+  "note": "Asserts an expansin-like polysaccharide-binding cell-wall-modifying protein, not supported by the effector truth."
+ },
+ {
+  "item": "9WIA-C",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Declares the protein unidentified with only a speculative secreted binding-domain guess."
+ },
+ {
+  "item": "9T71-A",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Uncharacterized alpha+beta protein, vague enzyme-or-ligand-binding guess; papain-like deubiquitinase not named."
+ },
+ {
+  "item": "9T71-B",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "correct",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "Names a papain-like cysteine peptidase/deubiquitinase from a plant NT-C2 (EEIG1/EHBP1 N-terminal) domain protein."
+ },
+ {
+  "item": "9T71-C",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Uncharacterized plant protein of unknown function with no catalytic motif claimed."
+ },
+ {
+  "item": "10ZI-A",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "none",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "LuxR-family AHL-dependent quorum-sensing transcriptional regulator matches MrtR."
+ },
+ {
+  "item": "10ZI-B",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "none",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "LuxR-family AHL receptor/transcriptional activator matches the quorum sensing receptor MrtR."
+ },
+ {
+  "item": "10ZI-C",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "wrong",
+  "true_abstention": false,
+  "overall": "partly_correct",
+  "note": "Family and function right, but claims recognition as Brucella BabR/BlxR whereas it is Mesorhizobium MrtR."
+ },
+ {
+  "item": "23AA-A",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Function stated unknown with a hedged guess at an inhibitor/immunity protein; anti-CRISPR not named."
+ },
+ {
+  "item": "23AA-B",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Uncharacterized acidic protein with a general DNA-mimic/interaction guess; anti-CRISPR not named."
+ },
+ {
+  "item": "23AA-C",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Uncharacterized acidic protein with a hedged toxin-immunity guess; anti-CRISPR not named."
+ },
+ {
+  "item": "9ZWQ-A",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "none",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "Polynucleotide 5'-hydroxyl kinase matches the N4BP2 PNK domain activity."
+ },
+ {
+  "item": "9ZWQ-B",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "none",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "P-loop polynucleotide-kinase-like domain of the NEDD4-binding protein 2(-like) group; paralogue naming is tentative and near the truth."
+ },
+ {
+  "item": "9ZWQ-C",
+  "family": "correct",
+  "specific_function": "correct",
+  "identity_claim": "none",
+  "true_abstention": false,
+  "overall": "correct",
+  "note": "Names a 5'-OH polynucleotide kinase P-loop domain phosphorylating DNA/RNA ends."
+ },
+ {
+  "item": "10CW-A",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "wrong",
+  "true_abstention": false,
+  "overall": "wrong",
+  "note": "Predicts a Rossmann-fold metabolic transferase/redox enzyme for an RNase P Rpp30 protein subunit."
+ },
+ {
+  "item": "10CW-B",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "wrong",
+  "true_abstention": false,
+  "overall": "wrong",
+  "note": "No family or function, and states a likely Thermus/Deinococcus bacterial origin for an archaeal RNase P protein."
+ },
+ {
+  "item": "10CW-C",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "wrong",
+  "true_abstention": false,
+  "overall": "wrong",
+  "note": "No family or function, and states a likely actinobacterial origin for an archaeal RNase P protein."
+ },
+ {
+  "item": "9YP0-A",
+  "family": "none",
+  "specific_function": "generic",
+  "identity_claim": "none",
+  "true_abstention": true,
+  "overall": "abstained",
+  "note": "Uncharacterized TBP-like repeat protein with vague binding guess; neither recognises design nor asserts a natural identity or protease activity."
+ },
+ {
+  "item": "9YP0-B",
+  "family": "wrong",
+  "specific_function": "generic",
+  "identity_claim": "wrong",
+  "true_abstention": false,
+  "overall": "wrong",
+  "note": "Calls the de novo designed cysteine protease a bacterial PepSY-like secreted lipoprotein."
+ },
+ {
+  "item": "9YP0-C",
+  "family": "none",
+  "specific_function": "none",
+  "identity_claim": "wrong",
+  "true_abstention": false,
+  "overall": "wrong",
+  "note": "Calls the de novo designed cysteine protease a bacterial lipoprotein with no catalytic motif."
+ }
+]

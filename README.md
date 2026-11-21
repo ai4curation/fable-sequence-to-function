@@ -7,7 +7,7 @@ Gemini API runs supplied no tools or system instruction in the request body.
 
 Gemini 4 Neon detects all 20 kinase Asp-to-Asn substitutions at low effort and,
 at medium effort, reaches 69.0% secondary-structure accuracy and 28.4% long-range
-contact precision on the 12 novel-stratum proteins. At low effort, however, it shows no detectable next-residue
+contact precision on the 12 proteins with no close earlier PDB match. At low effort, however, it shows no detectable next-residue
 advantage over shuffled sequences and identifies none of the 15 obscure DUF
 families. See [the Gemini methods, coverage, and results](gemini_experiment/README.md)
 for the full extension, incomplete pilots, and limits of cross-model comparisons.
@@ -76,7 +76,7 @@ pixel, so they are not byte-for-byte reproducible.
 | Scoring, statistics, figures | Deterministic from committed files. The bootstrap uses a fixed seed. |
 | Test sets (`truth.json`, `upstream/`) | Committed exactly as drawn on 2026-11-18. The `build.py` scripts record how, but they query live UniProt, InterPro and RCSB services, so re-running them draws different entries. Do not re-run them to check the paper. |
 | Model answers (`results/*.jsonl`, `gemini_experiment/results*/*/*.jsonl`) | Saved reply text and available usage metadata. Gemini retry records do not include all failed responses, their tokens, or total cost. Re-asking will not give identical answers; temperature and access routes vary and models change. |
-| Function grading (`structure/function_grading.yaml`) | One unblinded manual pass, committed with a note per protein. |
+| Function grading (`structure/function_regrade/`) | Two blinded graders (instances of a Claude model, not people) with a five-field rubric; items, key and both gradings committed. The first unblinded pass is kept in `structure/function_grading.yaml`. |
 
 ## Where each number comes from
 
@@ -213,7 +213,7 @@ report values remain unchanged.
   has no per-model token counts, so it does not show which model wrote the
   answer. One of them, the Opus 5.5 call for 7IMP, returned an API error
   instead of an answer and is excluded from the scores (so Opus 5.5 has 14
-  known-stratum entries). The other calls are kept in the reported
+  entries in the matched stratum). The other calls are kept in the reported
   numbers; `expected/next_residue.txt` and `expected/structure.txt` also give
   tests 1 and 4 without them.
   `expected/summary.txt` gives the totals.
