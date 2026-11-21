@@ -413,7 +413,14 @@ by a numerical difference.
 
 Opus~4.6 did much worse. On the unmatched proteins, at high effort, it reached 54\% on
 secondary structure, below the single-state guess, and 8\% contact precision, above chance but far below
-the first three. At low effort it reached 48\% and 4\%.
+the first three. At low effort it reached 48\% and 4\%. On the matched stratum, Opus~4.6 at high effort
+reached 58\%, slightly above the single-state guess of 55\%, and 10\% contact precision. Its nine longest
+\tstrfn{} answers, five on unmatched proteins and four on matched ones, rest on a reply that the tool
+continued: eight after the output limit and one after a classifier stop. Leaving them out keeps 7 of the 12
+unmatched proteins and 11 of the 15 matched ones. Secondary structure is then 56\% on both strata, against
+single-state guesses of 56\% and 54\% for those subsets, contact precision is 11\% and 10\%, and the gap
+between the strata in secondary structure falls from 3.9 to 0.5 points. With so few proteins this is a sensitivity check, not a
+separate result.
 
 We did not run dedicated structure predictors such as AlphaFold \citep{jumper2021alphafold} on these
 proteins, so we make no comparison with them. We claim only that three models do well above chance without an alignment and with built-in tools turned off. Model class,
@@ -891,10 +898,14 @@ unasked when that run was interrupted. We asked them on 19 November (UTC) with C
 flags that keep user settings and connector tools out of the call. With these flags, the one-sentence
 prompt carried 573 input tokens.
 
-\paragraph{Continued replies.} The high-effort Opus~4.6 answers were long. The tool asks again by itself after an output limit or a stopped reply, and 7 of 120 replies in the \tpseudo{} test
+\paragraph{Continued replies.} The high-effort Opus~4.6 answers were long. The tool asks again by itself after an output limit or an empty or stopped reply, and 7 of 120 replies in the \tpseudo{} test
 and 9 of 30 in the \tstrfn{} test took more than one request for this reason. In the \tfeat{} test, six such replies were asked
-again, and one of the new answers also took more than one request. In the \tnr{} test, Opus~4.6 was run at low
-effort only.
+again, and one of the new answers also took more than one request. Continued answers that were kept are
+scored like any other. In four of them a safety classifier had stopped the reply before the tool asked again:
+A0A919RPG7 in the \tfeat{} test, the Q2PAY3 aspartate-to-asparagine mutant and the Q9V422 wild type in the
+\tpseudo{} test, and 9T71 in the \tstrfn{} test. The rows do not record such stops; the tool's own session
+records do, and the repository lists them in \texttt{review/classifier\_stops\_2026-11-20}. In the \tnr{}
+test, Opus~4.6 was run at low effort only.
 
 \paragraph{Web requests.} Counts of web search and fetch requests were kept only in rows written by later versions of the revised
 route's code. These are mostly the Opus~4.6 high-effort runs of the \tpseudo{} and \tstrfn{} tests and the rerun of the \tpseudo{}
