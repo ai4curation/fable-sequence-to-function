@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it as below."
+title: "Sequence to function with general language models: code, test sets and model outputs"
+type: software
+authors:
+  - family-names: Joachimiak
+    given-names: Marcin P.
+    affiliation: Lawrence Berkeley National Laboratory
+    orcid: "https://orcid.org/0000-0001-8175-045X"
+  - family-names: Mungall
+    given-names: Christopher J.
+    affiliation: Lawrence Berkeley National Laboratory
+    orcid: "https://orcid.org/0000-0002-6601-2165"
+repository-code: "https://github.com/ai4curation/fable-sequence-to-function"
+license: CC-BY-4.0
+version: 0.1.0
+keywords:
+  - large language models
+  - protein function
+  - protein sequence
+  - catalytic residues
+  - protein structure
+  - Pfam
+  - benchmarking
