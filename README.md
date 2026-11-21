@@ -14,15 +14,15 @@ for the full extension, incomplete pilots, and limits of cross-model comparisons
 
 | Test | Folder | Question |
 |---|---|---|
-| 1 | `experiments/next_residue/` | Does the model predict the next residue of an obscure protein better than of its shuffled copy? A subsample replication of Tu and Chen (2026). |
-| 2 | `experiments/features/` | Does it name Pfam domains with boundaries, transmembrane helices and signal peptides, and leave shuffled sequences blank? |
-| 3 | `experiments/pseudo/` | Does it notice one catalytic-residue substitution in an otherwise active enzyme? |
-| 4 | `experiments/structure/` | Does it predict secondary structure, contacts and function for recent structures stratified by prior homology? |
+| NR | `experiments/next_residue/` | Does the model predict the next residue of an obscure protein better than of its shuffled copy? A subsample replication of Tu and Chen (2026). |
+| FEAT | `experiments/features/` | Does it name Pfam domains with boundaries, transmembrane helices and signal peptides, and leave shuffled sequences blank? |
+| PSEUDO | `experiments/pseudo/` | Does it notice one catalytic-residue substitution in an otherwise active enzyme? |
+| STRFN | `experiments/structure/` | Does it predict secondary structure, contacts and function for recent structures stratified by prior homology? |
 
 The manuscript is `manuscript.tex`, with a built copy in `manuscript.pdf`.
 
-`experiments/decoy_control/` holds the decoy control for test 3 reported in the manuscript: the same substitution
-at a non-catalytic position of each protein, and the test 3 mutants asked again on the same route. Its
+`experiments/decoy_control/` holds the decoy control for the PSEUDO test reported in the manuscript: the same substitution
+at a non-catalytic position of each protein, and the PSEUDO mutants asked again on the same route. Its
 `README.md` and `RESULTS.md` describe it. Its calls are not in the call totals of `expected/summary.txt`.
 
 ## Where this came from
@@ -89,15 +89,15 @@ pixel, so they are not byte-for-byte reproducible.
 | Claude call totals in Methods (2,854 recorded calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
 | Adjudication of the two disputed active sites (YrfG, ENV9) | `uv run python experiments/pseudo/adjudication/adjudicate.py` | `expected/adjudication.txt` |
-| Decoy-substitution control for test 3 (Table 5) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
+| Decoy-substitution control for the PSEUDO test (Table 5) | `uv run python experiments/decoy_control/score_decoys.py` | `expected/decoy_control.txt` |
 
 The Gemini extension adds the following reports; the original figure and Claude
 report values remain unchanged.
 
 | Manuscript item | Command | Frozen output |
 |---|---|---|
-| Gemini next-residue row, feature and pseudoenzyme results, Neon/Pro structure rows | `uv run python gemini_experiment/score_gemini.py results_vertex` | `expected/gemini_vertex.txt` |
-| Flash Lite structure row; other API and CLI pilots (incomplete runs identified) | `uv run python gemini_experiment/score_gemini.py results` | `expected/gemini_pilots.txt` |
+| Gemini next-residue row, feature and pseudoenzyme results, Neon structure row (and a Pro structure row not reported in the manuscript) | `uv run python gemini_experiment/score_gemini.py results_vertex` | `expected/gemini_vertex.txt` |
+| Flash Lite structure row (not reported in the manuscript); other API and CLI pilots (incomplete runs identified) | `uv run python gemini_experiment/score_gemini.py results` | `expected/gemini_pilots.txt` |
 | Recorded thinking tokens alongside Claude (including zeros; scored rows only) | `uv run python gemini_experiment/thinking.py` | `expected/gemini_thinking.txt` |
 | Coverage, safety blocks, retries, prompt integrity, recorded route and model version | `uv run python gemini_experiment/audit.py` | `expected/gemini_audit.txt` |
 
@@ -117,25 +117,25 @@ report values remain unchanged.
   its own, whose size the rows of 2026-11-18 do not record. Measured on 2026-11-19 with the same context
   flags and Claude Code 2.1.328 (`experiments/decoy_control/results/cli_context_check.json`,
   `canary-original-flags.jsonl`): 5,851 input tokens for a one-sentence prompt to Haiku 5.5 (573 for that
-  prompt with the extra flags of the revised route), and 97,813 and 6,413 for two questions with the test-3
+  prompt with the extra flags of the revised route), and 97,813 and 6,413 for two questions with the PSEUDO
   prompt to Fable 5.2, the larger most likely because the account's connector tools were attached. Whether
   the stored calls carried such an attachment is not known: the rows record cost, not tokens, and repeated
   context is cached, so cost does not bound it.
 - **Effort:** Fable 5.2 and Opus 5.5 ran at high effort in tests 2 to 4; the
-  rows of the test-2 runs of 2026-11-18 do not record the effort setting. On
+  rows of the FEAT runs of 2026-11-18 do not record the effort setting. On
   2026-11-18 Opus 4.6 ran at low effort in every test; the authors record
   that it did not finish at high effort that day (that attempt left no rows). On 2026-11-19 UTC, through `call()`, Opus 4.6 was asked
   tests 2 to 4 at high effort and answered every question
-  (`results/claude-opus-4-6-high.jsonl`, #51). Nine of the 30 test 4 answers
+  (`results/claude-opus-4-6-high.jsonl`, #51). Nine of the 30 STRFN answers
   took more than one request: eight after reaching the 64,000-token output
-  limit and one after a safety-classifier stop. In test 2 the six answers
+  limit and one after a safety-classifier stop. In the FEAT test the six answers
   that took more than one request were replaced by fresh answers, because
   the input check of that time marked them, and one of the fresh answers
   (A0A919RPG7) also took more than one request; tests 3 and 4 keep theirs
   (#104). The manuscript reports these high-effort runs for Opus 4.6 in
   tests 2 to 4 (Tables 3, 4 and 6, Figures 1 and 2) and gives the low-effort values in
-  the text; both are in the Methods call totals. Test 1 has low and high runs;
-  for Opus 4.6 at high effort only one canary question of test 1 was asked,
+  the text; both are in the Methods call totals. The NR test has low and high runs;
+  for Opus 4.6 at high effort only one canary question of the NR test was asked,
   and its row is not committed.
 - **Rows that record a prompt hash** (`prompt_sha256`; written from
   2026-11-19 UTC) come from `call()` in `experiments/common.py`. It adds
@@ -187,20 +187,20 @@ report values remain unchanged.
   retries would be marked although clean, and asked again.
 - **How a reply is read** (`experiments/common.py`, used by every scorer): the
   answer is the last complete JSON object in the reply that has at least two
-  of the requested keys. Three Opus 4.6 replies in test 2 hold two objects,
+  of the requested keys. Three Opus 4.6 replies in the FEAT test hold two objects,
   the second a correction; `expected/features.txt` also gives the headline
   counts with the first object and with those replies left out. A reply that
   contains a written-out tool call (a shell block, a web request or tool-call
-  markup) has no answer. In test 1 it is invalid and counts as wrong; in
+  markup) has no answer. In the NR test it is invalid and counts as wrong; in
   tests 2 to 4 it is left out like any reply without an answer, and the
-  scorer lists it. There is one: the Opus 5.5 high-effort test 1 reply for
+  scorer lists it. There is one: the Opus 5.5 high-effort NR reply for
   A0A518ICW8 (shuffled, cut 301) is a `curl` command with an HTTP response,
   not a prediction. The stored record cannot show whether anything was run.
   Two limits: an example object written after the answer would be taken as
   the answer, and an answer wrapped in an outer object would not be found.
 - **At most one scored answer per question, model, effort and run.** Fable 5.2 and
-  Opus 5.5 answered test 1 at low and high effort, and Opus 4.6 answered tests
-  2 to 4 at both. The decoy control asked the test-3 mutants and wild types
+  Opus 5.5 answered the NR test at low and high effort, and Opus 4.6 answered FEAT,
+  PSEUDO and STRFN at both. The decoy control asked the PSEUDO mutants and wild types
   again at the same effort on the revised route (`experiments/decoy_control/`).
   Calls marked as carrying attached context, or whose attempt failed, were
   asked again; the marked rows stay in the files and are not scored, and neither are the two rows of
@@ -208,7 +208,7 @@ report values remain unchanged.
 - **Calls listing a second model:** for 6 of the 2,854 recorded calls, the tool's usage
   record (the `served` field, from `modelUsage`) lists a second model besides
   the one requested. Three are Opus 5.5 next-residue calls at high effort; three
-  are in test 4 (PDB 29BS for Fable 5.2, 15AY and 7IMP for Opus 5.5). The record
+  are in the STRFN test (PDB 29BS for Fable 5.2, 15AY and 7IMP for Opus 5.5). The record
   has no per-model token counts, so it does not show which model wrote the
   answer. One of them, the Opus 5.5 call for 7IMP, returned an API error
   instead of an answer and is excluded from the scores (so Opus 5.5 has 14
@@ -216,7 +216,7 @@ report values remain unchanged.
   numbers; `expected/next_residue.txt` and `expected/structure.txt` also give
   tests 1 and 4 without them.
   `expected/summary.txt` gives the totals.
-- **Completed run:** the Opus 5.5 high-effort run of test 1 stopped at 264 of
+- **Completed run:** the Opus 5.5 high-effort run of the NR test stopped at 264 of
   272 answers when a container restarted on 2026-11-18. The 8 missing
   questions were asked on 2026-11-19 UTC through `call()`; they are the rows
   of that file with a prompt hash.
@@ -259,8 +259,8 @@ RCSB Protein Data Bank.
   "high" are not equivalent reasoning budgets.
 - Training-cutoff evidence for any claim that a target was absent from training;
   the PDB date/homology strata alone do not establish this.
-- Opus 4.6 was not asked the decoy control at high effort, and not test 1 at high effort.
-- A blinded second grader for function in test 4.
+- Opus 4.6 was not asked the decoy control at high effort, and not the NR test at high effort.
+- A blinded second grader for function in the STRFN test.
 - The two disputed active sites (YrfG Asp9, ENV9 Ser172) have not been reported to UniProt.
 - Related work is thin: protein language model baselines on the same items are
   not included.
