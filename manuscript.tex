@@ -235,19 +235,27 @@ Fable~5.2, Opus~5.5 and Neon called 18, 18 and 19 of the 20 proteins that Swiss-
 kinases inactive. This is agreement with a database name, not a measure of biological accuracy. In 17, 17
 and 19 of those answers the protein name the model gave already said ``inactive'' or ``pseudokinase'', so
 the set mostly measures recall of the entry. Nor does the name establish inactivity: we selected the 20
-by name and did not check their labels against the literature. Opus~4.6 at high effort called 12 of 20
+by name and checked only three of the labels against the literature (below). Opus~4.6 at high effort called 12 of 20
 inactive.
 
-For one of the 20, \textit{Arabidopsis} RLK902 (Q9LVI6), the entry itself notes that autophosphorylation
-is proposed although the kinase domain is predicted to be catalytically inactive \citep{uniprot}.
-Fable~5.2, Opus~5.5, Neon and Opus~4.6 at high effort all called RLK902 inactive. Agreeing with the name
-is therefore not the same as being right.
+For at least two of the 20 the name is contradicted by a published assay. The kinase domains of
+\textit{Arabidopsis} RLK902 (Q9LVI6) and RKL1 (Q9LP77), purified from \textit{E.~coli} as fusion
+proteins, each became phosphorylated when incubated with radiolabelled ATP, and the authors concluded
+that both are ``functional protein kinases capable of autophosphorylation'' \citep{tarutani2004rlk902}.
+The Swiss-Prot entry for RLK902 notes this result beside its prediction that the kinase domain is inactive
+\citep{uniprot}. Fable~5.2, Opus~5.5, Neon and Opus~4.6 at high effort called both proteins inactive.
+Agreeing with the name is therefore not the same as being right. One in vitro autophosphorylation assay does
+not settle what these proteins do in the plant either.
 
 All three of the stronger models called \textit{C.~elegans} kin-32 (Q95YD4) active, although Swiss-Prot
 names it an inactive tyrosine kinase. They cited an intact glycine loop, VAVK lysine, HRD and DFG motifs,
 and all of these are present in the sequence. The Swiss-Prot name rests on an assay, not on the sequence:
 the entry records that the protein ``has apparently no tyrosine kinase activity in vitro when expressed in
-mammalian cells''. Intact canonical motifs therefore do not guarantee detectable activity, and a reading
+mammalian cells''. In that study, kin-32 immunoprecipitated from transfected mouse cells showed no
+measurable activity against a general tyrosine kinase substrate \citep{cram2008kin32}. The authors note
+that it lacks the tyrosine at which mammalian focal adhesion kinase autophosphorylates, and they allow
+that it may be a kinase in the worm that was not activated in mouse cells. Intact canonical motifs
+therefore do not guarantee detectable activity, and a reading
 of catalytic residues cannot tell such a case from an active kinase. Nor does one assay settle whether
 kin-32 is inactive in the worm.
 
