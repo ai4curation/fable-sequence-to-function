@@ -8,6 +8,9 @@
 \usepackage{placeins}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+% Short names of the four tests (medium weight so they keep small caps inside bold headings)
+\newcommand{\tnr}{\textmd{\textsc{nr}}}\newcommand{\tfeat}{\textmd{\textsc{feat}}}
+\newcommand{\tpseudo}{\textmd{\textsc{pseudo}}}\newcommand{\tstrfn}{\textmd{\textsc{strfn}}}
 \setlength{\parindent}{0pt}\setlength{\parskip}{6pt plus 2pt minus 1pt}
 
 \title{Sequence-only protein annotation by general-purpose language models: catalytic residues, domains and structure in four models from two providers}
@@ -89,7 +92,7 @@ We tested four models from two providers (Table~\ref{tab:models}), each on all f
 \texttt{gemini-4-neon}. All models received the same frozen test sets and the same
 prompts. Effort settings are each provider's own labels and differ between models and tests. Because
 they are not comparable reasoning budgets, we also report the thinking tokens each model recorded
-(Table~\ref{tab:thinking}). Opus~4.6 was run at two settings in tests 2 to 4; unless stated, we report its
+(Table~\ref{tab:thinking}). Opus~4.6 was run at two settings in the \tfeat, \tpseudo{} and \tstrfn{} tests; unless stated, we report its
 high-effort run. Model identifiers are those returned by the endpoints. We did not establish any model's
 training cutoff. Runs of other Gemini models on some of the tests (Gemini~3.1 Pro Preview and Gemini~3.1 Flash Lite)
 and incomplete runs of other routes are kept in the repository and are not reported here.
@@ -100,7 +103,7 @@ and incomplete runs of other routes are kept in the repository and are not repor
 \label{tab:models}
 \begin{tabular}{llllll}
 \toprule
-Model & Provider & Test 1 & Test 2 & Test 3 & Test 4 \\
+Model & Provider & \tnr & \tfeat & \tpseudo & \tstrfn \\
 \midrule
 Claude Fable 5.2 & Anthropic & low, high & high & high & high \\
 Claude Opus 5.5 & Anthropic & low, high & high & high & high \\
@@ -111,22 +114,22 @@ Gemini 4 Neon & Google & low & low & low & medium \\
 \end{table}
 
 Each model was given a protein sequence and asked one of four things (details in
-Section~\ref{sec:methods}).
+Section~\ref{sec:methods}). We refer to the tests by the short names in parentheses.
 
-\textbf{Test 1, next residue.} Continue a sequence from a cut point. The control is the same protein with
+\textbf{Next residue (\tnr).} Continue a sequence from a cut point. The control is the same protein with
 its residues shuffled.
 
-\textbf{Test 2, domains and membrane features.} Name the Pfam domains with their boundaries, the
+\textbf{Domains and membrane features (\tfeat).} Name the Pfam domains with their boundaries, the
 transmembrane helices and any signal peptide, for 45 sampled bacterial and archaeal proteins and 15 from
 obscure domain-of-unknown-function families. Each protein was also given in shuffled form.
 
-\textbf{Test 3, catalytic residues.} Say whether an enzyme is catalytically active and which catalytic
+\textbf{Catalytic residues and pseudoenzymes (\tpseudo).} Say whether an enzyme is catalytically active and which catalytic
 residues are present or substituted. The sequences were 20 active kinases, the same kinases with the
 catalytic aspartate or the ATP-binding lysine substituted, 20 natural pseudokinases, and 20 other enzymes
 with and without an active-site residue changed to alanine. In a decoy control, run for the Claude models,
 the same type of substitution was placed at a position with no functional annotation.
 
-\textbf{Test 4, structure and function.} Predict secondary structure, residue contacts and function for
+\textbf{Structure and function (\tstrfn).} Predict secondary structure, residue contacts and function for
 30 PDB structures released from August 2026. We call an entry ``novel'' when no PDB entity at 30\%
 sequence identity or more was released before June 2026, and ``known'' when at least 20 were. One novel
 protein, human ASPRV1, was drawn four times and is counted once, leaving 12 novel proteins.
@@ -191,7 +194,7 @@ against 70 and 51 for the other two. All three left the shuffled sequences almos
 
 Opus~4.6 at high effort named a correct family for 7 of the 45 sampled proteins and assigned a domain to
 28 of the 60 shuffled sequences. Its earlier run gave 5 of 45 and 5 of 60. That run was at low effort by
-the authors' record; the test-2 rows of 18 November do not store the setting. The high-effort run, on the
+the authors' record; the \tfeat{} rows of 18 November do not store the setting. The high-effort run, on the
 revised route, thus invented many more domains for little gain in recall.
 
 The models gave no sign when they were wrong. Fable~5.2 assigned one DUF968 protein to a different
@@ -240,7 +243,7 @@ depends on effort.
 
 \begin{table}[ht]
 \centering\small
-\caption{Test 3: mutants in which the model reported the substituted position, of 20 per row. Claude models
+\caption{The \tpseudo{} test: mutants in which the model reported the substituted position, of 20 per row. Claude models
 at high effort; Neon at low effort.}
 \label{tab:positions}
 \begin{tabular}{lrrrr}
@@ -261,7 +264,7 @@ Neither named a decoy position as a lost residue. One case ran the other way: Op
 wild type of a mannosyltransferase (P26725) active, but called its decoy active. Opus~4.6, given the
 decoys at low effort only, called decoys, mutants and wild types active at similar rates.
 
-Asking the mutants and wild types again by the second route also gave a replicate of test 3. The
+Asking the mutants and wild types again by the second route also gave a replicate of the \tpseudo{} test. The
 active-or-not call matched the first run for 99 of 100 questions for Fable~5.2 and 96 of 100 for
 Opus~5.5. We ran no decoy control for Neon. It called all 20 wild-type kinases active,
 which rules out a blanket ``inactive'' answer but not a tendency to reject any altered sequence.
@@ -341,7 +344,7 @@ substitution introduced for this study. Claude models at high effort; Gemini~4 N
 \label{fig:pseudo}
 \end{figure}
 
-\subsection{Secondary structure and contacts are predicted above chance for recently released structures}
+\subsection{Structure is predicted above chance, and function called with abstentions, for recently released proteins}
 
 For the 12 novel proteins, Fable~5.2, Opus~5.5 and Neon reached 76\%, 73\% and 69\% three-state accuracy,
 against 57\% for the best single-state guess. Their long-range contact precision was 37\%, 19\% and 28\%,
@@ -409,7 +412,7 @@ biology. It also assigned PanG (37QB) to the TyrA dehydrogenase family and Rpp30
 enzyme. Several other answers were generic guesses, which we did not turn into an abstention or accuracy
 count.
 
-One of the ASPRV1 constructs (27IQ) gave an unplanned repeat of test 3, because its catalytic DSG motif
+One of the ASPRV1 constructs (27IQ) gave an unplanned repeat of the \tpseudo{} test, because its catalytic DSG motif
 is changed to NSG. Without being asked about activity, Fable~5.2 and Opus~5.5 said that the catalytic
 aspartate was replaced and that the construct was probably inactive. Neon did not identify the
 substitution.
@@ -428,12 +431,12 @@ Dashed lines show the best single-state guess (left) and the chance rate for a l
 \begin{table}[ht]
 \centering\small
 \caption{Median recorded thinking tokens per scored answer, zeros included; no scored row lacks a count.
-Test 1 includes real and shuffled questions only, and test 2 both conditions. The Opus~5.5 structure
+The \tnr{} test includes real and shuffled questions only, and the \tfeat{} test both conditions. The Opus~5.5 structure
 median is over 29 answers, with its API error excluded.}
 \label{tab:thinking}
 \begin{tabular}{lrrrr}
 \toprule
-Model & Test 1 & Test 2 & Test 3 & Test 4 \\
+Model & \tnr & \tfeat & \tpseudo & \tstrfn \\
 \midrule
 Gemini 4 Neon & 634 & 1,049 & 2,474 & 17,881.5 \\
 Claude Fable 5.2 & 164 & 703.5 & 2,548 & 3,009 \\
@@ -443,8 +446,8 @@ Claude Opus 4.6 & 0 & 14,189.5 & 19,921 & 42,987 \\
 \end{tabular}
 
 \smallskip
-\parbox{\linewidth}{\footnotesize Effort: Neon low in tests 1--3 and medium in test 4; Fable and
-Opus~5.5 high throughout; Opus~4.6 low in test 1 and high in tests 2--4. For test 2, the Fable and
+\parbox{\linewidth}{\footnotesize Effort: Neon low in the \tnr, \tfeat{} and \tpseudo{} tests and medium in the \tstrfn{} test; Fable and
+Opus~5.5 high throughout; Opus~4.6 low in the \tnr{} test and high in the others. For the \tfeat{} test, the Fable and
 Opus~5.5 setting comes from the authors' record of the collection, since those rows do not store it.
 The counts do not show that budgets were matched.}
 \end{table}
@@ -477,7 +480,7 @@ The next-residue signal that motivated this work was not needed for the other ab
 detectable next-residue advantage, yet it rejected all 20 aspartate mutants, reported 16 of 20 lysine
 substitutions and reached 28.4\% contact precision against 1.8\% by chance. The tasks dissociate, but
 that does not prove separate mechanisms or an absence of sequence knowledge, and a null result is weak
-evidence. Neon was run on test 1 at low effort only. Opus~5.5 at low effort also showed no detectable
+evidence. Neon was run on the \tnr{} test at low effort only. Opus~5.5 at low effort also showed no detectable
 advantage. Neon used thinking on every question it answered and Opus~5.5 at low effort on none, so we
 cannot tell whether Neon's null result comes from the model or from the setting. The Claude models
 scored well below the published values on the identical questions (Section~\ref{sec:nextres}), so this
@@ -505,9 +508,9 @@ catalytic position a model names should be checked against the sequence and a cu
 is used.
 
 \paragraph{Limitations.} The tests are small. Cells contain 12 to 68 items, and each question has at most
-one scored answer per model, effort setting and run. For the Claude models, the test-3 mutants and wild types were asked again at the same effort for
+one scored answer per model, effort setting and run. For the Claude models, the \tpseudo{} mutants and wild types were asked again at the same effort for
 the decoy control. Calls marked as carrying attached context, or whose attempt failed, were also asked
-again, and the marked rows are not scored. The split of test-1 accuracy by thinking is observational.
+again, and the marked rows are not scored. The split of \tnr{} accuracy by thinking is observational.
 
 Settings and routes were not matched. Answers were sampled. Claude questions went through a command-line
 tool that adds its own context, and Gemini questions through provider APIs. We measured neither the
@@ -515,27 +518,27 @@ effect of the route nor any benefit of greedy decoding, and effort settings are 
 providers. The Opus~4.6 high-effort runs used a revised call route and a later tool version than the runs
 of the other two Claude models.
 
-The controls of test 3 have gaps. No decoy control was run for Neon, and the Opus~4.6 decoys
+The controls of the \tpseudo{} test have gaps. No decoy control was run for Neon, and the Opus~4.6 decoys
 were asked at low effort only. The decoy positions were chosen by a rule written with the help of two of
 the tested models, and they avoid conserved positions. The adjudication of the two reference sites rests
 on alignment and predicted structures. Neither disputed position, nor the activity of the mutants used
 here, has been tested directly by experiment. Swiss-Prot proteins are well known, so the wild-type
-results in test 3 may reflect recall. The mutants are new sequences and cannot. Dead mutants made by one
+results in the \tpseudo{} test may reflect recall. The mutants are new sequences and cannot. Dead mutants made by one
 substitution are also not natural pseudoenzymes. Those usually differ from active relatives at many
 positions and can be inactive for reasons that leave the catalytic residues intact. We examined no
 over-annotated entry.
 
-The reference data and grading have limits too. Transmembrane and signal-peptide truth in test 2 is
-itself predicted. Function calls in test 4 were graded for Fable~5.2 and Opus~5.5 only, once and
+The reference data and grading have limits too. Transmembrane and signal-peptide truth in the \tfeat{} test is
+itself predicted. Function calls in the \tstrfn{} test were graded for Fable~5.2 and Opus~5.5 only, once and
 unblinded, by the agent that ran those tests; for the other models the review is qualitative. The novel
-stratum of test 4 excludes close homologs in the PDB and nothing else. Most of its sequences were already
+stratum of the \tstrfn{} test excludes close homologs in the PDB and nothing else. Most of its sequences were already
 public, remote homologs were not excluded, and at least one protein was described in a preprint before
 its structure was released. The random-contact baseline does not substitute for running dedicated
 predictors on the same proteins.
 
-We did not test eukaryotic multi-domain proteins in test 2, membrane proteins in test 4 or general
-variant-effect prediction. Apart from Opus~4.6, we did not test whether more reasoning effort improves
-tests 2 to 4. Finally, we have no information on how these models were trained and draw no conclusion
+We did not test eukaryotic multi-domain proteins in the \tfeat{} test, membrane proteins in the \tstrfn{} test or general
+variant-effect prediction. Apart from Opus~4.6, we did not test whether more reasoning effort improves results
+in the \tfeat, \tpseudo{} and \tstrfn{} tests. Finally, we have no information on how these models were trained and draw no conclusion
 about it.
 
 \FloatBarrier
@@ -551,7 +554,7 @@ are counts of recorded rows.
 This route does not expose temperature, so answers were sampled. It also adds context of its own, whose
 size the rows of 18 November do not record. We measured it on 19 November with the same context flags and
 Claude Code 2.1.328. A one-sentence prompt to Haiku~5.5 carried 5,851 input tokens. Two questions with the
-test-3 prompt to Fable~5.2 carried 97,813 and 6,413; the larger one most likely had the account's
+\tpseudo{} prompt to Fable~5.2 carried 97,813 and 6,413; the larger one most likely had the account's
 connector tools attached. We do not know whether the stored calls carried such an attachment. Their rows
 record cost but not tokens, and the tool caches repeated context, so a cached attachment would add far
 less to the cost of each later call. Eight Opus~5.5 next-residue questions at high effort were left
@@ -559,41 +562,41 @@ unasked when that run was interrupted. We asked them on 19 November (UTC) with C
 flags that keep user settings and connector tools out of the call. With these flags, the one-sentence
 prompt carried 573 input tokens.
 
-Fable~5.2 and Opus~5.5 ran at high effort in tests 2 to 4; the rows of the test-2 runs of 18 November do
-not record the effort setting. Opus~4.6 was asked tests 2 to 4 twice: at low effort on 18 November by the
+Fable~5.2 and Opus~5.5 ran at high effort in the \tfeat, \tpseudo{} and \tstrfn{} tests; the rows of the \tfeat{} runs of 18 November do
+not record the effort setting. Opus~4.6 was asked the \tfeat, \tpseudo{} and \tstrfn{} tests twice: at low effort on 18 November by the
 original route, and at high effort on 19 November by the revised route. Unless stated, we report the
 high-effort run, which matches the other two models in effort but not in route. Its answers were long.
-The tool asks again by itself after an output limit or a stopped reply, and 7 of 120 replies in test 3
-and 9 of 30 in test 4 took more than one request for this reason. In test 2, six such replies were asked
-again, and one of the new answers also took more than one request. In test 1, Opus~4.6 was run at low
+The tool asks again by itself after an output limit or a stopped reply, and 7 of 120 replies in the \tpseudo{} test
+and 9 of 30 in the \tstrfn{} test took more than one request for this reason. In the \tfeat{} test, six such replies were asked
+again, and one of the new answers also took more than one request. In the \tnr{} test, Opus~4.6 was run at low
 effort only.
 
 Counts of web search and fetch requests were kept only in rows written by later versions of the revised
-route's code. These are mostly the Opus~4.6 high-effort runs of tests 3 and 4 and the rerun of the test-3
+route's code. These are mostly the Opus~4.6 high-effort runs of the \tpseudo{} and \tstrfn{} tests and the rerun of the \tpseudo{}
 mutants and wild types for the decoy control. None of those rows shows a web request.
 
 Each question has at most one scored answer per run. For 6 of the 2,854 recorded calls in the four tests,
 the tool's usage record lists a second model besides the one requested. Three are Opus~5.5 next-residue
-calls at high effort, all on shuffled sequences. The other three are in test 4, one Fable~5.2 and two
-Opus~5.5 calls, all on known-stratum entries. One of the Opus~5.5 test-4 calls (PDB 7IMP) returned an
+calls at high effort, all on shuffled sequences. The other three are in the \tstrfn{} test, one Fable~5.2 and two
+Opus~5.5 calls, all on known-stratum entries. One of the Opus~5.5 \tstrfn{} calls (PDB 7IMP) returned an
 API error instead of an answer and is excluded from the scores. For the other five, the record does not
 show which model wrote the answer. We kept them in the reported numbers; the repository also gives tests
 1 and 4 with them excluded, and no conclusion changes. Where a reply held more than one JSON object, we
-scored the last one. This applies to three replies of the earlier Opus~4.6 run of test 2, in which the
+scored the last one. This applies to three replies of the earlier Opus~4.6 run of the \tfeat{} test, in which the
 second object corrects the first. One Opus~5.5 next-residue reply was a written-out web request instead
 of a prediction; it is counted as invalid and as a wrong answer.
 
 \paragraph{Gemini calls.} Gemini~4 Neon was asked on 19 November 2026 through
 the global Vertex AI \texttt{generateContent} endpoint, with no tools or system instruction in the request
 body. Temperature was not specified.
-Test 1 used real and shuffled sequences only. Neon gave usable answers for 271 of 272 questions in test 1
-(one shuffled question was safety-blocked), all 120 in each of tests 2 and 3, and all 30 in test 4. Successful
+The \tnr{} test used real and shuffled sequences only. Neon gave usable answers for 271 of 272 questions in the \tnr{} test
+(one shuffled question was safety-blocked), all 120 in each of the \tfeat{} and \tpseudo{} tests, and all 30 in the \tstrfn{} test. Successful
 API responses finished with \texttt{STOP}.
 
 Requests that met a rate limit, a server error, a Vertex authorisation error or a client exception were
 sent again, up to a fixed number of tries; safety blocks were not. Attempt counts are retained, but not
 all intermediate responses or their token usage. The retry rule changed during collection. Whether an earlier version also re-asked after
-a completed but unwanted reply cannot be checked from the files. For six Neon test-1 questions, the
+a completed but unwanted reply cannot be checked from the files. For six Neon \tnr{} questions, the
 endpoint recorded 764 to 921 input tokens, or 1.3 to 1.9 tokens per prompt character, against at most
 0.5 for the other 265. We could not establish what the extra input was. Excluding those six rows gives
 8.3\% real accuracy (133 questions) and 10.6\% shuffled accuracy (132), with a family-averaged gap of
@@ -611,20 +614,20 @@ None of the completed Neon runs used its highest effort setting, so its best ach
 unmeasured. These single-run scores are not a statistical lower bound on it either, because higher
 effort need not improve every task; the Opus~4.6 shuffled-domain results are an example.
 
-\paragraph{Test 1, next residue.} We drew 68 of the 167 families in the public test set
+\paragraph{Next residue (\tnr).} We drew 68 of the 167 families in the public test set
 \citep{tu2026probe}, 17 per family-size bin, and took one protein per family and two of its five cut
 points. We used the authors' prompt unchanged. The model writes the next ten residues, and the first is
 scored. The controls were the same protein shuffled with the authors' seed and, new here, the real
 sequence reversed. Intervals are 95\% bootstrap intervals over families.
 
-\paragraph{Test 2, domains and membrane features.} The test set was 45 unreviewed bacterial and archaeal
+\paragraph{Domains and membrane features (\tfeat).} The test set was 45 unreviewed bacterial and archaeal
 UniProt entries of 150 to 450 residues with a Pfam match, drawn haphazardly through the search interface
 \citep{uniprot}, and 15 proteins from the test set of Tu and Chen \citep{tu2026probe}. The model returned
 Pfam domains with coordinates \citep{mistry2021pfam}, transmembrane helices, a signal-peptide call, a name
 and a function. Truth was the InterPro Pfam matches and the UniProt transmembrane and signal features,
 which in unreviewed entries are themselves predicted. Each protein was also presented shuffled.
 
-\paragraph{Test 3, dead mutants and natural pseudoenzymes.} By a dead mutant we mean an active enzyme in
+\paragraph{Dead mutants and natural pseudoenzymes (\tpseudo).} By a dead mutant we mean an active enzyme in
 which we substituted one catalytic residue. A natural pseudoenzyme is an evolved homologue, which usually
 differs from active relatives at many positions. UniProt curates pseudoenzymes in Swiss-Prot
 \citep{zaru2020uniprot}. In UniProt release \texttt{2026\_04}, queried on 19 November 2026 (UTC), 688
@@ -637,13 +640,13 @@ methionine. Each other enzyme was presented with its first active-site residue c
 single prompt, used for every sequence, asked for the catalytic residues present, any that were
 substituted or missing, and whether the protein is catalytically active.
 
-\paragraph{Decoy control for test 3.} A model that calls any altered sequence inactive would pass test 3
+\paragraph{Decoy control for the \tpseudo{} test.} A model that calls any altered sequence inactive would pass the \tpseudo{} test
 without reading the catalytic residues. For each catalytic-site mutant we therefore made a decoy, with the
 same substitution type in the same protein at a position with no functional annotation. Kinase decoys lie
 inside the kinase domain. We excluded positions within three residues of any annotated site and, in
 kinases, the catalytic loop, the DFG motif and the subdomain~IX aspartate, then drew the position with a
 fixed seed. Two enzymes had no eligible residue, which left 58 decoys in 38 proteins, a median of 46
-residues from the nearest curated catalytic position. Decoys were asked with the test-3 prompt by the
+residues from the nearest curated catalytic position. Decoys were asked with the \tpseudo{} prompt by the
 revised route. The wild types and catalytic-site mutants of the same proteins were asked again by that
 route, so that all three are compared within one route. The control was run for the three Claude models
 only: Fable~5.2 and Opus~5.5 at high effort, and Opus~4.6 at low effort. It added 174 decoy calls and 300
@@ -660,7 +663,7 @@ SWISS-MODEL template identities are only 14.16\% (YrfG) and 18.48\% (ENV9). No a
 is used as evidence. Excluding these cases is a post hoc sensitivity analysis, and the main scores keep
 them.
 
-\paragraph{Test 4, structure and function.} From the PDB \citep{rcsb} we took X-ray entries released on
+\paragraph{Structure and function (\tstrfn).} From the PDB \citep{rcsb} we took X-ray entries released on
 or after 1 August 2026 with one protein entity of 100 to 350 residues and a resolution of 2.5~\AA{} or
 better. We kept 15 entries for which a sequence search found no PDB entity at 30\% identity or more
 released before 1 June 2026, and 15 entries with at least 20 such entities. We call these strata

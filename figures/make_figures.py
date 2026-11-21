@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 ARGS = [a for a in sys.argv[1:] if a != "--values-only"]; DRAW = "--values-only" not in sys.argv[1:]
 if len(ARGS) > 1: sys.exit(__doc__)
 HERE = pathlib.Path(__file__).parent; ROOT = pathlib.Path(ARGS[0]) if ARGS else HERE.parent / "experiments"
-# The four models run on all four tests. Each entry: key, legend label, colour, results file for test 3, results file for test 4.
-# Claude models at high effort; Gemini 4 Neon at the settings it was run at (low in test 3, medium in test 4).
+# The four models run on all four tests. Each entry: key, legend label, colour, results file for the PSEUDO test, results file for the STRFN test.
+# Claude models at high effort; Gemini 4 Neon at the settings it was run at (low in the PSEUDO test, medium in the STRFN test).
 GEM = HERE.parent / "gemini_experiment" / "results_vertex"
 MODELS = [("claude-fable-5-2", "Fable 5.2", "#2a78d6", ROOT / "pseudo/results/claude-fable-5-2.jsonl", ROOT / "structure/results/claude-fable-5-2.jsonl"),
           ("claude-opus-5-5", "Opus 5.5", "#eb6834", ROOT / "pseudo/results/claude-opus-5-5.jsonl", ROOT / "structure/results/claude-opus-5-5.jsonl"),
