@@ -358,13 +358,15 @@ by a numerical difference.
 
 The other three models did much worse. On the novel proteins, Opus~4.6 at high effort reached 54\% on
 secondary structure, below the single-state guess, and 8\% contact precision, above chance but far below
-the first three. At low effort it reached 48\% and 4\%. On the known stratum, Opus~4.6 at high effort reached
-58\%, slightly above the single-state guess of 55\%, and 10\% contact precision. Its nine longest test-4
-answers rest on a reply that the tool continued, eight after the output limit and one after a classifier stop.
-Without them, the novel-protein values are 56\%, just below the single-state guess (also 56\%), and 11\%, and the gap
-between the known and novel strata falls from 3.9 to 0.5 points of secondary-structure accuracy. Gemini~3.1 Pro Preview reached 61\% and 13\%.
+the first three. At low effort it reached 48\% and 4\%. Gemini~3.1 Pro Preview reached 61\% and 13\%.
 Flash Lite fell below the single-state guess on secondary structure (44\%) and below the chance rate on
-contacts (1.0\% against 1.8\%).
+contacts (1.0\% against 1.8\%). On the known stratum, Opus~4.6 at high effort reached 58\%, slightly above
+the single-state guess of 55\%, and 10\% contact precision. Its nine longest test-4 answers, five on novel
+proteins and four on known ones, rest on a reply that the tool continued: eight after the output limit and
+one after a classifier stop. Leaving them out keeps 7 of the 12 novel proteins and 11 of the 15 known ones.
+Secondary structure is then 56\% on both strata, against single-state guesses of 56\% and 54\% for those
+subsets, contact precision is 11\% and 10\%, and the gap between the strata falls from 3.9 to 0.5 points.
+With so few proteins this is a sensitivity check, not a separate result.
 
 All of these values are far short of dedicated structure predictors \citep{jumper2021alphafold}. We claim
 only that three models do well above chance without an alignment and with tools turned off. Model class,
@@ -581,12 +583,13 @@ Fable~5.2 and Opus~5.5 ran at high effort in tests 2 to 4; the rows of the test-
 not record the effort setting. Opus~4.6 was asked tests 2 to 4 twice: at low effort on 18 November by the
 original route, and at high effort on 19 November by the revised route. Unless stated, we report the
 high-effort run, which matches the other two models in effort but not in route. Its answers were long.
-The tool asks again by itself after an output limit or a stopped reply, and 7 of 120 replies in test 3
+The tool asks again by itself after an output limit or an empty or stopped reply, and 7 of 120 replies in test 3
 and 9 of 30 in test 4 took more than one request for this reason. In test 2, six such replies were asked
-again, and one of the new answers also took more than one request. These continued answers are scored like
-any other. In four of them a safety classifier had stopped the reply before the tool asked again: A0A919RPG7
-in test 2, the Q2PAY3 aspartate mutant and the Q9V422 wild type in test 3, and 9T71 in test 4. The rows do
-not record such stops; the tool's own session records do, and the repository lists them. In test 1, Opus~4.6 was run at low
+again, and one of the new answers also took more than one request. Continued answers that were kept are
+scored like any other. In four of them a safety classifier had stopped the reply before the tool asked again:
+A0A919RPG7 in test 2, the Q2PAY3 aspartate-to-asparagine mutant and the Q9V422 wild type in test 3, and 9T71
+in test 4. The rows do not record such stops; the tool's own session records do, and the repository lists
+them in \texttt{review/classifier\_stops\_2026-11-20}. In test 1, Opus~4.6 was run at low
 effort only.
 
 Counts of web search and fetch requests were kept only in rows written by later versions of the revised
