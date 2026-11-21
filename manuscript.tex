@@ -32,15 +32,11 @@
   these capabilites extended to protein annotation.
 
   We assigned different frontier generalist models a variety of protein annotation tasks, including predicting the
-  presence and coordinates of Pfam domains, loss of functional catalytic residues (including decoy controls), and predicting structure and activity. On
+  presence and coordinates of Pfam domains, loss of functional catalytic residues, and predicting structure and activity. On
   all annotation tasks, the frontier models performed well above chance, although short of state of the art predictors.
-  These capabilities were not
-  replicated in models trailing the frontier. Surprisingly, one model (Neon) performed well without showing advantages on the
-  simple next-residue prediction task. In two enzymes where the models disagreed with the curated
-  active site, alignment and structural models favour the position the models gave, clearly in one case
-  and tentatively in the other. The models also make characteristic hallucination errors, and they state them as confidently as their correct calls.
+  The models also make characteristic hallucination errors, and they state them as confidently as their correct calls.
 
-  While capabilities fall short of non-generalist method, the nascent ability of frontier models to perform protein annotation from sequence alone
+  While capabilities fall short of non-generalist methods, the nascent ability of frontier models to perform protein annotation from sequence alone
   is intriguing. The ability to reason over sequence, structure, and symbols in a single model allows for a neurosymbolic approach where
   a combination of sequence, experimental data and knowledge from the literature can be holistically combined to improve on functional annotation of the protein universe.
 
@@ -518,8 +514,10 @@ current practice the two parts are joined by pipelines and by people.
 
 In our tests, the three stronger models did both parts in a single answer. They placed Pfam domains in
 raw sequence, which is sub-symbolic work, and they reasoned about what a substituted residue does, which
-is symbolic. The kin-32 answers show the combination: the models located the glycine loop, the VAVK
-lysine and the HRD and DFG motifs in the sequence, then argued from them to a call of activity. Stated
+is symbolic. The aspartate mutants show the combination. Given
+the rhoptry kinase ROP17 (Q2PAY3) with Asp436 changed to asparagine, Fable~5.2 found the glycine loop,
+the $\beta$3 lysine and the DFG aspartate intact, noted that the catalytic-loop HRD motif now read HGN,
+and concluded that the loss of the catalytic base made the protein a pseudokinase. Stated
 reasons need not reflect how a model reaches its answer. The decoy control does not depend on them,
 though: the calls of Fable~5.2 and Opus~5.5 tracked the catalytic position whatever explanation came
 with them.
