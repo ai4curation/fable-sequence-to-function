@@ -1,0 +1,929 @@
+[
+ {
+  "item": "12WN-A",
+  "truth": {
+   "pdb_title": "De novo protein design, desE2D",
+   "molecule": "desE2D",
+   "keywords": "DE NOVO PROTEIN",
+   "keyword_text": "de novo protein design, metalloprotein, TIM barrel, asymmetric, DE NOVO PROTEIN",
+   "organism": [
+    "synthetic construct"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized alpha/beta domain protein (possibly from a thermophile)",
+   "function": "Predicted to be a small alpha/beta protein of uncertain function; it may bind a ligand or nucleotide at the C-terminal edges of its central beta-sheet.",
+   "fold": "alpha/beta two-layer sandwich (tandem ferredoxin-like / Rossmann-like alpha-beta repeats)",
+   "recognised": false,
+   "functional_residues": [
+    "G26 glycine in the beta-hairpin turn, possibly lining a binding site",
+    "D69 conserved acidic residue after strand 3, possible metal or ligand binding",
+    "E71 possible catalytic or metal-binding acidic residue",
+    "G106 glycine-rich loop after strand 4, possible phosphate binding",
+    "I164 end of strand 5, lines the putative pocket",
+    "P166 loop residue near the putative active site",
+    "H189 possible catalytic or metal-binding histidine"
+   ]
+  }
+ },
+ {
+  "item": "12WN-B",
+  "truth": {
+   "pdb_title": "De novo protein design, desE2D",
+   "molecule": "desE2D",
+   "keywords": "DE NOVO PROTEIN",
+   "keyword_text": "de novo protein design, metalloprotein, TIM barrel, asymmetric, DE NOVO PROTEIN",
+   "organism": [
+    "synthetic construct"
+   ]
+  },
+  "answer": {
+   "protein_name": "Unidentified alpha/beta protein, likely a computationally designed or idealized construct (not confidently assigned to a known protein)",
+   "function": "Function is uncertain from sequence alone; the repeating beta-alpha-beta architecture suggests a small-molecule or phosphoryl-group binding or transfer scaffold, with a possible active-site histidine in the GDH motif at the end of the first beta hairpin.",
+   "fold": "Two-subdomain alpha/beta (Rossmann-like, doubly wound) sandwich with parallel beta-sheets flanked by helices; possibly a de novo designed or heavily redesigned protein",
+   "recognised": false,
+   "functional_residues": [
+    "D27 Speculative: acidic residue in the GDH motif of the beta-hairpin turn, possible ligand or metal coordination, or support for His28",
+    "H28 Speculative: candidate catalytic or phospho-acceptor histidine at the start of the second strand",
+    "H154 Speculative: histidine at the C-terminus of the long helix near the subdomain interface, possible ligand-binding residue",
+    "H189 Speculative: histidine at the C-terminal end of a strand in the second subdomain, possible binding-site residue"
+   ]
+  }
+ },
+ {
+  "item": "12WN-C",
+  "truth": {
+   "pdb_title": "De novo protein design, desE2D",
+   "molecule": "desE2D",
+   "keywords": "DE NOVO PROTEIN",
+   "keyword_text": "de novo protein design, metalloprotein, TIM barrel, asymmetric, DE NOVO PROTEIN",
+   "organism": [
+    "synthetic construct"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized thermophilic Rossmann-fold metabolic enzyme",
+   "function": "Putative thermophilic metabolic enzyme (hydrolase, isomerase, or transferase) that binds a small-molecule substrate at the C-terminal edge of its central parallel beta-sheet.",
+   "fold": "Rossmann-like alpha/beta/alpha three-layer sandwich",
+   "recognised": false,
+   "functional_residues": [
+    "D27 Putative catalytic or metal-coordinating residue at the C-terminal loop of beta-strand 1",
+    "H28 Putative active-site acid/base or ligand-binding residue adjacent to Asp27",
+    "D69 Putative catalytic or metal-coordinating residue at the C-terminus of beta-strand 3",
+    "S108 Putative nucleophilic or hydrogen-bonding residue at the loop following beta-strand 4",
+    "S166 Putative substrate-binding residue in the Pro/Ser/Thr-rich active-site loop following beta-strand 5",
+    "H189 Putative catalytic general acid/base residue at the C-terminus of beta-strand 6"
+   ]
+  }
+ },
+ {
+  "item": "9SA5-A",
+  "truth": {
+   "pdb_title": "Inhibition by ATP regulates the activity of a CBASS antiphage nucleotide cyclase",
+   "molecule": "CD-NTase",
+   "keywords": "ANTIVIRAL PROTEIN",
+   "keyword_text": "CRISPR CBASS Anti-viral immune anti-phage, ANTIVIRAL PROTEIN",
+   "organism": [
+    "Bacillus cereus"
+   ]
+  },
+  "answer": {
+   "protein_name": "cGAS/DncV-like nucleotidyltransferase (CD-NTase) from a bacterial CBASS antiphage defence system",
+   "function": "Likely uses nucleoside triphosphates to synthesise a cyclic oligonucleotide second messenger that activates a downstream effector in antiphage defence.",
+   "fold": "Nucleotidyltransferase (DNA polymerase beta-like) fold; cGAS/DncV-like CD-NTase (SMODS) with N-terminal alpha/beta catalytic core and C-terminal helical bundle",
+   "recognised": false,
+   "functional_residues": [
+    "G59 Gly-Ser motif of the nucleotidyltransferase active-site lid; positions the NTP triphosphate",
+    "S60 Gly-Ser motif serine; contacts the donor nucleotide phosphates",
+    "N80 occupies the position of the first catalytic acidic residue (h[DE]h[DE]h motif); possible metal/nucleotide coordination",
+    "D82 catalytic aspartate coordinating Mg2+",
+    "D130 third catalytic aspartate on the neighbouring strand; Mg2+ coordination / general base",
+    "D128 possible alternative metal-coordinating acidic residue",
+    "G336 C-terminal Gly-rich tail, possibly the site of Cap2-mediated conjugation"
+   ]
+  }
+ },
+ {
+  "item": "9SA5-B",
+  "truth": {
+   "pdb_title": "Inhibition by ATP regulates the activity of a CBASS antiphage nucleotide cyclase",
+   "molecule": "CD-NTase",
+   "keywords": "ANTIVIRAL PROTEIN",
+   "keyword_text": "CRISPR CBASS Anti-viral immune anti-phage, ANTIVIRAL PROTEIN",
+   "organism": [
+    "Bacillus cereus"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterised Rossmann-fold nucleotide-binding enzyme",
+   "function": "Predicted to bind a nucleotide or cofactor at the C-terminal topological switch point of its parallel beta-sheet to catalyse a redox or group-transfer reaction, with a disordered proline-rich C-terminal tail mediating protein or nucleic acid interactions.",
+   "fold": "Rossmann-like alpha/beta/alpha sandwich",
+   "recognised": false,
+   "functional_residues": [
+    "D93 Putative catalytic or divalent metal-coordinating residue in the loop following strand 1",
+    "D138 Putative nucleotide ribose-binding aspartate at the C-terminal end of strand 2",
+    "C205 Putative catalytic or metal/redox-active cysteine in the CxxxxC motif at the C-terminal end of strand 4",
+    "E209 Putative acid/base catalytic residue adjacent to the active-site cysteines",
+    "C210 Putative catalytic or metal/redox-active cysteine in the CxxxxC motif following strand 4",
+    "D247 Putative substrate-binding residue in the glycine/proline-rich loop following strand 5"
+   ]
+  }
+ },
+ {
+  "item": "9SA5-C",
+  "truth": {
+   "pdb_title": "Inhibition by ATP regulates the activity of a CBASS antiphage nucleotide cyclase",
+   "molecule": "CD-NTase",
+   "keywords": "ANTIVIRAL PROTEIN",
+   "keyword_text": "CRISPR CBASS Anti-viral immune anti-phage, ANTIVIRAL PROTEIN",
+   "organism": [
+    "Bacillus cereus"
+   ]
+  },
+  "answer": {
+   "protein_name": "cGAS/DncV-like nucleotidyltransferase (CD-NTase, Mab21-like cyclic nucleotide synthase)",
+   "function": "Predicted metal-dependent nucleotidyltransferase that condenses NTPs into cyclic oligonucleotide second messengers (for example cyclic di- or trinucleotides) to signal antiphage or immune defense.",
+   "fold": "Nucleotidyltransferase fold (cGAS/DncV-like CD-NTase / Mab21-like; Pol beta superfamily) with C-terminal helical domain",
+   "recognised": false,
+   "functional_residues": [
+    "G59 G[S] motif of the catalytic beta-hairpin; triphosphate binding",
+    "S60 G[S] motif; NTP phosphate binding",
+    "D73 putative catalytic acidic residue; Mg2+ coordination",
+    "D82 catalytic acidic residue; Mg2+ coordination",
+    "D130 third catalytic acidic residue; metal binding / nucleotide transfer",
+    "K62 NTP phosphate binding",
+    "K126 nucleotide binding in active-site pocket"
+   ]
+  }
+ },
+ {
+  "item": "37QB-A",
+  "truth": {
+   "pdb_title": "Crystal Structure of the Ketopantoate Reductase PanG with NADP from Mycobacterium tuberculosis",
+   "molecule": "Ketopantoate Reductase PanG",
+   "keywords": "HYDROLASE",
+   "keyword_text": "Ketopantoate reductase (KPR), PanG, Tuberculosis, CSBID, Structural Genomics, Center for Structural Biology of Infectious Diseases, HYDROLASE",
+   "organism": [
+    "Mycobacterium tuberculosis"
+   ]
+  },
+  "answer": {
+   "protein_name": "Putative NADP-dependent oxidoreductase, Rossmann-like domain protein (DUF2520 family)",
+   "function": "Predicted to bind NAD(P)H through its N-terminal Rossmann fold and to catalyse reduction of an unidentified substrate, acting as a dinucleotide-dependent dehydrogenase/reductase.",
+   "fold": "NAD(P)-binding Rossmann fold N-terminal domain with an all-helical C-terminal domain (6-phosphogluconate dehydrogenase C-terminal-like; Rossmann-like/DUF2520 family)",
+   "recognised": false,
+   "functional_residues": [
+    "G19 glycine-rich dinucleotide-binding loop",
+    "G24 GxxGxxG motif, binds cofactor pyrophosphate",
+    "G27 GxxGxxG motif, binds cofactor pyrophosphate",
+    "R25 possible binding of the NADP 2'-phosphate",
+    "T82 cofactor nicotinamide-ribose binding",
+    "T108 cofactor binding near the substrate site",
+    "H131 putative catalytic acid/base",
+    "H187 putative substrate binding in the helical domain"
+   ]
+  }
+ },
+ {
+  "item": "37QB-B",
+  "truth": {
+   "pdb_title": "Crystal Structure of the Ketopantoate Reductase PanG with NADP from Mycobacterium tuberculosis",
+   "molecule": "Ketopantoate Reductase PanG",
+   "keywords": "HYDROLASE",
+   "keyword_text": "Ketopantoate reductase (KPR), PanG, Tuberculosis, CSBID, Structural Genomics, Center for Structural Biology of Infectious Diseases, HYDROLASE",
+   "organism": [
+    "Mycobacterium tuberculosis"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized Rossmann-like putative NADP-dependent oxidoreductase, DUF2520 family (probably an actinobacterial structural genomics target, given the SNA tag remnant)",
+   "function": "Predicted to bind NAD(P)(H) through its N-terminal Rossmann domain and act as a dehydrogenase/reductase related to pyrroline-5-carboxylate and ketopantoate reductases; the substrate is unknown.",
+   "fold": "NAD(P)-binding Rossmann fold N-terminal domain with a C-terminal all-helical 6-phosphogluconate dehydrogenase-like domain (DUF2520 / ProC/KPR-like oxidoreductase)",
+   "recognised": false,
+   "functional_residues": [
+    "G19 first glycine of the glycine-rich dinucleotide-binding loop (GIISAGRVG) after strand 1",
+    "G24 glycine-rich loop; close approach to the NAD(P) pyrophosphate",
+    "G27 glycine-rich loop; packing of the first helix against strand 1",
+    "S45 end of strand 2; predicted contact with the adenosine ribose 2'-phosphate of NADP",
+    "R52 predicted to bind the 2'-phosphate of NADP (specificity for NADP over NAD)",
+    "R53 predicted to bind the 2'-phosphate of NADP",
+    "T82 loop after strand 4; predicted contact with the nicotinamide ribose",
+    "T108 loop after strand 5; predicted cofactor/substrate site contact"
+   ]
+  }
+ },
+ {
+  "item": "37QB-C",
+  "truth": {
+   "pdb_title": "Crystal Structure of the Ketopantoate Reductase PanG with NADP from Mycobacterium tuberculosis",
+   "molecule": "Ketopantoate Reductase PanG",
+   "keywords": "HYDROLASE",
+   "keyword_text": "Ketopantoate reductase (KPR), PanG, Tuberculosis, CSBID, Structural Genomics, Center for Structural Biology of Infectious Diseases, HYDROLASE",
+   "organism": [
+    "Mycobacterium tuberculosis"
+   ]
+  },
+  "answer": {
+   "protein_name": "Prephenate/arogenate dehydrogenase (TyrA family)",
+   "function": "Catalyzes the NADP+-dependent oxidative decarboxylation of prephenate or arogenate to 4-hydroxyphenylpyruvate or L-tyrosine in tyrosine biosynthesis.",
+   "fold": "N-terminal NAD(P)-binding Rossmann fold with C-terminal 6-phosphogluconate dehydrogenase-like all-alpha helical domain",
+   "recognised": false,
+   "functional_residues": [
+    "G24 Glycine-rich pyrophosphate-binding loop of the Rossmann fold for NAD(P)+ cofactor binding",
+    "G27 Glycine-rich pyrophosphate-binding loop of the Rossmann fold for NAD(P)+ cofactor binding",
+    "S45 Post-beta-2 loop residue interacting with the adenosine ribose/2'-phosphate of NADP+",
+    "R52 Positively charged residue in the cofactor-binding loop stabilizing the 2'-phosphate of NADP+",
+    "R53 Positively charged residue in the cofactor-binding loop stabilizing the 2'-phosphate of NADP+",
+    "S109 Conserved active-site serine (TSG motif) hydrogen-bonding the substrate hydroxyl group and catalytic histidine",
+    "H131 Catalytic general base histidine at the C-terminus of beta-5 that deprotonates the substrate hydroxyl group during oxidative decarboxylation",
+    "R249 Conserved arginine in the C-terminal helical domain involved in binding the substrate carboxylate"
+   ]
+  }
+ },
+ {
+  "item": "27IK-A",
+  "truth": {
+   "pdb_title": "Crystal structure of the mature form of human ASPRV1",
+   "molecule": "Retroviral-like aspartic protease 1",
+   "keywords": "HYDROLASE",
+   "keyword_text": "Retroviral-like aspartic protease, HYDROLASE",
+   "organism": [
+    "Homo sapiens"
+   ]
+  },
+  "answer": {
+   "protein_name": "Protein DDI1 homolog 2 (DDI2) retroviral protease-like (RVP) domain",
+   "function": "Acts as a homodimeric ubiquitin-dependent aspartic endopeptidase that proteolytically cleaves polyubiquitinated substrates, notably processing the ER-bound transcription factor NRF1 (NFE2L1) to activate proteasome subunit gene expression.",
+   "fold": "Retroviral protease (acid protease / retropepsin) fold",
+   "recognised": true,
+   "functional_residues": [
+    "D23 Catalytic aspartate of the conserved DSGA active-site motif that activates the nucleophilic water molecule for peptide bond hydrolysis.",
+    "S24 Conserved serine in the DSGA motif that forms the fireman's grip hydrogen-bonding network stabilizing the active site across the homodimer interface.",
+    "G25 Conserved glycine in the DSGA active-site loop maintaining the tight turn geometry of the catalytic center.",
+    "A26 Conserved alanine in the DSGA motif contributing to active-site geometry and substrate binding.",
+    "T97 Conserved residue in the GTD motif that structurally supports the active-site loop."
+   ]
+  }
+ },
+ {
+  "item": "27IK-B",
+  "truth": {
+   "pdb_title": "Crystal structure of the mature form of human ASPRV1",
+   "molecule": "Retroviral-like aspartic protease 1",
+   "keywords": "HYDROLASE",
+   "keyword_text": "Retroviral-like aspartic protease, HYDROLASE",
+   "organism": [
+    "Homo sapiens"
+   ]
+  },
+  "answer": {
+   "protein_name": "Retroviral-like aspartic protease 1 (ASPRV1, skin aspartic protease SASPase), catalytic protease domain",
+   "function": "Homodimeric retroviral-type aspartic endopeptidase of the skin granular layer that autoactivates and cleaves profilaggrin (the linker regions between filaggrin repeats), contributing to stratum corneum hydration and texture.",
+   "fold": "Retropepsin-like (retroviral-type) aspartic protease fold; acid protease beta-barrel that forms a homodimer",
+   "recognised": true,
+   "functional_residues": [
+    "D23 Catalytic aspartate of the D-S-G-A motif; one Asp from each monomer forms the active site of the dimer",
+    "S24 Active-site motif residue; helps position the catalytic Asp in the 'fireman's grip' hydrogen-bond network",
+    "G25 Active-site motif glycine, lines the substrate-binding cleft",
+    "A26 Active-site motif residue contributing to the S1/S1' pocket",
+    "N58 Predicted tip of the flap hairpin that closes over bound substrate",
+    "G59 Predicted flap-tip glycine giving the flap its flexibility",
+    "I94 Hydrophobic substrate-pocket residue (equivalent to HIV protease Ile84)",
+    "I95 Hydrophobic core/pocket residue packing behind the catalytic loop"
+   ]
+  }
+ },
+ {
+  "item": "27IK-C",
+  "truth": {
+   "pdb_title": "Crystal structure of the mature form of human ASPRV1",
+   "molecule": "Retroviral-like aspartic protease 1",
+   "keywords": "HYDROLASE",
+   "keyword_text": "Retroviral-like aspartic protease, HYDROLASE",
+   "organism": [
+    "Homo sapiens"
+   ]
+  },
+  "answer": {
+   "protein_name": "Retroviral-like aspartic protease domain-containing protein (retropepsin-like domain, possibly from a DDI1-like or retrotransposon-derived protein)",
+   "function": "Likely functions as a homodimeric aspartic endopeptidase in which each monomer contributes a catalytic aspartate from the DSG motif to hydrolyse peptide bonds.",
+   "fold": "Retropepsin-like aspartic protease fold (acid proteases superfamily, retroviral protease-like domain)",
+   "recognised": false,
+   "functional_residues": [
+    "D23 catalytic aspartate (DSG active-site motif)",
+    "S24 active-site motif residue (fireman's grip / dimer interface)",
+    "G25 active-site motif glycine",
+    "G96 conserved hydrophobic-hydrophobic-Gly motif glycine, structural support of active site",
+    "D98 conserved residue in GxD motif that helps position the active site"
+   ]
+  }
+ },
+ {
+  "item": "9TGX-A",
+  "truth": {
+   "pdb_title": "Guanidine prenyltransferase NosH in complex with guanidine",
+   "molecule": "NosH",
+   "keywords": "TRANSFERASE",
+   "keyword_text": "NosH facilitates the magnesium-dependent transfer of guanidine groups to polyprenyl diphosphates of differing chain lengths, alongside the hydrolysis of the diphosphate moiety, TRANSFERASE",
+   "organism": [
+    "Nostoc flagelliforme CCNUN1"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized alpha-helical protein (recombinant construct with N-terminal GMAS tag)",
+   "function": "Predicted all-alpha helical domain that probably mediates protein-protein interactions; it has no clear catalytic motif.",
+   "fold": "All-alpha helical bundle / alpha-helical repeat domain",
+   "recognised": false,
+   "functional_residues": []
+  }
+ },
+ {
+  "item": "9TGX-B",
+  "truth": {
+   "pdb_title": "Guanidine prenyltransferase NosH in complex with guanidine",
+   "molecule": "NosH",
+   "keywords": "TRANSFERASE",
+   "keyword_text": "NosH facilitates the magnesium-dependent transfer of guanidine groups to polyprenyl diphosphates of differing chain lengths, alongside the hydrolysis of the diphosphate moiety, TRANSFERASE",
+   "organism": [
+    "Nostoc flagelliforme CCNUN1"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized all-alpha helical protein",
+   "function": "Putative multi-helical protein-binding or catalytic domain that may coordinate a divalent metal ion or charged ligand via its central acidic and histidine-containing loop regions.",
+   "fold": "All-alpha helical bundle",
+   "recognised": false,
+   "functional_residues": [
+    "D130 putative metal-binding or catalytic aspartate in glycine-rich loop",
+    "H131 putative catalytic or metal-coordinating histidine",
+    "D186 putative metal-binding or ligand-interacting aspartate in acidic loop",
+    "D187 putative metal-binding or ligand-interacting aspartate in acidic loop"
+   ]
+  }
+ },
+ {
+  "item": "9TGX-C",
+  "truth": {
+   "pdb_title": "Guanidine prenyltransferase NosH in complex with guanidine",
+   "molecule": "NosH",
+   "keywords": "TRANSFERASE",
+   "keyword_text": "NosH facilitates the magnesium-dependent transfer of guanidine groups to polyprenyl diphosphates of differing chain lengths, alongside the hydrolysis of the diphosphate moiety, TRANSFERASE",
+   "organism": [
+    "Nostoc flagelliforme CCNUN1"
+   ]
+  },
+  "answer": {
+   "protein_name": "TenA/THI-4 family protein (putative thiaminase II / aminopyrimidine aminohydrolase)",
+   "function": "Probably a thiamine-salvage hydrolase that converts 4-amino-5-aminomethyl-2-methylpyrimidine (or other thiamine breakdown products) to 4-amino-5-hydroxymethyl-2-methylpyrimidine using a catalytic cysteine; this is inferred from weak motif similarity to Bacillus subtilis TenA and is low confidence.",
+   "fold": "Heme oxygenase-like all-alpha helical bundle (TenA/THI-4/PqqC superfamily)",
+   "recognised": false,
+   "functional_residues": [
+    "D63 Predicted active-site aspartate that binds the aminopyrimidine ring (equivalent to TenA Asp44)",
+    "C150 Predicted catalytic nucleophile cysteine (equivalent to TenA Cys135)",
+    "E219 Predicted active-site glutamate acting as general acid/base (equivalent to TenA Glu205)",
+    "Y218 Predicted aromatic residue lining the substrate pocket",
+    "F153 Predicted aromatic residue stacking against the pyrimidine ring in the substrate pocket"
+   ]
+  }
+ },
+ {
+  "item": "9WIA-A",
+  "truth": {
+   "pdb_title": "Crystal structure of Helicoverpa armigera oral secretion R-like protein 1",
+   "molecule": "HARP1",
+   "keywords": "IMMUNOSUPPRESSANT",
+   "keyword_text": "effector, plant immunology, IMMUNOSUPPRESSANT",
+   "organism": [
+    "Helicoverpa armigera"
+   ]
+  },
+  "answer": {
+   "protein_name": "Putative carbohydrate-binding beta-sandwich domain",
+   "function": "Binds carbohydrates or glycans via surface-exposed aromatic and polar residues arranged on an all-beta sandwich scaffold.",
+   "fold": "beta-sandwich",
+   "recognised": false,
+   "functional_residues": [
+    "W65 Aromatic stacking interaction with carbohydrate or hydrophobic ligand in a surface loop",
+    "W90 Aromatic stacking interaction with ligand in the strand 5-6 turn",
+    "Y28 Aromatic stacking and hydrogen bonding within the strand 2 YYY motif",
+    "Y93 Aromatic stacking and hydrogen bonding within the C-terminal YYY motif",
+    "E97 Hydrogen bonding with polar ligand groups"
+   ]
+  }
+ },
+ {
+  "item": "9WIA-B",
+  "truth": {
+   "pdb_title": "Crystal structure of Helicoverpa armigera oral secretion R-like protein 1",
+   "molecule": "HARP1",
+   "keywords": "IMMUNOSUPPRESSANT",
+   "keyword_text": "effector, plant immunology, IMMUNOSUPPRESSANT",
+   "organism": [
+    "Helicoverpa armigera"
+   ]
+  },
+  "answer": {
+   "protein_name": "Putative carbohydrate-binding / expansin-like beta-sandwich domain protein",
+   "function": "Likely binds polysaccharides such as cellulose or xylan through aromatic surface residues, possibly as part of a secreted cell-wall-modifying enzyme.",
+   "fold": "small all-beta sandwich (carbohydrate-binding module / double-psi beta-barrel-like)",
+   "recognised": false,
+   "functional_residues": [
+    "Y27 aromatic carbohydrate-binding surface residue (putative)",
+    "Y28 aromatic carbohydrate-binding surface residue (putative)",
+    "W65 aromatic carbohydrate stacking (putative)",
+    "W90 aromatic carbohydrate stacking (putative)",
+    "W99 aromatic carbohydrate stacking (putative)",
+    "E97 possible catalytic or binding acidic residue (putative)"
+   ]
+  }
+ },
+ {
+  "item": "9WIA-C",
+  "truth": {
+   "pdb_title": "Crystal structure of Helicoverpa armigera oral secretion R-like protein 1",
+   "molecule": "HARP1",
+   "keywords": "IMMUNOSUPPRESSANT",
+   "keyword_text": "effector, plant immunology, IMMUNOSUPPRESSANT",
+   "organism": [
+    "Helicoverpa armigera"
+   ]
+  },
+  "answer": {
+   "protein_name": "Unidentified protein; possibly a secreted bacterial or fungal beta-sandwich domain (speculative)",
+   "function": "Not confidently assigned from sequence alone; the tyrosine- and tryptophan-rich, cysteine-free, predicted all-beta composition suggests a small secreted binding domain, perhaps carbohydrate- or protein-binding, rather than an enzyme.",
+   "fold": "All-beta sandwich (jelly-roll-like), possibly a protease C-terminal or carbohydrate-binding-type domain; low confidence",
+   "recognised": false,
+   "functional_residues": [
+    "Y27 speculative: aromatic residue in the YYY cluster, possible ligand-binding surface",
+    "Y28 speculative: aromatic residue in the YYY cluster, possible ligand-binding surface",
+    "Y29 speculative: aromatic residue in the YYY cluster, possible ligand-binding surface",
+    "W65 speculative: exposed loop tryptophan, possible ligand stacking",
+    "W90 speculative: aromatic residue, possible ligand contact or core packing",
+    "Y92 speculative: aromatic residue in the second YYY cluster, possible binding surface or core",
+    "Y93 speculative: aromatic residue in the second YYY cluster, possible binding surface or core",
+    "W99 speculative: C-terminal strand tryptophan, likely hydrophobic core packing"
+   ]
+  }
+ },
+ {
+  "item": "9T71-A",
+  "truth": {
+   "pdb_title": "Crystal structure of the deubiquitinase domain of AtDUC1.",
+   "molecule": "EEIG1/EHBP1 protein amino-terminal domain protein",
+   "keywords": "PLANT PROTEIN",
+   "keyword_text": "Deubiquitinase, K63-linked ubiquitin, Papain-like cysteine protease, DUC family, PLANT PROTEIN",
+   "organism": [
+    "Arabidopsis thaliana"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized alpha+beta globular protein",
+   "function": "Likely functions as a soluble cytosolic enzyme or ligand-binding protein utilizing a central beta-sheet cleft flanked by amphipathic helices and conserved cysteine and histidine residues.",
+   "fold": "Alpha+beta sandwich fold",
+   "recognised": false,
+   "functional_residues": [
+    "H51 Putative metal-binding or proton-transfer residue at the C-terminal end of a buried beta-strand",
+    "C112 Putative catalytic or structural cysteine located near the end of a beta-strand",
+    "H165 Putative active-site or ligand-coordinating histidine in a beta-hairpin turn",
+    "C177 Putative buried catalytic or redox-active cysteine within the central beta-sheet",
+    "C221 Part of a vicinal dicysteine motif potentially involved in redox regulation or metal coordination",
+    "C222 Part of a vicinal dicysteine motif potentially involved in redox regulation or metal coordination"
+   ]
+  }
+ },
+ {
+  "item": "9T71-B",
+  "truth": {
+   "pdb_title": "Crystal structure of the deubiquitinase domain of AtDUC1.",
+   "molecule": "EEIG1/EHBP1 protein amino-terminal domain protein",
+   "keywords": "PLANT PROTEIN",
+   "keyword_text": "Deubiquitinase, K63-linked ubiquitin, Papain-like cysteine protease, DUC family, PLANT PROTEIN",
+   "organism": [
+    "Arabidopsis thaliana"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterised plant protein fragment with a putative papain-like cysteine peptidase domain (possibly the C-terminal domain of an NT-C2 domain-containing protein)",
+   "function": "Predicted from sequence motifs alone to be a papain-like cysteine peptidase, possibly a deubiquitinase or ubiquitin-like-protein hydrolase, using a Cys-His-Asp triad to cleave peptide or isopeptide bonds.",
+   "fold": "Papain-like cysteine peptidase fold (CA-clan alpha+beta; N-terminal catalytic helix packed on an antiparallel beta-sheet carrying His/Asp)",
+   "recognised": false,
+   "functional_residues": [
+    "C42 putative catalytic nucleophile at the N-terminus of the central helix",
+    "H165 putative catalytic general base of the triad, at the start of a beta-strand",
+    "D180 putative third triad residue that orients and polarises the catalytic histidine",
+    "Q35 putative oxyanion-hole residue upstream of the catalytic cysteine",
+    "W162 putative aromatic residue lining the active-site cleft and substrate-binding site"
+   ]
+  }
+ },
+ {
+  "item": "9T71-C",
+  "truth": {
+   "pdb_title": "Crystal structure of the deubiquitinase domain of AtDUC1.",
+   "molecule": "EEIG1/EHBP1 protein amino-terminal domain protein",
+   "keywords": "PLANT PROTEIN",
+   "keyword_text": "Deubiquitinase, K63-linked ubiquitin, Papain-like cysteine protease, DUC family, PLANT PROTEIN",
+   "organism": [
+    "Arabidopsis thaliana"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized plant protein (domain of unknown function)",
+   "function": "This is a low-confidence guess: a globular alpha/beta protein of unknown function, possibly binding a small ligand or another protein, with no clear catalytic motif detectable from the sequence.",
+   "fold": "alpha/beta two-layer sandwich (mixed beta-sheet packed against helices)",
+   "recognised": false,
+   "functional_residues": [
+    "H51 possible ligand-binding or catalytic residue (HWFH motif)",
+    "H54 possible metal or ligand binding",
+    "D164 possible active-site acidic residue",
+    "H165 possible metal or ligand binding",
+    "D174 possible active-site acidic residue"
+   ]
+  }
+ },
+ {
+  "item": "10ZI-A",
+  "truth": {
+   "pdb_title": "Crystal structure of MrtR bound to 3O-C8 homoserine lactone and tetraethylene glycol",
+   "molecule": "MrtR",
+   "keywords": "TRANSCRIPTION",
+   "keyword_text": "quorum sensing receptor, TRANSCRIPTION",
+   "organism": [
+    "Mesorhizobium tianshanense"
+   ]
+  },
+  "answer": {
+   "protein_name": "LuxR-family quorum-sensing transcriptional regulator",
+   "function": "Acts as an acyl-homoserine lactone (AHL)-dependent quorum-sensing transcriptional regulator that binds a diffusible autoinducer ligand via its N-terminal domain to dimerize and bind target promoter DNA via its C-terminal helix-turn-helix domain.",
+   "fold": "LuxR-type two-domain fold (PAS/GAF-like autoinducer-binding alpha/beta/alpha sandwich + C-terminal GerE/LuxR 4-helix-bundle HTH DNA-binding domain)",
+   "recognised": false,
+   "functional_residues": [
+    "Y60 Autoinducer-binding pocket residue that hydrogen-bonds to the carbonyl oxygen of the AHL ligand",
+    "W64 Conserved autoinducer-binding pocket tryptophan that hydrogen-bonds to the lactone ring carbonyl of the AHL ligand",
+    "Y68 Autoinducer-binding pocket residue forming hydrophobic contacts with the AHL acyl chain",
+    "D77 Conserved autoinducer-binding pocket aspartate that hydrogen-bonds to the amide nitrogen of the AHL ligand",
+    "W92 Conserved autoinducer-binding pocket tryptophan mediating hydrophobic interactions with the AHL ligand",
+    "E207 Conserved residue in the HTH DNA-recognition helix involved in specific promoter DNA binding",
+    "R211 Positively charged residue in the HTH DNA-recognition helix mediating DNA major groove interactions",
+    "R218 Basic residue in the HTH DNA-recognition helix contacting the DNA backbone/bases"
+   ]
+  }
+ },
+ {
+  "item": "10ZI-B",
+  "truth": {
+   "pdb_title": "Crystal structure of MrtR bound to 3O-C8 homoserine lactone and tetraethylene glycol",
+   "molecule": "MrtR",
+   "keywords": "TRANSCRIPTION",
+   "keyword_text": "quorum sensing receptor, TRANSCRIPTION",
+   "organism": [
+    "Mesorhizobium tianshanense"
+   ]
+  },
+  "answer": {
+   "protein_name": "LuxR-family quorum-sensing transcriptional activator (acyl-homoserine lactone receptor, LuxR/LasR/TraR homolog)",
+   "function": "Binds a cognate N-acyl-homoserine lactone autoinducer in its N-terminal pocket, which promotes dimerization and lets the C-terminal HTH domain bind lux-box promoter DNA to activate quorum-sensing-regulated genes.",
+   "fold": "LuxR-type autoinducer (acyl-homoserine lactone) binding domain (GAF-like alpha/beta/alpha sandwich) plus C-terminal LuxR-type HTH DNA-binding domain",
+   "recognised": false,
+   "functional_residues": [
+    "Y60 AHL-binding pocket; hydrogen bond to lactone carbonyl (TraR Y53/LasR Y56 equivalent)",
+    "W64 AHL-binding pocket; hydrogen bond to amide carbonyl (TraR W57/LasR W60 equivalent)",
+    "Y68 AHL-binding pocket, hydrophobic contact with acyl chain",
+    "D77 Conserved Asp; hydrogen bond to the AHL amide N-H (TraR D70/LasR D73 equivalent)",
+    "W92 Conserved Trp packing against the ligand pocket (TraR W85 equivalent)",
+    "W189 Conserved Trp in the HTH domain core",
+    "Y196 HTH scaffold residue",
+    "T209 Recognition helix; DNA contact"
+   ]
+  }
+ },
+ {
+  "item": "10ZI-C",
+  "truth": {
+   "pdb_title": "Crystal structure of MrtR bound to 3O-C8 homoserine lactone and tetraethylene glycol",
+   "molecule": "MrtR",
+   "keywords": "TRANSCRIPTION",
+   "keyword_text": "quorum sensing receptor, TRANSCRIPTION",
+   "organism": [
+    "Mesorhizobium tianshanense"
+   ]
+  },
+  "answer": {
+   "protein_name": "LuxR-family acyl-homoserine-lactone-responsive transcriptional regulator (TraR/LasR-like; closest recalled match is Brucella BabR/BlxR, a VjbR paralogue, though the exact identity is uncertain)",
+   "function": "Quorum-sensing transcription factor that binds an N-acyl-homoserine lactone autoinducer in its N-terminal domain and binds lux-box-like promoter DNA as a dimer through its C-terminal helix-turn-helix domain to regulate target gene expression.",
+   "fold": "LuxR-type quorum-sensing regulator: N-terminal autoinducer-binding alpha/beta/alpha sandwich (GAF/PAS-like, TraR/LasR-type) plus C-terminal four-helix LuxR/GerE-type helix-turn-helix DNA-binding domain",
+   "recognised": true,
+   "functional_residues": [
+    "Y60 predicted autoinducer-binding pocket residue (aligns with TraR Tyr53; contacts acyl chain/lactone)",
+    "W64 predicted hydrogen bond to the homoserine-lactone ring carbonyl (aligns with TraR Trp57)",
+    "Y68 predicted autoinducer-binding pocket residue (aligns with TraR Tyr61)",
+    "D77 predicted hydrogen bond to the autoinducer amide NH (aligns with TraR Asp70)",
+    "P78 conserved structural residue of the ligand-binding pocket (aligns with TraR Pro71)",
+    "W92 predicted hydrophobic packing against the autoinducer (aligns with TraR Trp85)",
+    "G114 conserved glycine of the ligand-binding domain (aligns with TraR Gly113)",
+    "E183 conserved glutamate of the LuxR-type helix-turn-helix domain (aligns with TraR Glu178)"
+   ]
+  }
+ },
+ {
+  "item": "23AA-A",
+  "truth": {
+   "pdb_title": "Type II-A Anti-CRISPR protein AcrIIA17 from Streptococcus gallolyticus",
+   "molecule": "Anti-CRISPR protein",
+   "keywords": "IMMUNE SYSTEM",
+   "keyword_text": "CRISPR-Cas system, Anti-CRISPR protein, IMMUNE SYSTEM",
+   "organism": [
+    "Streptococcus gallolyticus"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized acidic protein from a Gram-positive bacterium (structural-genomics construct with C-terminal LEHHHHHH tag)",
+   "function": "Unknown; this small, highly acidic alpha+beta protein may act as an immunity or inhibitor protein that binds a basic partner such as a toxin or nucleic-acid-binding protein, but this is a guess from sequence composition alone.",
+   "fold": "Small alpha+beta two-layer sandwich (beta-hairpin sheet packed against three helices), possibly immunity-protein-like",
+   "recognised": false,
+   "functional_residues": [
+    "Y28 Aromatic residue on the beta-hairpin, likely hydrophobic core or binding surface",
+    "Y31 Aromatic residue on the beta-hairpin, possible partner-binding surface",
+    "Y41 Aromatic residue on the second strand, likely core packing",
+    "D47 Part of an acidic loop (DADE), possible electrostatic interaction with a basic partner",
+    "E50 Part of an acidic loop, possible electrostatic interaction with a basic partner",
+    "W94 Conserved-looking aromatic in the C-terminal helix, likely core packing"
+   ]
+  }
+ },
+ {
+  "item": "23AA-B",
+  "truth": {
+   "pdb_title": "Type II-A Anti-CRISPR protein AcrIIA17 from Streptococcus gallolyticus",
+   "molecule": "Anti-CRISPR protein",
+   "keywords": "IMMUNE SYSTEM",
+   "keyword_text": "CRISPR-Cas system, Anti-CRISPR protein, IMMUNE SYSTEM",
+   "organism": [
+    "Streptococcus gallolyticus"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized acidic ferredoxin-like protein",
+   "function": "Likely functions as a DNA-mimic or protein-protein interaction regulator that binds positively charged surfaces of target nucleic acid-binding complexes via its extensive acidic surface.",
+   "fold": "Ferredoxin-like fold with C-terminal alpha-helix",
+   "recognised": false,
+   "functional_residues": [
+    "D54 Part of the highly acidic surface loop mediating electrostatic interactions with positively charged target proteins",
+    "E55 Part of the highly acidic surface loop mediating electrostatic interactions with positively charged target proteins",
+    "E59 Part of the acidic cluster contributing to negative surface potential",
+    "E60 Part of the acidic cluster contributing to negative surface potential",
+    "K82 Part of a localized basic patch in the loop preceding the C-terminal helix, potentially involved in partner recognition",
+    "K83 Part of a localized basic patch in the loop preceding the C-terminal helix, potentially involved in partner recognition"
+   ]
+  }
+ },
+ {
+  "item": "23AA-C",
+  "truth": {
+   "pdb_title": "Type II-A Anti-CRISPR protein AcrIIA17 from Streptococcus gallolyticus",
+   "molecule": "Anti-CRISPR protein",
+   "keywords": "IMMUNE SYSTEM",
+   "keyword_text": "CRISPR-Cas system, Anti-CRISPR protein, IMMUNE SYSTEM",
+   "organism": [
+    "Streptococcus gallolyticus"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized small acidic protein (putative immunity protein), C-terminal His6-tagged",
+   "function": "Likely a small acidic protein that acts by protein-protein binding, possibly as an immunity protein that neutralizes a cognate toxin, but this cannot be confirmed from the sequence alone.",
+   "fold": "alpha/beta two-layer sandwich (small acidic immunity-protein-like domain)",
+   "recognised": false,
+   "functional_residues": [
+    "D47 acidic surface residue possibly mediating electrostatic partner binding",
+    "D49 acidic surface residue possibly mediating electrostatic partner binding",
+    "E50 acidic surface residue possibly mediating electrostatic partner binding",
+    "H91 possible partner interface residue",
+    "W93 hydrophobic core or interface residue"
+   ]
+  }
+ },
+ {
+  "item": "9ZWQ-A",
+  "truth": {
+   "pdb_title": "Crystal structure of the N4BP2 polynucleotide kinase (PNK) domain in complex with ADP and Mg.",
+   "molecule": "NEDD4-binding protein 2",
+   "keywords": "TRANSFERASE",
+   "keyword_text": "Transferase; Polynucleotide kinase; Catalysis; Enzyme reaction; Catalytic mechanism; Phosphoryl transfer, RNA, DNA, TRANSFERASE",
+   "organism": [
+    "Homo sapiens"
+   ]
+  },
+  "answer": {
+   "protein_name": "Polynucleotide 5'-hydroxyl-kinase",
+   "function": "Catalyzes the ATP-dependent transfer of a gamma-phosphate group to the 5'-hydroxyl terminus of RNA or DNA polynucleotides.",
+   "fold": "P-loop nucleoside triphosphate hydrolase (polynucleotide kinase fold)",
+   "recognised": false,
+   "functional_residues": [
+    "K40 Walker A (P-loop) lysine that binds the beta- and gamma-phosphates of ATP",
+    "S41 Walker A (P-loop) serine that coordinates the catalytic Mg2+ ion",
+    "D60 Catalytic general base that activates the 5'-OH group of the nucleic acid substrate for nucleophilic attack",
+    "D101 Walker B aspartate (DNTN motif) that coordinates the catalytic Mg2+ ion via water",
+    "N104 Conserved asparagine in the DNTN motif involved in active-site organization",
+    "R142 LID domain arginine finger that stabilizes the pentacoordinate transition state during phosphoryl transfer",
+    "R143 LID domain conserved arginine involved in phosphate binding and transition-state stabilization"
+   ]
+  }
+ },
+ {
+  "item": "9ZWQ-B",
+  "truth": {
+   "pdb_title": "Crystal structure of the N4BP2 polynucleotide kinase (PNK) domain in complex with ADP and Mg.",
+   "molecule": "NEDD4-binding protein 2",
+   "keywords": "TRANSFERASE",
+   "keyword_text": "Transferase; Polynucleotide kinase; Catalysis; Enzyme reaction; Catalytic mechanism; Phosphoryl transfer, RNA, DNA, TRANSFERASE",
+   "organism": [
+    "Homo sapiens"
+   ]
+  },
+  "answer": {
+   "protein_name": "NEDD4-binding protein 2-like (N4BP2L1/N4BP2L2-type) P-loop kinase domain, FLAG-tagged recombinant construct (tentative identification)",
+   "function": "Predicted P-loop nucleotide kinase that binds ATP/Mg2+ through its Walker A motif and likely transfers phosphate to a polynucleotide 5'-hydroxyl or a small-molecule substrate, by analogy with polynucleotide kinases.",
+   "fold": "P-loop containing nucleoside triphosphate hydrolase (Rossmann-like alpha/beta, polynucleotide kinase / AAA_33 kinase-like family)",
+   "recognised": false,
+   "functional_residues": [
+    "G34 Walker A (P-loop) glycine, GxxxxGKS motif start",
+    "G37 Walker A P-loop backbone, phosphate binding",
+    "G39 Walker A P-loop glycine, phosphate binding",
+    "K40 Walker A lysine, binds ATP beta/gamma-phosphates",
+    "S41 Walker A serine, Mg2+ coordination",
+    "D60 Putative catalytic base activating the substrate hydroxyl (PNK-like Asp after strand 2)",
+    "D61 Putative substrate/Mg2+ positioning acidic residue",
+    "D101 Walker B-like aspartate at end of hydrophobic strand, Mg2+/water coordination"
+   ]
+  }
+ },
+ {
+  "item": "9ZWQ-C",
+  "truth": {
+   "pdb_title": "Crystal structure of the N4BP2 polynucleotide kinase (PNK) domain in complex with ADP and Mg.",
+   "molecule": "NEDD4-binding protein 2",
+   "keywords": "TRANSFERASE",
+   "keyword_text": "Transferase; Polynucleotide kinase; Catalysis; Enzyme reaction; Catalytic mechanism; Phosphoryl transfer, RNA, DNA, TRANSFERASE",
+   "organism": [
+    "Homo sapiens"
+   ]
+  },
+  "answer": {
+   "protein_name": "Polynucleotide kinase-like domain (5'-OH polynucleotide kinase, P-loop kinase module), FLAG-tagged construct",
+   "function": "Uses ATP to phosphorylate the 5'-hydroxyl termini of DNA or RNA, a step in nucleic-acid repair or RNA end-processing.",
+   "fold": "P-loop containing nucleoside triphosphate hydrolase (polynucleotide kinase-like P-loop kinase domain)",
+   "recognised": false,
+   "functional_residues": [
+    "G37 Walker A P-loop, binds ATP phosphates",
+    "G39 Walker A P-loop",
+    "K40 Walker A lysine, binds ATP beta/gamma-phosphate",
+    "S41 Walker A serine/threonine, coordinates Mg2+",
+    "D60 Putative general base that activates the 5'-OH acceptor",
+    "D101 Mg2+/ATP coordination (Walker B-like)",
+    "N104 Substrate/phosphate binding",
+    "R127 Phosphate and substrate binding (lid arginine)"
+   ]
+  }
+ },
+ {
+  "item": "10CW-A",
+  "truth": {
+   "pdb_title": "Crystal structure of Thermoproteus neutrophilus Rpp30",
+   "molecule": "Ribonuclease P Rpp30",
+   "keywords": "RNA BINDING PROTEIN",
+   "keyword_text": "RNase P T type Archaeal, RNA BINDING PROTEIN",
+   "organism": [
+    "Pyrobaculum neutrophilum"
+   ]
+  },
+  "answer": {
+   "protein_name": "Putative Rossmann-fold metabolic enzyme",
+   "function": "Predicted to bind a nucleotide or small-molecule cofactor at the C-terminal ends of its central beta-sheet to catalyze a transferase or redox-related metabolic reaction.",
+   "fold": "Rossmann-like 3-layer alpha/beta/alpha sandwich",
+   "recognised": false,
+   "functional_residues": [
+    "D16 Putative active-site or cofactor-coordinating acidic residue at the C-terminal end of beta-strand 1",
+    "H84 Sole histidine in the sequence, located in the loop following beta-strand 5 and likely involved in catalysis or substrate binding",
+    "S131 Putative hydrogen-bonding or catalytic residue at the C-terminal end of buried central strand 7",
+    "D156 Putative catalytic or metal/ligand-binding residue within the GGDPSW loop following beta-strand 8"
+   ]
+  }
+ },
+ {
+  "item": "10CW-B",
+  "truth": {
+   "pdb_title": "Crystal structure of Thermoproteus neutrophilus Rpp30",
+   "molecule": "Ribonuclease P Rpp30",
+   "keywords": "RNA BINDING PROTEIN",
+   "keyword_text": "RNase P T type Archaeal, RNA BINDING PROTEIN",
+   "organism": [
+    "Pyrobaculum neutrophilum"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized protein (structural genomics target, likely from Thermus/Deinococcus-like bacterium)",
+   "function": "Uncharacterized protein of unknown function; possibly a small alpha/beta domain involved in nucleotide or ligand binding.",
+   "fold": "alpha/beta two-layer sandwich (mixed beta-sheet with flanking helices)",
+   "recognised": false,
+   "functional_residues": [
+    "H84 possible ligand-binding/catalytic residue in loop",
+    "D126 possible metal/ligand coordination",
+    "D138 possible metal/ligand coordination"
+   ]
+  }
+ },
+ {
+  "item": "10CW-C",
+  "truth": {
+   "pdb_title": "Crystal structure of Thermoproteus neutrophilus Rpp30",
+   "molecule": "Ribonuclease P Rpp30",
+   "keywords": "RNA BINDING PROTEIN",
+   "keyword_text": "RNase P T type Archaeal, RNA BINDING PROTEIN",
+   "organism": [
+    "Pyrobaculum neutrophilum"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterised conserved hypothetical protein (likely actinobacterial, structural genomics construct with N-terminal SNA tag remnant)",
+   "function": "Unknown; the sequence suggests a small cytoplasmic alpha/beta protein of undefined molecular function, possibly binding a ligand or nucleotide, but this is a speculative prediction.",
+   "fold": "Two-domain alpha/beta protein: N-terminal antiparallel beta-sheet domain followed by a C-terminal Rossmann-like alpha/beta/alpha segment (uncharacterised DUF-type, structural genomics target); low-confidence assignment",
+   "recognised": false,
+   "functional_residues": [
+    "H84 Speculative: possible ligand- or metal-binding residue in the loop after the central beta strand",
+    "D75 Speculative: acidic residue in a beta-hairpin turn, possible binding-site residue",
+    "S131 Speculative: residue at the C-terminal end of a parallel strand, a typical ligand-binding position in Rossmann-like folds",
+    "T132 Speculative: residue at the strand C-terminus/loop, possible ligand contact"
+   ]
+  }
+ },
+ {
+  "item": "9YP0-A",
+  "truth": {
+   "pdb_title": "Crystal structure of de novo cysteine protease (HC34 WT apo)",
+   "molecule": "HC34 WT apo",
+   "keywords": "DE NOVO PROTEIN",
+   "keyword_text": "de novo design, Cysteine proteases, enzyme design, deep learning method RFD2-MI, DE NOVO PROTEIN",
+   "organism": [
+    "synthetic construct"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized TBP-like tandem-repeat protein",
+   "function": "Predicted to act as a nucleic-acid- or ligand-binding protein using a pseudo-symmetric concave beta-sheet surface formed by two homologous alpha+beta repeats.",
+   "fold": "TBP-like",
+   "recognised": false,
+   "functional_residues": [
+    "E54 Conserved glutamate in the repeat 1 PEG beta-hairpin turn",
+    "E174 Conserved glutamate in the repeat 2 PEG beta-hairpin turn",
+    "H45 Sole histidine residue located at the beta-meander edge, potential ligand or catalytic interaction site",
+    "C100 Sole cysteine residue located in the central hydrophobic alpha-helix"
+   ]
+  }
+ },
+ {
+  "item": "9YP0-B",
+  "truth": {
+   "pdb_title": "Crystal structure of de novo cysteine protease (HC34 WT apo)",
+   "molecule": "HC34 WT apo",
+   "keywords": "DE NOVO PROTEIN",
+   "keyword_text": "de novo design, Cysteine proteases, enzyme design, deep learning method RFD2-MI, DE NOVO PROTEIN",
+   "organism": [
+    "synthetic construct"
+   ]
+  },
+  "answer": {
+   "protein_name": "Putative secreted/lipoprotein with PepSY-like and C-terminal beta-sandwich domains (uncharacterized)",
+   "function": "Predicted extracytoplasmic bacterial protein whose PepSY-like domain may regulate a protease or bind a peptide or ligand at the cell surface; its exact molecular function is unknown.",
+   "fold": "N-terminal helix packed on a beta-sheet (PepSY-like) followed by a helical segment and a C-terminal beta-sandwich domain",
+   "recognised": false,
+   "functional_residues": [
+    "C100 conserved cysteine, possibly structural or a redox site",
+    "W112 conserved aromatic residue in a possible binding surface",
+    "W160 conserved aromatic residue in the beta-sandwich core or ligand interface"
+   ]
+  }
+ },
+ {
+  "item": "9YP0-C",
+  "truth": {
+   "pdb_title": "Crystal structure of de novo cysteine protease (HC34 WT apo)",
+   "molecule": "HC34 WT apo",
+   "keywords": "DE NOVO PROTEIN",
+   "keyword_text": "de novo design, Cysteine proteases, enzyme design, deep learning method RFD2-MI, DE NOVO PROTEIN",
+   "organism": [
+    "synthetic construct"
+   ]
+  },
+  "answer": {
+   "protein_name": "Uncharacterized putative lipoprotein (domain of unknown function), mature form without signal peptide; likely a structural genomics target",
+   "function": "Function unknown; predicted to be a secreted or membrane-anchored bacterial lipoprotein, possibly involved in binding a ligand or protein partner at the cell surface, with no evident catalytic motif.",
+   "fold": "Two-lobed alpha+beta fold of a DUF-type bacterial (Gram-positive) lipoprotein: N-terminal long helix packed on an antiparallel beta-meander, a central helical hairpin, and a C-terminal antiparallel beta-sheet; family assignment uncertain",
+   "recognised": false,
+   "functional_residues": [
+    "C100 Only cysteine, predicted buried in the central helical hairpin; no known functional role (speculative)",
+    "W112 Conserved-looking aromatic at the end of helix 97-113, possibly core packing or ligand contact (speculative)",
+    "W160 Aromatic in the C-terminal beta-sheet, possible binding-surface residue (speculative)"
+   ]
+  }
+ }
+]
