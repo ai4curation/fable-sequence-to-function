@@ -1,0 +1,27 @@
+== per protein, 12 unmatched proteins: Q3 % / contacts correct of qualifying / function grade
+  best single state Q3 is given after the PDB id
+  37QB  base 63  84 12/15 partly  ;  81 12/20 partly  ;  77 9/20 wrong
+  9TGX  base 86  82 0/19 wrong  ;  84 0/7 abstained  ;  76 0/20 abstained
+  9YP0  base 43  79 0/20 wrong  ;  76 0/16 wrong  ;  72 0/20 abstained|wrong
+  10ZI  base 65  79 5/20 partly  ;  76 4/20 correct  ;  79 9/20 correct
+  23AA  base 58  78 2/19 abstained  ;  73 1/19 abstained  ;  72 0/20 abstained
+  9SA5  base 54  78 6/20 correct  ;  71 5/19 correct  ;  59 4/20 abstained|wrong
+  9ZWQ  base 53  76 18/19 correct  ;  72 8/20 correct  ;  70 14/20 correct
+  27IK  base 45  75 15/20 correct  ;  69 4/16 correct  ;  63 17/20 partly
+  9T71  base 39  75 2/19 correct  ;  70 0/19 abstained  ;  61 1/17 abstained
+  9WIA  base 57  75 4/19 abstained  ;  64 2/16 wrong  ;  71 1/20 wrong
+  12WN  base 60  72 11/20 correct  ;  80 6/18 abstained  ;  75 9/20 wrong
+  10CW  base 56  62 7/19 wrong|abstained  ;  65 1/18 wrong|abstained  ;  54 4/20 wrong
+  deposited titles:
+    10CW: {"pdb_title": "Crystal structure of Thermoproteus neutrophilus Rpp30", "molecule": "Ribonuclease P Rpp30", "keywords": "RNA BINDING PROTEIN", "keyword
+    10ZI: {"pdb_title": "Crystal structure of MrtR bound to 3O-C8 homoserine lactone and tetraethylene glycol", "molecule": "MrtR", "keywords": "TRANSCRIPTION",
+    12WN: {"pdb_title": "De novo protein design, desE2D", "molecule": "desE2D", "keywords": "DE NOVO PROTEIN", "keyword_text": "de novo protein design, metallop
+    23AA: {"pdb_title": "Type II-A Anti-CRISPR protein AcrIIA17 from Streptococcus gallolyticus", "molecule": "Anti-CRISPR protein", "keywords": "IMMUNE SYSTEM"
+    27IK: {"pdb_title": "Crystal structure of the mature form of human ASPRV1", "molecule": "Retroviral-like aspartic protease 1", "keywords": "HYDROLASE", "key
+    37QB: {"pdb_title": "Crystal Structure of the Ketopantoate Reductase PanG with NADP from Mycobacterium tuberculosis", "molecule": "Ketopantoate Reductase Pa
+    9SA5: {"pdb_title": "Inhibition by ATP regulates the activity of a CBASS antiphage nucleotide cyclase", "molecule": "CD-NTase", "keywords": "ANTIVIRAL PROTE
+    9T71: {"pdb_title": "Crystal structure of the deubiquitinase domain of AtDUC1.", "molecule": "EEIG1/EHBP1 protein amino-terminal domain protein", "keywords"
+    9TGX: {"pdb_title": "Guanidine prenyltransferase NosH in complex with guanidine", "molecule": "NosH", "keywords": "TRANSFERASE", "keyword_text": "NosH facil
+    9WIA: {"pdb_title": "Crystal structure of Helicoverpa armigera oral secretion R-like protein 1", "molecule": "HARP1", "keywords": "IMMUNOSUPPRESSANT", "keyw
+    9YP0: {"pdb_title": "Crystal structure of de novo cysteine protease (HC34 WT apo)", "molecule": "HC34 WT apo", "keywords": "DE NOVO PROTEIN", "keyword_text"
+    9ZWQ: {"pdb_title": "Crystal structure of the N4BP2 polynucleotide kinase (PNK) domain in complex with ADP and Mg.", "molecule": "NEDD4-binding protein 2", 
