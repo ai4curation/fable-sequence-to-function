@@ -85,8 +85,8 @@ pixel, so they are not byte-for-byte reproducible.
 | Table 8 (Claude rows), thinking split, authors' accuracy on the same questions | `uv run python experiments/next_residue/score.py` | `expected/next_residue.txt` |
 | No-model heuristics on all 3,340 cut points | `uv run python experiments/next_residue/baselines.py` | `expected/next_residue_baselines.txt` |
 | Table 5 (Claude columns; `set all` lines for rows 3 to 7); overlap of 0.85 in the Results (`set B` lines) | `uv run python experiments/features/score.py` | `expected/features.txt` |
-| Figure 1 and Table 3 (Claude models), recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
-| Figure 2 and Table 6 (Claude models), structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
+| Figure 2 and Table 3 (Claude models), recall of "inactive" names | `uv run python experiments/pseudo/score.py` | `expected/pseudo.txt` |
+| Figure 3 and Table 6 (Claude models), structure scores with ASPRV1 counted once, function grading counts | `uv run python experiments/structure/score.py` | `expected/structure.txt` |
 | Table 7, per-protein structure scores and function grades | `uv run python experiments/structure/per_protein_table.py` | `expected/structure_per_protein.txt` |
 | Claude call totals in Methods (2,854 recorded calls; 6 listing a second model) | `uv run python experiments/summary.py` | `expected/summary.txt` |
 | Values plotted in Figures 1 and 2 | `uv run python figures/make_figures.py --values-only` | `expected/figures.txt` |
