@@ -43,6 +43,17 @@ wave logs and, after completion or a stop, `scores.txt`, `audit.txt`, and `decoy
 append-only under `gpt6_experiment/results/`. Re-running the command resumes without re-asking
 attempted questions. Low-effort next-residue rows explicitly record `ncond=3` for the audit.
 
+`report_full.py` produces `gpt6_experiment/RESULTS.md` with coverage and summary tables, the canonical
+scores, sensitivity analyses, paired decoy comparisons and audit. It refuses incomplete grids unless
+`--allow-partial` is explicitly requested, which labels the report incomplete.
+
+For an unattended run, `finish_full.py PID --publish` waits for that controller process on EC2,
+requires both models to complete and the audit to pass, regenerates the reports and checksums, then
+commits and pushes the results to this PR branch without forcing. It records its outcome in
+`<home>/full_analysis/completion.json`. A stopped run, an audit failure, changed unrelated data,
+unexpected staged changes or an advanced remote branch prevents publication. The completion step
+does not make model calls or retry any question.
+
 Score the decoy comparison separately:
 
 ```bash
@@ -218,8 +229,8 @@ lines give the GPT-6 counts.
 
 ## Canary record
 
-The results are append-only. Only the last row of each file counts: every earlier row is from before
-`codex_row_format` 2.
+The results are append-only. For the initial canary question, only the final format-2 row counts;
+its earlier rows predate `codex_row_format` 2. Subsequent questions are scored independently.
 
 **Canary with the fixed runner** (commit 0f5a631, 2026-11-20), first test-4 question, high effort.
 Each model took one attempt. Each sent one logged request to chatgpt.com, which passed the request

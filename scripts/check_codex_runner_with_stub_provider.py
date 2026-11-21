@@ -747,23 +747,39 @@ threading.Timer(1.6, lambda: os.kill(os.getpid(), _signal.SIGINT)).start()
 code, rows = run_main(fake_slow, 2, interrupt_after=1.5, sig=_signal.SIGTERM)
 check(code == 128 + int(_signal.SIGTERM) and len(rows) == len(CALLS), f"first signal sets the exit status (exit {code})")
 
-# the journal's default place is the experiment home, and each call is synced and each row flushed before the next (#185, #191)
+# Check the actual flush, not worker scheduling: a worker may start its next question
+# before the main thread collects its previous future (#185, #191).
 syncs = {"n": 0}
 def counting_fsync(fd):
     syncs["n"] += 1
     return real_fsync(fd)
-seen_rows = []
-def fake_sees_rows(model, effort, prompt, *a, **k):
-    f = HOME / "main_check" / "structure" / "gpt-6-astra-high.jsonl"
-    seen_rows.append(len(f.read_text().splitlines()) if f.exists() else 0)
+flushed_rows = []
+real_path_open = pathlib.Path.open
+class FlushObserver:
+    def __init__(self, fh): self.fh = fh
+    def __getattr__(self, name): return getattr(self.fh, name)
+    def __enter__(self): return self
+    def __exit__(self, *args): return self.fh.__exit__(*args)
+    def flush(self):
+        self.fh.flush()
+        with real_path_open(f_rows) as source:
+            flushed_rows.append(len(source.read().splitlines()))
+def observe_open(path, mode="r", *args, **kwargs):
+    fh = real_path_open(path, mode, *args, **kwargs)
+    return FlushObserver(fh) if path == f_rows and mode == "a" else fh
+def fake_fast(model, effort, prompt, *a, **k):
     return "{}", dict(model=model, effort=effort, status="UNUSABLE", codex_row_format=2)
 shutil.rmtree(HOME / "launched", ignore_errors=True)
 run_codex.os.fsync = counting_fsync
-code, rows = run_main(fake_sees_rows, 1, limit=3, journal_default=True)
-run_codex.os.fsync = real_fsync
+pathlib.Path.open = observe_open
+try:
+    code, rows = run_main(fake_fast, 1, limit=3, journal_default=True)
+finally:
+    run_codex.os.fsync = real_fsync
+    pathlib.Path.open = real_path_open
 home_journal = HOME / "launched" / "structure" / "gpt-6-astra-high.jsonl"
-check(home_journal.exists() and len(home_journal.read_text().splitlines()) == 3 and syncs["n"] == 3 and seen_rows == [0, 1, 2],
-      f"journal in <home>/launched, synced per call, rows flushed before the next call ({syncs['n']} syncs; rows seen {seen_rows})")
+check(home_journal.exists() and len(home_journal.read_text().splitlines()) == 3 and syncs["n"] == 3 and flushed_rows == [1, 2, 3],
+      f"journal in <home>/launched, synced per call, each row flushed ({syncs['n']} syncs; rows on flush {flushed_rows})")
 shutil.rmtree(HOME / "launched", ignore_errors=True)
 
 # a journal line from a run writing another results file: not asked here, reported as such (#191)

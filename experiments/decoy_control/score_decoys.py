@@ -25,8 +25,6 @@ where NAME is MODEL or MODEL-TAG. Empty files are skipped. A question may have o
 import argparse, ast, collections, json, math, pathlib, re, sys
 HERE = pathlib.Path(__file__).resolve().parent; sys.path.insert(0, str(HERE.parent))
 from common import KEYS, NOTE_CONTINUED, NOTE_FAILED, NOTE_TOOL, answer, continued, efforts, requests_made, sha, tool_calls, unusable as common_unusable
-sys.path.insert(0, str(HERE.parent.parent / "gemini_experiment"))
-from run_agy import agy_unusable
 ap = argparse.ArgumentParser(description=__doc__)
 ap.add_argument("probe_dir", nargs="?", type=pathlib.Path, default=HERE.parent)
 ap.add_argument("--results", type=pathlib.Path, default=HERE / "results")
@@ -35,7 +33,11 @@ args = ap.parse_args()
 PROBE, RESULTS = args.probe_dir, args.results
 PSEUDO_RESULTS = args.pseudo_results or PROBE / "pseudo/results"
 def unusable(row):
-    return agy_unusable(row) if "codex_row_format" in row or str(row.get("cli_version", "")).startswith("codex-exec") else common_unusable(row)
+    if "codex_row_format" in row or str(row.get("cli_version", "")).startswith("codex-exec"):
+        sys.path.insert(0, str(HERE.parent.parent / "gemini_experiment"))
+        from run_agy import agy_unusable
+        return agy_unusable(row)
+    return common_unusable(row)
 def failed(rows): return sum(unusable(r) for r in rows)
 VARIANTS = [("asp_decoy_to_asn", "asp_to_asn"), ("lys_decoy_to_met", "lys_to_met"), ("site_decoy_to_ala", "site_to_ala")]
 D = {(d["accession"], d["variant"]): d for d in json.loads((HERE / "decoys.json").read_text())}
