@@ -705,8 +705,9 @@ at annotated catalytic positions and matched substitutions elsewhere. It does no
 correct: we assumed, and did not test, that the catalytic-site mutants are inactive and that the decoys
 are neutral. No decoy control was run for Neon, and the Opus~4.6 decoys
 were asked at low effort only. The decoy positions were chosen by a rule written with the help of two of
-the tested models and revised twice after we looked at the positions it picked, before any model call; the
-repository's history cannot show that order. The decoys avoid conserved positions, and some enzyme decoys
+the tested models and revised twice after the positions it picked had been inspected, before any model call;
+the repository's history cannot show that order. The decoys avoid annotated positions and, in kinases, three
+conserved motifs, and some enzyme decoys
 are easy to call active: one is the second-to-last residue, one lies in a disordered region and one in a
 transmembrane helix. The adjudication of the two reference sites rests
 on alignment and predicted structures. Neither disputed position, nor the activity of the mutants used
@@ -859,7 +860,8 @@ we give both counts where they differ. Both gradings are in the repository.
 points. We used the authors' prompt unchanged. The model writes the next ten residues, and the first is
 scored. The controls were the same protein shuffled with the authors' seed and, new here, the real
 sequence reversed. Intervals are 95\% bootstrap intervals over families (10,000 resamples, fixed seed). Over
-100 seeds, the bounds of the Claude intervals move by at most 0.8 points, and none changes sign.
+100 seeds, the bounds of the Claude intervals move by at most one resampling step (0.74 points), and none
+changes sign.
 
 \section*{Data and code availability}
 
@@ -902,9 +904,9 @@ prompt carried 573 input tokens.
 
 \paragraph{Continued replies.} The high-effort Opus~4.6 answers were long. The tool asks again by itself after an output limit or an empty or stopped reply, and 7 of 120 replies in the \tpseudo{} test
 and 9 of 30 in the \tstrfn{} test took more than one request for this reason. In the \tfeat{} test, six such replies were asked
-again, and one of the new answers also took more than one request. Had their first answers been kept
-instead, Opus~4.6 would still have 7 of 60 correct families, and 29 rather than 28 of 60 shuffled
-sequences given a domain. Continued answers that were kept are
+again, and one of the new answers also took more than one request. Had the six first answers been kept
+instead, Opus~4.6 would still have named a correct family for 7 of the 45 sampled proteins and 0 of the 15
+obscure ones, and would have given a domain to 29 rather than 28 of the 60 shuffled sequences. Continued answers that were kept are
 scored like any other. In four of them a safety classifier had stopped the reply before the tool asked again:
 A0A919RPG7 in the \tfeat{} test, the Q2PAY3 aspartate-to-asparagine mutant and the Q9V422 wild type in the
 \tpseudo{} test, and 9T71 in the \tstrfn{} test. The rows do not record such stops; the tool's own session
