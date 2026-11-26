@@ -1,8 +1,14 @@
 # Sequence to function with general language models
 
+[![arXiv](https://img.shields.io/badge/arXiv-2611.28529-b31b1b.svg)](https://arxiv.org/abs/2611.28529)
+
+**Preprint:** Mungall CJ, Joachimiak MP. *General-purpose language models are
+neurosymbolic reasoners able to annotate proteins from sequence.* arXiv:2611.28529
+(2026). <https://arxiv.org/abs/2611.28529> · [BibTeX](#citation) · [results site](https://ai4curation.io/fable-sequence-to-function/)
+
 Can a general-purpose language model read a protein sequence directly? This
 repository holds four small sequence-only tests of Claude Fable 5.2, Claude Opus
-5.5 and Claude Opus 4.6, plus a Gemini extension and a draft preprint. The completed
+5.5 and Claude Opus 4.6, plus a Gemini extension and the preprint above. The completed
 Gemini API runs supplied no tools or system instruction in the request body.
 
 Gemini 4 Neon detects all 20 kinase Asp-to-Asn substitutions at low effort and,
@@ -19,7 +25,8 @@ for the full extension, incomplete pilots, and limits of cross-model comparisons
 | PSEUDO | `experiments/pseudo/` | Does it notice one catalytic-residue substitution in an otherwise active enzyme? |
 | STRFN | `experiments/structure/` | Does it predict secondary structure, contacts and function for recent structures stratified by prior homology? |
 
-The manuscript is `manuscript.tex`, with a built copy in `manuscript.pdf`.
+The manuscript is `manuscript.tex`, with a built copy in `manuscript.pdf`; the version posted to arXiv is
+[arXiv:2611.28529](https://arxiv.org/abs/2611.28529).
 A one-page summary of the results for a general audience is in `docs/index.html` (a self-contained static page, ready for GitHub Pages from `/docs`).
 
 `experiments/decoy_control/` holds the decoy control for the PSEUDO test reported in the manuscript: the same substitution
@@ -252,7 +259,25 @@ commit `0d8d086`, under the MIT licence included in that folder. Protein
 sequences and annotations are from UniProt and InterPro; structures are from the
 RCSB Protein Data Bank.
 
-## Open before posting the preprint
+## Citation
+
+If you use this work, please cite the preprint (also in [`CITATION.cff`](CITATION.cff)):
+
+```bibtex
+@misc{mungall2026neurosymbolic,
+  title         = {General-purpose language models are neurosymbolic reasoners able to annotate proteins from sequence},
+  author        = {Mungall, Christopher J. and Joachimiak, Marcin P.},
+  year          = {2026},
+  eprint        = {2611.28529},
+  archivePrefix = {arXiv},
+  primaryClass  = {q-bio.GN},
+  url           = {https://arxiv.org/abs/2611.28529}
+}
+```
+
+## Open items
+
+These were open when the preprint was posted.
 
 - This repository has no licence file yet.
 - Repeat runs, to measure sampling variability in the FEAT, PSEUDO and STRFN tests.

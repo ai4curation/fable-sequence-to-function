@@ -13,11 +13,14 @@ Status: `open`, `decide` (authors' call before anyone edits), `done` (say where)
 
 ## Before posting the preprint
 
+The preprint is posted: arXiv:2611.28529 (https://arxiv.org/abs/2611.28529), submitted 21 November 2026. Items still open here now apply to a revised arXiv version.
+
 | # | Status | Task | Where | Source |
 |---|---|---|---|---|
 | T1 | open | The repository is now public (checked 2026-11-21), and the Data availability names it and the results site. Still missing: a licence file, a tagged release and an archived DOI (for example Zenodo). Add those, then cite the DOI. | Data and code availability, l. 365–368 | #27 |
 | T2 | done | Affiliation and funding are in (Lawrence Berkeley National Laboratory; DOE contract DE-AC02-05CH11231), done by #200 and #228. | front matter, Acknowledgements | README "Open before posting" |
 | T3 | done | #228 removed the agent and Antigravity/Codex sentences, leaving the Acknowledgements funding-only, and closed #154. | Acknowledgements (PR #115) | #154 |
+| T31 | done | Point the repository at the posted preprint: arXiv badge, citation and BibTeX in the README, `CITATION.cff`, links on the results site, and an arXiv ID comment at the top of `manuscript.tex`. | README, `CITATION.cff`, `docs/index.html` | arXiv:2611.28529 |
 
 ## Methods and route
 

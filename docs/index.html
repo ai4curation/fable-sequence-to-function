@@ -74,6 +74,7 @@ a { color: var(--link); text-underline-offset: 2px; }
 /* ---------- hero ---------- */
 .hero { padding: 64px 0 40px; }
 .kicker { font-family: var(--mono); font-size: 12.5px; text-transform: uppercase; letter-spacing: .14em; color: var(--accent); }
+.kicker a { color: inherit; }
 h1 { font-family: var(--display); font-weight: 400; font-size: clamp(36px, 5.6vw, 66px);
   line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 22px; max-width: 21ch; }
 h1 em { font-style: italic; color: var(--accent); }
@@ -237,12 +238,12 @@ footer { padding: 36px 0 60px; border-top: 1px solid var(--rule); font-family: v
   </div>
 
   <header class="hero">
-    <div class="kicker fade">Preprint · November 2026</div>
+    <div class="kicker fade">Preprint · <a href="https://arxiv.org/abs/2611.28529">arXiv:2611.28529</a> · November 2026</div>
     <h1 class="fade d1">General-purpose language models are <em>neurosymbolic reasoners</em> able to annotate proteins from sequence</h1>
     <p class="lede fade d2">Frontier general-purpose language models, given nothing but an amino-acid sequence, can place protein domains, spot a lost catalytic residue, and predict structure well above chance. They do it in one answer, combining pattern recognition over raw sequence with symbolic biological reasoning.</p>
     <div class="byline fade d3"><strong>Christopher J. Mungall</strong> · <strong>Marcin P. Joachimiak</strong> — Environmental Genomics and Systems Biology Division, Lawrence Berkeley National Laboratory</div>
     <div class="cta fade d4">
-      <a class="primary" href="https://github.com/ai4curation/fable-sequence-to-function/blob/main/manuscript.pdf">Read the manuscript (PDF)</a>
+      <a class="primary" href="https://arxiv.org/abs/2611.28529">Read the preprint (arXiv)</a>
       <a href="https://github.com/ai4curation/fable-sequence-to-function">Code, prompts &amp; every model reply</a>
     </div>
 
@@ -402,11 +403,12 @@ just check     # checksums + every reported number
 just figures   # redraw the manuscript figures
 just pdf       # build manuscript.pdf</pre>
       <p class="small">Needs <a href="https://docs.astral.sh/uv/">uv</a> and <a href="https://just.systems/">just</a>. Test sets were drawn from UniProt, InterPro and RCSB on 18 November 2026 and are committed as drawn. Re-asking the models will not give identical answers.</p>
+      <p class="small">Cite as: Mungall CJ, Joachimiak MP. General-purpose language models are neurosymbolic reasoners able to annotate proteins from sequence. <a href="https://arxiv.org/abs/2611.28529">arXiv:2611.28529</a> (2026). BibTeX and <code>CITATION.cff</code> are in the <a href="https://github.com/ai4curation/fable-sequence-to-function#citation">repository</a>.</p>
     </div>
   </section>
 
   <footer>
-    Mungall &amp; Joachimiak · Lawrence Berkeley National Laboratory · <a href="https://github.com/ai4curation/fable-sequence-to-function">github.com/ai4curation/fable-sequence-to-function</a>
+    Mungall &amp; Joachimiak · Lawrence Berkeley National Laboratory · <a href="https://arxiv.org/abs/2611.28529">arXiv:2611.28529</a> · <a href="https://github.com/ai4curation/fable-sequence-to-function">github.com/ai4curation/fable-sequence-to-function</a>
   </footer>
 </div>
 
