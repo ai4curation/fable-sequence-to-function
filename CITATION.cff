@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite the preprint below."
+title: "fable-sequence-to-function: test sets, prompts, model outputs and code"
+type: software
+authors:
+  - family-names: Mungall
+    given-names: Christopher J.
+    orcid: "https://orcid.org/0000-0002-6601-2165"
+    affiliation: Lawrence Berkeley National Laboratory
+  - family-names: Joachimiak
+    given-names: Marcin P.
+    orcid: "https://orcid.org/0000-0001-8175-045X"
+    affiliation: Lawrence Berkeley National Laboratory
+repository-code: "https://github.com/ai4curation/fable-sequence-to-function"
+url: "https://ai4curation.io/fable-sequence-to-function/"
+preferred-citation:
+  type: article
+  title: "General-purpose language models are neurosymbolic reasoners able to annotate proteins from sequence"
+  authors:
+    - family-names: Mungall
+      given-names: Christopher J.
+      orcid: "https://orcid.org/0000-0002-6601-2165"
+      affiliation: Lawrence Berkeley National Laboratory
+    - family-names: Joachimiak
+      given-names: Marcin P.
+      orcid: "https://orcid.org/0000-0001-8175-045X"
+      affiliation: Lawrence Berkeley National Laboratory
+  year: 2026
+  month: 11
+  date-published: 2026-11-21
+  journal: arXiv
+  identifiers:
+    - type: other
+      value: "arXiv:2611.28529"
+      description: arXiv identifier
+  url: "https://arxiv.org/abs/2611.28529"
